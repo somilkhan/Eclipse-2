@@ -8,10 +8,7 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">刷新</string>
     <string name="logs_copy">复制</string>
-    <string name="logs_share">分享</string>
     <string name="logs_clear">清除</string>
-    <string name="logs_share_title">分享 InstaEclipse 日志</string>
-    <string name="logs_share_subject">InstaEclipse 日志</string>
     <string name="logs_loading">正在加载日志…</string>
     <string name="logs_count_format">显示 %1$d 条，共 %2$d 条</string>
     <string name="logs_status_live">Instagram 正在运行 · 实时</string>

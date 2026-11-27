@@ -30,6 +30,7 @@ import com.google.android.material.color.MaterialColors;
 
 import ps.reso.instaeclipse.R;
 import ps.reso.instaeclipse.utils.core.ExportBrand;
+import ps.reso.instaeclipse.utils.core.RepoLinks;
 
 public class HelpFragment extends Fragment {
 
@@ -66,7 +67,7 @@ public class HelpFragment extends Fragment {
             logo.setClipToOutline(true);
         }
 
-        view.findViewById(R.id.github_button).setOnClickListener(v -> openUrl(ExportBrand.GITHUB + "/issues"));
+        view.findViewById(R.id.github_button).setOnClickListener(v -> openUrl(RepoLinks.ISSUES_URL));
         view.findViewById(R.id.telegram_button).setOnClickListener(v -> openUrl(ExportBrand.TELEGRAM));
         view.findViewById(R.id.source_button).setOnClickListener(v -> openUrl(ExportBrand.GITHUB));
 

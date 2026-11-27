@@ -3,11 +3,10 @@ name: Build Debug APK
 on:
   push:
     branches:
-      - main  # Trigger workflow on pushes to the main branch
+      - main
       - 0.4
-  pull_request:
-    branches:
-      - main  # Trigger workflow on pull requests to the main branch
+      - 'maintainer/**'   # integration branches, e.g. maintainer/0.8.4
+  pull_request:          # every pull request, whatever its target branch
   workflow_dispatch:  # Allow manual triggering via the GitHub Actions UI
 
 concurrency:

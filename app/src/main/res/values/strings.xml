@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
     <string name="app_name">InstaEclipse</string>
-    <string name="version" translatable="false">v0.8.1</string>
+    <string name="version" translatable="false">v0.8.4</string>
     <string name="home">Home</string>
     <string name="features">Features</string>
     <string name="help">Help</string>
@@ -714,4 +714,11 @@ Stay on this screen until it finishes.</string>
     <string name="ig_update_later">Later</string>
     <string name="ig_update_error_message">Failed to check for updates. Please try again later.</string>
 
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Safe pacing for bulk actions</string>
+    <string name="ie_safe_pacing_hint">Waits a random 0.7–1.6 s between items, and 3–6 s every 8 items, in bulk unsend, Download all and comment search. Recommended.</string>
+    <string name="ie_pacing_progress">%1$d of %2$d done</string>
+    <string name="ie_pacing_stop">Stop</string>
+    <string name="ie_pacing_hide">Hide</string>
+    <string name="ie_pacing_stopped">Stopped after %1$d of %2$d</string>
 </resources>

@@ -2724,9 +2724,14 @@ public class FeedVideoDownloadHook {
             labels.add(I18n.t(ctx, R.string.ig_dl_carousel_all, n));
             actions.add(() -> {
                 ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_toast_downloading_all_n_items, n), Toast.LENGTH_SHORT).show();
+                ps.reso.instaeclipse.utils.pacing.PacedRun run = ps.reso.instaeclipse.utils.pacing.PacedRun.start(
+                        ctx, I18n.t(ctx, R.string.ig_dl_carousel_all, n), urls.size());
                 executor.submit(() -> {
                     int failed = 0;
+                    int attempted = 0;
                     for (int i = 0; i < urls.size(); i++) {
+                        if (!run.awaitTurn(i)) break; // safe pacing + Stop
+                        attempted++;
                         String url = urls.get(i);
                         boolean isVid = isVideoUrl(url);
                         String fn = withSlide(buildFilename(username, "post", mediaId, isVid), i + 1, n);
@@ -2736,10 +2741,15 @@ public class FeedVideoDownloadHook {
                             failed++;
                             ModuleLog.line("(IE|Post|DL) item failed: " + e);
                         }
+                        run.done(i + 1);
                     }
+                    run.finish();
                     final int finalFailed = failed;
+                    final String stopped = run.stoppedText(attempted - failed);
                     mainHandler.post(() -> {
-                        if (finalFailed == 0) {
+                        if (stopped != null) {
+                            ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, stopped, Toast.LENGTH_SHORT).show();
+                        } else if (finalFailed == 0) {
                             ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_toast_all_items_saved, n),
                                     Toast.LENGTH_SHORT).show();
                         } else {
@@ -2993,9 +3003,23 @@ public class FeedVideoDownloadHook {
                         String url = urls.get(current);
                         startDirectDownload(ctx, url, isVideoUrl(url), current + 1, n);
                     } else {
-                        for (int i = 0; i < urls.size(); i++)
-                            startDirectDownload(ctx, urls.get(i), isVideoUrl(urls.get(i)), i + 1, n);
                         ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_toast_downloading_n_items, n), Toast.LENGTH_SHORT).show();
+                        // Safe pacing: start the downloads one by one with a random gap; Stop cancels the rest.
+                        ps.reso.instaeclipse.utils.pacing.PacedRun run = ps.reso.instaeclipse.utils.pacing.PacedRun.start(
+                                ctx, I18n.t(ctx, R.string.ig_dl_carousel_all, n), n);
+                        new Thread(() -> {
+                            int started = 0;
+                            for (int i = 0; i < urls.size(); i++) {
+                                if (!run.awaitTurn(i)) break;
+                                final int pos = i;
+                                mainHandler.post(() -> startDirectDownload(ctx, urls.get(pos), isVideoUrl(urls.get(pos)), pos + 1, n));
+                                run.done(++started);
+                            }
+                            run.finish();
+                            String stopped = run.stoppedText(started);
+                            if (stopped != null) mainHandler.post(() ->
+                                    ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, stopped, Toast.LENGTH_SHORT).show());
+                        }, "IE-PacedDownload").start();
                     }
                 }).show();
     }

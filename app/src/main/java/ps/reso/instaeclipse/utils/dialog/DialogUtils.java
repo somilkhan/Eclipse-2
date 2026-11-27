@@ -202,7 +202,7 @@ public class DialogUtils {
         // ---- TOOLS ---- app & account, developer, backup, restart, cache, about
         mainLayout.addView(sectionHeader(context, I18n.t(context, R.string.feat_group_tools)));
         LinearLayout tools = createGroupCard(context);
-        tools.addView(createMenuRow(context, R.drawable.ic_settings_gear, I18n.t(context, R.string.menu_app), A_TOOLS, () -> showAppOptions(context), onCount(context, "unlimitedAccounts", "fixNotificationRegistration", "showFeatureToasts")));
+        tools.addView(createMenuRow(context, R.drawable.ic_settings_gear, I18n.t(context, R.string.menu_app), A_TOOLS, () -> showAppOptions(context), onCount(context, "unlimitedAccounts", "fixNotificationRegistration", "showFeatureToasts", "safePacing")));
         tools.addView(createMenuRow(context, R.drawable.ic_tune, I18n.t(context, R.string.ig_dialog_menu_dev_options), A_TOOLS, () -> showDevOptions(context), onCount(context, "isDevEnabled", "removeBuildExpiredPopup")));
         tools.addView(createMenuRow(context, R.drawable.ic_save, I18n.t(context, R.string.ig_dialog_menu_backup_restore), A_TOOLS, () -> showBackupRestoreOptions(context)));
         tools.addView(createMenuRow(context, R.drawable.ic_restart, I18n.t(context, R.string.ig_dialog_menu_restart), A_TOOLS, () -> showRestartSection(context)));
@@ -1622,7 +1622,9 @@ public class DialogUtils {
         layout.addView(cardOf(context,
                 extraSwitch(context, "#0A84FF", "unlimitedAccounts"),
                 extraSwitch(context, "#0A84FF", "fixNotificationRegistration"),
-                flagSwitch(context, R.drawable.ic_notification, "#0A84FF", R.string.ig_dialog_misc_show_feature_toasts, "showFeatureToasts")));
+                flagSwitch(context, R.drawable.ic_notification, "#0A84FF", R.string.ig_dialog_misc_show_feature_toasts, "showFeatureToasts"),
+                flagSwitch(context, R.drawable.ic_timer, "#0A84FF", R.string.ie_safe_pacing, "safePacing")));
+        layout.addView(createInfoSection(context, "", I18n.t(context, R.string.ie_safe_pacing_hint)));
         showSectionDialog(context, I18n.t(context, R.string.menu_app), layout, () -> {});
     }
 
@@ -2580,7 +2582,7 @@ public class DialogUtils {
         links.addView(createActionRow(context, R.drawable.ic_telegram_logo, I18n.t(context, R.string.about_channel), "#29B6F6",
                 v -> openLink(context, ps.reso.instaeclipse.utils.core.ExportBrand.TELEGRAM)));
         links.addView(createActionRow(context, R.drawable.ic_github_logo, I18n.t(context, R.string.about_contributors), "#BF5AF2",
-                v -> openLink(context, ps.reso.instaeclipse.utils.core.ExportBrand.GITHUB + "/graphs/contributors")));
+                v -> openLink(context, ps.reso.instaeclipse.utils.core.RepoLinks.CONTRIBUTORS_URL)));
         layout.addView(links);
 
         TextView footer = new TextView(context);

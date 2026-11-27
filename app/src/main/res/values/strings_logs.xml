@@ -8,10 +8,12 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">Refresh</string>
     <string name="logs_copy">Copy</string>
-    <string name="logs_share">Share</string>
     <string name="logs_clear">Clear</string>
-    <string name="logs_share_title">Share InstaEclipse logs</string>
-    <string name="logs_share_subject">InstaEclipse logs</string>
+    <string name="logs_save">Save to storage</string>
+    <string name="logs_saving">Saving the full log…</string>
+    <string name="logs_saved">Log saved</string>
+    <string name="logs_save_failed">Couldn\'t save the log</string>
+    <string name="logs_export_companion_section" translatable="false">Companion app log</string>
     <string name="logs_loading">Loading logs…</string>
     <string name="logs_count_format">%1$d of %2$d entries</string>
     <string name="logs_status_live">Instagram is running · live</string>

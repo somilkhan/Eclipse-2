@@ -1140,11 +1140,17 @@ public class CommentSearchHook {
         final long started = System.currentTimeMillis();
         final long[] lastChange = {started};
         final int[] lastCount = {latest.size()};
+        // Safe pacing: each expand/scroll step waits a random 0.7–1.6 s (3–6 s every 8 steps).
+        // Tapping "load all" again or closing the sheet still cancels via stopLoading().
+        final ps.reso.instaeclipse.utils.pacing.SafePacer pacer =
+                ps.reso.instaeclipse.utils.pacing.SafePacer.create(ps.reso.instaeclipse.utils.feature.FeatureFlags.safePacing);
+        final long maxRunMs = pacer.isEnabled() ? 10 * 60_000 : 5 * 60_000;
+        final int[] step = {0};
         loading = new Runnable() {
             @Override
             public void run() {
                 if (loading != this) return;
-                if (!list.isAttachedToWindow() || System.currentTimeMillis() - started > 5 * 60_000) {
+                if (!list.isAttachedToWindow() || System.currentTimeMillis() - started > maxRunMs) {
                     loading = null;
                     done.run();
                     return;
@@ -1168,7 +1174,11 @@ public class CommentSearchHook {
                     done.run();
                     return;
                 }
-                MAIN.postDelayed(this, rv ? 300 : 450);
+                long base = rv ? 300 : 450;
+                long delay = Math.max(base, pacer.delayBefore(++step[0]));
+                // the extra paced wait is not "idle": don't let a long pause end loading early
+                lastChange[0] += delay - base;
+                MAIN.postDelayed(this, delay);
             }
         };
         MAIN.post(loading);

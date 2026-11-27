@@ -769,6 +769,13 @@ public class FeaturesFragment extends Fragment {
         return item;
     }
 
+    /** Safe pacing for bulk actions (default ON); synced to Instagram like every other switch. */
+    private FeatureItem safePacingSwitch() {
+        FeatureItem item = createSwitch(R.drawable.ic_timer, "#0A84FF", getString(R.string.ie_safe_pacing), "safePacing");
+        item.subtitle = getString(R.string.ie_safe_pacing_hint);
+        return item;
+    }
+
     private FeatureItem createSwitch(String title, String prefKey) {
         FeatureItem item = new FeatureItem();
         item.type = FeatureItem.TYPE_SWITCH;
@@ -1601,7 +1608,8 @@ public class FeaturesFragment extends Fragment {
         defs.add(Arrays.asList(
                 createExtrasSwitch("#0A84FF", "unlimitedAccounts"),
                 createExtrasSwitch("#0A84FF", "fixNotificationRegistration"),
-                createSwitch(R.drawable.ic_notification, "#0A84FF", getString(R.string.ig_dialog_misc_show_feature_toasts), "showFeatureToasts")
+                createSwitch(R.drawable.ic_notification, "#0A84FF", getString(R.string.ig_dialog_misc_show_feature_toasts), "showFeatureToasts"),
+                safePacingSwitch()
         ));
 
         // Auto-clear cache (mirrors the in-IG dialog's Tools section).
@@ -2250,7 +2258,7 @@ public class FeaturesFragment extends Fragment {
         links.addView(aboutButton(ctx, R.drawable.ic_github_logo, getString(R.string.about_source), ExportBrand.GITHUB, d));
         links.addView(aboutButton(ctx, R.drawable.ic_telegram_logo, getString(R.string.about_channel), ExportBrand.TELEGRAM, d));
         links.addView(aboutButton(ctx, R.drawable.ic_github_logo, getString(R.string.about_contributors),
-                ExportBrand.GITHUB + "/graphs/contributors", d));
+                ps.reso.instaeclipse.utils.core.RepoLinks.CONTRIBUTORS_URL, d));
         android.widget.LinearLayout.LayoutParams llp = new android.widget.LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         llp.topMargin = (int) (20 * d);
@@ -2348,7 +2356,7 @@ public class FeaturesFragment extends Fragment {
     // =========================================================
 
     private void stageChange(String prefKey, boolean isChecked) {
-        if (localCache.getBoolean(prefKey, "downloaderUseOriginal".equals(prefKey)) == isChecked) {
+        if (localCache.getBoolean(prefKey, ps.reso.instaeclipse.utils.feature.FeatureFlags.defaultOn(prefKey)) == isChecked) {
             stagedChanges.remove(prefKey);
         } else {
             stagedChanges.put(prefKey, isChecked);
@@ -2385,7 +2393,7 @@ public class FeaturesFragment extends Fragment {
     private boolean getCurrentState(String prefKey) {
         if (prefKey == null) return false;
         if (stagedChanges.containsKey(prefKey)) return stagedChanges.get(prefKey);
-        return localCache.getBoolean(prefKey, "downloaderUseOriginal".equals(prefKey));
+        return localCache.getBoolean(prefKey, ps.reso.instaeclipse.utils.feature.FeatureFlags.defaultOn(prefKey));
     }
 
     // =========================================================
