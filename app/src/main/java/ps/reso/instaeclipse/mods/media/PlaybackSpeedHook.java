@@ -181,6 +181,10 @@ public class PlaybackSpeedHook {
     private void installHero(DexKitBridge bridge, ClassLoader cl) {
         try {
             Method set = findStatic(bridge, cl, "PlaybackSpeed_heroSet", "HeroManager.setPlaybackSpeed", 3);
+            // 457+: the "HeroManager.setPlaybackSpeed" trace moved into an instance method; the
+            // static (player, speed, pitch) wrapper is still identified by its eviction log line.
+            if (set == null) set = findStatic(bridge, cl, "PlaybackSpeed_heroSet",
+                    "Before setPlaybackSpeed(), service player was evicted", 3);
             Method prepare = findStatic(bridge, cl, "PlaybackSpeed_heroPrepare", "HeroManager.prepareAndMayPlay", 1);
             if (set == null || prepare == null) {
                 ModuleLog.line(TAG + "⚠️ hero set=" + set + " prepare=" + prepare);
@@ -465,6 +469,57 @@ public class PlaybackSpeedHook {
         }
     }
 
+    /**
+     * 457+: the ClipsExperimentUtil marker is gone. The attached-scrubber decision now lives in a
+     * tiny static helper pair on the progress controller's config:
+     * {@code A01(Config, long durationMs, boolean)Z} (short/long video split) and
+     * {@code A00(Config, long, boolean)Z} which calls it and returns the matching "show" flag.
+     * Path: the "forceShowAttachedScrubber" marker -> ClipsProgressController (first param of the
+     * static helpers it calls) -> the static (X, long, boolean)Z it calls -> the sibling with the
+     * same shape that calls that one.
+     */
+    static Method findScrubberGate457(DexKitBridge bridge, ClassLoader cl) {
+        try {
+            java.util.Set<String> controllers = new java.util.LinkedHashSet<>();
+            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                    .usingStrings("ClipsProgressController_forceShowAttachedScrubber")))) {
+                for (MethodData inv : md.getInvokes()) {
+                    if (!inv.isMethod() || !java.lang.reflect.Modifier.isStatic(inv.getModifiers())) continue;
+                    var pt = inv.getParamTypeNames();
+                    if (!pt.isEmpty() && pt.get(0).equals(inv.getClassName())) controllers.add(inv.getClassName());
+                }
+            }
+            for (String ctrl : controllers) {
+                var cd = bridge.getClassData(ctrl);
+                if (cd == null) continue;
+                for (MethodData m : cd.getMethods()) {
+                    for (MethodData inv : m.getInvokes()) {
+                        if (!isConfigLongBool(inv)) continue;
+                        var helper = bridge.getClassData(inv.getClassName());
+                        if (helper == null) continue;
+                        for (MethodData sib : helper.getMethods()) {
+                            if (sib.getDescriptor().equals(inv.getDescriptor()) || !isConfigLongBool(sib)) continue;
+                            for (MethodData call : sib.getInvokes()) {
+                                if (call.getDescriptor().equals(inv.getDescriptor())) return sib.getMethodInstance(cl);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            ModuleLog.line(TAG + "⚠️ scrubber gate (457 path): " + t);
+        }
+        return null;
+    }
+
+    private static boolean isConfigLongBool(MethodData m) {
+        if (!m.isMethod() || !java.lang.reflect.Modifier.isStatic(m.getModifiers())) return false;
+        if (!"boolean".equals(m.getReturnTypeName())) return false;
+        var pt = m.getParamTypeNames();
+        return pt.size() == 3 && pt.get(1).equals("long") && pt.get(2).equals("boolean")
+                && !pt.get(0).startsWith("java.") && !pt.get(0).startsWith("android.");
+    }
+
     private void installReelScrubber(DexKitBridge bridge, ClassLoader cl) {
         try {
             Method gate = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("PlaybackSpeed_scrubberGate", cl) : null;
@@ -476,6 +531,7 @@ public class PlaybackSpeedHook {
                     Class<?>[] p = m.getParameterTypes();
                     if (p.length == 4 && p[1] == long.class) { gate = m; break; }
                 }
+                if (gate == null) gate = findScrubberGate457(bridge, cl);
                 if (gate == null) {
                     ModuleLog.line(TAG + "⚠️ reel scrubber gate not found");
                     return;

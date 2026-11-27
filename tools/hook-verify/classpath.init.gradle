@@ -1,0 +1,25 @@
+// Gradle init script used by tools/hook-verify/run.sh: adds :app:hookVerifyClasspath, which
+// compiles the debug Java sources and writes the module's JVM runtime classpath (compiled module
+// classes, R.jar, and every dependency's classes.jar) to app/build/hook-verify/classpath.txt.
+// It does not change the app's own build in any way.
+allprojects { p ->
+    p.afterEvaluate {
+        if (p.path != ':app') return
+        p.tasks.register('hookVerifyClasspath') {
+            dependsOn 'compileDebugJavaWithJavac', 'processDebugResources'
+            doLast {
+                def attr = Attribute.of('artifactType', String)
+                def deps = p.configurations.getByName('debugRuntimeClasspath').incoming.artifactView {
+                    attributes { attribute(attr, 'android-classes-jar') }
+                    lenient(true)
+                }.files.files
+                def javac = p.tasks.named('compileDebugJavaWithJavac').get().destinationDirectory.get().asFile
+                def rJar = p.fileTree(p.layout.buildDirectory.dir('intermediates/compile_and_runtime_not_namespaced_r_class_jar')).matching { include '**/R.jar' }.files
+                def out = p.layout.buildDirectory.file('hook-verify/classpath.txt').get().asFile
+                out.parentFile.mkdirs()
+                out.text = ([javac] + rJar + deps).collect { it.absolutePath }.join('\n') + '\n'
+                println "hook-verify classpath: ${out} (${deps.size()} dependency jars)"
+            }
+        }
+    }
+}
