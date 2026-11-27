@@ -438,9 +438,15 @@ public class HomeFragment extends Fragment {
             boolean ok = false;
             try {
                 Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "am force-stop " + pkg});
-                if (p.waitFor(15, TimeUnit.SECONDS)) {
-                    ok = p.exitValue() == 0;
-                } else {
+                try {
+                    p.getOutputStream().close(); // su must not wait on stdin
+                    if (p.waitFor(15, TimeUnit.SECONDS)) {
+                        ok = p.exitValue() == 0;
+                    }
+                } finally {
+                    // Close the pipes (fd leak otherwise) and never leave a hung su behind.
+                    try { p.getInputStream().close(); } catch (Throwable ignored) { }
+                    try { p.getErrorStream().close(); } catch (Throwable ignored) { }
                     p.destroy();
                 }
             } catch (Throwable ignored) { }
