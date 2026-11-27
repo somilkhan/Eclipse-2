@@ -8,17 +8,19 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">Refresh</string>
     <string name="logs_copy">Copy</string>
-    <string name="logs_share">Share</string>
     <string name="logs_clear">Clear</string>
-    <string name="logs_share_title">Share InstaEclipse logs</string>
-    <string name="logs_share_subject">InstaEclipse logs</string>
+    <string name="logs_save">Save to storage</string>
+    <string name="logs_saving">Saving the full log…</string>
+    <string name="logs_saved">Log saved</string>
+    <string name="logs_save_failed">Couldn\'t save the log</string>
+    <string name="logs_export_companion_section" translatable="false">Companion app log</string>
     <string name="logs_loading">Loading logs…</string>
     <string name="logs_count_format">%1$d of %2$d entries</string>
     <string name="logs_status_live">Instagram is running · live</string>
     <string name="logs_status_saved">Saved log · Instagram not running</string>
     <string name="logs_status_none">No supported Instagram app installed</string>
     <string name="logs_empty_title">No logs yet</string>
-    <string name="logs_empty_body">Open Instagram once with InstaEclipse enabled in LSPosed, then come back here and tap Refresh. Instagram\'s log is saved here automatically, even after Instagram is closed.</string>
+    <string name="logs_empty_body">Open Instagram once with Eclipse 2 enabled in LSPosed, then come back here and tap Refresh. Instagram\'s log is saved here automatically, even after Instagram is closed.</string>
     <string name="logs_empty_filter_title">Nothing matches this filter</string>
     <string name="logs_empty_filter_body">Switch back to All to see every entry.</string>
     <string name="logs_nothing_to_copy">No logs to copy</string>

@@ -1,34 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
+<!-- One row of the grouped "Custom colors" list (inside a GlassCardView). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10.0dp"
-    android:paddingBottom="10.0dp"
-    android:background="?selectableItemBackground"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="56dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
+
+        <View
+            android:id="@+id/theme_slot_swatch"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="14dp" />
+
+        <TextView
+            android:id="@+id/theme_slot_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.IE.Body"
+            android:textColor="?attr/colorOnSurface" />
+
+        <TextView
+            android:id="@+id/theme_slot_hex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="monospace"
+            android:textAppearance="@style/TextAppearance.IE.Subhead"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textDirection="ltr" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="4dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_ui_chevron_right"
+            app:tint="?attr/colorOnSurfaceVariant" />
+    </LinearLayout>
+
+    <!-- Inset separator, aligned with the label (16 + 30 + 14 dp). -->
     <View
-        android:id="@+id/theme_slot_swatch"
-        android:layout_width="36.0dp"
-        android:layout_height="36.0dp"
-        android:layout_marginEnd="14.0dp" />
-
-    <TextView
-        android:id="@+id/theme_slot_label"
-        android:layout_width="0.0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
-
-    <TextView
-        android:id="@+id/theme_slot_hex"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="monospace"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-        android:textColor="?colorOnSurfaceVariant" />
-
-</LinearLayout>
+        android:id="@+id/theme_slot_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="60dp"
+        android:background="@color/ie_separator" />
+</FrameLayout>

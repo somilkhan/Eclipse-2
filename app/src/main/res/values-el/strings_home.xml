@@ -7,7 +7,7 @@
     <string name="home_status_not_installed">Μη εγκατεστημένο</string>
     <string name="home_status_module_active">Module ενεργό</string>
     <string name="home_status_version">Έκδοση %1$s</string>
-    <string name="home_status_no_version">Εγκαταστήστε το Instagram για να χρησιμοποιήσετε το InstaEclipse</string>
+    <string name="home_status_no_version">Εγκαταστήστε το Instagram για να χρησιμοποιήσετε το Eclipse 2</string>
     <plurals name="home_features_enabled">
         <item quantity="one">%d ενεργή λειτουργία</item>
         <item quantity="other">%d ενεργές λειτουργίες</item>
@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Οι αλλαγές αποστέλλονται αμέσως στο Instagram.</string>
     <string name="home_shortcuts_limit">Μπορείτε να καρφιτσώσετε έως %1$d συντομεύσεις</string>
     <string name="home_shortcuts_locked_extreme">Κλειδωμένο από την Ακραία Λειτουργία</string>
+    <string name="ig_toast_no_app_to_open">Δεν βρέθηκε εφαρμογή για άνοιγμα</string>
 </resources>

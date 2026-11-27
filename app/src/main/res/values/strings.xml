@@ -1,7 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
-    <string name="version" translatable="false">v0.8.0</string>
+    <string name="app_name">Eclipse 2</string>
+    <string name="home_compat_tested" tools:ignore="MissingTranslation">Tested version</string>
+    <string name="home_compat_untested_build" tools:ignore="MissingTranslation">Untested build</string>
+    <string name="home_compat_newer" tools:ignore="MissingTranslation">Newer than tested</string>
+    <string name="home_compat_newer_alpha" tools:ignore="MissingTranslation">Alpha build, untested</string>
+    <string name="home_compat_older" tools:ignore="MissingTranslation">Older than tested</string>
+    <string name="home_compat_unknown" tools:ignore="MissingTranslation">Version not recognised</string>
+    <string name="home_compat_value" tools:ignore="MissingTranslation">Tested: %1$s</string>
+    <string name="home_compat_dialog_title" tools:ignore="MissingTranslation">Instagram %1$s</string>
+    <string name="home_compat_msg_tested" tools:ignore="MissingTranslation">Eclipse 2 %3$s was checked on this exact Instagram version (%1$s). Every hook should load.</string>
+    <string name="home_compat_msg_untested_build" tools:ignore="MissingTranslation">You have %1$s. Eclipse 2 %3$s was checked on %2$s, the same major version, so most features should work. If something breaks, look for ❌ lines in Logs.</string>
+    <string name="home_compat_msg_newer" tools:ignore="MissingTranslation">You have %1$s, which is newer than the version Eclipse 2 %3$s was checked on (%2$s). Instagram changes its code with every update, so some features may not load until Eclipse 2 is updated. Lines marked ❌ in Logs show which ones.\n\nFor everything to work, install %2$s.</string>
+    <string name="home_compat_msg_newer_alpha" tools:ignore="MissingTranslation">You have %1$s, an alpha build from the Play Store testing programme. It is newer than the version Eclipse 2 %3$s was checked on (%2$s), and alpha builds change every few days, so some features may not load. Lines marked ❌ in Logs show which ones.\n\nFor everything to work, leave the Instagram testing programme in the Play Store and install %2$s.</string>
+    <string name="home_compat_msg_older" tools:ignore="MissingTranslation">You have %1$s, which is older than the version Eclipse 2 %3$s was checked on (%2$s). Some features may not load. Install %2$s for the best results.</string>
+    <string name="home_compat_msg_unknown" tools:ignore="MissingTranslation">Eclipse 2 %3$s couldn\'t read the Instagram version (%1$s). It was checked on %2$s.</string>
+    <string name="home_compat_get_tested" tools:ignore="MissingTranslation">Get %1$s</string>
+    <string name="legacy_module_title" tools:ignore="MissingTranslation">Old InstaEclipse is installed</string>
+    <string name="legacy_module_message" tools:ignore="MissingTranslation">The original InstaEclipse module (ps.reso.instaeclipse) is still installed. If it is enabled in LSPosed next to Eclipse 2, both hook Instagram at the same time: features run twice, Instagram starts slower, and the log fills with errors from the old hooks.\n\nUninstall it (or disable it in LSPosed), keep only Eclipse 2 scoped to Instagram, then force-stop Instagram.</string>
+    <string name="legacy_module_uninstall" tools:ignore="MissingTranslation">Open its app info</string>
+    <string name="version" translatable="false">v0.8.4</string>
     <string name="home">Home</string>
     <string name="features">Features</string>
     <string name="help">Help</string>
@@ -144,7 +162,7 @@
     <!-- ================================================================ -->
 
     <!-- Common -->
-    <string name="ig_dialog_title" translatable="false">InstaEclipse 🌘</string>
+    <string name="ig_dialog_title" translatable="false">Eclipse 2 🌘</string>
     <string name="ig_dialog_subtitle">Tap a section to configure</string>
     <string name="ig_dialog_close">Close</string>
     <string name="ig_dialog_enable_disable_all">Enable/Disable All</string>
@@ -170,7 +188,7 @@
     <string name="logging_clear">Clear</string>
     <string name="logging_copy">Copy</string>
     <string name="logging_copied">Copied to clipboard</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
     <string name="logging_instagram_timeout">Instagram did not respond in time. Showing companion logs only.</string>
     <string name="logging_no_target">Install a supported Instagram app first.</string>
@@ -259,9 +277,9 @@
     <string name="ig_dialog_dev_remove_build_expired">Remove Build Expired Popup</string>
     <string name="ig_dialog_clear_cache">Clear Hooks Cache</string>
     <string name="ig_dialog_section_clear_cache">Clear Hooks Cache</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ This will force InstaEclipse to re-scan Instagram on next launch. The app will restart.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ This will force Eclipse 2 to re-scan Instagram on next launch. The app will restart.</string>
     <string name="ig_dialog_clear_cache_now">Clear Cache &amp; Restart</string>
-    <string name="ig_dialog_unable_open_ui">Unable to open InstaEclipse UI.</string>
+    <string name="ig_dialog_unable_open_ui">Unable to open Eclipse 2 UI.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram is not open or ready.</string>
     <string name="ig_dialog_mc_overrides_not_found">mc_overrides.json not found.</string>
     <string name="ig_dialog_failed_read_config">Failed to read config: %1$s</string>
@@ -302,20 +320,20 @@
     <string name="ig_locked_coll_unlock">Unlock this collection</string>
     <string name="ig_locked_coll_locked">Collection locked: it will ask for your passcode</string>
     <string name="ig_locked_coll_unlocked">Collection unlocked</string>
-    <string name="ig_locked_coll_need_passcode">Set a passcode first: InstaEclipse settings in Instagram, Lock</string>
+    <string name="ig_locked_coll_need_passcode">Set a passcode first: Eclipse 2 settings in Instagram, Lock</string>
     <string name="ig_saved_on_profile">Saved button on your profile (restart Instagram)</string>
     <string name="ig_saved_on_profile_button">Saved</string>
     <string name="ig_nav_tab_search">Search</string>
     <string name="ig_nav_tab_order">Tab order</string>
     <string name="ig_nav_tab_order_hint">Use the arrows to reorder the bottom bar. Hidden tabs keep their place. Takes effect when you return to Instagram.</string>
     <string name="ig_nav_tab_order_reset">Reset</string>
-    <string name="share_dl_label">Download with InstaEclipse</string>
+    <string name="share_dl_label">Download with Eclipse 2</string>
     <string name="share_dl_no_link">No Instagram post or reel link found</string>
     <string name="share_dl_no_instagram">Instagram is not installed</string>
-    <string name="ig_share_dl_loading">InstaEclipse: loading the post to download…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: saving %1$d file(s)…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: could not load that post</string>
-    <string name="ig_thread_menu">InstaEclipse chat actions</string>
+    <string name="ig_share_dl_loading">Eclipse 2: loading the post to download…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: saving %1$d file(s)…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: could not load that post</string>
+    <string name="ig_thread_menu">Eclipse 2 chat actions</string>
     <string name="ig_unsent_messages">Unsent messages</string>
     <string name="ig_hide_chat_toggle">Hide / unhide chat</string>
     <string name="ig_chat_export_working">Exporting loaded messages…</string>
@@ -380,11 +398,11 @@
     <string name="ig_toast_audio_saved">Audio saved</string>
     <string name="ig_dialog_misc_hide_chats">Hide Specific Chats</string>
     <string name="ig_hide_chats_manage">Manage hidden chats</string>
-    <string name="ig_hide_chats_empty">No hidden chats. Open a chat, tap the InstaEclipse button in its header and choose Hide / unhide chat.</string>
+    <string name="ig_hide_chats_empty">No hidden chats. Open a chat, tap the Eclipse 2 button in its header and choose Hide / unhide chat.</string>
     <string name="ig_hide_chats_unhide">Unhide</string>
-    <string name="ig_hide_chats_hint">To hide a chat, open it, tap the InstaEclipse button in the chat header and choose Hide / unhide chat.</string>
-    <string name="ig_lock_passcode_hint">Set your passcode from inside Instagram (open the InstaEclipse menu → Lock).</string>
-    <string name="ig_theme_font_hint">Pick your font &amp; emoji files from inside Instagram (InstaEclipse menu → Custom Theme).</string>
+    <string name="ig_hide_chats_hint">To hide a chat, open it, tap the Eclipse 2 button in the chat header and choose Hide / unhide chat.</string>
+    <string name="ig_lock_passcode_hint">Set your passcode from inside Instagram (open the Eclipse 2 menu → Lock).</string>
+    <string name="ig_theme_font_hint">Pick your font &amp; emoji files from inside Instagram (Eclipse 2 menu → Custom Theme).</string>
     <string name="ig_hide_chat_hidden">Chat hidden — it will disappear from your inbox</string>
     <string name="ig_hide_chat_unhidden">Chat unhidden</string>
     <string name="ig_hide_chat_no_thread">Couldn\'t identify this chat</string>
@@ -432,8 +450,13 @@
     <string name="theme_dark_mode">Dark mode</string>
     <string name="ig_dialog_translate_messages">Translate Button in Chats</string>
     <string name="ig_chat_translate_row">Translate with app</string>
-    <string name="ig_downloader_folder_hint">Set the folder from the InstaEclipse app</string>
-    <string name="lock_code_set_in_ig">Set it inside Instagram: InstaEclipse menu &gt; Lock. Tap to open Instagram.</string>
+    <string name="ig_dialog_bulk_unsend">Unsend Multiple Messages</string>
+    <string name="ig_bulk_unsend_row">Unsend multiple</string>
+    <string name="ig_bulk_unsend_go">Unsend</string>
+    <string name="ig_bulk_unsend_done">Unsent %1$d message(s)</string>
+    <string name="ig_bulk_unsend_unavailable">Bulk unsend is not available on this Instagram version</string>
+    <string name="ig_downloader_folder_hint">Set the folder from the Eclipse 2 app</string>
+    <string name="lock_code_set_in_ig">Set it inside Instagram: Eclipse 2 menu &gt; Lock. Tap to open Instagram.</string>
     <string name="theme_set_light">Light mode themes</string>
     <string name="theme_set_dark">Dark mode themes</string>
     <string name="theme_light_same">Same theme as dark mode</string>
@@ -479,11 +502,16 @@
     <string name="ig_dialog_clean_feed_hide_plus">Hide Instagram Plus Upsells</string>
     <string name="ig_dialog_clean_feed_hide_community_notes">Hide Community Notes</string>
     <string name="ig_dialog_misc_profile_follows_label">Show \"Follows You\" on Profiles</string>
+    <string name="ig_dialog_fancy_bio_font">Fancy Fonts in Bio</string>
+    <string name="ig_fancy_font_button">Fancy font</string>
+    <string name="ig_fancy_font_title">Bio font</string>
+    <string name="ig_fancy_font_note">Pick a style and what you type next uses it; text already there stays as it is. Latin and Greek letters and numbers get every style, strikethrough and underline work in every language.</string>
     <string name="ig_profile_follows_you">Follows you</string>
     <string name="ig_profile_not_following_you">Doesn\'t follow you</string>
     <string name="ig_dialog_downloader_offer_media_info">Add Media Info to the Post Menu</string>
     <string name="ig_dialog_downloader_offer_speed">Add Playback Speed to the Post Menu</string>
     <string name="ig_dialog_downloader_reel_scrubber">Always Show the Reel Seek Bar</string>
+    <string name="ig_dialog_reels_hold_left_slow">Hold the Left Side for Slow Motion (0.5×)</string>
     <string name="ig_dialog_max_upload_quality">Always Upload at Highest Quality</string>
     <string name="ig_media_info_title">Media info</string>
     <string name="ig_media_info_copy">Copy</string>
@@ -491,6 +519,7 @@
     <string name="ig_playback_speed_next">Speed set — applies to the next video that starts</string>
     <string name="ig_dialog_distraction_hide_notes_tray">Hide Notes in Messages</string>
     <string name="ig_dialog_downloader_voice">Download Voice Messages (long-press)</string>
+    <string name="ig_dialog_downloader_dm_media">Download DM Photos &amp; Videos (long-press)</string>
     <string name="ig_dialog_misc_viewer_search">Search Your Story Viewers</string>
     <string name="ig_viewer_search_hint">Search viewers</string>
     <string name="ig_dialog_misc_comment_search">Search Comments</string>
@@ -510,6 +539,18 @@
     <string name="ig_comment_export_post_media">Also save the post\'s photos/videos</string>
     <string name="ig_comment_export_done">Exported %1$d comments to %2$s</string>
     <string name="ig_dialog_misc_follow_export">Export Followers/Following to CSV</string>
+    <string name="ig_feat_followers_history">Followers History (who unfollowed you)</string>
+    <string name="ig_followers_history">Followers history</string>
+    <string name="ig_followers_history_first">Saved your first list: %1$d followers. Check again later to see who unfollowed or followed you.</string>
+    <string name="ig_followers_history_changes">Since %1$s: %2$d unfollowed, %3$d new</string>
+    <string name="ig_followers_history_summary">%1$d followers · checked %2$s</string>
+    <string name="ig_followers_history_empty">No changes recorded yet.</string>
+    <string name="ig_followers_history_unfollowed">Unfollowed you</string>
+    <string name="ig_followers_history_followed">Followed you</string>
+    <string name="ig_followers_history_partial">The list didn\'t finish loading, so nothing was compared. Try again.</string>
+    <string name="ig_followers_history_note">Changes are found when you check, so each date is when a change was noticed.</string>
+    <string name="ig_followers_history_clear">Clear history</string>
+    <string name="ig_followers_history_wrong_tab">Open your own Followers tab to check.</string>
     <string name="ig_follow_export">Export CSV</string>
     <string name="ig_follow_export_done">Exported %1$d accounts to %2$s</string>
     <string name="ig_follow_export_none">No accounts loaded yet</string>
@@ -520,6 +561,11 @@ Stay on this screen until it finishes.</string>
     <string name="ig_like_undo_bar">❤ Liked · UNDO</string>
     <string name="ig_like_undo_cancelled">Like cancelled — refresh to update the heart</string>
     <string name="ig_dialog_misc_exact_timestamps">Show Exact Dates Instead of \"2h ago\"</string>
+    <string name="ig_timestamp_format">Date format</string>
+    <string name="ig_timestamp_format_default">Device default</string>
+    <string name="ig_timestamp_format_custom">Custom…</string>
+    <string name="ig_timestamp_format_custom_hint">Letters: yyyy year · MM month · MMM month name · dd day · EEE weekday · HH hour (24h) · h hour (12h) · mm minutes · ss seconds · a AM/PM. Put other text in \'single quotes\'.</string>
+    <string name="ig_timestamp_format_invalid">Not a valid format</string>
     <string name="ig_dialog_misc_hide_share_create_group">Hide \"Create group\" on Share Sheet</string>
     <string name="ig_dialog_misc_show_feature_toasts">Show Feature Toasts</string>
     <string name="ig_dialog_misc_show_follower_toast">Show Follower Toast</string>
@@ -585,7 +631,7 @@ Stay on this screen until it finishes.</string>
     <string name="ig_dialog_backup_failed">Failed to create backup: %1$s</string>
 
     <!-- About -->
-    <string name="ig_dialog_about_created_by" translatable="false">Created by @reso7200</string>
+    <string name="ig_dialog_about_created_by" translatable="false">Maintained by @somilkhan · Original by @reso7200</string>
     <string name="ig_dialog_about_github">GitHub</string>
     <string name="ig_dialog_about_telegram">Telegram</string>
 
@@ -621,12 +667,12 @@ Stay on this screen until it finishes.</string>
     <string name="ig_toast_downloading">Downloading…</string>
     <string name="ig_toast_downloading_video">Downloading video…</string>
     <string name="ig_toast_downloading_photo">Downloading photo…</string>
-    <string name="ig_toast_video_saved">Video saved to InstaEclipse folder</string>
-    <string name="ig_toast_photo_saved">Photo saved to InstaEclipse folder</string>
-    <string name="ig_toast_saved">Saved to InstaEclipse folder</string>
+    <string name="ig_toast_video_saved">Video saved to Eclipse 2 folder</string>
+    <string name="ig_toast_photo_saved">Photo saved to Eclipse 2 folder</string>
+    <string name="ig_toast_saved">Saved to Eclipse 2 folder</string>
     <string name="ig_toast_download_failed">Download failed: %1$s</string>
     <string name="ig_toast_downloading_reel">Downloading reel…</string>
-    <string name="ig_toast_reel_saved">Reel saved to InstaEclipse folder</string>
+    <string name="ig_toast_reel_saved">Reel saved to Eclipse 2 folder</string>
     <string name="ig_toast_reel_failed">Reel download failed: %1$s</string>
     <string name="ig_toast_reel_url_not_found">Reel URL not found</string>
     <string name="ig_toast_post_url_not_found">Post URL not found</string>
@@ -634,7 +680,7 @@ Stay on this screen until it finishes.</string>
     <string name="ig_toast_no_media">No media found</string>
     <string name="ig_toast_downloading_story_video">Downloading story video…</string>
     <string name="ig_toast_downloading_story_photo">Downloading story photo…</string>
-    <string name="ig_toast_story_saved">Story saved to InstaEclipse folder</string>
+    <string name="ig_toast_story_saved">Story saved to Eclipse 2 folder</string>
     <string name="ig_toast_story_url_not_found">Story URL not found</string>
     <string name="ig_toast_downloading_profile_pic">Downloading profile picture…</string>
     <string name="ig_toast_profile_pic_saved">Profile picture saved!</string>
@@ -642,12 +688,12 @@ Stay on this screen until it finishes.</string>
     <string name="ig_toast_merging_video_audio">Merging video + audio…</string>
     <string name="ig_toast_downloading_n_items">Downloading %1$d items…</string>
     <string name="ig_toast_downloading_all_n_items">Downloading all %1$d items…</string>
-    <string name="ig_toast_all_items_saved">All %1$d items saved to InstaEclipse folder</string>
+    <string name="ig_toast_all_items_saved">All %1$d items saved to Eclipse 2 folder</string>
     <string name="ig_toast_items_partial_saved">%1$d of %2$d items saved (%3$d failed)</string>
     <string name="ig_toast_no_reel_url_scroll">No reel URL found — scroll the reel first</string>
     <string name="ig_toast_no_download_folder">No download folder set</string>
     <string name="ig_toast_file_saved">Saved: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse Loaded 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 Loaded 🎯</string>
 
     <!-- Downloader carousel UI -->
     <string name="ig_dl_title">Download</string>
@@ -686,4 +732,11 @@ Stay on this screen until it finishes.</string>
     <string name="ig_update_later">Later</string>
     <string name="ig_update_error_message">Failed to check for updates. Please try again later.</string>
 
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Safe pacing for bulk actions</string>
+    <string name="ie_safe_pacing_hint">Waits a random 0.7–1.6 s between items, and 3–6 s every 8 items, in bulk unsend, Download all and comment search. Recommended.</string>
+    <string name="ie_pacing_progress">%1$d of %2$d done</string>
+    <string name="ie_pacing_stop">Stop</string>
+    <string name="ie_pacing_hide">Hide</string>
+    <string name="ie_pacing_stopped">Stopped after %1$d of %2$d</string>
 </resources>

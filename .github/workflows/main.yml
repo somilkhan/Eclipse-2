@@ -3,11 +3,10 @@ name: Build Debug APK
 on:
   push:
     branches:
-      - main  # Trigger workflow on pushes to the main branch
+      - main
       - 0.4
-  pull_request:
-    branches:
-      - main  # Trigger workflow on pull requests to the main branch
+      - 'maintainer/**'   # integration branches, e.g. maintainer/0.8.4
+  pull_request:          # every pull request, whatever its target branch
   workflow_dispatch:  # Allow manual triggering via the GitHub Actions UI
 
 concurrency:
@@ -40,6 +39,17 @@ jobs:
       # Step 4: Grant execution permissions to gradlew
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
+
+      # Robolectric's android-all jars: cached between runs and prefetched with retries, so a
+      # flaky Maven Central download can't fail every Robolectric test (see the script).
+      - name: Cache Robolectric SDK jars
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/robolectric/android-all-instrumented
+          key: robolectric-android-all-${{ hashFiles('.github/scripts/prefetch-robolectric.sh') }}
+
+      - name: Prefetch Robolectric SDK jars
+        run: bash .github/scripts/prefetch-robolectric.sh
 
       # Step 5: Run unit tests before building
       - name: Run unit tests

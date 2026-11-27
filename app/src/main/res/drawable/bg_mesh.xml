@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Window background: flat grouped-background colour (iOS systemGroupedBackground; true black in
+     dark). Per HIG, translucency/glass is reserved for the navigation layer (top bar, nav pill),
+     so the content layer sits on a calm neutral base. Name kept for existing theme references. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/ie_mesh_base" />
+</shape>

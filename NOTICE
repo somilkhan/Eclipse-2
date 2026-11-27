@@ -1,0 +1,51 @@
+Eclipse 2
+Copyright 2024-2026 ReSo7200 (Abdalhaleem Altamimi), somilkhan and Eclipse 2 contributors
+
+Eclipse 2 (formerly InstaEclipse 2) is the maintained continuation of InstaEclipse, created by
+ReSo7200 (https://github.com/ReSo7200). This repository is https://github.com/somilkhan/Eclipse-2,
+maintained by somilkhan.
+
+License
+-------
+The combined work, including the APK, is licensed under the GNU General Public License,
+version 3 only (GPL-3.0-only). The full text is in LICENSE.
+
+Why GPL-3.0: this project includes code from HushGram and Hushfacebook, which are GPL-3.0
+(see below). The GPL requires the whole combined work to be distributed under the GPL.
+
+Original InstaEclipse code
+--------------------------
+The code written by ReSo7200 and the other upstream InstaEclipse contributors was released under
+the Apache License 2.0. Apache-2.0 allows that code to be included in a GPL-3.0 work. Their
+copyright and license notices are kept, and the Apache-2.0 text is in LICENSES/Apache-2.0.txt.
+Files that came from the original project remain credited to their authors.
+
+Third-party code
+----------------
+  * HushGram (https://github.com/SysAdminDoc/HushGram) and
+    Hushfacebook (https://github.com/SysAdminDoc/Hushfacebook), including work by Andrew Liang
+    (morphe-patches). GPL-3.0. See third-party/HushGram/LICENSE and third-party/HushGram/NOTICE.md.
+
+Libraries used at build and run time (each under its own license):
+  * DexKit - https://github.com/LuckyPray/DexKit (LGPL-3.0)
+  * LSPosed / Xposed API - https://github.com/JingMatrix/LSPosed (Apache-2.0 for the API)
+  * AndroidX, Material Components, Gson (Apache-2.0)
+  * osmdroid (Apache-2.0)
+  * FilePrefs
+  * Liquid-Glass-Android (com.github.QWEA0:liquidglass) - MIT,
+    https://github.com/QWEA0/Liquid-Glass-Android - see third-party/Liquid-Glass-Android/LICENSE
+
+Bundled assets:
+  * Inter typeface by Rasmus Andersson (app/src/main/res/font/inter*.ttf) - SIL Open Font
+    License 1.1, https://github.com/rsms/inter - see third-party/Inter/LICENSE.txt
+  * Phosphor Icons (app/src/main/res/drawable/ic_ui_*.xml, converted to vector drawables) - MIT,
+    https://github.com/phosphor-icons/core - see third-party/Phosphor/LICENSE
+  * The Eclipse 2 app icon and logo are original artwork released under GPL-3.0 with the code.
+
+Source code
+-----------
+Anyone who receives the APK can get the matching source from
+https://github.com/somilkhan/Eclipse-2 (the release tag named in the APK's version).
+
+Eclipse 2 is not affiliated with, endorsed by, or connected to Meta Platforms, Inc. or Instagram.
+See DISCLAIMER.md.

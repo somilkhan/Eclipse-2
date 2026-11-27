@@ -7,7 +7,7 @@
     <string name="home_status_not_installed">未安裝</string>
     <string name="home_status_module_active">模組已啟用</string>
     <string name="home_status_version">版本 %1$s</string>
-    <string name="home_status_no_version">請先安裝 Instagram 才能使用 InstaEclipse</string>
+    <string name="home_status_no_version">請先安裝 Instagram 才能使用 Eclipse 2</string>
     <plurals name="home_features_enabled">
         <item quantity="one">已啟用 %d 項功能</item>
         <item quantity="other">已啟用 %d 項功能</item>
@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">變更會立即同步到 Instagram。</string>
     <string name="home_shortcuts_limit">最多只能釘選 %1$d 個快速開關</string>
     <string name="home_shortcuts_locked_extreme">已被極端模式鎖定</string>
+    <string name="ig_toast_no_app_to_open">找不到可開啟此內容的應用程式</string>
 </resources>

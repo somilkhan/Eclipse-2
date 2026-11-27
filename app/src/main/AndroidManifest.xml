@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="ps.reso.instaeclipse">
+    package="io.github.somilkhan.instaeclipse2">
 
 
     <application
@@ -26,23 +26,23 @@
 
         <activity
             android:name=".mods.devops.config.JsonImportActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.InstaEclipse">
         </activity>
 
         <activity
             android:name=".mods.devops.config.JsonExportActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.InstaEclipse" />
 
         <activity
             android:name=".mods.location.LocationPickerActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.InstaEclipse" />
 
         <activity
             android:name=".ui.theme.ThemeCustomizerActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.InstaEclipse" />
 
         <!-- "Download with InstaEclipse" share target for Instagram post/reel links (#236). -->
@@ -66,7 +66,7 @@
              whose permission belongs to the companion app. -->
         <service
             android:name=".mods.media.DownloadSaveService"
-            android:exported="true"
+            android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <!-- Logs tab: hands Instagram's hooked process an append-only FD on a file in the
@@ -74,7 +74,7 @@
              Only supported Instagram packages may open it (checked in openFile). -->
         <provider
             android:name=".utils.log.LogMirrorProvider"
-            android:authorities="ps.reso.instaeclipse.logmirror"
+            android:authorities="io.github.somilkhan.instaeclipse2.logmirror"
             android:exported="true" />
 
         <!-- Settings sync, Instagram -> companion: the hooked Instagram process pushes its
@@ -82,8 +82,11 @@
              supported Instagram packages may call it (checked in call()). -->
         <provider
             android:name=".utils.core.PrefsSyncProvider"
-            android:authorities="ps.reso.instaeclipse.prefsync"
+            android:authorities="io.github.somilkhan.instaeclipse2.prefsync"
             android:exported="true" />
+
+        <activity android:name=".mods.media.VideoFramePickerActivity" android:exported="false" android:theme="@style/Theme.InstaEclipse" />
+        <service android:name=".mods.media.DownloadBrokerService" android:exported="true" />
 
         <!-- Xposed Meta-data -->
         <meta-data
@@ -109,6 +112,8 @@
          so no storage permissions are needed. -->
     <queries>
         <package android:name="com.instagram.android" />
+        <!-- Original InstaEclipse: warn when both modules are installed (they double-hook). -->
+        <package android:name="ps.reso.instaeclipse" />
         <package android:name="com.instagold.android" />
         <package android:name="com.instaflux.app" />
         <package android:name="com.myinsta.android" />
@@ -132,9 +137,9 @@
          registered inside the hooked process require senders to hold it, so only this APK
          (signed with the same key) can change settings there. See IpcSecurity. -->
     <permission
-        android:name="ps.reso.instaeclipse.permission.MODULE_IPC"
+        android:name="io.github.somilkhan.instaeclipse2.permission.MODULE_IPC"
         android:protectionLevel="signature" />
-    <uses-permission android:name="ps.reso.instaeclipse.permission.MODULE_IPC" />
+    <uses-permission android:name="io.github.somilkhan.instaeclipse2.permission.MODULE_IPC" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">Ana Səhifə</string>
     <string name="features">Funksiyalar</string>
     <string name="help">Kömək</string>
@@ -147,7 +147,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">Bu, cari Tərtibatçı Konfiqurasiyasını daxil edilmiş standart ilə əvəz edəcəkdir. Davam etmək istəyirsiniz?</string>
     <string name="ig_toast_default_config_restored">✅ Standart konfiqurasiya bərpa edildi.</string>
     <string name="ig_dialog_dev_remove_build_expired">Sürüm Vaxtı Keçmiş Bildirişini Sil</string>
-    <string name="ig_dialog_unable_open_ui">InstaEclipse interfeysi açıla bilmir.</string>
+    <string name="ig_dialog_unable_open_ui">Eclipse 2 interfeysi açıla bilmir.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram açıq deyil və ya hazır deyil.</string>
     <string name="ig_dialog_mc_overrides_not_found">mc_overrides.json tapılmadı.</string>
     <string name="ig_dialog_failed_read_config">Konfiqurasiya oxuna bilmədi: %1$s</string>
@@ -193,8 +193,13 @@
     <string name="theme_dark_mode">Qaranlıq rejim</string>
     <string name="ig_dialog_translate_messages">Söhbətlərdə tərcümə düyməsi</string>
     <string name="ig_chat_translate_row">Tətbiqlə tərcümə et</string>
-    <string name="ig_downloader_folder_hint">Qovluğu InstaEclipse tətbiqindən təyin edin</string>
-    <string name="lock_code_set_in_ig">Instagram daxilində təyin edin: InstaEclipse menyusu &gt; Kilid. Instagram-ı açmaq üçün toxunun.</string>
+    <string name="ig_dialog_bulk_unsend">Çoxlu mesajı geri götür</string>
+    <string name="ig_bulk_unsend_row">Çoxlu geri götür</string>
+    <string name="ig_bulk_unsend_go">Geri götür</string>
+    <string name="ig_bulk_unsend_done">%1$d mesaj geri götürüldü</string>
+    <string name="ig_bulk_unsend_unavailable">Toplu geri götürmə bu Instagram versiyasında mövcud deyil</string>
+    <string name="ig_downloader_folder_hint">Qovluğu Eclipse 2 tətbiqindən təyin edin</string>
+    <string name="lock_code_set_in_ig">Instagram daxilində təyin edin: Eclipse 2 menyusu &gt; Kilid. Instagram-ı açmaq üçün toxunun.</string>
     <string name="theme_set_light">İşıqlı rejim temaları</string>
     <string name="theme_set_dark">Qaranlıq rejim temaları</string>
     <string name="theme_light_same">Qaranlıq rejimlə eyni tema</string>
@@ -215,22 +220,33 @@
     <string name="ig_dialog_clean_feed_hide_plus">Instagram Plus Təkliflərini Gizlət</string>
     <string name="ig_dialog_clean_feed_hide_community_notes">İcma Qeydlərini Gizlət</string>
     <string name="ig_dialog_misc_profile_follows_label">Profillərdə \"Sizi izləyir\" Göstər</string>
+    <string name="ig_dialog_fancy_bio_font">Bioda dekorativ şriftlər</string>
+    <string name="ig_fancy_font_button">Dekorativ şrift</string>
+    <string name="ig_fancy_font_title">Bio şrifti</string>
+    <string name="ig_fancy_font_note">İngilis və yunan hərflərini və rəqəmləri hamının görəcəyi şəkildə bəzəyir. Üstündən xətt və alt xətt bütün dillərdə işləyir.</string>
     <string name="ig_profile_follows_you">Sizi izləyir</string>
     <string name="ig_profile_not_following_you">Sizi izləmir</string>
     <string name="ig_dialog_downloader_offer_media_info">Paylaşım Menyusuna Media Məlumatı Əlavə Et</string>
     <string name="ig_dialog_downloader_offer_speed">Paylaşım Menyusuna Oynatma Sürəti Əlavə Et</string>
     <string name="ig_dialog_downloader_reel_scrubber">Reels İrəliləmə Zolağını Həmişə Göstər</string>
+    <string name="ig_dialog_reels_hold_left_slow">Yavaş hərəkət üçün sol tərəfi basılı saxla (0.5×)</string>
     <string name="ig_media_info_title">Media məlumatı</string>
     <string name="ig_playback_speed_title">Oynatma sürəti</string>
     <string name="ig_playback_speed_next">Sürət təyin edildi — başlayan növbəti videoya tətbiq olunur</string>
     <string name="ig_dialog_distraction_hide_notes_tray">Mesajlarda Qeydləri Gizlət</string>
     <string name="ig_dialog_downloader_voice">Səsli Mesajları Yüklə (uzun basma)</string>
+    <string name="ig_dialog_downloader_dm_media">Mesajlardakı şəkil və videoları yüklə (uzun basma)</string>
     <string name="ig_dialog_misc_viewer_search">Hekayə Baxanlarınızda Axtar</string>
     <string name="ig_viewer_search_hint">Baxanlarda axtar</string>
     <string name="ig_dialog_misc_like_undo">Bəyənmələr üçün Geri Alma Pəncərəsi (4 san)</string>
     <string name="ig_like_undo_bar">❤ Bəyənildi · GERİ AL</string>
     <string name="ig_like_undo_cancelled">Bəyənmə ləğv edildi — ürəyi yeniləmək üçün səhifəni yeniləyin</string>
     <string name="ig_dialog_misc_exact_timestamps">\"2 saat əvvəl\" Əvəzinə Dəqiq Tarixləri Göstər</string>
+    <string name="ig_timestamp_format">Tarix formatı</string>
+    <string name="ig_timestamp_format_default">Cihaz standartı</string>
+    <string name="ig_timestamp_format_custom">Fərdi…</string>
+    <string name="ig_timestamp_format_custom_hint">Hərflər: yyyy il · MM ay · MMM ayın adı · dd gün · EEE həftənin günü · HH saat (24) · h saat (12) · mm dəqiqə · ss saniyə · a AM/PM. Başqa mətni \'tək dırnaqlara\' yazın.</string>
+    <string name="ig_timestamp_format_invalid">Format düzgün deyil</string>
     <string name="ig_dialog_misc_hide_share_create_group">Paylaşım Pəncərəsində \"Qrup yarat\" Düyməsini Gizlət</string>
     <string name="ig_dialog_misc_show_feature_toasts">Xüsusiyyət Bildirişlərini Göstər</string>
     <string name="ig_dialog_misc_show_follower_toast">İzləyici Bildirişini Göstər</string>
@@ -263,7 +279,7 @@
     <string name="ig_dialog_restart_message">⚠️ Tətbiqin keşini təmizlə və yenidən başlat?</string>
     <string name="ig_dialog_clear_cache">Hook Önbelleğini Temizle</string>
     <string name="ig_dialog_section_clear_cache">Hook Önbelleğini Temizle</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ Bu, InstaEclipse-in növbəti işə salınmada Instagram-ı yenidən skan etməsinə məcbur edəcək. Tətbiq yenidən başlayacaq.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Bu, Eclipse 2-in növbəti işə salınmada Instagram-ı yenidən skan etməsinə məcbur edəcək. Tətbiq yenidən başlayacaq.</string>
     <string name="ig_dialog_clear_cache_now">Önbelleği Temizle və Yenidən Başlat</string>
     <string name="ig_dialog_restart_now">İndi Yenidən Başlat</string>
     <string name="ig_dialog_restart_not_found">Yenidən başlatmaq üçün tətbiq tapılmadı.</string>
@@ -295,12 +311,12 @@
     <string name="ig_toast_downloading">Yüklənir…</string>
     <string name="ig_toast_downloading_video">Video yüklənir…</string>
     <string name="ig_toast_downloading_photo">Şəkil yüklənir…</string>
-    <string name="ig_toast_video_saved">Video InstaEclipse qovluğuna saxlanıldı</string>
-    <string name="ig_toast_photo_saved">Şəkil InstaEclipse qovluğuna saxlanıldı</string>
-    <string name="ig_toast_saved">InstaEclipse qovluğuna saxlanıldı</string>
+    <string name="ig_toast_video_saved">Video Eclipse 2 qovluğuna saxlanıldı</string>
+    <string name="ig_toast_photo_saved">Şəkil Eclipse 2 qovluğuna saxlanıldı</string>
+    <string name="ig_toast_saved">Eclipse 2 qovluğuna saxlanıldı</string>
     <string name="ig_toast_download_failed">Yükləmə uğursuz oldu: %1$s</string>
     <string name="ig_toast_downloading_reel">Reel yüklənir…</string>
-    <string name="ig_toast_reel_saved">Reel InstaEclipse qovluğuna saxlanıldı</string>
+    <string name="ig_toast_reel_saved">Reel Eclipse 2 qovluğuna saxlanıldı</string>
     <string name="ig_toast_reel_failed">Reel yükləmə uğursuz oldu: %1$s</string>
     <string name="ig_toast_reel_url_not_found">Reel URL tapılmadı</string>
     <string name="ig_toast_post_url_not_found">Paylaşım URL tapılmadı</string>
@@ -308,7 +324,7 @@
     <string name="ig_toast_no_media">Media tapılmadı</string>
     <string name="ig_toast_downloading_story_video">Hekayə videosu yüklənir…</string>
     <string name="ig_toast_downloading_story_photo">Hekayə şəkli yüklənir…</string>
-    <string name="ig_toast_story_saved">Hekayə InstaEclipse qovluğuna saxlanıldı</string>
+    <string name="ig_toast_story_saved">Hekayə Eclipse 2 qovluğuna saxlanıldı</string>
     <string name="ig_toast_story_url_not_found">Hekayə URL tapılmadı</string>
     <string name="ig_toast_downloading_profile_pic">Profil şəkli yüklənir…</string>
     <string name="ig_toast_profile_pic_saved">Profil şəkli saxlanıldı!</string>
@@ -316,7 +332,7 @@
     <string name="ig_toast_merging_video_audio">Video və səs birləşdirilir…</string>
     <string name="ig_toast_downloading_n_items">%1$d element yüklənir…</string>
     <string name="ig_toast_downloading_all_n_items">Bütün %1$d element yüklənir…</string>
-    <string name="ig_toast_all_items_saved">Bütün %1$d element InstaEclipse qovluğuna saxlanıldı</string>
+    <string name="ig_toast_all_items_saved">Bütün %1$d element Eclipse 2 qovluğuna saxlanıldı</string>
     <string name="ig_toast_items_partial_saved">%2$d-dən %1$d element saxlanıldı (%3$d uğursuz)</string>
     <string name="ig_toast_no_reel_url_scroll">Reel URL tapılmadı — əvvəlcə reeli sürüşdürün</string>
     <string name="ig_dl_title">Yüklə</string>
@@ -358,7 +374,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">Yükləmə qovluğu təyin edilməyib</string>
     <string name="ig_toast_file_saved">Saxlanıldı: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse yükləndi 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 yükləndi 🎯</string>
 
     <!-- Update check dialog -->
     <string name="ig_update_title">Yeniləmə mövcuddur</string>
@@ -410,7 +426,7 @@
     <string name="logging_clear">Təmizlə</string>
     <string name="logging_copy">Kopyala</string>
     <string name="logging_copied">Mübadilə buferinə kopyalandı</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
     <string name="logging_instagram_timeout">Instagram vaxtında cavab vermədi. Yalnız kompanyon logları göstərilir.</string>
     <string name="logging_no_target">Əvvəlcə dəstəklənən Instagram tətbiqini quraşdırın.</string>
@@ -486,8 +502,8 @@
     <string name="ig_hide_chats_empty">Gizli söhbət yoxdur. Söhbəti açın və gizlətmək üçün göz-söndür düyməsinə toxunun.</string>
     <string name="ig_hide_chats_unhide">Göstər</string>
     <string name="ig_hide_chats_hint">Söhbəti gizlətmək üçün onu açın və başlıqdakı göz-söndür düyməsinə toxunun.</string>
-    <string name="ig_lock_passcode_hint">Parolunuzu Instagram daxilindən təyin edin (InstaEclipse menyusunu açın → Kilid).</string>
-    <string name="ig_theme_font_hint">Şrift &amp; emoji fayllarınızı Instagram daxilindən seçin (InstaEclipse menyusu → Xüsusi Tema).</string>
+    <string name="ig_lock_passcode_hint">Parolunuzu Instagram daxilindən təyin edin (Eclipse 2 menyusunu açın → Kilid).</string>
+    <string name="ig_theme_font_hint">Şrift &amp; emoji fayllarınızı Instagram daxilindən seçin (Eclipse 2 menyusu → Xüsusi Tema).</string>
     <string name="ig_hide_chat_hidden">Söhbət gizlədildi — gələnlər qutunuzdan yox olacaq</string>
     <string name="ig_hide_chat_unhidden">Söhbət yenidən göstərildi</string>
     <string name="ig_hide_chat_no_thread">Bu söhbəti müəyyən etmək mümkün olmadı</string>
@@ -574,20 +590,20 @@
     <string name="ig_locked_coll_unlock">Bu kolleksiyanın kilidini aç</string>
     <string name="ig_locked_coll_locked">Kolleksiya kilidləndi: parolunuz soruşulacaq</string>
     <string name="ig_locked_coll_unlocked">Kolleksiyanın kilidi açıldı</string>
-    <string name="ig_locked_coll_need_passcode">Əvvəlcə parol təyin edin: Instagram\'dakı InstaEclipse ayarları, Kilid</string>
+    <string name="ig_locked_coll_need_passcode">Əvvəlcə parol təyin edin: Instagram\'dakı Eclipse 2 ayarları, Kilid</string>
     <string name="ig_saved_on_profile">Profilinizdə Saxlanılanlar düyməsi (Instagram\'ı yenidən başladın)</string>
     <string name="ig_saved_on_profile_button">Saxlanılanlar</string>
     <string name="ig_nav_tab_search">Axtar</string>
     <string name="ig_nav_tab_order">Tab sırası</string>
     <string name="ig_nav_tab_order_hint">Aşağı paneli yenidən sıralamaq üçün oxlardan istifadə edin. Gizli tablar yerini saxlayır. Instagram\'a qayıtdığınızda tətbiq olunur.</string>
     <string name="ig_nav_tab_order_reset">Sıfırla</string>
-    <string name="share_dl_label">InstaEclipse ilə yüklə</string>
+    <string name="share_dl_label">Eclipse 2 ilə yüklə</string>
     <string name="share_dl_no_link">Instagram paylaşım və ya reel linki tapılmadı</string>
     <string name="share_dl_no_instagram">Instagram quraşdırılmayıb</string>
-    <string name="ig_share_dl_loading">InstaEclipse: yükləmək üçün paylaşım yüklənir…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: %1$d fayl saxlanılır…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: həmin paylaşım yüklənə bilmədi</string>
-    <string name="ig_thread_menu">InstaEclipse söhbət əməliyyatları</string>
+    <string name="ig_share_dl_loading">Eclipse 2: yükləmək üçün paylaşım yüklənir…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: %1$d fayl saxlanılır…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: həmin paylaşım yüklənə bilmədi</string>
+    <string name="ig_thread_menu">Eclipse 2 söhbət əməliyyatları</string>
     <string name="ig_unsent_messages">Geri götürülən mesajlar</string>
     <string name="ig_hide_chat_toggle">Söhbəti gizlət / göstər</string>
     <string name="ig_chat_export_working">Yüklənmiş mesajlar ixrac edilir…</string>
@@ -625,6 +641,18 @@
     <string name="ig_comment_export_post_media">Paylaşımın foto/videolarını da saxla</string>
     <string name="ig_comment_export_done">%1$d şərh %2$s ünvanına ixrac edildi</string>
     <string name="ig_dialog_misc_follow_export">İzləyiciləri/İzlənilənləri CSV olaraq ixrac et</string>
+    <string name="ig_feat_followers_history">İzləyici tarixçəsi (kim izləməni dayandırdı)</string>
+    <string name="ig_followers_history">İzləyici tarixçəsi</string>
+    <string name="ig_followers_history_first">İlk siyahınız saxlanıldı: %1$d izləyici. Kimin izləməni dayandırdığını və ya izlədiyini görmək üçün sonra yenidən yoxlayın.</string>
+    <string name="ig_followers_history_changes">%1$s tarixindən bəri: %2$d dayandırdı, %3$d yeni</string>
+    <string name="ig_followers_history_summary">%1$d izləyici · yoxlanıldı %2$s</string>
+    <string name="ig_followers_history_empty">Hələ dəyişiklik qeydə alınmayıb.</string>
+    <string name="ig_followers_history_unfollowed">Sizi izləməyi dayandırdı</string>
+    <string name="ig_followers_history_followed">Sizi izlədi</string>
+    <string name="ig_followers_history_partial">Siyahı tam yüklənmədi, ona görə müqayisə edilmədi. Yenidən cəhd edin.</string>
+    <string name="ig_followers_history_note">Dəyişikliklər yoxlayanda tapılır, ona görə tarix dəyişikliyin görüldüyü vaxtdır.</string>
+    <string name="ig_followers_history_clear">Tarixçəni təmizlə</string>
+    <string name="ig_followers_history_wrong_tab">Yoxlamaq üçün öz İzləyicilər bölmənizi açın.</string>
     <string name="ig_follow_export">CSV ixrac et</string>
     <string name="ig_follow_export_done">%1$d hesab %2$s ünvanına ixrac edildi</string>
     <string name="ig_follow_export_none">Hələ hesab yüklənməyib</string>
@@ -636,4 +664,12 @@
     <string name="ig_highlight_loading">Seçilmiş yüklənir…</string>
     <string name="ig_highlight_downloading">%1$d seçilmiş element yüklənir…</string>
     <string name="ig_highlight_done">Seçilmiş saxlanıldı: %2$d elementdən %1$d tanesi</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Toplu əməliyyatlar üçün təhlükəsiz temp</string>
+    <string name="ie_safe_pacing_hint">Toplu göndərmə ləğvi, Hamısını yüklə və şərh axtarışında elementlər arasında təsadüfi 0,7–1,6 san, hər 8 elementdən bir 3–6 san gözləyir. Tövsiyə olunur.</string>
+    <string name="ie_pacing_progress">%2$d-dən %1$d hazırdır</string>
+    <string name="ie_pacing_stop">Dayandır</string>
+    <string name="ie_pacing_hide">Gizlət</string>
+    <string name="ie_pacing_stopped">%2$d-dən %1$d sonra dayandırıldı</string>
 </resources>

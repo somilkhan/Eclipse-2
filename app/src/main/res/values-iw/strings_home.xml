@@ -7,7 +7,7 @@
     <string name="home_status_not_installed">לא מותקן</string>
     <string name="home_status_module_active">המודול פעיל</string>
     <string name="home_status_version">גרסה %1$s</string>
-    <string name="home_status_no_version">התקן את Instagram כדי להשתמש ב-InstaEclipse</string>
+    <string name="home_status_no_version">התקן את Instagram כדי להשתמש ב-Eclipse 2</string>
     <plurals name="home_features_enabled">
         <item quantity="one">%d תכונה מופעלת</item>
         <item quantity="two">%d תכונות מופעלות</item>
@@ -24,4 +24,5 @@
     <string name="home_shortcuts_hint">השינויים נשלחים ל-Instagram באופן מיידי.</string>
     <string name="home_shortcuts_limit">ניתן להצמיד עד %1$d קיצורים</string>
     <string name="home_shortcuts_locked_extreme">נעול על ידי המצב הקיצוני</string>
+    <string name="ig_toast_no_app_to_open">לא נמצאה אפליקציה לפתיחה</string>
 </resources>

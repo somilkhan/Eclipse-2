@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings-style tinted squircle (matches the Features row tiles: soft accent fill, accent glyph). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="8dp" />
+    <solid android:color="@color/ie_icon_tile" />
+</shape>

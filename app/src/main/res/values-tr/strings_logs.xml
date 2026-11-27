@@ -8,17 +8,14 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">Yenile</string>
     <string name="logs_copy">Kopyala</string>
-    <string name="logs_share">Paylaş</string>
     <string name="logs_clear">Temizle</string>
-    <string name="logs_share_title">InstaEclipse günlüklerini paylaş</string>
-    <string name="logs_share_subject">InstaEclipse günlükleri</string>
     <string name="logs_loading">Günlükler yükleniyor…</string>
     <string name="logs_count_format">%1$d / %2$d kayıt</string>
     <string name="logs_status_live">Instagram çalışıyor · canlı</string>
     <string name="logs_status_saved">Kayıtlı günlük · Instagram çalışmıyor</string>
     <string name="logs_status_none">Desteklenen bir Instagram uygulaması yüklü değil</string>
     <string name="logs_empty_title">Henüz günlük yok</string>
-    <string name="logs_empty_body">InstaEclipse LSPosed\'de etkinken Instagram\'ı bir kez açın, ardından buraya dönüp Yenile\'ye dokunun. Instagram\'ın günlüğü, Instagram kapatıldıktan sonra bile burada otomatik olarak kaydedilir.</string>
+    <string name="logs_empty_body">Eclipse 2 LSPosed\'de etkinken Instagram\'ı bir kez açın, ardından buraya dönüp Yenile\'ye dokunun. Instagram\'ın günlüğü, Instagram kapatıldıktan sonra bile burada otomatik olarak kaydedilir.</string>
     <string name="logs_empty_filter_title">Bu filtreyle eşleşen bir şey yok</string>
     <string name="logs_empty_filter_body">Tüm kayıtları görmek için Tümü\'ne geri dönün.</string>
     <string name="logs_nothing_to_copy">Kopyalanacak günlük yok</string>
@@ -26,4 +23,8 @@
     <string name="logs_entry_copied">Kayıt kopyalandı</string>
     <string name="logs_cleared">Günlükler temizlendi</string>
     <string name="logs_source_companion">[uygulama]</string>
+    <string name="logs_save">Depolamaya kaydet</string>
+    <string name="logs_saving">Tam günlük kaydediliyor…</string>
+    <string name="logs_saved">Günlük kaydedildi</string>
+    <string name="logs_save_failed">Günlük kaydedilemedi</string>
 </resources>

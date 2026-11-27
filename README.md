@@ -1,65 +1,61 @@
 <div align="center">
-  <img src="assets/logo.png" alt="InstaEclipse" width="120" />
-  <h1>InstaEclipse</h1>
-  <p><b>Instagram, the way you want it.</b><br/>
-  An LSPosed module for privacy, downloads, a cleaner feed, smarter stories and DMs, and your own look. Everything is a switch inside Instagram.</p>
+  <img src="docs/images/hero.png" alt="Eclipse 2 on a phone, showing the Home and Features screens in light and dark themes" width="100%" />
 
   <p>
-    <a href="https://github.com/ReSo7200/InstaEclipse/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/ReSo7200/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
-    <a href="https://github.com/ReSo7200/InstaEclipse/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/ReSo7200/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
-    <a href="https://github.com/ReSo7200/InstaEclipse/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/ReSo7200/InstaEclipse/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/Eclipse/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/somilkhan/Eclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/Eclipse-2/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/somilkhan/Eclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/Eclipse-2/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/somilkhan/Eclipse-2/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPL--3.0-5856D6?style=for-the-badge&labelColor=0d0d0d"/></a>
     <a href="https://t.me/InstaEclipse"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-Channel-26A5E4?style=for-the-badge&logo=telegram&labelColor=0d0d0d"/></a>
-    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/ReSo7200/InstaEclipse?style=for-the-badge&color=1a1a2e&labelColor=0d0d0d"/></a>
   </p>
 
   <p>
-    <a href="#whats-new-in-080">What's new</a> •
+    <a href="#screenshots">Screenshots</a> •
     <a href="#features">Features</a> •
     <a href="#compatibility">Compatibility</a> •
     <a href="#installation">Installation</a> •
     <a href="#using-it">Using it</a> •
     <a href="#faq">FAQ</a> •
-    <a href="#contributors">Contributors</a>
+    <a href="#license">License</a>
   </p>
 </div>
 
 ---
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/14145?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14145" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/14145/daily?language=Java" alt="ReSo7200%2FInstaEclipse | Trendshift" width="250" height="55"/>
-  </a>
-</p>
+Eclipse 2 is an LSPosed module for Instagram on Android 9 and newer. It adds privacy switches, media downloads, feed cleanup and theming, all controlled from a menu inside Instagram, and it comes with a companion app for status, logs and settings backup. It runs on rooted phones through LSPosed and on unrooted phones through LSPatch.
 
-## What is it
+> **Eclipse 2 was called InstaEclipse 2 until version 0.8.4.** It continues [InstaEclipse](https://github.com/ReSo7200/InstaEclipse) by [ReSo7200](https://github.com/ReSo7200) and keeps its full history. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
+>
+> **Coming from the original InstaEclipse?** Eclipse 2 has its own package name (`io.github.somilkhan.instaeclipse2`), so it installs next to the original. Settings do not carry over: back them up in the old app, restore them here, enable the new module in LSPosed, and re-patch Instagram if you use LSPatch.
 
-InstaEclipse is a module for [LSPosed](https://github.com/JingMatrix/LSPosed) (rooted phones) and [LSPatch](https://github.com/JingMatrix/LSPatch) (no root). Long press the Explore (search) tab inside Instagram and the InstaEclipse menu slides up. Flip what you want, and most things apply right away.
+## Screenshots
 
-It comes with a companion app too. That is where you see whether the module is running, read its logs, back up your settings, edit themes, and get help.
+<table>
+  <tr>
+    <td align="center"><img src="docs/images/home-light.png" width="230" alt="Home screen, light theme"/><br/><sub><b>Home</b></sub></td>
+    <td align="center"><img src="docs/images/home-dark.png" width="230" alt="Home screen, dark theme"/><br/><sub><b>Home, dark</b></sub></td>
+    <td align="center"><img src="docs/images/features-light.png" width="230" alt="Features screen, light theme"/><br/><sub><b>Features</b></sub></td>
+    <td align="center"><img src="docs/images/features-dark.png" width="230" alt="Features screen, dark theme"/><br/><sub><b>Features, dark</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/images/theme-light.png" width="230" alt="Theme customizer, light theme"/><br/><sub><b>Themes</b></sub></td>
+    <td align="center"><img src="docs/images/theme-dark.png" width="230" alt="Theme customizer, dark theme"/><br/><sub><b>Themes, dark</b></sub></td>
+    <td align="center"><img src="docs/images/logs-dark.png" width="230" alt="Logs screen, dark theme"/><br/><sub><b>Logs</b></sub></td>
+    <td align="center"><img src="docs/images/help-light.png" width="230" alt="Help screen, light theme"/><br/><sub><b>Help</b></sub></td>
+  </tr>
+</table>
 
-Under the hood, InstaEclipse uses [DexKit](https://github.com/LuckyPray/DexKit) to find what it needs inside Instagram every time Instagram updates, instead of relying on names that change with each build. So when Instagram ships a new version, most features keep working without waiting for a module update.
+<sub>These images come from the app's own screenshot tests, not from a phone. They use sample data, and the glass blur on a real device is stronger than what the test renderer draws.</sub>
 
-> InstaEclipse is a personal, educational project. It is not affiliated with Meta or Instagram. See the [Disclaimer](DISCLAIMER.md).
+> Eclipse 2 is an independent, educational project. Meta and Instagram have nothing to do with it, and it contains no Instagram code or artwork. See the [Disclaimer](DISCLAIMER.md).
 
 ---
 
-## What's new in 0.8.0
+## How it works
 
-The biggest update so far. Highlights:
+Long press the Explore (search) tab inside Instagram and the Eclipse 2 menu slides up. Flip the switches you want, and most apply right away. The companion app shows whether the module is running, shows its logs, backs up your settings, edits themes and answers common questions.
 
-- **Stories got smart.** Story Info shows exact posting and expiry times, the song with Spotify, YouTube Music and Apple Music buttons, location, hashtags, who it was reshared from, paid partnerships, Add Yours counts and more. Polls, sliders and quizzes show their results as bars.
-- **Song links on posts and reels too.** Media info shows the song with the same Spotify, YouTube Music and Apple Music buttons.
-- **Translate chat messages** with your own translator app (Google Translate, DeepL and others), right from the message menu.
-- **Copy links from story link stickers**, and hold a mention to open that profile.
-- **A reorganized menu**, grouped by what things do: Feed, Navigation, Reels, Stories, Ghost Mode, Messages, Downloads, Likes and Comments, Profiles, and more. Same layout in Instagram and in the companion app.
-- **Per chat tools** in one InstaEclipse button inside every chat: unsent messages, export, jump to the first message, read receipts for just that chat, and hide or unhide the chat.
-- **Edit history, unsent message log, chat export, voice message downloads, comment search, follower export.**
-- **Clean up Instagram's own buttons:** hide the Threads button on profiles, the Blend button in chats, the Notes tray, "Create group" on the share sheet, Plus upsells, and community notes.
-- **Navigation:** hide tabs, reorder them, choose the tab Instagram opens on, and turn off swipe to camera.
-- **Extras:** airplane mode, following only feed, high resolution images, unlimited accounts, Reels auto scroll and scroll lock.
-- **A new look everywhere.** Modern dialogs and toasts, a home dashboard, searchable features, an animated About page, light and dark versions of every theme. InstaEclipse's own menus, toggles and dialogs follow your theme's colors, and its menu items get proper icons.
-- **Sturdier.** Safer settings sync with the companion app, crash fixes, security hardening, and every feature found at runtime with DexKit.
-- **New language:** Vietnamese joins the list.
+Eclipse 2 uses [DexKit](https://github.com/LuckyPray/DexKit) to find what it needs inside Instagram each time Instagram updates, instead of relying on class names that change with every build. Most features keep working after an Instagram update without a new module release.
 
 ---
 
@@ -75,7 +71,7 @@ Everything here is a switch in the menu. Tap a section to open it.
 | Feature | What it does |
 |---|---|
 | Hide DM seen | Read messages without sending a read receipt |
-| Read receipts for specific chats | Keep Hide DM seen on for everyone, but still send "Seen" in the chats you pick (set it from the chat's InstaEclipse menu) |
+| Read receipts for specific chats | Keep Hide DM seen on for everyone, but still send "Seen" in the chats you pick (set it from the chat's Eclipse 2 menu) |
 | Hide typing indicator | Type without the other person seeing the dots |
 | Hide story views | Watch stories without appearing in the viewer list |
 | Mark a story as seen | Send the view for one story on purpose, from the story menu |
@@ -86,7 +82,7 @@ Everything here is a switch in the menu. Tap a section to open it.
 | Unlock view once and view twice | Replay view once media instead of it disappearing |
 | Spoof last seen | Freeze your "active" status |
 | Airplane mode | Appear offline: Instagram stops its live connection while you browse |
-| Quick toggle | Turn Ghost Mode on and off from a ghost icon next to your inbox |
+| Ghost icon | Turn Ghost Mode on and off from an icon next to your inbox |
 
 </details>
 
@@ -104,12 +100,13 @@ Everything here is a switch in the menu. Tap a section to open it.
 | Jump to first message | Scroll a chat all the way back to its first message |
 | Voice message downloads | Save voice messages, named by sender |
 | Translate messages | Send a message to your translator app from its long press menu (under More) |
+| Unsend multiple messages | Long press one of your messages, then More, Unsend multiple: check your messages right in the chat and unsend them all at once |
 | Hide specific chats | Hide chats from your inbox and manage them later |
 | Hide the Notes tray | Remove Notes from the top of your inbox |
 | Hide Blend in chats | Remove the Blend button from the chat header |
 | Hide "Create group" | Remove it from the share sheet |
 
-All chat tools live in one InstaEclipse button in the chat header, next to the back arrow.
+All chat tools live in one Eclipse 2 button in the chat header, next to the back arrow.
 
 </details>
 
@@ -140,6 +137,7 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 |---|---|
 | Force Reels quality | Pick a fixed quality (Auto, 360p to 1080p, or Max) |
 | Playback speed | 0.5x to 3x for reels, stories and feed videos |
+| Hold for slow motion | Hold the left side of a reel for 0.5x, the right side for 2x |
 | Always show the seek bar | Scrub through any reel |
 | Reels auto scroll | Move to the next reel when one ends |
 | Lock Reels scrolling | Stop accidental swipes |
@@ -155,12 +153,12 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 | Feature | What it does |
 |---|---|
 | Download posts, reels and stories | Single photos, full carousels, reels, and stories (your own included, with music) |
-| Download profile pictures | Full size, from a long press on the profile picture |
-| Audio only | Save just the audio of a video or reel as .m4a, including a post's music |
+| Download profile pictures | Long press a profile picture to see the full-size original, square, and save it |
+| Audio only | Save only the audio of a video or reel as .m4a, including a post's music |
 | Copy media link | Copy the direct link for a post, reel or a single carousel slide |
 | Copy image | Copy a photo straight to the clipboard |
 | Media info | Resolution, file size, the song with streaming links, and an option to open the file in another app |
-| Download with InstaEclipse | Share a post or reel link from any app to download it |
+| Download with Eclipse 2 | Share a post or reel link from any app to download it |
 | Story cache | Keep stories you watched for 24 hours, so you can save ones that expired |
 | Save Instants | Long press an Instant to save it |
 | Upload Instant from gallery | Send a picture from your gallery as an Instant |
@@ -185,7 +183,7 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 | Hide the story tray | Keep the feed, lose the story row |
 | Disable Discover People | Remove the "people you may know" row |
 | Always show full captions | No more "... more" |
-| Exact dates | "17 Oct 2026 07:36" instead of "2h ago" |
+| Exact dates | "17 Oct 2026 07:36" instead of "2h ago", in the date format you pick (presets or your own pattern) |
 | High resolution images | Load the sharpest version of every photo |
 | Photo zoom | Long press a photo to zoom in |
 | Disable video autoplay | Videos wait for a tap |
@@ -206,8 +204,9 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 | Translate | Translate captions, comments and chat messages with your own translator app |
 | Save comment GIFs and images | Download the media in comments |
 | "Follows you" label | See on any profile whether they follow you back |
-| Follower toast | A quick message when you open a profile |
+| Follower toast | A short message when you open a profile |
 | Export followers and following | Save the whole list as CSV |
+| Followers history | See who unfollowed you and who followed you since your last check |
 | Saved on your profile | A Saved button right on your profile |
 | Lock Saved collections | Put a passcode on a collection |
 | Hide the Threads button | Remove it from profiles |
@@ -236,7 +235,7 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 | Feature | What it does |
 |---|---|
 | Lock the whole app | Passcode or fingerprint to open Instagram |
-| Lock DMs | Lock just the inbox, and optionally lock it again every time you leave |
+| Lock DMs | Lock only the inbox, and optionally lock it again every time you leave |
 | Block ads and analytics | Drop sponsored posts and tracking calls |
 | Disable tracking links | Strip only the tracking parts from links you share |
 | Open links externally | Use your own browser instead of Instagram's |
@@ -256,7 +255,7 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 |---|---|
 | Custom theme | Presets or your own colors for every part of the app, applied live |
 | Light and dark themes | Every theme has both versions and follows your phone |
-| Themed menus | InstaEclipse's own menus, toggles and dialogs use your theme's accent color |
+| Themed menus | Eclipse 2's own menus, toggles and dialogs use your theme's accent color |
 | Custom font | Use any .ttf or .otf across the app |
 | Custom emoji | Swap in another emoji font |
 
@@ -297,7 +296,7 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 
 | Feature | What it does |
 |---|---|
-| Home dashboard | Module status, Instagram version, quick launch and restart, and your pinned shortcuts |
+| Home dashboard | Module status, Instagram version, launch and restart buttons, and your pinned shortcuts |
 | Feature search | Find any switch by name |
 | Live logs | Hook status from Instagram and the app, no adb needed |
 | Help | Frequently asked questions, setup links for LSPosed and LSPatch, and the community |
@@ -311,8 +310,8 @@ All chat tools live in one InstaEclipse button in the chat header, next to the b
 
 | | |
 |---|---|
-| **Tested on** | Instagram `451.0.0.20.80` |
-| **Get this version** | [Instagram 451.0.0.20.80 on APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-451-0-0-20-80-release/) |
+| **Tested on** | Instagram `457.0.0.55.73` |
+| **Get this version** | [Instagram 457.0.0.55.73 on APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) |
 | **Survives updates** | Yes, DexKit finds what it needs at runtime |
 | **Android** | 9 and newer |
 
@@ -322,31 +321,31 @@ A big Instagram update can still knock a feature out until it is patched. The me
 
 ## Installation
 
-> Get Instagram [451.0.0.20.80 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-451-0-0-20-80-release/) rather than the Play Store. The Play build is not always fully supported.
+> Get Instagram [457.0.0.55.73 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) rather than the Play Store. The Play build is not always fully supported.
 
-Download the latest InstaEclipse APK from [**Releases**](https://github.com/ReSo7200/InstaEclipse/releases/latest), then follow the path for your phone.
+Download the latest Eclipse 2 APK from [**Releases**](https://github.com/somilkhan/Eclipse-2/releases/latest), then follow the path for your phone.
 
 ### Rooted, with LSPosed
 
 > Needs [JingMatrix's LSPosed](https://github.com/JingMatrix/LSPosed/releases/latest).
 
-1. **Install InstaEclipse** from the APK you downloaded.
-2. **Enable the module.** In LSPosed Manager, open Modules, enable InstaEclipse and tick Instagram.
+1. **Install Eclipse 2** from the APK you downloaded.
+2. **Enable the module.** In LSPosed Manager, open Modules, enable Eclipse 2 and tick Instagram.
 3. **Restart Instagram.** Force stop it and open it again.
 4. **Open the menu.** Long press the Explore (search) tab.
 
 > [!CAUTION]
-> Using Hide My Applist? Do not hide InstaEclipse from Instagram. Instagram needs to see it, or the menu text goes missing and features stop working.
+> Using Hide My Applist? Do not hide Eclipse 2 from Instagram. Instagram needs to see it, or the menu text goes missing and features stop working.
 
 ### No root, with LSPatch
 
 > Needs [JingMatrix's LSPatch](https://github.com/JingMatrix/LSPatch/releases/latest).
 
-1. **Install InstaEclipse** from the APK.
+1. **Install Eclipse 2** from the APK.
 2. **Install LSPatch** (the JingMatrix fork).
 3. **Patch Instagram.** In LSPatch, tap **+**, pick the Instagram APK or the installed app, choose **Local Patch Mode**, turn on **Inject loader dex**, then tap **Start Patch**.
 4. **Install the patched APK** and log in.
-5. **Enable the module.** In LSPatch, open Manage, pick Instagram, open Modules and enable InstaEclipse.
+5. **Enable the module.** In LSPatch, open Manage, pick Instagram, open Modules and enable Eclipse 2.
 6. **Open the menu.** Long press the Explore (search) tab.
 
 There is also a [step by step guide](https://t.me/instaEclipse_discussion/158/5149) in the community.
@@ -357,7 +356,7 @@ There is also a [step by step guide](https://t.me/instaEclipse_discussion/158/51
 
 - **Open the menu:** long press the Explore (search) tab inside Instagram.
 - **Find things:** sections are grouped into Appearance, Privacy, Media, Social and Tools. Each shows how many of its switches are on.
-- **Chat tools:** open any chat and tap the InstaEclipse button next to the back arrow.
+- **Chat tools:** open any chat and tap the Eclipse 2 button next to the back arrow.
 - **Story tools:** open a story and tap its ⋯ menu for Story Info, links, mentions and results.
 - **Back:** the phone's back button steps back one page at a time.
 
@@ -373,8 +372,8 @@ Updates and tips:
 **A feature is not doing anything.**
 Disable and enable the module again in LSPosed or LSPatch, then force stop and reopen Instagram.
 
-**The text in the InstaEclipse menus is missing.**
-Turn off Hide My Applist (HMA) for Instagram. InstaEclipse reads its text from its own app, and HMA hides it.
+**The text in the Eclipse 2 menus is missing.**
+Turn off Hide My Applist (HMA) for Instagram. Eclipse 2 reads its text from its own app, and HMA hides it.
 
 **Some features will not work even when they are on.**
 Instagram's own config can block them. Open Developer Options and choose Restore Default Config. The same config is also on [Telegram](https://t.me/InstaEclipse/52).
@@ -386,7 +385,7 @@ That happens on Instagram's Stable build. Use a Beta or Alpha build from APKMirr
 Force stop Instagram and clear its cache, then open it again.
 
 **It does not work on the Play Store version.**
-Install [Instagram 451.0.0.20.80 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-451-0-0-20-80-release/) instead.
+Install [Instagram 457.0.0.55.73 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) instead.
 
 **Still stuck?**
 Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will help.
@@ -397,26 +396,39 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 <div align="center">
 
-### Maintainer
+### Original author
 
 <a href="https://github.com/ReSo7200">
   <img src="https://github.com/ReSo7200.png" width="80" alt="ReSo7200" style="border-radius:50%"/><br/>
   <b>ReSo7200</b>
 </a>
 
+<sub>Created InstaEclipse and led it through 0.8.x.</sub>
+
+<br/><br/>
+
+### Maintainer
+
+<a href="https://github.com/somilkhan">
+  <img src="https://github.com/somilkhan.png" width="80" alt="somilkhan" style="border-radius:50%"/><br/>
+  <b>somilkhan</b>
+</a>
+
+<sub>Maintains this continuation.</sub>
+
 <br/><br/>
 
 ### Everyone who has pitched in
 
-<a href="https://github.com/ReSo7200/InstaEclipse/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ReSo7200/InstaEclipse" alt="Contributors"/>
+<a href="https://github.com/somilkhan/Eclipse-2/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=somilkhan/Eclipse-2" alt="Contributors"/>
 </a>
 
 <sub>Made with <a href="https://contrib.rocks">contrib.rocks</a></sub>
 
 <br/>
 
-**Thank you** to [b4lol](https://github.com/b4lol) for the extras, security and performance work in this release, to [izadiegizabal](https://github.com/izadiegizabal) for own story downloads, and to everyone who translated InstaEclipse into their language.
+**Thank you** to [b4lol](https://github.com/b4lol) for the extras, security and performance work in this release, to [izadiegizabal](https://github.com/izadiegizabal) for own story downloads, and to everyone who translated the app into their language.
 
 </div>
 
@@ -434,13 +446,22 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 Pull requests, bug reports, ideas and translations are all welcome.
 
-- Found a bug? [Open a bug report](https://github.com/ReSo7200/InstaEclipse/issues/new/choose)
-- Have an idea? [Request a feature](https://github.com/ReSo7200/InstaEclipse/issues/new/choose)
-- Want to build something? Fork the repo and open a pull request
+- Found a bug? [Open a bug report](https://github.com/somilkhan/Eclipse-2/issues/new/choose)
+- Have an idea? [Request a feature](https://github.com/somilkhan/Eclipse-2/issues/new/choose)
+- Want to build something? Fork the repo and open a pull request. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+- Maintainers: see [MAINTAINERS.md](MAINTAINERS.md) and [RELEASING.md](RELEASING.md).
+
+---
+
+## License
+
+Eclipse 2 is free software under the [GNU General Public License v3.0](LICENSE). You can use, study, change and share it, and anyone you share it with gets the same rights. If you distribute a modified build, you must publish its source under the GPL as well.
+
+The project reuses GPL-3.0 code from HushGram, so the whole work, APK included, has to be GPL-3.0. The original InstaEclipse code by ReSo7200 was Apache-2.0, which the GPL allows. Its notices and license text are kept in [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt), and [NOTICE](NOTICE) lists every third-party component and its license.
 
 ---
 
 <div align="center">
-  <sub>Made with care by the InstaEclipse community.</sub><br/>
-  <sub>Not affiliated with Meta or Instagram. See the <a href="DISCLAIMER.md">Disclaimer</a>.</sub>
+  <sub>Made by the Eclipse 2 community.</sub><br/>
+  <sub>Not affiliated with Meta or Instagram. Released under <a href="LICENSE">GPL-3.0</a>. See the <a href="DISCLAIMER.md">Disclaimer</a>.</sub>
 </div>

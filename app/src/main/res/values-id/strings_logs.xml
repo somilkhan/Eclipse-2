@@ -8,17 +8,14 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">Muat ulang</string>
     <string name="logs_copy">Salin</string>
-    <string name="logs_share">Bagikan</string>
     <string name="logs_clear">Bersihkan</string>
-    <string name="logs_share_title">Bagikan log InstaEclipse</string>
-    <string name="logs_share_subject">Log InstaEclipse</string>
     <string name="logs_loading">Memuat log…</string>
     <string name="logs_count_format">%1$d dari %2$d entri</string>
     <string name="logs_status_live">Instagram sedang berjalan · langsung</string>
     <string name="logs_status_saved">Log tersimpan · Instagram tidak berjalan</string>
     <string name="logs_status_none">Tidak ada aplikasi Instagram yang didukung terpasang</string>
     <string name="logs_empty_title">Belum ada log</string>
-    <string name="logs_empty_body">Buka Instagram sekali dengan InstaEclipse diaktifkan di LSPosed, lalu kembali ke sini dan ketuk Muat ulang. Log Instagram disimpan di sini secara otomatis, bahkan setelah Instagram ditutup.</string>
+    <string name="logs_empty_body">Buka Instagram sekali dengan Eclipse 2 diaktifkan di LSPosed, lalu kembali ke sini dan ketuk Muat ulang. Log Instagram disimpan di sini secara otomatis, bahkan setelah Instagram ditutup.</string>
     <string name="logs_empty_filter_title">Tidak ada yang cocok dengan filter ini</string>
     <string name="logs_empty_filter_body">Kembali ke Semua untuk melihat semua entri.</string>
     <string name="logs_nothing_to_copy">Tidak ada log untuk disalin</string>
@@ -26,4 +23,8 @@
     <string name="logs_entry_copied">Entri disalin</string>
     <string name="logs_cleared">Log dibersihkan</string>
     <string name="logs_source_companion">[aplikasi]</string>
+    <string name="logs_save">Simpan ke penyimpanan</string>
+    <string name="logs_saving">Menyimpan log lengkap…</string>
+    <string name="logs_saved">Log disimpan</string>
+    <string name="logs_save_failed">Tidak dapat menyimpan log</string>
 </resources>

@@ -8,17 +8,14 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">רענן</string>
     <string name="logs_copy">העתק</string>
-    <string name="logs_share">שתף</string>
     <string name="logs_clear">נקה</string>
-    <string name="logs_share_title">שתף יומני InstaEclipse</string>
-    <string name="logs_share_subject">יומני InstaEclipse</string>
     <string name="logs_loading">טוען יומנים…</string>
     <string name="logs_count_format">%1$d מתוך %2$d רשומות</string>
     <string name="logs_status_live">Instagram פועל · בזמן אמת</string>
     <string name="logs_status_saved">יומן שמור · Instagram לא פועל</string>
     <string name="logs_status_none">לא מותקנת אפליקציית Instagram נתמכת</string>
     <string name="logs_empty_title">אין עדיין יומנים</string>
-    <string name="logs_empty_body">פתח את Instagram פעם אחת כש-InstaEclipse מופעל ב-LSPosed, ואז חזור לכאן והקש על רענן. היומן של Instagram נשמר כאן אוטומטית, גם אחרי ש-Instagram נסגר.</string>
+    <string name="logs_empty_body">פתח את Instagram פעם אחת כש-Eclipse 2 מופעל ב-LSPosed, ואז חזור לכאן והקש על רענן. היומן של Instagram נשמר כאן אוטומטית, גם אחרי ש-Instagram נסגר.</string>
     <string name="logs_empty_filter_title">אין תוצאות למסנן הזה</string>
     <string name="logs_empty_filter_body">חזור אל הכל כדי לראות את כל הרשומות.</string>
     <string name="logs_nothing_to_copy">אין יומנים להעתקה</string>
@@ -26,4 +23,8 @@
     <string name="logs_entry_copied">הרשומה הועתקה</string>
     <string name="logs_cleared">היומנים נוקו</string>
     <string name="logs_source_companion">[אפליקציה]</string>
+    <string name="logs_save">שמור באחסון</string>
+    <string name="logs_saving">שומר את היומן המלא…</string>
+    <string name="logs_saved">היומן נשמר</string>
+    <string name="logs_save_failed">לא ניתן לשמור את היומן</string>
 </resources>
