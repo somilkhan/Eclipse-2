@@ -122,8 +122,9 @@ new key (0.8.4). Later releases update in place.
    changelog, runs unit tests, builds `assembleRelease` signed with the secrets, verifies the
    signature with `apksigner`, and publishes `Eclipse2-v0.8.4.apk` (+ `.sha256`) as a GitHub
    Release.
-7. For a stable release only: update [`version.json`](version.json) on `main` (`latest_version`)
-   so the in-app update checker offers it. Leave it alone for pre-releases.
+7. For a stable release the workflow then sets `latest_version` in [`version.json`](version.json)
+   on `main`, so the in-app update checker offers it. Pre-releases leave it alone. If that step
+   fails (for example branch protection on `main`), update `version.json` by hand.
 
 ### If something fails
 
