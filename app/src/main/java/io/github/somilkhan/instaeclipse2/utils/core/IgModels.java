@@ -172,12 +172,22 @@ public final class IgModels {
 
     @Nullable
     private static Method findAccessor(Class<?> c) {
+        Method plain = findAccessor(c, false);
+        if (plain != null) return plain;
+        // Pando trees (ImmutablePando*, *Impl) declare the same accessor with ACC_SYNTHETIC on 458.
+        // A List.get(int) bridge has the same shape, so collections never qualify.
+        if (java.util.Collection.class.isAssignableFrom(c) || java.util.Map.class.isAssignableFrom(c)) return null;
+        return findAccessor(c, true);
+    }
+
+    @Nullable
+    private static Method findAccessor(Class<?> c, boolean synthetic) {
         for (Class<?> k = c; k != null && k != Object.class; k = k.getSuperclass()) {
             Method pick = null;
             int n = 0;
             for (Method m : k.getDeclaredMethods()) {
                 int mod = m.getModifiers();
-                if (Modifier.isStatic(mod) || m.isSynthetic() || m.isBridge()) continue;
+                if (Modifier.isStatic(mod) || m.isBridge() || m.isSynthetic() != synthetic) continue;
                 if (m.getReturnType() != Object.class) continue;
                 Class<?>[] p = m.getParameterTypes();
                 if (p.length != 1 || p[0] != int.class) continue;

@@ -63,7 +63,8 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
             ModuleLog.line("(IE|MediaAdapter) resolved properties=" + adapter.bindings.size()
                     + " manifest=" + adapter.bindings.containsKey("video_dash_manifest")
                     + " direct=" + adapter.bindings.containsKey("video_versions")
-                    + " story=" + (adapter.reelItemMedia != null));
+                    + " story=" + (adapter.reelItemMedia != null)
+                    + " hashed=" + (IgModels.accessor(adapter.mediaClass) != null));
         } catch (Throwable ignored) {
             installed = null;
             ModuleLog.line("(IE|MediaAdapter) installation unavailable");
@@ -461,7 +462,7 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
     @Override public SelectedMediaSnapshot.Value read(Object receiver, String property) throws Exception {
         if (receiver == null) return SelectedMediaSnapshot.Value.missing();
         List<Method> candidates = bindings.get(property);
-        if (candidates == null) return SelectedMediaSnapshot.Value.missing();
+        if (candidates == null) return hashed(receiver, property);
         Method selected = null;
         for (Method candidate : candidates) {
             if (!candidate.getDeclaringClass().isInstance(receiver)) continue;
@@ -469,8 +470,18 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
                 throw new IllegalStateException("Ambiguous media property: " + property);
             selected = candidate;
         }
-        if (selected == null) return SelectedMediaSnapshot.Value.missing();
+        if (selected == null) return hashed(receiver, property);
         try { return SelectedMediaSnapshot.Value.of(selected.invoke(receiver)); }
         catch (Throwable ignored) { throw new IllegalStateException("Media property read failed: " + property); }
+    }
+
+    /**
+     * Instagram 458 removed the typed getters (Media has no getId() and no per-field getters);
+     * each model answers {@code Object x(int)} keyed by the JSON field name's hashCode().
+     * The value belongs to this exact receiver, so it is as safe as a typed getter.
+     */
+    static SelectedMediaSnapshot.Value hashed(Object receiver, String property) {
+        if (!IgModels.readable(receiver)) return SelectedMediaSnapshot.Value.missing();
+        return SelectedMediaSnapshot.Value.of(IgModels.read(receiver, property));
     }
 }

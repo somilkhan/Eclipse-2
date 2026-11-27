@@ -381,7 +381,8 @@ final class SelectedMediaDownloads {
 
     static void unavailable(Context ctx, Throwable error) {
         ModuleLog.line("(IE|MediaAdapter) capture unavailable"
-                + (error == null ? "" : " (" + error.getClass().getSimpleName() + ")"));
+                + (error == null ? "" : " (" + error.getClass().getSimpleName()
+                + (error.getMessage() == null ? "" : ": " + error.getMessage()) + ")"));
         toast(ctx, I18n.t(ctx, R.string.ie_download_unavailable));
     }
 

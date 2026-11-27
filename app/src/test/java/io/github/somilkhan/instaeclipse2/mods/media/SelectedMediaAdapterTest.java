@@ -275,4 +275,23 @@ public class SelectedMediaAdapterTest {
         PostHandler handler = new PostHandler(new MenuCreator(selected), null);
         assertSame(selected, SelectedMediaAdapter.menuMedia(handler, MenuCreator.class, Media.class));
     }
+
+    public static final class HashedModel {
+        public Object x(int key) {
+            if (key == "id".hashCode()) return "1_2";
+            if (key == "video_versions".hashCode()) return java.util.List.of();
+            return null;
+        }
+    }
+
+    @Test public void hashedFallbackReadsOnlyModelsWithTheAccessor() {
+        SelectedMediaSnapshot.Value id = SelectedMediaAdapter.hashed(new HashedModel(), "id");
+        assertTrue(id.bound);
+        assertEquals("1_2", id.value);
+        SelectedMediaSnapshot.Value dash = SelectedMediaAdapter.hashed(new HashedModel(), "video_dash_manifest");
+        assertTrue(dash.bound);
+        assertNull(dash.value);
+        assertFalse(SelectedMediaAdapter.hashed(new Object(), "id").bound);
+        assertFalse(SelectedMediaAdapter.hashed(new java.util.ArrayList<>(java.util.List.of("a")), "id").bound);
+    }
 }

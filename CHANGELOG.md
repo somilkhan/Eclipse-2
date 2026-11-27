@@ -19,6 +19,11 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
   reads it: its own `static Media x(Handler)` accessor (the reel handler's "clipsItem" path), a
   direct Media field, or an already-initialized `Lazy<Media>`. A Lazy is never forced, and two
   different Media values still fail closed.
+- Download capture on 458: Media has no `getId()` and no typed field getters any more, so the
+  snapshot stopped at "Media identity unavailable". Fields the adapter cannot bind now fall back to
+  the model's own hashed accessor (id, user, video_versions, image_versions2, candidates, ...).
+  `IgModels` also accepts the synthetic `x(int)` accessor that Pando models (image info, video
+  versions) declare, but never on a List or Map. The capture error log now includes its reason.
 - Hide suggested posts: the FeedItem parser lookup matched Instagram's shared string table
   (`X.0000`) on 458 and hooked nothing. It now goes through `StringTables` and only accepts a class
   that has the parser bridge.
