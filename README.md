@@ -107,6 +107,10 @@ Everything here is a switch in the menu. Tap a section to open it.
 | Hide the Notes tray | Remove Notes from the top of your inbox |
 | Hide Blend in chats | Remove the Blend button from the chat header |
 | Hide "Create group" | Remove it from the share sheet |
+| Hide "Hidden requests" | Remove the hidden requests row from message requests |
+| Hide call buttons | Remove the audio and video call buttons from the chat header |
+| No swipe to disappearing messages | Stop a swipe up from turning on vanish mode |
+| Mark as read when you reply | With Ghost seen on, a chat is marked read only once you reply |
 
 All chat tools live in one Eclipse 2 button in the chat header, next to the back arrow.
 
@@ -127,6 +131,10 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | Search your story viewers | A search box over your viewer list |
 | Disable story auto swipe | Stories stop advancing on their own |
 | Download a whole highlight | From the highlight's long press menu |
+| Hide the Follow button | Remove Follow from story headers |
+| Loop stories | Replay the current story instead of moving on |
+| Filter the story tray | Hide tray items by story type, or by verified or unverified accounts |
+| Story ring size | Make the story tray rings 40% to 160% of normal |
 
 </details>
 
@@ -144,6 +152,8 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | Reels auto scroll | Move to the next reel when one ends |
 | Lock Reels scrolling | Stop accidental swipes |
 | Disable repost | Keep the repost button from reposting |
+| Hide the Follow button | Remove Follow from reels |
+| Resume reels | Pick up a reel where you left it |
 
 </details>
 
@@ -189,6 +199,8 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | High resolution images | Load the sharpest version of every photo |
 | Photo zoom | Long press a photo to zoom in |
 | Disable video autoplay | Videos wait for a tap |
+| Hide post buttons | Hide share, save or repost, and the like count, on feed posts |
+| Custom like animation | Pick the double tap like animation, or a random one |
 
 </details>
 
@@ -212,6 +224,7 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | Saved on your profile | A Saved button right on your profile |
 | Lock Saved collections | Put a passcode on a collection |
 | Hide the Threads button | Remove it from profiles |
+| Hide highlights | Remove the highlights row from profiles |
 
 </details>
 
@@ -226,6 +239,7 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | Tab order | Put the bottom tabs in any order |
 | Startup tab | Choose which tab Instagram opens on |
 | Disable swipe to camera | Stop the camera from opening on a swipe |
+| Remove space under the tab bar | Drop the empty gap below the bottom tabs |
 
 </details>
 
@@ -272,6 +286,7 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 |---|---|
 | Turn off sections | Stories, Feed, Reels (or all Reels except in DMs), Explore and Comments, one by one |
 | Extreme mode | Lock those choices in until you reinstall |
+| Focus Lock | Extreme mode with an end time, from 1 minute to 3 months |
 
 </details>
 
@@ -288,6 +303,8 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | Auto clear cache | Clear Instagram's media cache once it gets too big |
 | Backup and restore | All settings to a file and back |
 | Feature toasts | See which features loaded when Instagram starts |
+| Crash reports | When Instagram crashes, save a report with the error and recent logs to a folder you pick |
+| External downloader | Send a post or reel link to your downloader app from the post menu |
 
 </details>
 
@@ -301,6 +318,7 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | Home dashboard | Module status, Instagram version, launch and restart buttons, and your pinned shortcuts |
 | Feature search | Find any switch by name |
 | Live logs | Hook status from Instagram and the app, no adb needed |
+| Clone apps | Trust clones such as Instafel or InstaAlpha so they get settings sync and downloads |
 | Help | Frequently asked questions, setup links for LSPosed and LSPatch, and the community |
 | 18 languages | English, Arabic, Azerbaijani, Chinese (Simplified and Traditional), French, German, Greek, Hebrew, Indonesian, Italian, Polish, Portuguese, Russian, Spanish, Swedish, Turkish and Vietnamese |
 
@@ -313,6 +331,8 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 | | |
 |---|---|
 | **Tested on** | Instagram `457.0.0.55.73` |
+| **Hooks updated for** | Instagram `458.0.0.0.67` (not device-tested yet) |
+| **Also works in** | Instafel and InstaAlpha, including their clone apps |
 | **Get this version** | [Instagram 457.0.0.55.73 on APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) |
 | **Survives updates** | Yes, DexKit finds what it needs at runtime |
 | **Android** | 9 and newer |
