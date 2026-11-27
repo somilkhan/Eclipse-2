@@ -90,6 +90,9 @@ public class HomeFragment extends Fragment {
             "showFeatureToasts", "enableStoryMentions", "disableDiscoverPeople", "enableCopyComment",
             "disableDoubleTapLike", "enableCaptionCopy", "enablePhotoZoom", "removeMetaAI",
             "hideShareCreateGroup", "hideFeedShareButton", "hideFeedSaveButton", "hideFeedRepostButton", "hideFeedLikeCount", "disableHighlights", "hideHiddenRequests", "removeEmptyBottomSpace",
+            "hideStoryFollowButton", "hideReelsFollowButton", "loopStories", "disableDisappearingSwipe",
+            "hideChatCallButtons", "filterStoryTray", "customLikeAnimation", "customStoryRingSize", "resumeReels",
+            "externalDownloader", "markReadAfterReply",
             "exactTimestamps", "likeUndo", "profileFollowsYouLabel", "fancyBioFont", "savedOnProfile",
             "storyViewerSearch", "storyLinks", "storyInfo", "commentSearch", "followListExport", "followersHistory",
             // Lock / hide chats

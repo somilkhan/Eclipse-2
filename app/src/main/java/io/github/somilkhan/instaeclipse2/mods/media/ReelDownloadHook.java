@@ -172,7 +172,7 @@ public class ReelDownloadHook {
         try {
             // Enum constants are resolved lazily on first call: the lookup below must not depend
             // on running Instagram code at install time.
-            final Object[] opts = new Object[4]; // DOWNLOAD, COPY_LINK, info carrier, speed carrier
+            final Object[] opts = new Object[5]; // DOWNLOAD, COPY_LINK, info carrier, speed carrier, external carrier
             final boolean[] resolved = {false};
             final Runnable resolve = () -> {
                 if (resolved[0]) return;
@@ -181,6 +181,8 @@ public class ReelDownloadHook {
                 opts[1] = mediaOption(classLoader, "COPY_LINK");   // #117 — clicks handled by PostDownloadContextMenuHook
                 opts[2] = mediaOption(classLoader, PostDownloadContextMenuHook.MEDIA_INFO_CARRIER); // #231
                 opts[3] = mediaOption(classLoader, PostDownloadContextMenuHook.SPEED_CARRIER);      // #247
+                for (String c : io.github.somilkhan.instaeclipse2.mods.piko.ExternalDownloader.CARRIERS)
+                    if (opts[4] == null) opts[4] = mediaOption(classLoader, c);          // Piko external downloader
                 if (opts[0] == null && opts[1] == null)
                     ModuleLog.line("(IE|Reel) ❌ DOWNLOAD/COPY_LINK enum values not found");
             };
@@ -189,12 +191,13 @@ public class ReelDownloadHook {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
                     resolve.run();
-                    final Object download = opts[0], copyLink = opts[1], info = opts[2], speedRow = opts[3];
+                    final Object download = opts[0], copyLink = opts[1], info = opts[2], speedRow = opts[3], external = opts[4];
                     boolean wantDl = FeatureFlags.enableReelDownload && download != null;
                     boolean wantCl = FeatureFlags.copyMediaLink && copyLink != null;
                     boolean wantInfo = FeatureFlags.offerMediaInfo && info != null;
                     boolean wantSpeed = FeatureFlags.offerPlaybackSpeed && speedRow != null;
-                    if (!wantDl && !wantCl && !wantInfo && !wantSpeed) return;
+                    boolean wantExternal = FeatureFlags.externalDownloader && external != null;
+                    if (!wantDl && !wantCl && !wantInfo && !wantSpeed && !wantExternal) return;
                     try {
                         Object result = param.getResult();
                         if (result instanceof List<?> list) {
@@ -204,6 +207,7 @@ public class ReelDownloadHook {
                             if (wantCl && !mutable.contains(copyLink)) mutable.add(copyLink);
                             if (wantInfo && !mutable.contains(info)) mutable.add(info);
                             if (wantSpeed && !mutable.contains(speedRow)) mutable.add(speedRow);
+                            if (wantExternal && !mutable.contains(external)) mutable.add(external);
                         }
                     } catch (Throwable t) {
                         ModuleLog.line("(IE|Reel) ❌ options-list patch failed: " + t);

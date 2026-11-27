@@ -32,7 +32,9 @@ public final class SettingsRestore {
             "lockDirectPasscode", "lockDirectSalt",
             // SAF grant and file paths belong to the device/install that made the backup.
             "downloaderCustomUri", "downloaderCustomPath", "customFontPath", "customEmojiPath",
-            "crashReportUri", "crashReportPath")));
+            "crashReportUri", "crashReportPath",
+            // A timed focus lock must not come back (or be cut short) via an old backup.
+            "focusLockUntil")));
 
     private SettingsRestore() {}
 

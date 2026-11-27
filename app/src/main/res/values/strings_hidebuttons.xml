@@ -13,4 +13,36 @@
     <string name="ig_feat_disable_highlights">Hide highlights on profiles</string>
     <string name="ig_feat_hide_hidden_requests">Hide \"Hidden requests\" in message requests</string>
     <string name="ig_feat_remove_bottom_space">Remove empty space under the tab bar</string>
+    <!-- Piko ports, batch 2 -->
+    <string name="ig_feat_hide_story_follow">Hide Follow button on stories</string>
+    <string name="ig_feat_hide_reels_follow">Hide Follow button on reels</string>
+    <string name="ig_feat_loop_stories">Loop stories (replay instead of moving on)</string>
+    <string name="ig_feat_disable_disappearing_swipe">Disable swipe up for disappearing messages</string>
+    <string name="ig_feat_hide_chat_call_buttons">Hide audio and video call buttons in chats</string>
+    <string name="ig_feat_filter_story_tray">Filter stories tray</string>
+    <string name="ig_feat_story_filter_types">Story types to hide</string>
+    <string name="ig_feat_story_filter_users">Accounts to hide (verified / unverified)</string>
+    <string name="ig_feat_custom_like_animation">Custom like animation</string>
+    <string name="ig_feat_like_animation_pick">Like animation</string>
+    <string name="ig_feat_like_animation_random">Random</string>
+    <string name="ig_feat_story_ring_size">Custom story ring size</string>
+    <string name="ig_feat_story_ring_size_value">Story ring size</string>
+    <string name="ig_feat_restart_needed">Restart Instagram to apply</string>
+    <string name="ig_feat_resume_reels">Resume reels where you left off</string>
+    <string name="ig_feat_external_downloader">Open in external downloader (menu row)</string>
+    <string name="ig_feat_external_downloader_pkg">External downloader app package</string>
+    <string name="ig_feat_external_downloader_pkg_hint">Leave empty to pick an app each time</string>
+    <string name="ig_external_downloader_title">Open in external downloader</string>
+    <string name="ig_external_downloader_no_link">No link found for this post</string>
+    <string name="ig_feat_mark_read_after_reply">Mark chat as read when you reply</string>
+    <string name="ig_feat_mark_read_after_reply_hint">Works with Ghost seen on: reading stays hidden until you send a message in that chat.</string>
+    <string name="ig_feat_any">None (all)</string>
+    <string name="ig_focus_lock">Focus Lock</string>
+    <string name="ig_focus_lock_desc">Lock these switches on for a while; they can\'t be turned off until the time is up.</string>
+    <string name="ig_focus_lock_active">Locked for %1$s more</string>
+    <string name="ig_focus_lock_pick">Lock for how long?</string>
+    <string name="ig_focus_lock_none">Turn on at least one switch first</string>
+    <string name="ig_focus_lock_confirm">Lock for %1$s? You can\'t undo this until the time is up.</string>
+    <string name="ig_focus_lock_start">Lock</string>
+    <string name="ig_focus_lock_locked_toast">Focus Lock is on for %1$s more</string>
 </resources>
