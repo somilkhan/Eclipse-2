@@ -5,6 +5,12 @@
 First release of Eclipse 2, the maintained continuation at `somilkhan/Eclipse-2` (original author: ReSo7200).
 Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 
+### Settings
+- Ghost Mode master switch: `isGhostModeEnabled` was never tied to the "Enable/disable all"
+  switch, so it was always saved and synced as `false`, even with every Ghost Mode feature on. It
+  now mirrors that switch (on only while all eight Ghost Mode features are on), is recomputed on
+  every settings load and save, and a stale stored value from older builds is corrected.
+
 ### Instagram 458 (458.0.0.0.67) hook fixes
 - Instagram 458 deleted the typed per-field getters on its models (Media went from 1368 to 502
   methods) and renamed `com.instagram.user.model.User` to an obfuscated class. Each model still has
