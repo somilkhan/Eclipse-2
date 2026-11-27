@@ -2,7 +2,7 @@
   <img src="docs/images/hero.png" alt="Eclipse 2 on a phone, showing the Home and Features screens in light and dark themes" width="100%" />
 
   <p>
-    <a href="https://github.com/somilkhan/Eclipse/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/somilkhan/Eclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/Eclipse-2/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/somilkhan/Eclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="https://github.com/somilkhan/Eclipse-2/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/somilkhan/Eclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="https://github.com/somilkhan/Eclipse-2/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/somilkhan/Eclipse-2/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPL--3.0-5856D6?style=for-the-badge&labelColor=0d0d0d"/></a>
@@ -24,7 +24,9 @@
 
 Eclipse 2 is an LSPosed module for Instagram on Android 9 and newer. It adds privacy switches, media downloads, feed cleanup and theming, all controlled from a menu inside Instagram, and it comes with a companion app for status, logs and settings backup. It runs on rooted phones through LSPosed and on unrooted phones through LSPatch.
 
-> **Eclipse 2 was called InstaEclipse 2 until version 0.8.4.** It continues [InstaEclipse](https://github.com/ReSo7200/InstaEclipse) by [ReSo7200](https://github.com/ReSo7200) and keeps its full history. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
+**[Download the latest APK](https://github.com/somilkhan/Eclipse-2/releases/latest)**. If Eclipse 2 is useful to you, a star on this repo helps other people find it.
+
+> **Eclipse 2 was called InstaEclipse 2 until version 0.8.4.** It continues [InstaEclipse](https://github.com/Xposed-Modules-Repo/ps.reso.instaeclipse) by [ReSo7200](https://github.com/ReSo7200) and keeps its full history. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
 >
 > **Coming from the original InstaEclipse?** Eclipse 2 has its own package name (`io.github.somilkhan.instaeclipse2`), so it installs next to the original. Settings do not carry over: back them up in the old app, restore them here, enable the new module in LSPosed, and re-patch Instagram if you use LSPatch.
 
