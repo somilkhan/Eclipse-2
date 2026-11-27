@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Edge-to-edge map; floating glass chrome (search capsule, results, place card) is kept clear of
+     the system bars by LocationPickerActivity (loc_top_panel padding, loc_place_card margin). -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:fitsSystemWindows="true">
+    android:background="?attr/colorSurface">
 
     <FrameLayout
+        android:id="@+id/loc_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -28,6 +30,7 @@
 
         <!-- Top: back + search bar, search results, recent places -->
         <LinearLayout
+            android:id="@+id/loc_top_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -35,14 +38,13 @@
             android:paddingHorizontal="16dp"
             android:paddingTop="12dp">
 
-            <com.google.android.material.card.MaterialCardView
+            <ps.reso.instaeclipse.ui.glass.GlassCardView
                 android:id="@+id/search_card"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
-                app:cardCornerRadius="28dp"
-                app:cardElevation="6dp"
-                app:strokeWidth="0dp">
+                android:elevation="6dp"
+                app:cardBackgroundColor="@color/ie_glass_chrome_fallback"
+                app:cardCornerRadius="28dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -59,7 +61,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/back"
                         android:src="@drawable/ic_arrow_back"
-                        app:tint="?attr/colorOnSurface" />
+                        app:tint="?attr/colorPrimary" />
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/search_input"
@@ -73,8 +75,10 @@
                         android:maxLines="1"
                         android:paddingStart="4dp"
                         android:paddingEnd="6dp"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textColorHint="?attr/colorOnSurfaceVariant" />
+                        android:textAppearance="@style/TextAppearance.IE.Body"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
+                        android:textDirection="locale" />
 
                     <com.google.android.material.progressindicator.CircularProgressIndicator
                         android:id="@+id/search_progress"
@@ -96,18 +100,17 @@
                         android:visibility="gone"
                         app:tint="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </ps.reso.instaeclipse.ui.glass.GlassCardView>
 
-            <com.google.android.material.card.MaterialCardView
+            <ps.reso.instaeclipse.ui.glass.GlassCardView
                 android:id="@+id/results_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:elevation="6dp"
                 android:visibility="gone"
-                app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="6dp"
-                app:strokeWidth="0dp">
+                app:cardBackgroundColor="@color/ie_glass_chrome_fallback"
+                app:cardCornerRadius="24dp">
 
                 <LinearLayout
                     android:id="@+id/results_list"
@@ -115,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingVertical="6dp" />
-            </com.google.android.material.card.MaterialCardView>
+            </ps.reso.instaeclipse.ui.glass.GlassCardView>
 
             <HorizontalScrollView
                 android:id="@+id/recent_scroll"
@@ -135,21 +138,26 @@
         </LinearLayout>
 
         <!-- Bottom: place card with name, coordinates and the confirm button -->
-        <com.google.android.material.card.MaterialCardView
+        <ps.reso.instaeclipse.ui.glass.GlassCardView
+            android:id="@+id/loc_place_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_margin="12dp"
-            app:cardBackgroundColor="?attr/colorSurfaceContainer"
-            app:cardCornerRadius="28dp"
-            app:cardElevation="8dp"
-            app:strokeWidth="0dp">
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="8dp"
+            app:cardBackgroundColor="@color/ie_glass_chrome_fallback"
+            app:cardCornerRadius="30dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:paddingStart="20dp"
+                android:paddingTop="18dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="16dp">
 
                 <TextView
                     android:id="@+id/place_name"
@@ -158,7 +166,7 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:text="@string/loc_picker_locating"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textAppearance="@style/TextAppearance.IE.Title3"
                     android:textColor="?attr/colorOnSurface" />
 
                 <TextView
@@ -167,19 +175,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="monospace"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textAppearance="@style/TextAppearance.IE.Footnote"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAlignment="viewStart"
+                    android:textDirection="ltr" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_use"
+                    style="@style/Widget.IE.Button"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:minHeight="52dp"
                     android:text="@string/loc_picker_use"
-                    app:cornerRadius="28dp"
                     app:icon="@drawable/ic_pin"
                     app:iconGravity="textStart" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </ps.reso.instaeclipse.ui.glass.GlassCardView>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

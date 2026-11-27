@@ -99,14 +99,14 @@ public class HelpFragment extends Fragment {
         LinearLayout header = new LinearLayout(ctx);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setMinimumHeight(dp(56));
+        header.setMinimumHeight(dp(52));
         header.setPadding(gutter, pad, dp(12), pad);
         header.setBackgroundResource(resolveResId(ctx, android.R.attr.selectableItemBackground));
         header.setClickable(true);
         header.setFocusable(true);
 
         TextView q = new TextView(ctx);
-        q.setTextAppearance(resolveResId(ctx, com.google.android.material.R.attr.textAppearanceTitleMedium));
+        q.setTextAppearance(R.style.TextAppearance_IE_Headline);
         q.setTextColor(MaterialColors.getColor(parentCard, com.google.android.material.R.attr.colorOnSurface));
         q.setText(question.toString());
         header.addView(q, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -121,7 +121,7 @@ public class HelpFragment extends Fragment {
         header.addView(chevron, chevronLp);
 
         TextView a = new TextView(ctx);
-        a.setTextAppearance(resolveResId(ctx, com.google.android.material.R.attr.textAppearanceBodyMedium));
+        a.setTextAppearance(R.style.TextAppearance_IE_Subhead);
         a.setTextColor(MaterialColors.getColor(parentCard, com.google.android.material.R.attr.colorOnSurfaceVariant));
         a.setLineSpacing(0f, 1.15f);
         a.setText(answer);
@@ -184,12 +184,10 @@ public class HelpFragment extends Fragment {
 
     private View hairline(Context ctx) {
         View v = new View(ctx);
-        v.setBackgroundColor(MaterialColors.getColor(ctx,
-                com.google.android.material.R.attr.colorOutlineVariant, 0x22FFFFFF));
+        v.setBackgroundColor(androidx.core.content.ContextCompat.getColor(ctx, R.color.ie_separator));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(1));
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(dp(1) / 2f)));
         lp.setMarginStart(dp(20));
-        lp.setMarginEnd(dp(20));
         v.setLayoutParams(lp);
         return v;
     }

@@ -217,8 +217,8 @@ public class LoggingFragment extends Fragment {
 
         adapter.colorInfo = MaterialColors.getColor(view, com.google.android.material.R.attr.colorOnSurfaceVariant);
         adapter.colorError = MaterialColors.getColor(view, androidx.appcompat.R.attr.colorError);
-        adapter.colorWarn = ContextCompat.getColor(requireContext(), R.color.warning_yellow);
-        adapter.colorOk = Color.parseColor("#81C784");
+        adapter.colorWarn = ContextCompat.getColor(requireContext(), R.color.ie_log_warn);
+        adapter.colorOk = ContextCompat.getColor(requireContext(), R.color.ie_log_ok);
 
         LinearLayoutManager lm = new LinearLayoutManager(requireContext());
         listView.setLayoutManager(lm);
@@ -847,10 +847,15 @@ public class LoggingFragment extends Fragment {
             TextView tv = new TextView(parent.getContext());
             tv.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setTypeface(Typeface.MONOSPACE);
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-            int pad = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, parent.getResources().getDisplayMetrics()));
-            tv.setPadding(0, pad, 0, pad);
-            tv.setLineSpacing(0, 1.1f);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            android.util.DisplayMetrics dm = parent.getResources().getDisplayMetrics();
+            int padV = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, dm));
+            int padH = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, dm));
+            tv.setPadding(padH, padV, padH, padV);
+            tv.setLineSpacing(0, 1.15f);
+            // Log lines are code: keep them left-to-right even in Arabic / Hebrew.
+            tv.setTextDirection(View.TEXT_DIRECTION_LTR);
+            tv.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
             return new VH(tv);
         }
 

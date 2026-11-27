@@ -98,7 +98,9 @@ public class LocationPickerActivity extends AppCompatActivity {
             Configuration.getInstance().setUserAgentValue(getPackageName());
         } catch (Throwable ignored) {}
 
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_location_picker);
+        applyEdgeToEdgeInsets();
 
         map = findViewById(R.id.map);
         placeName = findViewById(R.id.place_name);
@@ -198,6 +200,33 @@ public class LocationPickerActivity extends AppCompatActivity {
         if (!labelLocked) onCenterChanged();
     }
 
+    /** The map runs under the system bars; the floating chrome keeps clear of them. */
+    private void applyEdgeToEdgeInsets() {
+        View top = findViewById(R.id.loc_top_panel);
+        View card = findViewById(R.id.loc_place_card);
+        final int topBase = top.getPaddingTop();
+        final int cardBase = ((android.view.ViewGroup.MarginLayoutParams) card.getLayoutParams()).bottomMargin;
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.loc_root), (v, insets) -> {
+            androidx.core.graphics.Insets bars = insets.getInsets(
+                    androidx.core.view.WindowInsetsCompat.Type.systemBars()
+                            | androidx.core.view.WindowInsetsCompat.Type.displayCutout());
+            int ime = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime()).bottom;
+            top.setPadding(bars.left + dp16(), topBase + bars.top,
+                    bars.right + dp16(), top.getPaddingBottom());
+            android.view.ViewGroup.MarginLayoutParams lp =
+                    (android.view.ViewGroup.MarginLayoutParams) card.getLayoutParams();
+            lp.bottomMargin = cardBase + Math.max(bars.bottom, ime);
+            lp.leftMargin = Math.round(12 * getResources().getDisplayMetrics().density) + bars.left;
+            lp.rightMargin = Math.round(12 * getResources().getDisplayMetrics().density) + bars.right;
+            card.setLayoutParams(lp);
+            return insets;
+        });
+    }
+
+    private int dp16() {
+        return Math.round(16 * getResources().getDisplayMetrics().density);
+    }
+
     // ---- recent places ---------------------------------------------------------------------
 
     private void buildRecentChips() {
@@ -207,7 +236,7 @@ public class LocationPickerActivity extends AppCompatActivity {
                 ps.reso.instaeclipse.utils.core.CommonUtils.companionCache(this).getString("spoofRecent", ""));
         group.removeAllViews();
         for (LocationPresets.Preset p : recent) {
-            Chip chip = new Chip(this, null, com.google.android.material.R.attr.chipStyle);
+            Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_location_recent_chip, group, false);
             chip.setText(shorten(p.title()));
             chip.setChipIconResource(R.drawable.ic_timer);
             chip.setChipIconVisible(true);
@@ -272,10 +301,18 @@ public class LocationPickerActivity extends AppCompatActivity {
             int comma = name.indexOf(',');
             t1.setText(comma > 0 ? name.substring(0, comma) : name);
             t2.setText(comma > 0 ? name.substring(comma + 1).trim() : LocationPresets.coords(lat, lng));
+            t1.setTextAppearance(R.style.TextAppearance_IE_Body);
+            t1.setTextColor(com.google.android.material.color.MaterialColors.getColor(t1,
+                    com.google.android.material.R.attr.colorOnSurface));
+            t2.setTextAppearance(R.style.TextAppearance_IE_Footnote);
+            t2.setTextColor(com.google.android.material.color.MaterialColors.getColor(t2,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant));
+            t1.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            t2.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
             t2.setMaxLines(1);
             t2.setEllipsize(android.text.TextUtils.TruncateAt.END);
             int pad = Math.round(getResources().getDisplayMetrics().density * 20);
-            row.setPadding(pad, row.getPaddingTop(), pad, row.getPaddingBottom());
+            row.setPaddingRelative(pad, row.getPaddingTop(), pad, row.getPaddingBottom());
             row.setBackgroundResource(resolveSelectable());
             row.setOnClickListener(v -> {
                 resultsCard.setVisibility(View.GONE);
