@@ -31,10 +31,15 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 - [ ] Hooks A
 - [ ] Hooks B
 - [x] Features (wip/features: repo links, maintainer docs, log export, release workflow, 0.8.4/22, safe pacing)
-- [ ] UI
+- [x] UI (wip/ui: liquid-glass redesign of the companion app; see "UI notes" below)
 - [x] Bugs (see docs/BUGFIXES-0.8.4.md)
 - [ ] Merged, build + tests green, CHANGELOG written
 - [ ] PR opened into `main`
+
+## UI notes
+- Glass components live in `app/src/main/java/ps/reso/instaeclipse/ui/glass/`: `BackdropBlurLayout` (RenderEffect blur on API 31+, CPU box-blur on 28–30, tinted fallback), `GlassNavPill` (floating nav, spring indicator, haptics, hides on scroll, never for TalkBack), `GlassCardView` (grouped inset rows, hairline + specular rim), `Motion` (reduce-motion / haptics).
+- Edge-to-edge insets are applied by `MainActivity` via view tags on fragment roots: `ie_scroll`, `ie_scroll_list`, `ie_inset_top`, `ie_inset_bottom`, `ie_inset_bottom_margin`, `ie_float_above_nav`.
+- Screenshots: `ie-gradle testDebugUnitTest --tests '*ScreenshotTest*' -Pie.screenshots=true` writes `docs/screenshots/*.png` (light + dark of Home, Home scrolled, Features, Logs, Help). Uses the CPU blur path; `-Pie.hwBlur=true` for RenderEffect. In-Instagram UI (`mods/**`) untouched.
 
 ## Things that cannot be fixed client-side on 457
 
