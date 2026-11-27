@@ -138,6 +138,24 @@ jobs:
             --notes-file "$RUNNER_TEMP/notes.md" \
             --verify-tag "${flags[@]}"
 
+      # The in-app update checker reads version.json from main. Bump it for stable releases so
+      # users are offered the new build; pre-releases leave it alone.
+      - name: Point the update checker at this release
+        if: steps.tag.outputs.prerelease == 'false'
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          git fetch --depth=1 origin main
+          git checkout -B update-version-json origin/main
+          current=$(sed -n 's/.*"latest_version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' version.json)
+          if [ "$current" = "$VERSION" ]; then echo "version.json already at $VERSION"; exit 0; fi
+          printf '{\n  "latest_version": "%s",\n  "update_url": "https://github.com/%s/releases/latest"\n}\n' \
+            "$VERSION" "$GITHUB_REPOSITORY" > version.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "version.json: $VERSION"
+          git push origin HEAD:main
+
       - name: Remove keystore
         if: always()
         run: rm -f "$RUNNER_TEMP/release.jks"
