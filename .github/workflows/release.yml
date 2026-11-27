@@ -90,6 +90,17 @@ jobs:
           printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
           [ -s "$RUNNER_TEMP/release.jks" ] || { echo "::error::RELEASE_KEYSTORE_BASE64 did not decode to a keystore"; exit 1; }
 
+      # Robolectric's android-all jars: cached between runs and prefetched with retries, so a
+      # flaky Maven Central download can't fail every Robolectric test (see the script).
+      - name: Cache Robolectric SDK jars
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/robolectric/android-all-instrumented
+          key: robolectric-android-all-${{ hashFiles('.github/scripts/prefetch-robolectric.sh') }}
+
+      - name: Prefetch Robolectric SDK jars
+        run: bash .github/scripts/prefetch-robolectric.sh
+
       - name: Run unit tests
         run: chmod +x ./gradlew && ./gradlew testDebugUnitTest
 
