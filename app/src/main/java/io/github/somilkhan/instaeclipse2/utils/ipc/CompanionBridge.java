@@ -47,9 +47,13 @@ public final class CompanionBridge {
     public interface Callback { void onResult(String error); }
     private interface Writer { void write(Parcel parcel); }
 
-    /** Name alone never enrolls a host. This intentionally excludes companion and clone packages. */
+    /**
+     * Name alone never enrolls a host: official Instagram must carry its signer, and a clone must
+     * carry the signer the user approved in the companion ({@link CloneTrust}).
+     */
     public static boolean isTrustedHost(Context context, String packageName) {
-        if (context == null || !BrokerPayload.HOST.equals(packageName)) return false;
+        if (context == null || packageName == null) return false;
+        if (!BrokerPayload.HOST.equals(packageName)) return CloneTrust.isTrusted(context, packageName);
         try {
             byte[] expected = new byte[32];
             if (HOST_SIGNER_SHA256.length() != 64) return false;
@@ -61,14 +65,20 @@ public final class CompanionBridge {
 
     /** Called only inside a Binder transaction with Binder.getCallingUid(), never a claimed extra. */
     public static boolean isTrustedCaller(Context context, int uid) {
-        if (uid == Process.myUid()) return true;
+        return uid == Process.myUid() || trustedCallerPackage(context, uid) != null;
+    }
+
+    /** The trusted Instagram/clone package behind a Binder caller UID, or null. */
+    public static String trustedCallerPackage(Context context, int uid) {
         try {
             PackageManager pm = context.getPackageManager();
             String[] packages = pm.getPackagesForUid(uid);
-            return packages != null && packages.length == 1 && BrokerPayload.HOST.equals(packages[0])
-                    && pm.getApplicationInfo(BrokerPayload.HOST, 0).uid == uid
-                    && isTrustedHost(context, BrokerPayload.HOST);
-        } catch (Exception ignored) { return false; }
+            if (packages == null || packages.length != 1) return null;
+            String pkg = packages[0];
+            return io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.SUPPORTED_PACKAGES.contains(pkg)
+                    && pm.getApplicationInfo(pkg, 0).uid == uid
+                    && isTrustedHost(context, pkg) ? pkg : null;
+        } catch (Exception ignored) { return null; }
     }
 
     public static void download(Context context, DownloadRequest request, Callback callback) {

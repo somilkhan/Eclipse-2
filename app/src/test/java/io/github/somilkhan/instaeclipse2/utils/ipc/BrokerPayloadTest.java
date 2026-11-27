@@ -70,6 +70,8 @@ public class BrokerPayloadTest {
         assertEquals(BrokerPayload.HOST, validated.get("target_package"));
         assertEquals(BuildConfig.APPLICATION_ID + ".ACTION_IMPORT_CONFIG", validated.get("broadcast_action"));
         rejects(() -> BrokerPayload.activity(BrokerPayload.IMPORT, entry("target_package", "com.instagram.clone")));
+        assertEquals("com.instaalpha.android", BrokerPayload.activity(BrokerPayload.IMPORT,
+                entry("target_package", "com.instaalpha.android")).get("target_package"));
         rejects(() -> BrokerPayload.activity(BrokerPayload.IMPORT, entry("broadcast_action", "arbitrary.action")));
         Map<String, String> restore = entry("broadcast_action", BuildConfig.APPLICATION_ID + ".ACTION_RESTORE_SETTINGS");
         assertEquals(restore.get("broadcast_action"), BrokerPayload.activity(BrokerPayload.IMPORT, restore).get("broadcast_action"));

@@ -11,6 +11,11 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 - LSPosed scope (`xposedscope`) now lists every supported package instead of only
   `com.instagram.android`, so clones are pre-selected when the module is enabled.
 - DM conversation menu hook no longer checks for `com.instagram.android` only.
+- Trusted clones: App settings → "Clone apps" lists installed clones. Trusting one pins its
+  current signing key (SHA-256) in the companion's private prefs (not synced, not backed up).
+  A trusted clone gets live settings sync both ways, downloads into the companion folder and
+  config import; before, all of these were official-Instagram-only ("Companion request denied").
+  A different signer under the same package name is denied until trusted again.
 
 ### Crash reports
 - New "Crash reports" section (App settings, default on). When a hooked Instagram crashes, the

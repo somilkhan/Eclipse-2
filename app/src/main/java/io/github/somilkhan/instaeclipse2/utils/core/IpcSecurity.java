@@ -52,8 +52,7 @@ public final class IpcSecurity {
     /** Authoritative UID and pinned signing history are required for provider access too. */
     public static String supportedCallerPackage(Context context, int callingUid) {
         if (context == null || callingUid == android.os.Process.myUid()) return null;
-        return io.github.somilkhan.instaeclipse2.utils.ipc.CompanionBridge.isTrustedCaller(context, callingUid)
-                ? CommonUtils.IG_PACKAGE_NAME : null;
+        return io.github.somilkhan.instaeclipse2.utils.ipc.CompanionBridge.trustedCallerPackage(context, callingUid);
     }
 
     public static String newNonce() {

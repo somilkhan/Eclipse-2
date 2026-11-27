@@ -1676,7 +1676,55 @@ public class FeaturesFragment extends Fragment {
                 createClickable(R.drawable.ic_ui_delete, "#FF453A", getString(R.string.ie_crash_folder_reset), this::resetCrashFolder)
         ));
 
+        // Clone apps: each one is trusted only after the user approves its signing key here.
+        List<String> clones = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.installedClones(requireContext());
+        if (!clones.isEmpty()) {
+            List<FeatureItem> rows = new ArrayList<>();
+            for (String pkg : clones) {
+                boolean trusted = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.isTrusted(requireContext(), pkg);
+                FeatureItem row = createClickable(R.drawable.ic_ui_shield, trusted ? "#30D158" : "#FF9F0A",
+                        appLabel(pkg), () -> showCloneTrustDialog(pkg));
+                row.subtitle = getString(trusted ? R.string.ie_clone_trusted : R.string.ie_clone_not_trusted, pkg);
+                rows.add(row);
+            }
+            defs.add(getString(R.string.ie_clone_section));
+            defs.add(rows);
+            defs.add(getString(R.string.ie_clone_hint));
+        }
+
         return defs;
+    }
+
+    private String appLabel(String pkg) {
+        try {
+            android.content.pm.PackageManager pm = requireContext().getPackageManager();
+            return String.valueOf(pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)));
+        } catch (Exception e) { return pkg; }
+    }
+
+    private void showCloneTrustDialog(String pkg) {
+        Context ctx = requireContext();
+        boolean trusted = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.isTrusted(ctx, pkg);
+        String sha = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.signerSha256(ctx, pkg);
+        MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(ctx)
+                .setTitle(appLabel(pkg))
+                .setMessage(getString(R.string.ie_clone_dialog, pkg,
+                        io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.pretty(sha)))
+                .setNegativeButton(android.R.string.cancel, null);
+        if (trusted) {
+            b.setPositiveButton(R.string.ie_clone_untrust, (d, w) -> {
+                io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.untrust(ctx, pkg);
+                if ("app".equals(currentMenu)) loadAppMenu();
+            });
+        } else if (sha != null) {
+            b.setPositiveButton(R.string.ie_clone_trust, (d, w) -> {
+                boolean ok = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.trust(ctx, pkg);
+                io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx,
+                        getString(ok ? R.string.ie_clone_trusted_toast : R.string.ie_clone_trust_failed), Toast.LENGTH_LONG).show();
+                if ("app".equals(currentMenu)) loadAppMenu();
+            });
+        }
+        b.show();
     }
 
     private void resetCrashFolder() {

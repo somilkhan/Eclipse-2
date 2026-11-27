@@ -58,6 +58,14 @@ public final class DownloadBrokerService extends Service {
                         throw new IllegalArgumentException("Invalid companion request");
                 }
                 extras = BrokerPayload.activity(name, extras);
+                // Config import goes back to the app that asked (official Instagram or a trusted clone).
+                if (BrokerPayload.IMPORT.equals(name)) {
+                    String caller = CompanionBridge.trustedCallerPackage(DownloadBrokerService.this, Binder.getCallingUid());
+                    if (caller != null) {
+                        extras = new LinkedHashMap<>(extras);
+                        extras.put("target_package", caller);
+                    }
+                }
                 target = new Intent().setClassName(DownloadBrokerService.this, name).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 for (Map.Entry<String, String> item : extras.entrySet()) {
                     if (BrokerPayload.LOCATION.equals(name)) target.putExtra(item.getKey(),
