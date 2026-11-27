@@ -24,4 +24,5 @@
     <string name="home_shortcuts_hint">Zmiany są od razu wysyłane do Instagrama.</string>
     <string name="home_shortcuts_limit">Możesz przypiąć maksymalnie %1$d skrótów</string>
     <string name="home_shortcuts_locked_extreme">Zablokowane przez tryb ekstremalny</string>
+    <string name="ig_toast_no_app_to_open">Nie znaleziono aplikacji, aby to otworzyć</string>
 </resources>

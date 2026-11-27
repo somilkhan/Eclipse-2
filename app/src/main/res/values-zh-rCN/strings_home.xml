@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">更改会立即同步到 Instagram。</string>
     <string name="home_shortcuts_limit">最多只能固定 %1$d 个快捷开关</string>
     <string name="home_shortcuts_locked_extreme">已被极端模式锁定</string>
+    <string name="ig_toast_no_app_to_open">未找到可打开此内容的应用</string>
 </resources>

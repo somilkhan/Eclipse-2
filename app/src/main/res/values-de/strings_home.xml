@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Änderungen werden sofort an Instagram übertragen.</string>
     <string name="home_shortcuts_limit">Du kannst bis zu %1$d Schnellzugriffe anheften</string>
     <string name="home_shortcuts_locked_extreme">Durch Extremmodus gesperrt</string>
+    <string name="ig_toast_no_app_to_open">Keine App zum Öffnen gefunden</string>
 </resources>

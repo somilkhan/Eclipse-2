@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Perubahan langsung dikirim ke Instagram.</string>
     <string name="home_shortcuts_limit">Anda dapat menyematkan hingga %1$d pintasan</string>
     <string name="home_shortcuts_locked_extreme">Dikunci oleh Mode Ekstrem</string>
+    <string name="ig_toast_no_app_to_open">Tidak ada aplikasi untuk membuka ini</string>
 </resources>
