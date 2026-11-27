@@ -60,8 +60,6 @@ public class HomeFragment extends Fragment {
     private static final String DEFAULT_PINNED = "isGhostSeen,isGhostTyping,isGhostStory,isAdBlockEnabled";
     private static final int MAX_PINNED = 8;
 
-    private static final int COLOR_OK = 0xFF30D158;
-    private static final int COLOR_ERROR = 0xFFFF453A;
     private static final int COLOR_INSTAGRAM = 0xFFFF375F;
 
     /**
@@ -217,6 +215,7 @@ public class HomeFragment extends Fragment {
         shortcutsContainer = view.findViewById(R.id.home_shortcuts_container);
         shortcutsEmpty = view.findViewById(R.id.home_shortcuts_empty);
         shortcutsHint = view.findViewById(R.id.home_shortcuts_hint);
+        ((TextView) view.findViewById(R.id.home_app_version)).setText("v" + ps.reso.instaeclipse.BuildConfig.VERSION_NAME);
 
         int primary = MaterialColors.getColor(view, com.google.android.material.R.attr.colorPrimary);
         applyTonalSquare(view.findViewById(R.id.home_features_icon_container),
@@ -226,7 +225,8 @@ public class HomeFragment extends Fragment {
 
         GradientDrawable variantBg = new GradientDrawable();
         variantBg.setCornerRadius(dp(14));
-        variantBg.setColor(MaterialColors.getColor(view, com.google.android.material.R.attr.colorSurfaceContainerHighest));
+        variantBg.setColor(colorRes(R.color.ie_glass_fill_raised));
+        variantBg.setStroke(Math.max(1, dp(1)), colorRes(R.color.ie_glass_outline));
         instagramVariantText.setBackground(variantBg);
 
         checkInstagramStatus();
@@ -294,7 +294,7 @@ public class HomeFragment extends Fragment {
             instagramStatusText.setText(getString(R.string.not_installed_instagram));
             versionText.setText(getString(R.string.home_status_no_version));
             instagramLogo.setImageResource(R.drawable.ic_cancel);
-            applyTonalSquare(logoContainer, instagramLogo, COLOR_ERROR);
+            applyTonalSquare(logoContainer, instagramLogo, colorRes(R.color.ie_error));
             instagramVariantText.setVisibility(View.GONE);
             instagramMultiButton.setVisibility(View.GONE);
             instagramInfoIcon.setVisibility(View.GONE);
@@ -373,18 +373,18 @@ public class HomeFragment extends Fragment {
         int color;
         String label;
         if (installedPackages == null || installedPackages.isEmpty()) {
-            color = COLOR_ERROR;
+            color = colorRes(R.color.ie_error);
             label = getString(R.string.home_status_not_installed);
         } else if (moduleConfirmed) {
-            color = COLOR_OK;
+            color = colorRes(R.color.ie_ok);
             label = getString(R.string.home_status_module_active);
         } else {
-            color = COLOR_OK;
+            color = colorRes(R.color.ie_ok);
             label = getString(R.string.home_status_installed);
         }
         GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(dp(14));
-        bg.setColor((color & 0x00FFFFFF) | 0x29000000);
+        bg.setColor((color & 0x00FFFFFF) | 0x24000000);
         statusPill.setBackground(bg);
         statusDot.setImageTintList(ColorStateList.valueOf(color));
         statusPillText.setTextColor(color);
@@ -501,7 +501,17 @@ public class HomeFragment extends Fragment {
         boolean extreme = localCache.getBoolean("isExtremeMode", false);
         for (String key : pinned) {
             Shortcut s = findShortcut(key);
-            if (s != null) shortcutsContainer.addView(buildShortcutRow(s, extreme && EXTREME_LOCKED.contains(s.key)));
+            if (s == null) continue;
+            if (shortcutsContainer.getChildCount() > 0) {
+                // Inset hairline aligned with the row titles (grouped-list rhythm).
+                View sep = new View(requireContext());
+                sep.setBackgroundColor(colorRes(R.color.ie_separator));
+                LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(dp(1) / 2f)));
+                slp.setMarginStart(dp(60));
+                shortcutsContainer.addView(sep, slp);
+            }
+            shortcutsContainer.addView(buildShortcutRow(s, extreme && EXTREME_LOCKED.contains(s.key)));
         }
         boolean empty = shortcutsContainer.getChildCount() == 0;
         shortcutsEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
@@ -514,8 +524,8 @@ public class HomeFragment extends Fragment {
         LinearLayout row = new LinearLayout(ctx);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setMinimumHeight(dp(64));
-        row.setPadding(dp(16), dp(8), dp(16), dp(8));
+        row.setMinimumHeight(dp(52));
+        row.setPadding(dp(16), dp(6), dp(16), dp(6));
         TypedValue ripple = new TypedValue();
         ctx.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
         row.setBackgroundResource(ripple.resourceId);
@@ -524,27 +534,28 @@ public class HomeFragment extends Fragment {
         ImageView icon = new ImageView(ctx);
         icon.setImageResource(s.iconRes);
         icon.setContentDescription(null);
-        FrameLayout.LayoutParams iconLp = new FrameLayout.LayoutParams(dp(22), dp(22), Gravity.CENTER);
+        FrameLayout.LayoutParams iconLp = new FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER);
         iconBox.addView(icon, iconLp);
         applyTonalSquare(iconBox, icon, s.accent);
-        row.addView(iconBox, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        row.addView(iconBox, new LinearLayout.LayoutParams(dp(30), dp(30)));
 
         LinearLayout texts = new LinearLayout(ctx);
         texts.setOrientation(LinearLayout.VERTICAL);
         TextView title = new TextView(ctx);
         title.setText(s.labelRes);
-        title.setTextAppearance(resolveStyle(com.google.android.material.R.attr.textAppearanceBodyLarge));
+        title.setTextAppearance(R.style.TextAppearance_IE_Body);
         title.setTextColor(MaterialColors.getColor(row, com.google.android.material.R.attr.colorOnSurface));
         texts.addView(title);
         if (locked) {
             TextView sub = new TextView(ctx);
             sub.setText(R.string.home_shortcuts_locked_extreme);
-            sub.setTextAppearance(resolveStyle(com.google.android.material.R.attr.textAppearanceBodySmall));
+            sub.setTextAppearance(R.style.TextAppearance_IE_Footnote);
             sub.setTextColor(MaterialColors.getColor(row, com.google.android.material.R.attr.colorOnSurfaceVariant));
             texts.addView(sub);
         }
         LinearLayout.LayoutParams textLp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         textLp.setMarginStart(dp(14));
+        row.setMinimumHeight(dp(52));
         textLp.setMarginEnd(dp(12));
         row.addView(texts, textLp);
 
@@ -652,14 +663,27 @@ public class HomeFragment extends Fragment {
     // STYLE HELPERS
     // =========================================================
 
-    /** 40dp rounded-square tonal container, same recipe as FeaturesFragment's row icons. */
+    /** Settings-style icon tile: solid accent squircle (soft top-light gradient), white glyph. */
     private void applyTonalSquare(View container, ImageView icon, int accent) {
         if (container == null) return;
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor((accent & 0x00FFFFFF) | 0x33000000);
-        bg.setCornerRadius(dp(12));
+        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{lighten(accent, 0.18f), accent});
+        int w = container.getLayoutParams() != null ? container.getLayoutParams().width : dp(30);
+        bg.setCornerRadius(w > 0 ? w * 0.27f : dp(10));
         container.setBackground(bg);
-        if (icon != null) icon.setImageTintList(ColorStateList.valueOf(accent));
+        if (icon != null) icon.setImageTintList(ColorStateList.valueOf(colorRes(R.color.ie_on_accent_tile)));
+    }
+
+    private static int lighten(int c, float f) {
+        int r = (c >> 16) & 0xFF, g = (c >> 8) & 0xFF, b = c & 0xFF;
+        r += Math.round((255 - r) * f);
+        g += Math.round((255 - g) * f);
+        b += Math.round((255 - b) * f);
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
+    }
+
+    private int colorRes(int res) {
+        return androidx.core.content.ContextCompat.getColor(requireContext(), res);
     }
 
     private int resolveStyle(int attr) {

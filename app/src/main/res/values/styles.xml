@@ -151,6 +151,18 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <!-- Home section header: bold Title3 with Apple-like 24/8 rhythm. -->
+    <style name="IeHomeSection">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:accessibilityHeading">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.SectionTitle</item>
+    </style>
+
     <!-- ================= shapes ================= -->
     <style name="ShapeAppearance.IE.Small" parent="ShapeAppearance.Material3.Corner.Small">
         <item name="cornerSize">10dp</item>

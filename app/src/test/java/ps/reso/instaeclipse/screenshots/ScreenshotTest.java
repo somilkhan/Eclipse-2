@@ -42,6 +42,8 @@ public class ScreenshotTest {
 
     @Test public void homeLight() { render("home_light", null, false); }
     @Test @Config(qualifiers = "+night") public void homeDark() { render("home_dark", null, true); }
+    @Test public void homeScrolledLight() { render("home_scrolled_light", null, false, 900); }
+    @Test @Config(qualifiers = "+night") public void homeScrolledDark() { render("home_scrolled_dark", null, true, 900); }
     @Test public void featuresLight() { render("features_light", new FeaturesFragment(), false); }
     @Test @Config(qualifiers = "+night") public void featuresDark() { render("features_dark", new FeaturesFragment(), true); }
     @Test public void logsLight() { render("logs_light", new LoggingFragment(), false); }
@@ -58,6 +60,11 @@ public class ScreenshotTest {
     }
 
     private void render(String name, Fragment fragment, boolean dark) {
+        render(name, fragment, dark, 0);
+    }
+
+    private void render(String name, Fragment fragment, boolean dark, int scrollDp) {
+        ScreenshotSupport.installFakeInstagram();
         ActivityController<MainActivity> controller = Robolectric.buildActivity(MainActivity.class).setup();
         MainActivity activity = controller.get();
         if (fragment != null) {
@@ -67,6 +74,14 @@ public class ScreenshotTest {
             ScreenshotSupport.selectTab(activity, tab, fragment);
         }
         idle();
+        ScreenshotSupport.applyPhoneInsets(activity);
+        idle();
+        if (scrollDp > 0) {
+            View scroller = activity.findViewById(R.id.fragment_container).findViewWithTag("ie_scroll");
+            int px = Math.round(scrollDp * activity.getResources().getDisplayMetrics().density);
+            if (scroller != null) scroller.scrollBy(0, px);
+            idle();
+        }
         View decor = activity.getWindow().getDecorView();
         Bitmap bmp = capture(activity, decor);
         assertTrue("render is blank: " + name, ScreenshotSupport.hasDetail(bmp));

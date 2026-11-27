@@ -66,6 +66,9 @@ android {
                 systemProperty 'instaeclipse.screenshotDir', rootProject.file('docs/screenshots').absolutePath
             }
             systemProperty 'robolectric.pixelCopyRenderMode', 'hardware'
+            // Robolectric's RenderEffect doesn't really blur: screenshots use the CPU blur path
+            // (the same one API 28-30 devices use). -Pie.hwBlur=true to exercise RenderEffect.
+            if (!project.hasProperty('ie.hwBlur')) systemProperty 'instaeclipse.softBlur', 'true'
             maxHeapSize = '1536m'
             ['instaeclipse.ffmpeg', 'instaeclipse.ffprobe', 'instaeclipse.fixtureOutput'].each { key ->
                 if (System.getProperty(key) != null) systemProperty key, System.getProperty(key)

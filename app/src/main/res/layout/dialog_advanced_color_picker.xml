@@ -42,14 +42,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12.0dp"
         android:fontFamily="monospace"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+        android:textAppearance="@style/TextAppearance.IE.Subhead" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8.0dp"
         android:text="R"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized" />
     <SeekBar
         android:id="@+id/color_red_bar"
         android:layout_width="match_parent"
@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="G"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized" />
     <SeekBar
         android:id="@+id/color_green_bar"
         android:layout_width="match_parent"
@@ -69,7 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="B"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized" />
     <SeekBar
         android:id="@+id/color_blue_bar"
         android:layout_width="match_parent"
@@ -80,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4.0dp"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+        android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized" />
     <SeekBar
         android:id="@+id/color_alpha_bar"
         android:layout_width="match_parent"

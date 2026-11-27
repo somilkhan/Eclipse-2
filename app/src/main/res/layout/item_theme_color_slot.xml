@@ -21,14 +21,14 @@
         android:layout_width="0.0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
-        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+        android:textAppearance="@style/TextAppearance.IE.Body" />
 
     <TextView
         android:id="@+id/theme_slot_hex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textAppearance="@style/TextAppearance.IE.Subhead"
         android:textColor="?colorOnSurfaceVariant" />
 
 </LinearLayout>

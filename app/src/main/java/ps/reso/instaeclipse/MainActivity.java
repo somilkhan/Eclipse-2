@@ -35,13 +35,13 @@ import ps.reso.instaeclipse.utils.version.VersionCheckUtility;
  *   <li>{@code ie_large_title} – the large title inside it (its text becomes the compact title).</li>
  *   <li>{@code ie_scroll_list} – a scroller below a fixed header: bottom padding + pill hiding.</li>
  *   <li>{@code ie_inset_top} / {@code ie_inset_bottom} – pad only that edge.</li>
+ *   <li>{@code ie_inset_bottom_margin} – bottom margin so a fixed panel ends above the pill.</li>
  *   <li>{@code ie_float_above_nav} – bottom margin so a FAB floats above the pill.</li>
  * </ul>
  */
 public class MainActivity extends AppCompatActivity {
 
     private GlassNavPill nav;
-    private View navShadow;
     private View topBar;
     private TextView topTitle;
     private Insets bars = Insets.NONE;
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
         nav = findViewById(R.id.bottom_navigation);
-        navShadow = findViewById(R.id.bottom_navigation_shadow);
         topBar = findViewById(R.id.top_app_bar);
         topTitle = findViewById(R.id.toolbar_title_name);
         nav.setBlurSource(fragmentContainer);
@@ -144,11 +143,6 @@ public class MainActivity extends AppCompatActivity {
         lp.rightMargin = bars.right + side + extra;
         lp.bottomMargin = bars.bottom + gap;
         nav.setLayoutParams(lp);
-        ViewGroup.MarginLayoutParams slp = (ViewGroup.MarginLayoutParams) navShadow.getLayoutParams();
-        slp.leftMargin = lp.leftMargin + side / 2;
-        slp.rightMargin = lp.rightMargin + side / 2;
-        slp.bottomMargin = Math.max(0, lp.bottomMargin - Math.round(Motion.dp(this, 10)));
-        navShadow.setLayoutParams(slp);
         topBar.setPadding(bars.left, bars.top, bars.right, 0);
     }
 
@@ -177,6 +171,12 @@ public class MainActivity extends AppCompatActivity {
         padTagged(root, "ie_inset_top", bars.top, -1);
         padTagged(root, "ie_inset_bottom", -1, bottom);
         padTagged(root, "ie_scroll_list", -1, bottom);
+        View card = root.findViewWithTag("ie_inset_bottom_margin");
+        if (card != null && card.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) card.getLayoutParams();
+            lp.bottomMargin = bottom;
+            card.setLayoutParams(lp);
+        }
         View fab = root.findViewWithTag("ie_float_above_nav");
         if (fab != null && fab.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();

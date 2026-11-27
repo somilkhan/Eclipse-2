@@ -217,8 +217,8 @@ public class LoggingFragment extends Fragment {
 
         adapter.colorInfo = MaterialColors.getColor(view, com.google.android.material.R.attr.colorOnSurfaceVariant);
         adapter.colorError = MaterialColors.getColor(view, androidx.appcompat.R.attr.colorError);
-        adapter.colorWarn = ContextCompat.getColor(requireContext(), R.color.warning_yellow);
-        adapter.colorOk = Color.parseColor("#81C784");
+        adapter.colorWarn = ContextCompat.getColor(requireContext(), R.color.ie_log_warn);
+        adapter.colorOk = ContextCompat.getColor(requireContext(), R.color.ie_log_ok);
 
         LinearLayoutManager lm = new LinearLayoutManager(requireContext());
         listView.setLayoutManager(lm);
