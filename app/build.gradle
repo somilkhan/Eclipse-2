@@ -30,7 +30,15 @@ android {
     }
 
     testOptions {
+        // Robolectric screenshot tests (ScreenshotTest) need merged resources + assets.
+        unitTests.includeAndroidResources = true
         unitTests.all {
+            // Pass -Pie.screenshots=true to write PNGs to docs/screenshots/.
+            if (project.hasProperty('ie.screenshots')) {
+                systemProperty 'instaeclipse.screenshotDir', rootProject.file('docs/screenshots').absolutePath
+            }
+            systemProperty 'robolectric.pixelCopyRenderMode', 'hardware'
+            maxHeapSize = '1536m'
             ['instaeclipse.ffmpeg', 'instaeclipse.ffprobe', 'instaeclipse.fixtureOutput'].each { key ->
                 if (System.getProperty(key) != null) systemProperty key, System.getProperty(key)
             }
@@ -58,6 +66,10 @@ dependencies {
     implementation libs.fileprefs
     // Testing dependencies
     testImplementation libs.junit
+    // Test-only: Robolectric native-graphics renders of the companion screens (docs/screenshots).
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+    testImplementation 'androidx.test:core:1.6.1'
+    testImplementation 'androidx.test.ext:junit:1.2.1'
     testRuntimeOnly files('libs/api-82.jar')
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core.v361
