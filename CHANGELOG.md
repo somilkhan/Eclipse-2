@@ -29,10 +29,38 @@ by default, and each hook installs nothing and logs a reason when its target is 
   mark as read, links externally, tracking links, Instants, unsent messages, comment media,
   theme, dev options, ghost mode, story mentions, build-expired popup, notification fix,
   exact timestamps.
-- Not ported, they need bytecode edits in the middle of a method, which an Xposed hook can't do
-  safely: reels/story follow buttons, loop story, disappearing-message swipe, call buttons, focus
-  lock, story filter, like animation, story ring size, resume reels, external downloader, mark as
-  read after reply, reels share/save/like.
+- Not ported: reels share/save/like. On 458 those checks are inlined into larger methods.
+
+### Ported from Piko (batch 2)
+The features the first batch skipped, done with method hooks instead of bytecode edits. Hook
+points come from Instagram 458.0.0.0.57 (arm64). They are not device-tested yet, are off by
+default, and each one logs and skips when its target is missing.
+- Stories → Hide Follow button: hides the follow holders in the story header binder and the
+  `StoryFollowButtonViewComponent` views.
+- Reels → Hide Follow button: `FollowButtonBase` views inside a `clips_*` container stay hidden.
+- Stories → Loop stories: the "end of scene" path replays the current item, and the video player
+  seeks to 0 and resumes, instead of moving on.
+- Messages → Disable swipe up for disappearing messages: the swipe gate returns false unless
+  vanish mode is already on, so you can still swipe out of it.
+- Messages → Hide audio and video call buttons: removes the call kinds (`*_CALL`,
+  `COMBINED_CALL_*`, `COLLAPSED_CALL`) from the thread header button list.
+- Stories → Filter stories tray: drops tray items by reel type and by verified or unverified
+  account. Piko's min/max media count filter is not ported.
+- Feed → Custom like animation: `LikeActionView.setUpCustomLikesAnimation` with a picked style or
+  a random one each time. `UNRECOGNIZED` is never used.
+- Stories → Custom story ring size (40–160%): replaces the 66/100 dp sizes in the tray item
+  constructor. Needs an Instagram restart.
+- Reels → Resume where you left off: saves the position when a reel goes out of view and seeks
+  there on the next prepare. Positions under 1 s are not saved.
+- Post menu → Open in external downloader: a post/reel menu row (`SHOP_LANE_DEBUG` carrier,
+  `DEBUG_AD` fallback) that sends the `instagram.com/p/` or `/reel/` link to the set app, or to
+  the share chooser when none is set or that app is missing.
+- Messages → Mark chat as read when you reply: with Ghost seen on, the newest blocked read
+  receipt per chat is held and sent with Instagram's own sender once a message you sent in that
+  chat is confirmed. It does nothing with Ghost seen off.
+- Distraction-free → Focus Lock: Extreme Mode with an end time (1 minute to 3 months), in the
+  in-app dialog and the companion app. When the time is up, the switches unlock and keep their
+  state. Moving the device clock forward ends the lock early.
 
 ## 0.8.4 (versionCode 22), for Instagram 457.0.0.55.73
 
