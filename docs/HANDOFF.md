@@ -28,6 +28,12 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 
 ## Status
 
+- [x] Instagram 458.0.0.0.67 (build 386405730, Play Store testing build): typed model getters are
+  gone and User was renamed. Read fields through `utils/core/IgModels` (generic `Object x(int)`
+  accessor, key = `"field_name".hashCode()`), and never hard-code `com.instagram.user.model.User`;
+  use `IgModels.userClassName()` / `isUser()`. Harness: OK=71 PARTIAL=2 FAIL=1 NO-HOOK=5, report
+  `docs/hook-verify/report-458.0.0.0.67-386405730.md`. Open: reel scrubber gate on 458. Not yet
+  checked on a device, so 458 is not in `IgCompat.TESTED`.
 - [x] Device build check (2026-11-27): harness on Instagram 457.0.0.55.73 build 386314291 (the
   tester's device build): OK=72 PARTIAL=1 FAIL=1 NO-HOOK=5. The PARTIAL (VoiceMessageDownload) and
   FAIL (LocationSpoof) lines come from harness stubs. Report:

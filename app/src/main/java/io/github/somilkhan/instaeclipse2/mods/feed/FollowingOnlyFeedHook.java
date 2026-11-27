@@ -131,15 +131,23 @@ public class FollowingOnlyFeedHook {
     }
 
     private static Method findBuildMethod(DexKitBridge bridge, ClassLoader classLoader) {
-        try {
-            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .usingStrings("homecoming_all", "X-IG-PRIMED-FEED-REQUEST")))) {
-                if (md.isConstructor() || md.isStaticInitializer()) continue;
-                Method m = md.getMethodInstance(classLoader);
-                if (builderIndex(m) >= 0) return m;
+        // IG 458 moved the "homecoming_all" default into a small helper the builder calls, so
+        // the builder itself is matched by the header plus the parameter name it writes.
+        String[][] fingerprints = {
+                {"homecoming_all", "X-IG-PRIMED-FEED-REQUEST"},
+                {"pagination_source", "X-IG-PRIMED-FEED-REQUEST"},
+        };
+        for (String[] strings : fingerprints) {
+            try {
+                for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .usingStrings(strings)))) {
+                    if (md.isConstructor() || md.isStaticInitializer()) continue;
+                    Method m = md.getMethodInstance(classLoader);
+                    if (builderIndex(m) >= 0) return m;
+                }
+            } catch (Throwable t) {
+                ModuleLog.line(TAG + t);
             }
-        } catch (Throwable t) {
-            ModuleLog.line(TAG + t);
         }
         return null;
     }

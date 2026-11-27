@@ -41,6 +41,7 @@ import de.robv.android.xposed.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.mods.feed.ZoomableImageView;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
@@ -74,8 +75,9 @@ public class ProfilePicDownloadHook {
 
     private static final String FRAGMENT = "com.instagram.profile.fragment.UserDetailFragment";
     private static final String VIEW_MODEL = "com.instagram.profile.fragment.UserDetailViewModel";
-    private static final String USER = "com.instagram.user.model.User";
     private static volatile Method hdGetter;
+    /** IG 458+: no typed getter left; read hd_profile_pic_url_info through the generic accessor. */
+    private static volatile boolean hdHashed;
     private static volatile WeakReference<Object> lastProfile;
 
     public static void install(DexKitBridge bridge, ClassLoader cl) {
@@ -101,14 +103,21 @@ public class ProfilePicDownloadHook {
 
     private static void resolveHdGetter(DexKitBridge bridge, ClassLoader cl) {
         try {
+            IgModels.ensure(bridge, cl);
             Method m = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("ProfilePic_hdGetter", cl) : null;
             if (m == null) {
                 List<MethodData> found = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                        .declaredClass(USER)
+                        .declaredClass(IgModels.userClassName())
                         .usingEqStrings(List.of("hd_profile_pic_url_info"))
                         .returnType("com.instagram.api.schemas.ProfilePicUrlInfo")
                         .paramCount(0)));
                 if (found.size() != 1) {
+                    Class<?> user = IgModels.userClass(cl);
+                    if (found.isEmpty() && user != null && IgModels.accessor(user) != null) {
+                        hdHashed = true;
+                        ModuleLog.line("(IE|ProfileDL) ✅ HD url via " + user.getName() + " hash(hd_profile_pic_url_info)");
+                        return;
+                    }
                     ModuleLog.line("(IE|ProfileDL) ⚠️ hd_profile_pic_url_info getter: " + found.size() + " matches");
                     return;
                 }
@@ -129,21 +138,64 @@ public class ProfilePicDownloadHook {
             Method getter = hdGetter;
             WeakReference<Object> ref = lastProfile;
             Object frag = ref != null ? ref.get() : null;
-            if (getter == null || frag == null) return null;
+            if ((getter == null && !hdHashed) || frag == null) return null;
             Object vm = fieldOfType(frag, VIEW_MODEL);
-            Object user = vm != null ? fieldOfType(vm, USER) : null;
-            Object info = user != null ? getter.invoke(user) : null;
-            if (info == null) return null;
-            Object url = info.getClass().getMethod("getUrl").invoke(info);
-            if (!(url instanceof String hd) || !hd.startsWith("http")) return null;
-            if (!fileName(hd).equals(fileName(displayedUrl))) {
-                ModuleLog.line("(IE|ProfileDL) HD picture belongs to another profile, keeping the displayed one");
-                return null;
+            if (vm == null) return null;
+            // The view model keeps the User directly (older builds) or inside a state holder
+            // (458: a StateFlow / state object), so look a couple of levels deep and keep every
+            // User found. The file-name check below picks the one that is on screen.
+            List<Object> users = new java.util.ArrayList<>();
+            collectUsers(vm, 3, java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()), users);
+            boolean otherProfile = false;
+            for (Object user : users) {
+                Object info = getter != null ? getter.invoke(user)
+                        : IgModels.read(user, "hd_profile_pic_url_info");
+                if (info == null) continue;
+                String hd = infoUrl(info);
+                if (hd == null) continue;
+                if (fileName(hd).equals(fileName(displayedUrl))) return hd;
+                otherProfile = true;
             }
-            return hd;
+            if (otherProfile) {
+                ModuleLog.line("(IE|ProfileDL) HD picture belongs to another profile, keeping the displayed one");
+            }
+            return null;
         } catch (Throwable t) {
             ModuleLog.line("(IE|ProfileDL) ⚠️ HD url: " + t);
             return null;
+        }
+    }
+
+    /** ProfilePicUrlInfo.getUrl(), or its "url" field through the generic accessor. */
+    private static String infoUrl(Object info) {
+        Object url = null;
+        try {
+            url = info.getClass().getMethod("getUrl").invoke(info);
+        } catch (Throwable ignored) {
+            url = IgModels.readString(info, "url");
+        }
+        return url instanceof String s && s.startsWith("http") ? s : null;
+    }
+
+    private static void collectUsers(Object o, int depth, java.util.Set<Object> seen, List<Object> out) {
+        if (o == null || depth < 0 || out.size() >= 8 || !seen.add(o)) return;
+        if (IgModels.isUser(o)) {
+            out.add(o);
+            return;
+        }
+        if (depth == 0) return;
+        for (Class<?> c = o.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            if (c.getName().startsWith("java.") || c.getName().startsWith("android.")) return;
+            for (Field f : c.getDeclaredFields()) {
+                if (java.lang.reflect.Modifier.isStatic(f.getModifiers()) || f.getType().isPrimitive()) continue;
+                try {
+                    f.setAccessible(true);
+                    Object v = f.get(o);
+                    if (v == null || v instanceof String || v instanceof Number || v instanceof Boolean) continue;
+                    if (v instanceof View || v instanceof Context) continue;
+                    collectUsers(v, depth - 1, seen, out);
+                } catch (Throwable ignored) {}
+            }
         }
     }
 

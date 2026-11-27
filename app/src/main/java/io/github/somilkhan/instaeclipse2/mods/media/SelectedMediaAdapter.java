@@ -4,6 +4,8 @@
  */
 package io.github.somilkhan.instaeclipse2.mods.media;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.content.Context;
 
 import org.luckypray.dexkit.DexKitBridge;
@@ -43,7 +45,7 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
             for (String key : new String[]{"video_dash_manifest", "video_versions", "image_versions2",
                     "carousel_media", "user", "has_audio", "media_type", "original_media_type",
                     "is_story_image_with_music"}) adapter.resolve(bridge, loader, MEDIA, key);
-            adapter.resolve(bridge, loader, "com.instagram.user.model.User", "username");
+            adapter.resolve(bridge, loader, IgModels.userClassName(), "username");
             for (String key : new String[]{"url", "width", "height", "frame_rate", "codecs", "bitrate"}) {
                 for (String type : MediaClassNames.IMMUTABLE_PANDO_VIDEO_VERSION) adapter.resolve(bridge, loader, type, key);
                 for (String type : MediaClassNames.VIDEO_VERSION) adapter.resolve(bridge, loader, type, key);

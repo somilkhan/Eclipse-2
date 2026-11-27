@@ -6,6 +6,7 @@ import org.luckypray.dexkit.query.matchers.MethodMatcher;
 import org.luckypray.dexkit.result.MethodData;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class ForceReelQualityHook {
     // so it is matched via DexKit rather than by the per-version obfuscated method name or
     // the volatile Pando index.
     private static final int HEIGHT_HASH = "height".hashCode();
+    private static final int VIDEO_VERSIONS_HASH = "video_versions".hashCode();
 
     private static final String CACHE_GETTER_KEY = "ForceReelQuality_VideoVersionsGetter";
     private static final String CACHE_HEIGHT_KEY = "ForceReelQuality_HeightGetterName";
@@ -89,8 +91,14 @@ public class ForceReelQualityHook {
                 videoVersionsGetter = resolveVideoVersionsGetter(bridge, classLoader);
                 heightGetterName = resolveHeightGetterName(bridge, classLoader);
 
+                if (videoVersionsGetter == null && heightGetterName != null
+                        && installHashed(classLoader, heightGetterName)) {
+                    DexKitCache.saveString(CACHE_HEIGHT_KEY, heightGetterName);
+                    return;
+                }
                 if (videoVersionsGetter == null || heightGetterName == null) {
-                    ModuleLog.line("(InstaEclipse | ForceReelQuality): ❌ discovery failed");
+                    ModuleLog.line("(InstaEclipse | ForceReelQuality): ❌ discovery failed (video_versions="
+                            + (videoVersionsGetter != null) + ", height=" + heightGetterName + ")");
                     return;
                 }
 
@@ -113,9 +121,9 @@ public class ForceReelQualityHook {
                         if (versions.size() <= 1) return;
 
                         Object chosen = pickBestQuality(versions, FeatureFlags.forceReelQuality, finalHeightGetterName);
-                        if (chosen != null) {
-                            param.setResult(Collections.singletonList(chosen));
-                        }
+                        Object one = chosen == null ? null
+                                : singleton(chosen, ((Method) param.method).getReturnType());
+                        if (one != null) param.setResult(one);
                     } catch (Throwable t) {
                         ModuleLog.line("(InstaEclipse | ForceReelQuality): ❌ hook body – " + t);
                     }
@@ -132,6 +140,76 @@ public class ForceReelQualityHook {
                     + " (height=" + heightGetterName + ")");
         } catch (Throwable t) {
             ModuleLog.line("(InstaEclipse | ForceReelQuality): ❌ install – " + t);
+        }
+    }
+
+    /**
+     * IG 458 removed Media's typed {@code video_versions} getter. Callers now read the field through
+     * Media's list accessors, {@code ImmutableList x(int)}, passing {@code "video_versions".hashCode()}.
+     * There are a handful of these (one per element kind), so hook each and bail out on the first
+     * int compare for every other field. No reflection on the hot path.
+     */
+    private static boolean installHashed(ClassLoader cl, String heightGetterName) {
+        Class<?> media;
+        try {
+            media = Class.forName(DICT_CLASS_CANDIDATES[0], false, cl);
+        } catch (Throwable t) {
+            ModuleLog.line("(InstaEclipse | ForceReelQuality): ⚠️ Media class: " + t);
+            return false;
+        }
+        int hooked = 0;
+        for (Method m : media.getDeclaredMethods()) {
+            // No isSynthetic() filter: on 458 these accessors are compiler-generated delegates
+            // (ACC_SYNTHETIC) to a static helper, and they are exactly what callers invoke.
+            if (Modifier.isStatic(m.getModifiers()) || m.isBridge()) continue;
+            Class<?>[] p = m.getParameterTypes();
+            if (p.length != 1 || p[0] != int.class) continue;
+            if (!List.class.isAssignableFrom(m.getReturnType())) continue;
+            try {
+                m.setAccessible(true);
+                XposedBridge.hookMethod(m, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        if ((Integer) param.args[0] != VIDEO_VERSIONS_HASH) return;
+                        if (FeatureFlags.forceReelQuality <= 0 || RAW.get() != null) return;
+                        try {
+                            Object result = param.getResult();
+                            if (!(result instanceof List<?> versions) || versions.size() <= 1) return;
+                            Object chosen = pickBestQuality(versions, FeatureFlags.forceReelQuality, heightGetterName);
+                            Object one = chosen == null ? null
+                                    : singleton(chosen, ((Method) param.method).getReturnType());
+                            if (one != null) param.setResult(one);
+                        } catch (Throwable t) {
+                            ModuleLog.line("(InstaEclipse | ForceReelQuality): ❌ hashed hook body – " + t);
+                        }
+                    }
+                });
+                hooked++;
+            } catch (Throwable t) {
+                ModuleLog.line("(InstaEclipse | ForceReelQuality): ⚠️ hook " + m.getName() + " – " + t);
+            }
+        }
+        if (hooked == 0) {
+            ModuleLog.line("(InstaEclipse | ForceReelQuality): ⚠️ no (int)List accessors on " + media.getName());
+            return false;
+        }
+        heightGetter = heightGetterName;
+        FeatureStatusTracker.setHooked("ForceReelQuality");
+        ModuleLog.line("(InstaEclipse | ForceReelQuality): ✅ Hooked " + media.getName()
+                + " list accessors x" + hooked + " [video_versions hash] (height=" + heightGetterName + ")");
+        return true;
+    }
+
+    /** A one-item list the caller can accept: plain List, or e.g. ImmutableList via copyOf. */
+    static Object singleton(Object item, Class<?> want) {
+        List<Object> one = Collections.singletonList(item);
+        if (want.isInstance(one)) return one;
+        try {
+            Method copyOf = want.getMethod("copyOf", java.util.Collection.class);
+            Object r = copyOf.invoke(null, one);
+            return want.isInstance(r) ? r : null;
+        } catch (Throwable t) {
+            return null;
         }
     }
 

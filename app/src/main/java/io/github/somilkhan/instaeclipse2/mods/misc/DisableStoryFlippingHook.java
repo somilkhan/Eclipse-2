@@ -69,8 +69,28 @@ public class DisableStoryFlippingHook {
                 );
             }
 
+            // IG 458+: "end_scene" moved into an enum constant, so the typed callback no longer
+            // holds the literal. It is still the only (ReelItem)V on the fragment that opens the
+            // "comment" scene and null-checks "userSession".
             if (methods.isEmpty()) {
-                ModuleLog.line("(InstaEclipse | StoryFlipping): ❌ story-advance method not found (end_scene / userSession).");
+                methods = bridge.findMethod(
+                        FindMethod.create().matcher(
+                                MethodMatcher.create()
+                                        .declaredClass(rvf)
+                                        .paramTypes("com.instagram.model.reels.ReelItem")
+                                        .returnType("void")
+                                        .usingStrings("comment", "userSession")
+                        )
+                );
+                if (methods.size() > 1) {
+                    ModuleLog.line("(InstaEclipse | StoryFlipping): ⚠️ " + methods.size()
+                            + " story-advance candidates, not guessing");
+                    return;
+                }
+            }
+
+            if (methods.isEmpty()) {
+                ModuleLog.line("(InstaEclipse | StoryFlipping): ❌ story-advance method not found (end_scene / userSession / comment).");
                 return;
             }
 

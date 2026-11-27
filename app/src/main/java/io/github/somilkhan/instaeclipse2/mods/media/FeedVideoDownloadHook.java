@@ -69,6 +69,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
@@ -99,6 +100,8 @@ public class FeedVideoDownloadHook {
     private static Method   musicMetadataGetter;    // "music_metadata" getter (feed posts)
     private static Method   clipsMetadataGetter;    // "clips_metadata" getter (reels)
     static final long       MUSIC_CLIP_MS = 30_000; // length of a post's music clip
+    /** IG 458+: Media lost its typed getters; read JSON fields through {@link IgModels}. */
+    private static volatile boolean hashedMedia;
     private static Method   dashManifestGetter;     // "video_dash_manifest" getter: () -> String (Media 447+, LiveTreeMediaDict <= 446)
 
     // VideoVersionIntf – stable public interface with getUrl()
@@ -834,7 +837,22 @@ public class FeedVideoDownloadHook {
                 if (result instanceof List<?> l && !l.isEmpty()) return true;
             } catch (Throwable ignored) {}
         }
+        if (hashedMedia) {
+            List<?> l = hashedVideoVersions(media);
+            return l != null && !l.isEmpty();
+        }
         return false;
+    }
+
+    /** IG 458+: Media's video_versions through the generic accessor (full list, never forced). */
+    private static List<?> hashedVideoVersions(Object media) {
+        ForceReelQualityHook.RAW.set(Boolean.TRUE);
+        try {
+            Object v = mediaField(media, "video_versions");
+            return v instanceof List<?> l ? l : null;
+        } finally {
+            ForceReelQualityHook.RAW.remove();
+        }
     }
 
     /**
@@ -856,6 +874,10 @@ public class FeedVideoDownloadHook {
                     ? media
                     : MediaModelResolver.findObjectOfType(media, getter.getDeclaringClass(), 7);
             if (owner != null) collectUrlsFromVideoVersionsMethod(owner, getter, out, true);
+        }
+        if (hashedMedia) {
+            List<?> items = hashedVideoVersions(media);
+            if (items != null) addVideoVersionUrls(items, out, true);
         }
 
         // Structural fallback for builds where DexKit cannot identify video_versions:
@@ -880,7 +902,13 @@ public class FeedVideoDownloadHook {
             ForceReelQualityHook.RAW.set(Boolean.TRUE);
             try { result = getter.invoke(dict); } finally { ForceReelQualityHook.RAW.remove(); }
             if (!(result instanceof List<?> items) || items.isEmpty()) return;
+            addVideoVersionUrls(items, out, trustedVideoList);
+        } catch (Throwable ignored) {}
+    }
 
+    private static void addVideoVersionUrls(List<?> items, List<String> out, boolean trustedVideoList) {
+        try {
+            if (items.isEmpty()) return;
             List<String> found = new ArrayList<>();
             for (Object item : items) {
                 String url = videoUrlFromVersionObject(item);
@@ -1161,6 +1189,10 @@ public class FeedVideoDownloadHook {
      */
     public static void installVideoUrlCaptureHook(DexKitBridge bridge, ClassLoader classLoader) {
         SelectedMediaAdapter.install(bridge, classLoader);
+        IgModels.ensure(bridge, classLoader);
+        try {
+            hashedMedia = IgModels.accessor(Class.forName(IgModels.MEDIA, false, classLoader)) != null;
+        } catch (Throwable ignored) {}
         discoverDynamicMediaModel(bridge, classLoader);
         resolveVideoVersionsGetters(bridge, classLoader);
         resolveCarouselGetter(bridge, classLoader);
@@ -1376,7 +1408,7 @@ public class FeedVideoDownloadHook {
                 carouselCandidates.add(0, carouselMediaGetter);
             }
             ModuleLog.line("(IE|DL|DexKit) carousel getter="
-                    + (carouselMediaGetter == null ? "not found"
+                    + (carouselMediaGetter == null ? (hashedMedia ? "hash(carousel_media)" : "not found")
                        : carouselMediaGetter.getDeclaringClass().getName() + "." + carouselMediaGetter.getName()));
         } catch (Throwable t) {
             ModuleLog.line("(IE|DL|DexKit) carousel getter resolution failed: " + t);
@@ -1403,7 +1435,7 @@ public class FeedVideoDownloadHook {
                 DexKitCache.saveMethod("MediaDownload_HasAudio", m);
             }
             ModuleLog.line("(IE|DL|DexKit) has_audio getter="
-                    + (hasAudioGetter == null ? "not found" : hasAudioGetter.getName()));
+                    + (hasAudioGetter == null ? (hashedMedia ? "hash(has_audio)" : "not found") : hasAudioGetter.getName()));
         } catch (Throwable t) {
             ModuleLog.line("(IE|DL|DexKit) has_audio getter failed: " + t);
         }
@@ -1412,6 +1444,10 @@ public class FeedVideoDownloadHook {
     /** Instagram's has_audio for this media: TRUE / FALSE, or null when unknown. */
     static Boolean hasAudio(Object media) {
         Method getter = hasAudioGetter;
+        if (media != null && getter == null && hashedMedia) {
+            Object v = mediaField(media, "has_audio");
+            return v instanceof Boolean ? (Boolean) v : null;
+        }
         if (media == null || getter == null || !getter.getDeclaringClass().isInstance(media)) return null;
         try {
             Object v = getter.invoke(media);
@@ -1445,16 +1481,39 @@ public class FeedVideoDownloadHook {
                 break;
             }
             ModuleLog.line("(IE|DL|DexKit) dash manifest getter="
-                    + (dashManifestGetter == null ? "not found"
+                    + (dashManifestGetter == null ? (hashedMedia ? "hash(video_dash_manifest)" : "not found")
                        : dashManifestGetter.getDeclaringClass().getName() + "." + dashManifestGetter.getName()));
         } catch (Throwable t) {
             ModuleLog.line("(IE|DL|DexKit) dash manifest getter failed: " + t);
         }
     }
 
+    /**
+     * A Media JSON field through the generic accessor (IG 458+). Accepts a Media or anything that
+     * holds one (feed item wrappers); null when unreadable.
+     */
+    static Object mediaField(Object media, String key) {
+        if (media == null) return null;
+        Object target = media;
+        if (!IgModels.readable(target)) {
+            try {
+                Class<?> mc = mediaClass != null ? mediaClass
+                        : Class.forName(IgModels.MEDIA, false, media.getClass().getClassLoader());
+                target = MediaModelResolver.findObjectOfType(media, mc, 5);
+            } catch (Throwable t) {
+                return null;
+            }
+        }
+        return IgModels.read(target, key);
+    }
+
     /** Audio track URL of a video/reel (from its DASH manifest), or null (photos, no manifest). */
     /** Child Media of a carousel (carousel_media getter), or null when not a carousel / unavailable. */
     static List<?> carouselChildren(Object media) {
+        if (media != null && carouselMediaGetter == null && hashedMedia) {
+            Object v = mediaField(media, "carousel_media");
+            return v instanceof List<?> l && !l.isEmpty() ? l : null;
+        }
         if (media == null || carouselMediaGetter == null) return null;
         try {
             Object owner = carouselMediaGetter.getDeclaringClass().isInstance(media) ? media
@@ -1469,6 +1528,10 @@ public class FeedVideoDownloadHook {
     /** The media's DASH manifest XML (video_dash_manifest), or null. */
     static String dashManifest(Object media) {
         Method getter = dashManifestGetter;
+        if (media != null && getter == null && hashedMedia) {
+            Object v = mediaField(media, "video_dash_manifest");
+            return v instanceof String s ? s : null;
+        }
         if (media == null || getter == null) return null;
         try {
             Object target = getter.getDeclaringClass().isInstance(media) ? media
@@ -1482,6 +1545,10 @@ public class FeedVideoDownloadHook {
 
     static String extractAudioUrl(Object media) {
         Method getter = dashManifestGetter;
+        if (media != null && getter == null && hashedMedia) {
+            String manifest = dashManifest(media);
+            return manifest != null ? DashAudio.audioUrl(manifest) : null;
+        }
         if (media == null || getter == null) return null;
         try {
             Object target = media;
@@ -1556,10 +1623,14 @@ public class FeedVideoDownloadHook {
     /** The song attached to a post (Instagram music) as {url, true, startMs, MUSIC_CLIP_MS, true}, or null. */
     static Object[] musicSource(Object media) {
         if (media == null) return null;
-        for (Method getter : new Method[]{musicMetadataGetter, clipsMetadataGetter}) {
-            if (getter == null || !getter.getDeclaringClass().isInstance(media)) continue;
+        Method[] getters = {musicMetadataGetter, clipsMetadataGetter};
+        String[] keys = {"music_metadata", "clips_metadata"};
+        for (int gi = 0; gi < getters.length; gi++) {
+            Method getter = getters[gi];
+            boolean viaHash = getter == null && hashedMedia;
+            if (!viaHash && (getter == null || !getter.getDeclaringClass().isInstance(media))) continue;
             try {
-                Object meta = getter.invoke(media);
+                Object meta = viaHash ? mediaField(media, keys[gi]) : getter.invoke(media);
                 Object info = meta == null ? null : callByReturnType(meta, "com.instagram.api.schemas.MusicInfo");
                 Object track = info == null ? null : callByReturnType(info, "com.instagram.api.schemas.TrackData");
                 java.util.Map<?, ?> tm = fieldMap(track);
@@ -1839,7 +1910,7 @@ public class FeedVideoDownloadHook {
             try {
                 List<MethodData> ugMethods = bridge.findMethod(FindMethod.create()
                         .matcher(MethodMatcher.create()
-                                .declaredClass("com.instagram.user.model.User")
+                                .declaredClass(userClass.getName())
                                 .returnType("java.lang.String")
                                 .paramCount(0)
                                 .usingNumbers(-265713450)));
@@ -1849,7 +1920,7 @@ public class FeedVideoDownloadHook {
                     try {
                         for (MethodData md : bridge.findMethod(FindMethod.create()
                                 .matcher(MethodMatcher.create()
-                                        .declaredClass("com.instagram.user.model.User")
+                                        .declaredClass(userClass.getName())
                                         .returnType("java.lang.String")
                                         .paramCount(0)
                                         .usingNumbers(-265713450, "full_name".hashCode())))) {
@@ -1867,6 +1938,9 @@ public class FeedVideoDownloadHook {
                     DexKitCache.saveMethod("UsernameGetter", UserUtils.userUsernameGetter);
                     ModuleLog.line("(IE|DL|Username) userUsernameGetter=" + UserUtils.userUsernameGetter.getName()
                             + " (excluded " + readsFullName.size() + " full_name getter(s))");
+                } else if (IgModels.accessor(userClass) != null) {
+                    // 458+: no typed getter; UserUtils reads "username" through the accessor.
+                    ModuleLog.line("(IE|DL|Username) ✅ username via hashed accessor on " + userClass.getName());
                 } else {
                     ModuleLog.line("(IE|DL|Username) ❌ userUsernameGetter not found via -265713450");
                 }
@@ -1911,6 +1985,8 @@ public class FeedVideoDownloadHook {
                 mediaAuthorGetter = m;
                 DexKitCache.saveMethod("MediaAuthorGetter", m);
                 ModuleLog.line("(IE|DL|Username) ✅ mediaAuthorGetter (Media.\"user\"): " + m.getName());
+            } else if (hashedMedia) {
+                ModuleLog.line("(IE|DL|Username) ✅ media author via hash(user)");
             } else {
                 ModuleLog.line("(IE|DL|Username) mediaAuthorGetter: no Media \"user\" getter (older build)");
             }
@@ -1987,6 +2063,10 @@ public class FeedVideoDownloadHook {
             }
         }
 
+        if (mediaAuthorGetter == null && hashedMedia) {
+            ModuleLog.line("(IE|DL|Username) dictUserGetter: not needed (458+ layout), using hash(user)");
+            return;
+        }
         if (mediaAuthorGetter != null) {
             // 446+: no media dict carries the author any more; Media's own "user" getter does.
             ModuleLog.line("(IE|DL|Username) dictUserGetter: no dict author getter (446+ layout), using Media."
@@ -2032,6 +2112,13 @@ public class FeedVideoDownloadHook {
         // com.instagram.feed.media.Media itself as lazy Pando getters; invoke the "user" one directly
         // on the media object. These getters materialise the User on demand, so the field-scan tiers
         // below cannot find it until it's been called once — this must run first.
+        if (mediaAuthorGetter == null && hashedMedia) {
+            Object userObj = mediaField(media, "user");
+            if (userObj != null) {
+                String name = UserUtils.callUsernameGetter(userObj);
+                if (name != null) return name;
+            }
+        }
         if (mediaAuthorGetter != null && mediaClass != null && mediaClass.isInstance(media)) {
             try {
                 Object userObj = mediaAuthorGetter.invoke(media);
@@ -2637,15 +2724,19 @@ public class FeedVideoDownloadHook {
      * the caller falls back to the legacy single-media / dict-based paths.
      */
     private static List<String> extractCarouselUrls(Context ctx, Object media) {
-        if (carouselMediaGetter == null) return null;
+        if (carouselMediaGetter == null && !hashedMedia) return null;
         try {
-            Object owner = carouselMediaGetter.getDeclaringClass().isInstance(media)
-                    ? media
-                    : MediaModelResolver.findObjectOfType(
-                            media, carouselMediaGetter.getDeclaringClass(), 5);
-            if (owner == null) return null;
-
-            Object listObj = carouselMediaGetter.invoke(owner);
+            Object listObj;
+            if (carouselMediaGetter == null) {
+                listObj = mediaField(media, "carousel_media");
+            } else {
+                Object owner = carouselMediaGetter.getDeclaringClass().isInstance(media)
+                        ? media
+                        : MediaModelResolver.findObjectOfType(
+                                media, carouselMediaGetter.getDeclaringClass(), 5);
+                if (owner == null) return null;
+                listObj = carouselMediaGetter.invoke(owner);
+            }
             if (!(listObj instanceof List<?> items) || items.size() < 2) return null;
 
             List<String> urls = new ArrayList<>();
@@ -2897,6 +2988,10 @@ public class FeedVideoDownloadHook {
      */
     static String extractUsernameFromMediaObject(Object media) {
         if (media == null) return null;
+        if (mediaAuthorGetter == null && hashedMedia) {
+            String name = UserUtils.callUsernameGetter(mediaField(media, "user"));
+            if (name != null) return name;
+        }
         // IG 446+/447.0.0.39+: author getter lives directly on Media (see resolveMediaAuthorGetter).
         if (mediaAuthorGetter != null && mediaClass != null && mediaClass.isInstance(media)) {
             try {

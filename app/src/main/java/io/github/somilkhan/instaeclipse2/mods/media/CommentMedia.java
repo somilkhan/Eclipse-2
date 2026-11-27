@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.media;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.content.Context;
 
 import java.lang.reflect.Field;
@@ -159,7 +161,7 @@ public final class CommentMedia {
         String commenter = null, author = null;
         if (mediaId == null) mediaId = sheetMediaId; // the menu callback doesn't always pass the post id
         try {
-            Object u = firstOfType(comment, "com.instagram.user.model.User", 2, null);
+            Object u = firstOfType(comment, IgModels.userClassName(), 2, null);
             if (u != null) commenter = io.github.somilkhan.instaeclipse2.utils.users.UserUtils.callUsernameGetter(u);
             String pk = mediaId != null ? mediaId.split("_")[0] : null;
             // IG's session media cache (com.instagram.feed.media.MediaCache keeps its real names)

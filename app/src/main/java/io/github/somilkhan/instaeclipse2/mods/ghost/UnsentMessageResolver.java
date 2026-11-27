@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.ghost;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import org.luckypray.dexkit.DexKitBridge;
 import org.luckypray.dexkit.query.FindMethod;
 import org.luckypray.dexkit.query.matchers.MethodMatcher;
@@ -27,7 +29,6 @@ final class UnsentMessageResolver {
     private static final String ID = "DirectMessage_getId_null_client_context";
     private static final String CLIENT = "DirectMessage_getClientContext_null";
     private static final String SESSION = "com.instagram.common.session.UserSession";
-    private static final String USER = "com.instagram.user.model.User";
     private static final String KEY = "com.instagram.model.direct.DirectThreadKey";
     static final int MAX_MESSAGES = 20_000;
 
@@ -95,7 +96,7 @@ final class UnsentMessageResolver {
                         && !m.getReturnType().isPrimitive() && m.getReturnType() != String.class);
                 MethodData ownCall = unique(invokes, "ownership-call", m -> !Modifier.isStatic(m.getModifiers())
                         && m.getReturnType() == boolean.class && m.getParameterCount() == 1
-                        && m.getParameterTypes()[0].getName().equals(USER));
+                        && IgModels.isUserClass(m.getParameterTypes()[0].getName()));
                 if (entryCall == null || ownCall == null) continue;
                 Method entryLookup = entryCall.getMethodInstance(loader), own = ownCall.getMethodInstance(loader);
                 Class<?> entryType = entryLookup.getReturnType(), messageType = own.getDeclaringClass();

@@ -1,6 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
     <string name="app_name">Eclipse 2</string>
+    <string name="home_compat_tested" tools:ignore="MissingTranslation">Tested version</string>
+    <string name="home_compat_untested_build" tools:ignore="MissingTranslation">Untested build</string>
+    <string name="home_compat_newer" tools:ignore="MissingTranslation">Newer than tested</string>
+    <string name="home_compat_newer_alpha" tools:ignore="MissingTranslation">Alpha build, untested</string>
+    <string name="home_compat_older" tools:ignore="MissingTranslation">Older than tested</string>
+    <string name="home_compat_unknown" tools:ignore="MissingTranslation">Version not recognised</string>
+    <string name="home_compat_value" tools:ignore="MissingTranslation">Tested: %1$s</string>
+    <string name="home_compat_dialog_title" tools:ignore="MissingTranslation">Instagram %1$s</string>
+    <string name="home_compat_msg_tested" tools:ignore="MissingTranslation">Eclipse 2 %3$s was checked on this exact Instagram version (%1$s). Every hook should load.</string>
+    <string name="home_compat_msg_untested_build" tools:ignore="MissingTranslation">You have %1$s. Eclipse 2 %3$s was checked on %2$s, the same major version, so most features should work. If something breaks, look for ❌ lines in Logs.</string>
+    <string name="home_compat_msg_newer" tools:ignore="MissingTranslation">You have %1$s, which is newer than the version Eclipse 2 %3$s was checked on (%2$s). Instagram changes its code with every update, so some features may not load until Eclipse 2 is updated. Lines marked ❌ in Logs show which ones.\n\nFor everything to work, install %2$s.</string>
+    <string name="home_compat_msg_newer_alpha" tools:ignore="MissingTranslation">You have %1$s, an alpha build from the Play Store testing programme. It is newer than the version Eclipse 2 %3$s was checked on (%2$s), and alpha builds change every few days, so some features may not load. Lines marked ❌ in Logs show which ones.\n\nFor everything to work, leave the Instagram testing programme in the Play Store and install %2$s.</string>
+    <string name="home_compat_msg_older" tools:ignore="MissingTranslation">You have %1$s, which is older than the version Eclipse 2 %3$s was checked on (%2$s). Some features may not load. Install %2$s for the best results.</string>
+    <string name="home_compat_msg_unknown" tools:ignore="MissingTranslation">Eclipse 2 %3$s couldn\'t read the Instagram version (%1$s). It was checked on %2$s.</string>
+    <string name="home_compat_get_tested" tools:ignore="MissingTranslation">Get %1$s</string>
     <string name="legacy_module_title" tools:ignore="MissingTranslation">Old InstaEclipse is installed</string>
     <string name="legacy_module_message" tools:ignore="MissingTranslation">The original InstaEclipse module (ps.reso.instaeclipse) is still installed. If it is enabled in LSPosed next to Eclipse 2, both hook Instagram at the same time: features run twice, Instagram starts slower, and the log fills with errors from the old hooks.\n\nUninstall it (or disable it in LSPosed), keep only Eclipse 2 scoped to Instagram, then force-stop Instagram.</string>
     <string name="legacy_module_uninstall" tools:ignore="MissingTranslation">Open its app info</string>
@@ -616,7 +631,7 @@ Stay on this screen until it finishes.</string>
     <string name="ig_dialog_backup_failed">Failed to create backup: %1$s</string>
 
     <!-- About -->
-    <string name="ig_dialog_about_created_by" translatable="false">Created by @reso7200</string>
+    <string name="ig_dialog_about_created_by" translatable="false">Maintained by @somilkhan · Original by @reso7200</string>
     <string name="ig_dialog_about_github">GitHub</string>
     <string name="ig_dialog_about_telegram">Telegram</string>
 

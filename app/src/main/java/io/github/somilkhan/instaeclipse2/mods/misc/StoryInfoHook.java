@@ -40,6 +40,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.dialog.IeDialog;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
@@ -68,15 +69,25 @@ public class StoryInfoHook {
             "story_quizs", "story_polls", "story_sliders", "story_prompts", "sponsor_tags", "is_paid_partnership", "coauthor_producers",
     };
     private static final Map<String, Method> getters = new LinkedHashMap<>();
+    /** IG 458+: Media has no typed getters; read KEYS through its generic field accessor. */
+    private static volatile boolean hashed;
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public void install(DexKitBridge bridge, ClassLoader classLoader) {
+        IgModels.ensure(bridge, classLoader);
         resolveGetters(bridge, classLoader);
         if (getters.isEmpty()) {
-            ModuleLog.line("(IE|StoryInfo) ❌ no Media getters found");
-            return;
+            try {
+                hashed = IgModels.accessor(Class.forName(IgModels.MEDIA, false, classLoader)) != null;
+            } catch (Throwable ignored) {}
+            if (!hashed) {
+                ModuleLog.line("(IE|StoryInfo) ❌ no Media getters found");
+                return;
+            }
+            ModuleLog.line("(IE|StoryInfo) ✅ Media fields via hashed accessor");
+        } else {
+            ModuleLog.line("(IE|StoryInfo) getters: " + getters.keySet());
         }
-        ModuleLog.line("(IE|StoryInfo) getters: " + getters.keySet());
         installButtonHook(bridge, classLoader);
         installClickHook(bridge, classLoader);
         FeatureStatusTracker.setHooked("StoryInfo");
@@ -94,7 +105,8 @@ public class StoryInfoHook {
                     Method m = DexKitCache.loadMethod("StoryInfo_" + key, classLoader);
                     if (m != null) { m.setAccessible(true); getters.put(key, m); }
                 }
-                if (!getters.isEmpty()) return;
+                // Empty = the last run found no typed getters (458+): don't redo 27 queries.
+                if (!getters.isEmpty() || found.isEmpty()) return;
             }
         }
         StringBuilder keys = new StringBuilder();
@@ -245,7 +257,7 @@ public class StoryInfoHook {
 
     private static Object raw(Object media, String key) {
         Method g = getters.get(key);
-        if (g == null) return null;
+        if (g == null) return hashed ? IgModels.read(media, key) : null;
         try { return g.invoke(media); } catch (Throwable t) { return null; }
     }
 
@@ -795,7 +807,7 @@ public class StoryInfoHook {
     private static void collectUsers(Object o, int depth, List<String> out, Set<Object> seen) {
         if (o == null || depth > 5 || o instanceof CharSequence || o instanceof Number || o instanceof Boolean) return;
         if (!seen.add(o)) return;
-        if (o.getClass().getName().equals("com.instagram.user.model.User")) {
+        if (IgModels.isUser(o)) {
             String u = io.github.somilkhan.instaeclipse2.utils.users.UserUtils.callUsernameGetter(o);
             if (u != null && !u.isEmpty() && !out.contains(u)) out.add(u);
             return;

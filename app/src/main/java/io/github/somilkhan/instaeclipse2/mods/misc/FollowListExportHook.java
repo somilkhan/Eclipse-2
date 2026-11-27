@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.misc;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -68,7 +70,6 @@ import io.github.somilkhan.instaeclipse2.utils.users.UserUtils;
 public class FollowListExportHook {
 
     private static final String TAG = "(IE|FollowExport) ";
-    private static final String USER = "com.instagram.user.model.User";
     private static Method fullNameGetter;
     private static volatile boolean loading;
 
@@ -77,7 +78,7 @@ public class FollowListExportHook {
             Class<?> frag = findFragment(bridge, cl);
             if (frag == null) { ModuleLog.line(TAG + "❌ FollowListFragment not found"); return; }
             for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .declaredClass(USER).paramCount(0).returnType("java.lang.String").usingNumbers(-1677176261)))) {
+                    .declaredClass(IgModels.userClassName()).paramCount(0).returnType("java.lang.String").usingNumbers(-1677176261)))) {
                 fullNameGetter = md.getMethodInstance(cl); // "full_name".hashCode()
                 break;
             }
@@ -539,7 +540,7 @@ public class FollowListExportHook {
             if (o == null || !seen.add(o)) continue;
             if (o instanceof List<?> l) { for (Object it : l) q.add(new Object[]{it, d + 1, true}); continue; }
             if (o instanceof Map<?, ?> m) { for (Object it : m.values()) q.add(new Object[]{it, d + 1, true}); continue; }
-            if (o.getClass().getName().equals(USER)) {
+            if (IgModels.isUserClass(o.getClass().getName())) {
                 if (rowsOnly && !row) continue; // the profile owner / logged-in user held in plain fields, not a list row
                 String u = UserUtils.callUsernameGetter(o);
                 String id = userId(o);

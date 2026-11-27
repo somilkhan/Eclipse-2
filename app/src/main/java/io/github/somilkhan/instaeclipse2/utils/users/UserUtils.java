@@ -19,7 +19,11 @@ public class UserUtils {
             } catch (Throwable ignored) {}
         }
 
-        // 2. Fallback: DexKit was wrong. Scan for the real lowercase username method.
+        // 2. IG 458+: no typed getter; read the "username" field through the model accessor.
+        String hashed = io.github.somilkhan.instaeclipse2.utils.core.IgModels.readString(user, "username");
+        if (isValidUsername(hashed)) return hashed;
+
+        // 3. Fallback: DexKit was wrong. Scan for the real lowercase username method.
         for (Method m : user.getClass().getDeclaredMethods()) {
             if (m.getParameterCount() != 0 || !m.getReturnType().equals(String.class)) continue;
             try {

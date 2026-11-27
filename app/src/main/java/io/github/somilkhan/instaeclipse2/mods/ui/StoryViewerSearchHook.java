@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.ui;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -112,7 +114,7 @@ public class StoryViewerSearchHook {
         try {
             for (Class<?> k = record.getClass(); k != null && k != Object.class; k = k.getSuperclass())
                 for (Field f : k.getDeclaredFields()) {
-                    if (Modifier.isStatic(f.getModifiers()) || !f.getType().getName().equals("com.instagram.user.model.User")) continue;
+                    if (Modifier.isStatic(f.getModifiers()) || !IgModels.isUserClass(f.getType().getName())) continue;
                     f.setAccessible(true);
                     return UserUtils.callUsernameGetter(f.get(record));
                 }

@@ -5,6 +5,31 @@
 First release of Eclipse 2, the maintained continuation at `somilkhan/Eclipse-2` (original author: ReSo7200).
 Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 
+### Instagram 458 (458.0.0.0.67) hook fixes
+- Instagram 458 deleted the typed per-field getters on its models (Media went from 1368 to 502
+  methods) and renamed `com.instagram.user.model.User` to an obfuscated class. Each model still has
+  one generic `Object x(int)` accessor keyed by the JSON field name's `String.hashCode()`. New
+  `IgModels` helper finds the User class by its `XDTUserDict` type name and reads fields by hash.
+- Fallbacks on top of the old lookups for: hide liked posts, "Follows you" badge, story mentions,
+  story links, story info, caption copy, feed/reel download (carousel, audio, DASH, username,
+  video_versions), HD profile picture, force reel quality, following-only feed, story auto-advance,
+  hero playback speed. All User checks now go through `IgModels`.
+- Hide suggested posts: the FeedItem parser lookup matched Instagram's shared string table
+  (`X.0000`) on 458 and hooked nothing. It now goes through `StringTables` and only accepts a class
+  that has the parser bridge.
+- Offline checker on 458 build 386405730: OK=71 / PARTIAL=2 / FAIL=1 / NO-HOOK=5 (baseline was
+  OK=60 / PARTIAL=6 / FAIL=8). Remaining: reel scrubber gate (PlaybackSpeed, optional) and two
+  harness-only stubs. 457 is unchanged at OK=72 / PARTIAL=1 / FAIL=1.
+- The "first launch for this Instagram version" log line now says why (cache reset vs. previous run
+  unfinished), and a hook that throws out of the background pass no longer keeps the cache from
+  being marked complete.
+
+### Home screen
+- Instagram compatibility row: shows whether the installed Instagram is the tested build, another
+  build of the same version, newer, an alpha/beta, or older, with a link to the tested APK.
+- Credits: maintained by @somilkhan, original by @reso7200 (About dialog, footer, in-app menu,
+  contributors list).
+
 ### Instagram 457 hook fixes
 - New offline hook checker (`tools/hook-verify/`) that runs every hook lookup against an IG APK with DexKit.
   On 457: baseline OK=53 / PARTIAL=10 / FAIL=11, and after these fixes OK=57 / PARTIAL=8 / FAIL=9

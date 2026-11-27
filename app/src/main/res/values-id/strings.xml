@@ -316,7 +316,7 @@
     <string name="ig_dialog_backup_failed">Gagal membuat cadangan: %1$s</string>
 
     <!-- About -->
-    <string name="ig_dialog_about_created_by" translatable="false">Created by @reso7200</string>
+    <string name="ig_dialog_about_created_by" translatable="false">Maintained by @somilkhan · Original by @reso7200</string>
     <string name="ig_dialog_about_github">GitHub</string>
     <string name="ig_dialog_about_telegram">Telegram</string>
 

@@ -290,6 +290,12 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         ModuleLog.line("(InstaEclipse | RestoreReceiver): ❌ " + e.getMessage());
                     }
                     final Runnable installFeatureHooks = () -> {
+                    // Resolve renamed model classes (User is X.02gr on 458) before any hook asks.
+                    try {
+                        io.github.somilkhan.instaeclipse2.utils.core.IgModels.ensure(dexKitBridge, hostClassLoader);
+                    } catch (Throwable e) {
+                        ModuleLog.line("(IE|Models) ❌ " + e);
+                    }
                     UIHookManager instagramUI = new UIHookManager();
                     if (!skip("instagramUI")) instagramUI.mainActivity(hostClassLoader);
 
@@ -801,10 +807,22 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         // risks Android killing the app for not finishing startup, before the cache
                         // is even written. Resolve in the background instead; features turn on a few
                         // seconds after launch, and from the next launch on everything is cached.
-                        ModuleLog.line("(InstaEclipse): first launch for this Instagram version — installing hooks in background");
+                        // Say why, so a log that repeats this line every launch can be told apart:
+                        // "cache reset" = new Instagram or module build; "previous run unfinished" =
+                        // Instagram was closed or crashed before the background pass got to the end.
+                        ModuleLog.line("(InstaEclipse): first launch for this Instagram version ("
+                                + (DexKitCache.isCacheValid() ? "previous run unfinished" : "cache reset")
+                                + ") — installing hooks in background");
                         Thread t = new Thread(() -> {
                             long start = android.os.SystemClock.elapsedRealtime();
-                            installFeatureHooks.run();
+                            try {
+                                installFeatureHooks.run();
+                            } catch (Throwable e) {
+                                // One hook escaping its own try must not stop the cache from being
+                                // marked complete, or every launch repeats the slow DexKit pass.
+                                ModuleLog.line("(InstaEclipse): ❌ background install: " + e);
+                                DexKitCache.saveString(CACHE_COMPLETE_KEY, "1");
+                            }
                             ModuleLog.line("(InstaEclipse): background hook installation took "
                                     + (android.os.SystemClock.elapsedRealtime() - start) + " ms");
                         }, "InstaEclipse-Init");

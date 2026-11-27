@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.misc;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -329,8 +331,7 @@ public class CommentCopyHook {
     private static String discoverAndCacheLegacy(Object gestureListener) {
         try {
             ClassLoader cl = gestureListener.getClass().getClassLoader();
-            Class<?> userClass = Class.forName(
-                    "com.instagram.user.model.User", false, cl);
+            Class<?> userClass = Class.forName(IgModels.userClassName(), false, cl);
 
             for (Field f1 : gestureListener.getClass().getDeclaredFields()) {
                 if (!isObfuscatedObject(f1)) continue;

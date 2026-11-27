@@ -170,6 +170,9 @@ public class HomeFragment extends Fragment {
     private boolean pingReceiverRegistered;
 
     private AutoScroller contributorsScroller;
+    private View compatRow, compatDivider;
+    private ImageView compatDot;
+    private TextView compatText, compatValue;
     private AutoScroller specialThanksScroller;
 
     /**
@@ -214,6 +217,11 @@ public class HomeFragment extends Fragment {
         statusPill = view.findViewById(R.id.home_status_pill);
         statusDot = view.findViewById(R.id.home_status_dot);
         statusPillText = view.findViewById(R.id.home_status_pill_text);
+        compatRow = view.findViewById(R.id.home_compat_row);
+        compatDivider = view.findViewById(R.id.home_compat_divider);
+        compatDot = view.findViewById(R.id.home_compat_dot);
+        compatText = view.findViewById(R.id.home_compat_text);
+        compatValue = view.findViewById(R.id.home_compat_value);
         featuresCountText = view.findViewById(R.id.home_features_count);
         shortcutsContainer = view.findViewById(R.id.home_shortcuts_container);
         shortcutsEmpty = view.findViewById(R.id.home_shortcuts_empty);
@@ -304,6 +312,7 @@ public class HomeFragment extends Fragment {
             instagramInfoIcon.setVisibility(View.GONE);
             launchInstagramButton.setEnabled(false);
             restartInstagramButton.setEnabled(false);
+            bindCompat(null, false);
             updateStatusPill();
             return;
         }
@@ -338,8 +347,10 @@ public class HomeFragment extends Fragment {
         try {
             String versionName = pm.getPackageInfo(pkg, 0).versionName;
             versionText.setText(getString(R.string.home_status_version, versionName));
+            bindCompat(versionName, true);
         } catch (PackageManager.NameNotFoundException e) {
             versionText.setText("");
+            bindCompat(null, false);
         }
 
         instagramVariantText.setText(CommonUtils.getVariantLabel(pkg));
@@ -373,6 +384,47 @@ public class HomeFragment extends Fragment {
         } else {
             io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.not_installed_instagram), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** Compatibility row: tested / untested / alpha / older, with a dialog that explains it. */
+    private void bindCompat(@Nullable String versionName, boolean installed) {
+        if (compatRow == null) return;
+        compatRow.setVisibility(installed ? View.VISIBLE : View.GONE);
+        compatDivider.setVisibility(installed ? View.VISIBLE : View.GONE);
+        if (!installed) return;
+
+        io.github.somilkhan.instaeclipse2.utils.core.IgCompat.Status st =
+                io.github.somilkhan.instaeclipse2.utils.core.IgCompat.classify(versionName);
+        String tested = io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.TESTED_INSTAGRAM;
+        int label, msg, color;
+        switch (st) {
+            case TESTED:         label = R.string.home_compat_tested;         msg = R.string.home_compat_msg_tested;         color = colorRes(R.color.ie_ok); break;
+            case UNTESTED_BUILD: label = R.string.home_compat_untested_build; msg = R.string.home_compat_msg_untested_build; color = colorRes(R.color.ie_warn); break;
+            case NEWER:          label = R.string.home_compat_newer;          msg = R.string.home_compat_msg_newer;          color = colorRes(R.color.ie_warn); break;
+            case NEWER_ALPHA:    label = R.string.home_compat_newer_alpha;    msg = R.string.home_compat_msg_newer_alpha;    color = colorRes(R.color.ie_warn); break;
+            case OLDER:          label = R.string.home_compat_older;          msg = R.string.home_compat_msg_older;          color = colorRes(R.color.ie_warn); break;
+            default:             label = R.string.home_compat_unknown;        msg = R.string.home_compat_msg_unknown;        color = colorRes(R.color.ie_warn); break;
+        }
+        compatDot.setImageTintList(ColorStateList.valueOf(color));
+        compatText.setText(label);
+        boolean ok = st == io.github.somilkhan.instaeclipse2.utils.core.IgCompat.Status.TESTED;
+        // Tested: the version is already in the hero, so no trailing value. Otherwise show the target.
+        compatValue.setText(ok ? "" : getString(R.string.home_compat_value, tested));
+        compatValue.setVisibility(ok ? View.GONE : View.VISIBLE);
+        String shown = versionName == null ? "?" : versionName;
+        compatRow.setContentDescription(getString(label) + ". " + (ok ? "" : getString(R.string.home_compat_value, tested)));
+        compatRow.setOnClickListener(v -> {
+            if (!isAdded()) return;
+            com.google.android.material.dialog.MaterialAlertDialogBuilder b =
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(getString(R.string.home_compat_dialog_title, shown))
+                            .setMessage(getString(msg, shown, tested, io.github.somilkhan.instaeclipse2.BuildConfig.VERSION_NAME))
+                            .setPositiveButton(android.R.string.ok, null);
+            if (!ok) b.setNeutralButton(getString(R.string.home_compat_get_tested, tested), (d, w) ->
+                    safeStart(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.TESTED_INSTAGRAM_APK))));
+            b.show();
+        });
     }
 
     private void updateStatusPill() {
@@ -708,6 +760,8 @@ public class HomeFragment extends Fragment {
         LinearLayout specialThanksContainer = rootView.findViewById(R.id.special_thanks_container);
 
         List<Contributor> contributors = Arrays.asList(
+                // Eclipse 2 maintainer, then the original InstaEclipse author.
+                new Contributor("somilkhan", "https://github.com/somilkhan", null, null),
                 new Contributor("ReSo7200", "https://github.com/ReSo7200", "https://linkedin.com/in/abdalhaleem-altamimi", null),
                 new Contributor("swakwork", "https://github.com/swakwork", null, null),
                 new Contributor("isma3iloiso", "https://github.com/isma3iloiso", null, null),

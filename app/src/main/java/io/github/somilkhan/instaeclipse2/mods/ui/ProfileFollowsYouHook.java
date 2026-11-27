@@ -21,6 +21,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
@@ -41,31 +42,34 @@ public class ProfileFollowsYouHook {
     private static final String TAG = "(InstaEclipse | FollowsYou): ";
     private static final String FRAGMENT = "com.instagram.profile.fragment.UserDetailFragment";
     private static final String VIEW_MODEL = "com.instagram.profile.fragment.UserDetailViewModel";
-    private static final String USER = "com.instagram.user.model.User";
     private static final String MARK = " · "; // separator our span starts with
     private static Method followedByGetter;
     private static volatile java.lang.ref.WeakReference<Object> lastFragment;
 
     public void install(DexKitBridge bridge, ClassLoader cl) {
         try {
+            IgModels.ensure(bridge, cl);
             Method updated = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("FollowsYou_onUserUpdated", cl) : null;
             followedByGetter = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("FollowsYou_followedBy", cl) : null;
             if (updated == null || followedByGetter == null) {
                 List<MethodData> u = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
                         .declaredClass(FRAGMENT).usingStrings("UserDetailFragment.onUserUpdated")));
                 List<MethodData> f = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                        .declaredClass(USER).paramCount(0).returnType("java.lang.Boolean")
+                        .declaredClass(IgModels.userClassName()).paramCount(0).returnType("java.lang.Boolean")
                         .usingEqStrings(java.util.List.of("followed_by"))));
-                if (u.isEmpty() || f.size() != 1) {
+                // IG 458+: typed getter is gone; read "followed_by" through the User accessor.
+                Class<?> userCls = IgModels.userClass(cl);
+                boolean hashed = f.isEmpty() && userCls != null && IgModels.accessor(userCls) != null;
+                if (u.isEmpty() || (f.size() != 1 && !hashed)) {
                     ModuleLog.line(TAG + "❌ onUserUpdated=" + u.size() + " followed_by=" + f.size());
                     return;
                 }
                 updated = u.get(0).getMethodInstance(cl);
-                followedByGetter = f.get(0).getMethodInstance(cl);
+                followedByGetter = hashed ? null : f.get(0).getMethodInstance(cl);
                 DexKitCache.saveMethod("FollowsYou_onUserUpdated", updated);
-                DexKitCache.saveMethod("FollowsYou_followedBy", followedByGetter);
+                if (followedByGetter != null) DexKitCache.saveMethod("FollowsYou_followedBy", followedByGetter);
             }
-            followedByGetter.setAccessible(true);
+            if (followedByGetter != null) followedByGetter.setAccessible(true);
             XposedBridge.hookMethod(updated, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
@@ -95,7 +99,8 @@ public class ProfileFollowsYouHook {
                     }
                 }
             });
-            ModuleLog.line(TAG + "✅ Hooked " + updated.getName() + " / followed_by " + followedByGetter.getName());
+            ModuleLog.line(TAG + "✅ Hooked " + updated.getName() + " / followed_by "
+                    + (followedByGetter != null ? followedByGetter.getName() : "via hashed accessor"));
             FeatureStatusTracker.setHooked("ProfileFollowsYou");
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);
@@ -119,7 +124,7 @@ public class ProfileFollowsYouHook {
         new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
             try {
                 Object vm = fieldOfType(frag, VIEW_MODEL);
-                Object user = vm != null ? fieldOfType(vm, USER) : null;
+                Object user = vm != null ? fieldOfType(vm, IgModels.userClassName()) : null;
                 if (user != null && sameUser(user, userId)) apply(frag, followedBy);
             } catch (Throwable t) {
                 ModuleLog.line(TAG + "⚠️ follow result: " + t);
@@ -183,7 +188,7 @@ public class ProfileFollowsYouHook {
     private static Boolean cachedResult(Object frag) {
         try {
             Object vm = fieldOfType(frag, VIEW_MODEL);
-            Object user = vm != null ? fieldOfType(vm, USER) : null;
+            Object user = vm != null ? fieldOfType(vm, IgModels.userClassName()) : null;
             if (user == null) return null;
             for (java.util.Map.Entry<String, Boolean> e : RESULTS.entrySet())
                 if (sameUserStrict(user, e.getKey())) return e.getValue();
@@ -241,9 +246,14 @@ public class ProfileFollowsYouHook {
 
     private static Boolean followedBy(Object frag) throws Exception {
         Object vm = fieldOfType(frag, VIEW_MODEL);
-        Object user = vm != null ? fieldOfType(vm, USER) : null;
+        Object user = vm != null ? fieldOfType(vm, IgModels.userClassName()) : null;
         if (user == null) return null;
-        Object r = followedByGetter.invoke(user);
+        Method getter = followedByGetter;
+        Object r = getter != null ? getter.invoke(user) : IgModels.read(user, "followed_by");
+        if (r == null && getter == null) {
+            // Some builds keep it inside friendship_status.
+            r = IgModels.read(IgModels.read(user, "friendship_status"), "followed_by");
+        }
         return r instanceof Boolean b ? b : null;
     }
 

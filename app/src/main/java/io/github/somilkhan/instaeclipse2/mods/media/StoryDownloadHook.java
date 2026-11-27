@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.media;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.os.Handler;
@@ -1347,7 +1349,7 @@ public class StoryDownloadHook {
                     String candidateClass = candidate.getClass().getName();
 
                     // Direct User object — use DexKit-resolved getter (stable int constant -265713450)
-                    if (candidateClass.equals("com.instagram.user.model.User")) {
+                    if (IgModels.isUserClass(candidateClass)) {
                         String username = UserUtils.callUsernameGetter(candidate);
                         if (username != null) {
                             ModuleLog.line("(IE|Story|Username) reelItem." + m.getName() + "() [User] → " + username);

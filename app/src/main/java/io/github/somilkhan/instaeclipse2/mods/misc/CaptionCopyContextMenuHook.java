@@ -35,6 +35,7 @@ import de.robv.android.xposed.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.dialog.IeDialog;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
@@ -72,6 +73,7 @@ public class CaptionCopyContextMenuHook {
     private static int idxList   = 4;
 
     private static Method captionGetter; // LiveTreeMediaDict -> caption object
+    private static volatile boolean hashedCaption; // IG 458+: read "caption" via IgModels
 
     // ── Guards ────────────────────────────────────────────────────────────────
 
@@ -223,14 +225,26 @@ public class CaptionCopyContextMenuHook {
                     } catch (Throwable ignored) {}
                 }
             }
-            ModuleLog.line("(IE|Caption) ❌ captionGetter not found");
+            try {
+                hashedCaption = IgModels.accessor(Class.forName(IgModels.MEDIA, false, classLoader)) != null;
+            } catch (Throwable ignored) {}
+            ModuleLog.line(hashedCaption
+                    ? "(IE|Caption) ✅ caption via hashed accessor"
+                    : "(IE|Caption) ❌ captionGetter not found");
         } catch (Throwable t) {
             ModuleLog.line("(IE|Caption) ❌ resolveCaptionGetter: " + t);
         }
     }
 
     private static String extractCaptionText(Object media) {
-        if (media == null || captionGetter == null) return null;
+        if (media == null || (captionGetter == null && !hashedCaption)) return null;
+        if (captionGetter == null) {
+            Object receiver = IgModels.readable(media) ? media : firstFieldOf(media, IgModels.MEDIA);
+            Object captionObj = IgModels.read(receiver, "caption");
+            if (captionObj == null) return null;
+            String text = IgModels.readString(captionObj, "text");
+            return text != null && !text.isEmpty() ? text : bestCaptionString(captionObj);
+        }
         try {
             // The receiver depends on where the getter is declared:
             //   442+ : declared on Media itself      -> invoke on `media` directly
@@ -258,7 +272,29 @@ public class CaptionCopyContextMenuHook {
 
             Object captionObj = captionGetter.invoke(receiver);
             if (captionObj == null) return null;
+            return bestCaptionString(captionObj);
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|Caption) ❌ extractCaptionText: " + t);
+            return null;
+        }
+    }
 
+    private static Object firstFieldOf(Object o, String typeName) {
+        for (Class<?> c = o.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field f : c.getDeclaredFields()) {
+                if (!f.getType().getName().equals(typeName)) continue;
+                try {
+                    f.setAccessible(true);
+                    Object v = f.get(o);
+                    if (v != null) return v;
+                } catch (Throwable ignored) {}
+            }
+        }
+        return null;
+    }
+
+    private static String bestCaptionString(Object captionObj) {
+        try {
             // Longest-plausible-string heuristic over the caption wrapper. Scan zero-arg
             // String getters AND String fields so it works whether the text is exposed as a
             // getter or a bare field (the 442+ caption object shape is not name-stable).

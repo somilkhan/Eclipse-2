@@ -32,6 +32,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.dialog.IeDialog;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
@@ -50,13 +51,23 @@ public class StoryLinksHook {
 
     private static final String[] KEYS = {"story_link_stickers", "story_cta"};
     private static final List<Method> getters = new ArrayList<>();
+    /** IG 458+: typed getters are gone; read KEYS through the Media field accessor. */
+    private static volatile boolean hashed;
+    /** Fields that hold link stickers' URLs (or the sub-object with them) on Pando-backed models. */
+    private static final String[] URL_KEYS = {"story_link", "url", "display_url", "link", "web_uri", "cta_url"};
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public void install(DexKitBridge bridge, ClassLoader classLoader) {
         resolveGetters(bridge, classLoader);
         if (getters.isEmpty()) {
-            ModuleLog.line("(IE|StoryLinks) ❌ link getters not found");
-            return;
+            try {
+                hashed = IgModels.accessor(Class.forName(IgModels.MEDIA, false, classLoader)) != null;
+            } catch (Throwable ignored) {}
+            if (!hashed) {
+                ModuleLog.line("(IE|StoryLinks) ❌ link getters not found");
+                return;
+            }
+            ModuleLog.line("(IE|StoryLinks) ✅ link stickers via hashed accessor");
         }
         installButtonHook(bridge, classLoader);
         installClickHook(bridge, classLoader);
@@ -215,6 +226,14 @@ public class StoryLinksHook {
                         collectUrls(sticker, 0, out, Collections.newSetFromMap(new IdentityHashMap<>()));
             } catch (Throwable ignored) {}
         }
+        if (getters.isEmpty() && hashed) {
+            for (String key : KEYS) {
+                List<?> list = IgModels.readList(media, key);
+                if (list == null) continue;
+                for (Object sticker : list)
+                    collectUrls(sticker, 0, out, Collections.newSetFromMap(new IdentityHashMap<>()));
+            }
+        }
         return new ArrayList<>(out);
     }
 
@@ -227,6 +246,9 @@ public class StoryLinksHook {
         }
         if (o instanceof Number || o instanceof Boolean || o.getClass().isPrimitive() || o.getClass().isEnum()) return;
         if (!seen.add(o)) return;
+        if (IgModels.readable(o)) {
+            for (String k : URL_KEYS) collectUrls(IgModels.read(o, k), depth + 1, out, seen);
+        }
         if (o instanceof Map<?, ?> m) {
             for (Object v : m.values()) collectUrls(v, depth + 1, out, seen);
             return;

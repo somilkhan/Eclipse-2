@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.ghost;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Handler;
@@ -74,7 +76,6 @@ public class ChatExportHook {
 
     private static final String TAG = "(IE|ChatExport) ";
     private static final String BTN_TAG = "ie_chat_export_btn";
-    private static final String USER = "com.instagram.user.model.User";
     private static final String SESSION = "com.instagram.common.session.UserSession";
     /** the viewer's user id, found next to the participants (set by {@link #participants}) */
     private static volatile String selfId;
@@ -918,7 +919,7 @@ public class ChatExportHook {
                 try { selfId = (String) o.getClass().getMethod("getUserId").invoke(o); } catch (Throwable ignored) {}
                 continue;
             }
-            if (o.getClass().getName().equals(USER)) {
+            if (IgModels.isUserClass(o.getClass().getName())) {
                 String u = UserUtils.callUsernameGetter(o);
                 String id = userId(o);
                 if (u != null && id != null) out.put(id, u);

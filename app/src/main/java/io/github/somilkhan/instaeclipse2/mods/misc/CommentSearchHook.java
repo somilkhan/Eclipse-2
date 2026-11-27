@@ -1,5 +1,7 @@
 package io.github.somilkhan.instaeclipse2.mods.misc;
 
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -62,7 +64,6 @@ import io.github.somilkhan.instaeclipse2.utils.users.UserUtils;
 public class CommentSearchHook {
 
     private static final String TAG = "(IE|CommentSearch) ";
-    private static final String USER = "com.instagram.user.model.User";
     /** {username, text, comment id, parent comment id ("" = top level), likes, reply count, created (s), media id};
      *  the post caption row has no ids (its user = the post author) */
     private static volatile List<String[]> latest = new ArrayList<>();
@@ -181,7 +182,7 @@ public class CommentSearchHook {
                         f.setAccessible(true);
                         Object v = f.get(o);
                         if (v == null) continue;
-                        if (f.getType().getName().equals(USER)) user = v;
+                        if (IgModels.isUserClass(f.getType().getName())) user = v;
                         else if (v instanceof String s) {
                             if (!s.startsWith("http") && !TOKEN.matcher(s).matches()
                                     && (text == null || s.length() > text.length())) text = s;

@@ -12,6 +12,8 @@ import java.util.List;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.StringTables;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
@@ -24,6 +26,8 @@ public class HideSuggestedFeedItemsHook {
     // "has_liked" getter: Media.()Boolean on IG 447+, LiveTreeMediaDict.()Boolean on <= 446 (436)
     // — reached through the Media field of that type. Resolved once at install (#249).
     private static volatile Method hasLikedGetter;
+    /** IG 458+: no typed getter; read "has_liked" through the model's generic accessor. */
+    private static volatile Class<?> hashedMediaClass;
 
     public void install(DexKitBridge bridge, ClassLoader classLoader) {
         XC_MethodHook filterHook = new XC_MethodHook() {
@@ -94,28 +98,23 @@ public class HideSuggestedFeedItemsHook {
         }
 
         try {
-            List<MethodData> methods = bridge.findMethod(
-                    FindMethod.create().matcher(
-                            MethodMatcher.create().usingStrings(
-                                    "clips_netego", "suggested_users", "Unknown FeedItem Type"
-                            )
-                    )
-            );
-
+            // StringTables: on 458 these literals live in the shared X.0000 string table, and a
+            // plain usingStrings() query would match the table itself (and hook nothing useful).
+            List<MethodData> methods = StringTables.findMethodUsingStrings(bridge, null,
+                    "clips_netego", "suggested_users", "Unknown FeedItem Type");
+            // 458 dropped "Unknown FeedItem Type"; the FeedItem parser is the JSON parser that
+            // reads the "clips_netego" key. Enum initialisers use that string too, so require
+            // the parser method name.
             if (methods.isEmpty()) {
-                methods = bridge.findMethod(
-                        FindMethod.create().matcher(
-                                MethodMatcher.create().usingStrings("clips_netego", "media_or_ad")
-                        )
-                );
+                methods = StringTables.findMethodUsingStrings(bridge,
+                        m -> m.name("unsafeParseFromJson"), "clips_netego");
             }
-
             if (methods.isEmpty()) {
-                methods = bridge.findMethod(
-                        FindMethod.create().matcher(
-                                MethodMatcher.create().usingStrings("clips_netego", "stories_netego", "bloks_netego")
-                        )
-                );
+                methods = StringTables.findMethodUsingStrings(bridge, null, "clips_netego", "media_or_ad");
+            }
+            if (methods.isEmpty()) {
+                methods = StringTables.findMethodUsingStrings(bridge, null,
+                        "clips_netego", "stories_netego", "bloks_netego");
             }
 
             if (methods.isEmpty()) {
@@ -123,7 +122,18 @@ public class HideSuggestedFeedItemsHook {
                 return;
             }
 
-            String targetClass = methods.get(0).getClassName();
+            String targetClass = null;
+            for (MethodData md : methods) {
+                if (hasParserBridge(md.getClassName(), classLoader)) {
+                    targetClass = md.getClassName();
+                    break;
+                }
+            }
+            if (targetClass == null) {
+                ModuleLog.line("(InstaEclipse | HideSuggested): ❌ FeedItem parser not found ("
+                        + methods.size() + " candidates without a parser bridge).");
+                return;
+            }
             DexKitCache.saveString(CACHE_KEY_PARSER, targetClass);
             hookBridgeMethod(targetClass, classLoader, filterHook);
             markHookedForEnabledFlags();
@@ -158,6 +168,15 @@ public class HideSuggestedFeedItemsHook {
                 ModuleLog.line("(InstaEclipse | HideLiked): ✅ has_liked getter " + owner + "." + m.getName());
                 return;
             }
+            try {
+                Class<?> media = Class.forName(IgModels.MEDIA, false, classLoader);
+                if (IgModels.accessor(media) != null) {
+                    hashedMediaClass = media;
+                    ModuleLog.line("(InstaEclipse | HideLiked): ✅ has_liked via " + IgModels.accessor(media).getName() + "(hash)");
+                    return;
+                }
+            } catch (Throwable ignored) {
+            }
             ModuleLog.line("(InstaEclipse | HideLiked): ❌ has_liked getter not found");
         } catch (Throwable t) {
             ModuleLog.line("(InstaEclipse | HideLiked): ❌ " + t.getMessage());
@@ -166,7 +185,8 @@ public class HideSuggestedFeedItemsHook {
 
     public static boolean isLiked(Object media) {
         Method getter = hasLikedGetter;
-        if (media == null || getter == null) return false;
+        if (media == null) return false;
+        if (getter == null) return isLikedHashed(media);
         try {
             Object target = media;
             Class<?> owner = getter.getDeclaringClass();
@@ -184,6 +204,38 @@ public class HideSuggestedFeedItemsHook {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    private static boolean isLikedHashed(Object media) {
+        Class<?> owner = hashedMediaClass;
+        if (owner == null) return false;
+        try {
+            Object target = media;
+            if (!owner.isInstance(media)) {
+                target = null;
+                for (Field f : media.getClass().getDeclaredFields()) {
+                    if (!owner.isAssignableFrom(f.getType())) continue;
+                    f.setAccessible(true);
+                    target = f.get(media);
+                    break;
+                }
+                if (target == null) return false;
+            }
+            return Boolean.TRUE.equals(IgModels.readBoolean(target, "has_liked"));
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /** True when the class has the bridge parse methods this hook attaches to. */
+    private static boolean hasParserBridge(String className, ClassLoader classLoader) {
+        try {
+            for (Method m : Class.forName(className, false, classLoader).getDeclaredMethods()) {
+                if (m.isBridge() && m.getName().equals("unsafeParseFromJson")) return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
     }
 
     private void hookBridgeMethod(String className, ClassLoader classLoader, XC_MethodHook hook)
@@ -204,6 +256,6 @@ public class HideSuggestedFeedItemsHook {
     private void markHookedForEnabledFlags() {
         if (FeatureFlags.hideSuggestionsInFeed) FeatureStatusTracker.setHooked("HideSuggestionsInFeed");
         if (FeatureFlags.hideThreadsSuggestions) FeatureStatusTracker.setHooked("HideThreadsSuggestions");
-        if (FeatureFlags.hideLikedPosts && hasLikedGetter != null) FeatureStatusTracker.setHooked("HideLikedPosts");
+        if (FeatureFlags.hideLikedPosts && (hasLikedGetter != null || hashedMediaClass != null)) FeatureStatusTracker.setHooked("HideLikedPosts");
     }
 }

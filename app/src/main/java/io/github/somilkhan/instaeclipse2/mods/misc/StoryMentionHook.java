@@ -30,6 +30,7 @@ import de.robv.android.xposed.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.dialog.IeDialog;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
@@ -48,12 +49,14 @@ public class StoryMentionHook {
     // literal JSON field names and hardcoded log/QPL strings don't change on a version bump.
     private static volatile Method rawMentionsGetter;   // LiveTreeMediaDict -> List (raw entries)
     private static volatile Method mentionsConverter;   // List(raw) -> List<Interactive w/ User field>
+    private static volatile boolean hashedMentions;     // IG 458+: read "reel_mentions" via IgModels
 
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     // ── Entry point ──────────────────────────────────────────────────────────
 
     public void install(DexKitBridge bridge, ClassLoader classLoader) {
+        IgModels.ensure(bridge, classLoader);
         resolveMentionPipeline(bridge, classLoader);
         installButtonHook(bridge, classLoader);
         installClickHook(bridge, classLoader);
@@ -108,7 +111,15 @@ public class StoryMentionHook {
                     } catch (Throwable ignored) {}
                 }
             }
-            if (rawMentionsGetter == null) ModuleLog.line("(IE|Mention) ❌ rawMentionsGetter not found");
+            if (rawMentionsGetter == null) {
+                try {
+                    Class<?> media = Class.forName(IgModels.MEDIA, false, classLoader);
+                    hashedMentions = IgModels.accessor(media) != null;
+                } catch (Throwable ignored) {}
+                ModuleLog.line(hashedMentions
+                        ? "(IE|Mention) ✅ reel_mentions via hashed accessor"
+                        : "(IE|Mention) ❌ rawMentionsGetter not found");
+            }
         } catch (Throwable t) {
             ModuleLog.line("(IE|Mention) ❌ rawMentionsGetter query failed: " + t);
         }
@@ -150,8 +161,10 @@ public class StoryMentionHook {
             ModuleLog.line("(IE|Mention) ❌ mentionsConverter query failed: " + t);
         }
 
-        if (rawMentionsGetter != null && mentionsConverter != null) {
-            ModuleLog.line("(IE|Mention) ✅ pipeline resolved: " + rawMentionsGetter.getName() + " -> " + mentionsConverter.getName());
+        if ((rawMentionsGetter != null || hashedMentions) && mentionsConverter != null) {
+            ModuleLog.line("(IE|Mention) ✅ pipeline resolved: "
+                    + (rawMentionsGetter != null ? rawMentionsGetter.getName() : "hash(reel_mentions)")
+                    + " -> " + mentionsConverter.getName());
         }
     }
 
@@ -296,22 +309,27 @@ public class StoryMentionHook {
     private static List<String> resolveMentions(Object media) {
         List<String> usernames = new ArrayList<>();
         try {
-            if (rawMentionsGetter == null || mentionsConverter == null) {
+            if ((rawMentionsGetter == null && !hashedMentions) || mentionsConverter == null) {
                 ModuleLog.line("(IE|Mention) ❌ mention pipeline not resolved");
                 return usernames;
             }
 
-            // The getter may be declared directly on Media (442+) or on a sub-dict field of
-            // Media (<=436). Derive the receiver from the resolved getter's own declaring class
-            // instead of hardcoding a class name.
-            Class<?> owner = rawMentionsGetter.getDeclaringClass();
-            Object receiver = owner.isInstance(media) ? media : findFieldByType(media, owner.getName());
-            if (receiver == null) {
-                ModuleLog.line("(IE|Mention) ❌ mention receiver (" + owner.getName() + ") not found on media");
-                return usernames;
+            Object rawResult;
+            if (rawMentionsGetter == null) {
+                Object receiver = IgModels.readable(media) ? media : findFieldByType(media, IgModels.MEDIA);
+                rawResult = IgModels.read(receiver, "reel_mentions");
+            } else {
+                // The getter may be declared directly on Media (442+) or on a sub-dict field of
+                // Media (<=436). Derive the receiver from the resolved getter's own declaring class
+                // instead of hardcoding a class name.
+                Class<?> owner = rawMentionsGetter.getDeclaringClass();
+                Object receiver = owner.isInstance(media) ? media : findFieldByType(media, owner.getName());
+                if (receiver == null) {
+                    ModuleLog.line("(IE|Mention) ❌ mention receiver (" + owner.getName() + ") not found on media");
+                    return usernames;
+                }
+                rawResult = rawMentionsGetter.invoke(receiver);
             }
-
-            Object rawResult = rawMentionsGetter.invoke(receiver);
             if (!(rawResult instanceof List<?> raw) || raw.isEmpty()) return usernames;
 
             Object convertedResult = mentionsConverter.invoke(null, raw);
@@ -322,8 +340,8 @@ public class StoryMentionHook {
                 // The converter returns Interactive stickers, not raw Users — the mentioned
                 // User lives in one of Interactive's own fields (unless a future version
                 // returns Users directly, which this also handles).
-                Object user = item.getClass().getName().equals("com.instagram.user.model.User")
-                        ? item : findFieldByType(item, "com.instagram.user.model.User");
+                Object user = IgModels.isUser(item)
+                        ? item : findFieldByType(item, IgModels.userClassName());
                 if (user == null) continue;
                 String username = UserUtils.callUsernameGetter(user);
                 if (username != null && !username.isEmpty()) usernames.add(username);

@@ -232,7 +232,9 @@ public class PlaybackSpeedHook {
             if (owner == null && set != null) owner = set.getParameterTypes()[0];
             if (prepare == null) prepare = findStaticWrapper(bridge, cl, "PlaybackSpeed_heroPrepare", owner, 1,
                     "HeroManager.prepareAndMayPlay", "HeroServicePlayer.prepareAndMayPlay",
-                    "id [%d]: prepareAndMayPlay, shouldPlay=%b, videoSource=%s");
+                    "id [%d]: prepareAndMayPlay, shouldPlay=%b, videoSource=%s",
+                    // 458: the trace literals left the wrapper; its error lines stayed.
+                    "Failed ensure service player, ", "Error occurs while creating player");
             if (set == null || prepare == null) {
                 ModuleLog.line(TAG + "⚠️ hero set=" + set + " prepare=" + prepare);
                 return;
