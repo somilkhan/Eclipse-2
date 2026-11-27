@@ -482,7 +482,7 @@ public class KeepUnsentMessagesHook {
         if (s.matches("[0-9]+") || s.matches("[a-z0-9_]+")) return false;   // ids / snake_case tokens
         // Reject enum/type tokens: strings with letters that are ALL uppercase (TEXT, ACTION_LOG,
         // RAVEN_MEDIA, EXPIRING_MEDIA, LINK, …). Real message text is not all-caps.
-        if (s.equals(s.toUpperCase()) && !s.equals(s.toLowerCase())) return false;
+        if (s.equals(s.toUpperCase(java.util.Locale.ROOT)) && !s.equals(s.toLowerCase(java.util.Locale.ROOT))) return false;
         boolean hasLetter = false;
         for (int i = 0; i < s.length(); i++) if (Character.isLetter(s.charAt(i))) { hasLetter = true; break; }
         return hasLetter;

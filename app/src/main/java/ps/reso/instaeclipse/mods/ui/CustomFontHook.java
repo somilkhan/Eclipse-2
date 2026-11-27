@@ -63,10 +63,10 @@ public class CustomFontHook {
                 // Safeguard: don't replace an icon/glyph font.
                 for (Object a : p.args) {
                     if (a instanceof String s) {
-                        String low = s.toLowerCase();
+                        String low = s.toLowerCase(java.util.Locale.ROOT);
                         if (low.contains("icon") || low.contains("glyph")) return;
                     } else if (a instanceof File f) {
-                        String low = f.getName().toLowerCase();
+                        String low = f.getName().toLowerCase(java.util.Locale.ROOT);
                         if (low.contains("icon") || low.contains("glyph")) return;
                     }
                 }
@@ -122,7 +122,7 @@ public class CustomFontHook {
                 if (Boolean.TRUE.equals(loading.get()) || p.getResult() == null) return;
                 try { // same safeguard as above: leave icon/glyph fonts alone
                     Object path = XposedHelpers.getObjectField(p.thisObject, "mPath");
-                    if (path != null && (path.toString().toLowerCase().contains("icon") || path.toString().toLowerCase().contains("glyph"))) return;
+                    if (path != null && (path.toString().toLowerCase(java.util.Locale.ROOT).contains("icon") || path.toString().toLowerCase(java.util.Locale.ROOT).contains("glyph"))) return;
                 } catch (Throwable ignored) {}
                 Typeface tf = getActiveTypeface();
                 if (tf != null) p.setResult(Typeface.create(tf, weightOf((Typeface) p.getResult()), ((Typeface) p.getResult()).isItalic()));
@@ -163,7 +163,7 @@ public class CustomFontHook {
                 java.util.Map<String, Typeface> map = new android.util.ArrayMap<>(orig.size());
                 map.putAll(orig);
                 for (java.util.Map.Entry<String, Typeface> e : orig.entrySet()) {
-                    String k = e.getKey().toLowerCase();
+                    String k = e.getKey().toLowerCase(java.util.Locale.ROOT);
                     if (!(k.startsWith("sans-serif") || k.startsWith("roboto") || k.startsWith("google-sans"))
                             || k.contains("mono")) continue;
                     Typeface old = e.getValue();
