@@ -531,6 +531,17 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         ModuleLog.line("(InstaEclipse | NotesTray): ❌ Failed to hook");
                     }
 
+                    // Ported from Piko: feed share/save/repost/like-count, profile highlights,
+                    // hidden requests row, empty bottom space. Each install fails closed and logs.
+                    try {
+                        if (!skip("FeedUfiButtonsHook")) new io.github.somilkhan.instaeclipse2.mods.feed.FeedUfiButtonsHook().install(dexKitBridge);
+                        if (!skip("ProfileHighlightsHook")) new io.github.somilkhan.instaeclipse2.mods.ui.ProfileHighlightsHook().install(dexKitBridge);
+                        if (!skip("HideHiddenRequestsHook")) new io.github.somilkhan.instaeclipse2.mods.ghost.HideHiddenRequestsHook().install();
+                        if (!skip("BottomSpaceHook")) new io.github.somilkhan.instaeclipse2.mods.ui.BottomSpaceHook().install(dexKitBridge);
+                    } catch (Throwable t) {
+                        ModuleLog.line("(InstaEclipse | PikoPorts): ❌ " + t);
+                    }
+
                     // Download DM voice messages (#223)
                     try {
                         if (!skip("VoiceMessageDownloadHook")) new io.github.somilkhan.instaeclipse2.mods.media.VoiceMessageDownloadHook().install(dexKitBridge, hostClassLoader);

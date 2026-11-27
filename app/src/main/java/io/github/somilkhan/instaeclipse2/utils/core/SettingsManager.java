@@ -166,6 +166,13 @@ public class SettingsManager {
         editor.putInt("forceReelQuality", FeatureFlags.forceReelQuality);
         editor.putBoolean("disableRepost", FeatureFlags.disableRepost);
         editor.putBoolean("hideShareCreateGroup", FeatureFlags.hideShareCreateGroup);
+        editor.putBoolean("hideFeedShareButton", FeatureFlags.hideFeedShareButton);
+        editor.putBoolean("hideFeedSaveButton", FeatureFlags.hideFeedSaveButton);
+        editor.putBoolean("hideFeedRepostButton", FeatureFlags.hideFeedRepostButton);
+        editor.putBoolean("hideFeedLikeCount", FeatureFlags.hideFeedLikeCount);
+        editor.putBoolean("disableHighlights", FeatureFlags.disableHighlights);
+        editor.putBoolean("hideHiddenRequests", FeatureFlags.hideHiddenRequests);
+        editor.putBoolean("removeEmptyBottomSpace", FeatureFlags.removeEmptyBottomSpace);
         editor.putBoolean("exactTimestamps", FeatureFlags.exactTimestamps);
         editor.putBoolean("likeUndo", FeatureFlags.likeUndo);
         editor.putBoolean("profileFollowsYouLabel", FeatureFlags.profileFollowsYouLabel);
@@ -374,6 +381,13 @@ public class SettingsManager {
         FeatureFlags.forceReelQuality = prefs.getInt("forceReelQuality", 0);
         FeatureFlags.disableRepost = prefs.getBoolean("disableRepost", false);
         FeatureFlags.hideShareCreateGroup = prefs.getBoolean("hideShareCreateGroup", false);
+        FeatureFlags.hideFeedShareButton = prefs.getBoolean("hideFeedShareButton", false);
+        FeatureFlags.hideFeedSaveButton = prefs.getBoolean("hideFeedSaveButton", false);
+        FeatureFlags.hideFeedRepostButton = prefs.getBoolean("hideFeedRepostButton", false);
+        FeatureFlags.hideFeedLikeCount = prefs.getBoolean("hideFeedLikeCount", false);
+        FeatureFlags.disableHighlights = prefs.getBoolean("disableHighlights", false);
+        FeatureFlags.hideHiddenRequests = prefs.getBoolean("hideHiddenRequests", false);
+        FeatureFlags.removeEmptyBottomSpace = prefs.getBoolean("removeEmptyBottomSpace", false);
         FeatureFlags.exactTimestamps = prefs.getBoolean("exactTimestamps", false);
         FeatureFlags.likeUndo = prefs.getBoolean("likeUndo", false);
         FeatureFlags.profileFollowsYouLabel = prefs.getBoolean("profileFollowsYouLabel", false);

@@ -167,6 +167,13 @@ public class FeatureFlags {
     public static volatile boolean exactTimestamps = false; // absolute date/time instead of "3h ago" (#232)
     public static volatile String  exactTimestampFormat = ""; // its SimpleDateFormat pattern, "" = device default (#265)
     public static volatile boolean hideShareCreateGroup = false; // hide "Create group" on the DM share sheet (#240)
+    public static volatile boolean hideFeedShareButton = false; // hide the share button and count under feed posts (Piko port)
+    public static volatile boolean hideFeedSaveButton = false; // hide the save button under feed posts (Piko port)
+    public static volatile boolean hideFeedRepostButton = false; // hide the repost button under feed posts; disableRepost only blocks the action (Piko port)
+    public static volatile boolean hideFeedLikeCount = false; // hide the like count under feed posts (Piko port)
+    public static volatile boolean disableHighlights = false; // hide the story highlights row on profiles (Piko port)
+    public static volatile boolean hideHiddenRequests = false; // hide the Hidden requests row in message requests (Piko port)
+    public static volatile boolean removeEmptyBottomSpace = false; // drop the empty strip under the tab bar (Piko port)
 
 
     public static volatile boolean enableStoryMentions = false;

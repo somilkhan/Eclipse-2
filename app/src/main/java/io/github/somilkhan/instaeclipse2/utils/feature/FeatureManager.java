@@ -302,6 +302,13 @@ public class FeatureManager {
         reg(FeatureFlags.savedOnProfile,       "SavedOnProfile",       R.string.ig_feat_saved_on_profile);
         reg(FeatureFlags.hideNotesTray,        "HideNotesTray",        R.string.ig_feat_hide_notes);
         reg(FeatureFlags.hideDmBlend,          "HideDmBlend",          R.string.ig_feat_hide_blend);
+        reg(FeatureFlags.hideFeedShareButton, "HideFeedShareButton", R.string.ig_feat_hide_feed_share);
+        reg(FeatureFlags.hideFeedSaveButton, "HideFeedSaveButton", R.string.ig_feat_hide_feed_save);
+        reg(FeatureFlags.hideFeedRepostButton, "HideFeedRepostButton", R.string.ig_feat_hide_feed_repost);
+        reg(FeatureFlags.hideFeedLikeCount, "HideFeedLikeCount", R.string.ig_feat_hide_feed_like_count);
+        reg(FeatureFlags.disableHighlights, "DisableHighlights", R.string.ig_feat_disable_highlights);
+        reg(FeatureFlags.hideHiddenRequests, "HideHiddenRequests", R.string.ig_feat_hide_hidden_requests);
+        reg(FeatureFlags.removeEmptyBottomSpace, "RemoveEmptyBottomSpace", R.string.ig_feat_remove_bottom_space);
         reg(FeatureFlags.readReceiptChats,     "ReadReceiptChats",     R.string.ig_feat_read_receipt_chats);
         reg(FeatureFlags.hideThreadsButton,    "HideThreadsButton",    R.string.ig_feat_hide_threads);
         reg(FeatureFlags.offerPlaybackSpeed,   "PlaybackSpeed",        R.string.ig_playback_speed_title);

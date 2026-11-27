@@ -167,7 +167,7 @@ public class DialogUtils {
         mainLayout.addView(sectionHeader(context, I18n.t(context, R.string.feat_group_appearance)));
         LinearLayout appearance = createGroupCard(context);
         appearance.addView(createMenuRow(context, R.drawable.ic_palette, I18n.t(context, R.string.ig_dialog_menu_theme), A_APPEARANCE, () -> showThemeOptions(context), onCount(context, "customThemeEnabled", "customFontEnabled", "customEmojiEnabled")));
-        appearance.addView(createMenuRow(context, R.drawable.ic_sparkle, I18n.t(context, R.string.menu_feed), A_APPEARANCE, () -> showFeedOptions(context), onCount(context, "hideSuggestionsInFeed", "hideThreadsSuggestions", "hideLikedPosts", "hideCommunityNotes", "hidePlusUpsells", "followingOnlyFeed", "hideStoriesTray", "disableDiscoverPeople", "expandCaptions", "exactTimestamps", "highResolutionImages", "enablePhotoZoom", "disableVideoAutoPlay")));
+        appearance.addView(createMenuRow(context, R.drawable.ic_sparkle, I18n.t(context, R.string.menu_feed), A_APPEARANCE, () -> showFeedOptions(context), onCount(context, "hideSuggestionsInFeed", "hideThreadsSuggestions", "hideLikedPosts", "hideCommunityNotes", "hidePlusUpsells", "followingOnlyFeed", "hideStoriesTray", "disableDiscoverPeople", "expandCaptions", "exactTimestamps", "highResolutionImages", "enablePhotoZoom", "disableVideoAutoPlay", "hideFeedShareButton", "hideFeedSaveButton", "hideFeedRepostButton", "hideFeedLikeCount", "disableHighlights")));
         appearance.addView(createMenuRow(context, R.drawable.ic_tune, I18n.t(context, R.string.menu_navigation), A_APPEARANCE, () -> showNavigationOptions(context), navCount(context)));
         appearance.addView(createMenuRow(context, R.drawable.ic_movie, I18n.t(context, R.string.menu_reels), A_APPEARANCE, () -> showReelsOptions(context), onCount(context, "reelsAutoScroll", "reelsLockScroll", "forceReelScrubber", "holdLeftSlowMotion", "disableRepost")));
         appearance.addView(createMenuRow(context, R.drawable.ic_story_ring, I18n.t(context, R.string.menu_stories), A_APPEARANCE, () -> showStoriesOptions(context), onCount(context, "disableStoryFlipping", "enableStoryMentions", "storyLinks", "storyInfo", "storyViewerSearch")));
@@ -177,7 +177,7 @@ public class DialogUtils {
         mainLayout.addView(sectionHeader(context, I18n.t(context, R.string.feat_group_privacy)));
         LinearLayout privacy = createGroupCard(context);
         privacy.addView(createMenuRow(context, R.drawable.ic_eye, I18n.t(context, R.string.ig_dialog_menu_ghost_settings), A_PRIVACY, () -> showGhostOptions(context), onCount(context, "isGhostSeen", "isGhostTyping", "isGhostStory", "isGhostLive", "isGhostScreenshot", "allowScreenshots", "isGhostViewOnce", "permanentViewMode", "readReceiptChats", "spoofLastSeen", "airplaneMode")));
-        privacy.addView(createMenuRow(context, R.drawable.ic_chat, I18n.t(context, R.string.menu_messages), A_PRIVACY, () -> showMessagesOptions(context), onCount(context, "keepEphemeralMessages", "keepUnsentMessages", "keepEditHistory", "jumpToFirstMessage", "translateMessages", "bulkUnsend", "chatExport", "hideNotesTray", "hideDmBlend", "hideShareCreateGroup")));
+        privacy.addView(createMenuRow(context, R.drawable.ic_chat, I18n.t(context, R.string.menu_messages), A_PRIVACY, () -> showMessagesOptions(context), onCount(context, "keepEphemeralMessages", "keepUnsentMessages", "keepEditHistory", "jumpToFirstMessage", "translateMessages", "bulkUnsend", "chatExport", "hideNotesTray", "hideDmBlend", "hideShareCreateGroup", "hideHiddenRequests")));
         privacy.addView(createMenuRow(context, R.drawable.ic_eye_off, I18n.t(context, R.string.ig_hide_chats_title), A_PRIVACY, () -> showHideChatsOptions(context), onCount(context, "hideSpecificChats")));
         privacy.addView(createMenuRow(context, R.drawable.ic_shield, I18n.t(context, R.string.ig_dialog_misc_lock_section), A_PRIVACY, () -> showLockOptions(context), onCount(context, "lockDirectMessages", "lockWholeApp", "lockSavedCollections", "lockUseFingerprint")));
         privacy.addView(createMenuRow(context, R.drawable.ic_block, I18n.t(context, R.string.menu_ads_tracking), A_PRIVACY, () -> showAdOptions(context), onCount(context, "isAdBlockEnabled", "isAnalyticsBlocked", "disableTrackingLinks", "openLinksExternally", "removeMetaAI", "hideOnboardingPrompts")));
@@ -263,7 +263,7 @@ public class DialogUtils {
     /** Navigation: the switch count, plus "· Tab order changed" when the tab order isn't Instagram's. */
     private static String navCount(Context context) {
         String base = onCount(context, "hideTabHome", "hideTabReels", "hideTabCreate", "hideTabMessages",
-                "hideTabActivity", "hideTabProfile", "disableSwipeToCamera");
+                "hideTabActivity", "hideTabProfile", "disableSwipeToCamera", "removeEmptyBottomSpace");
         return io.github.somilkhan.instaeclipse2.mods.ui.DistractionFreeUIHook.isCustomTabOrder(FeatureFlags.navTabOrder)
                 ? base + " · " + I18n.t(context, R.string.nav_tab_order_changed) : base;
     }
@@ -1107,7 +1107,8 @@ public class DialogUtils {
                 flagSwitch(context, R.drawable.ic_download, "#5E5CE6", R.string.ig_dialog_ghost_chat_export, "chatExport"),
                 flagSwitch(context, R.drawable.ic_block, "#5E5CE6", R.string.ig_dialog_distraction_hide_notes_tray, "hideNotesTray"),
                 flagSwitch(context, R.drawable.ic_block, "#5E5CE6", R.string.ig_dialog_hide_dm_blend, "hideDmBlend"),
-                flagSwitch(context, R.drawable.ic_block, "#5E5CE6", R.string.ig_dialog_misc_hide_share_create_group, "hideShareCreateGroup")));
+                flagSwitch(context, R.drawable.ic_block, "#5E5CE6", R.string.ig_dialog_misc_hide_share_create_group, "hideShareCreateGroup"),
+                flagSwitch(context, R.drawable.ic_block, "#5E5CE6", R.string.ig_feat_hide_hidden_requests, "hideHiddenRequests")));
         layout.addView(createInfoSection(context, "", I18n.t(context, R.string.ie_keep_unsent_in_chat_hint)));
         showSectionDialog(context, I18n.t(context, R.string.menu_messages), layout, () -> {});
     }
@@ -1304,7 +1305,8 @@ public class DialogUtils {
                         v -> showStartupTabDialog(context, (TextView) findFirstText(v)))));
 
         layout.addView(sectionHeader(context, I18n.t(context, R.string.menu_nav_gestures)));
-        layout.addView(cardOf(context, extraSwitch(context, "#30D158", "disableSwipeToCamera")));
+        layout.addView(cardOf(context, extraSwitch(context, "#30D158", "disableSwipeToCamera"),
+                flagSwitch(context, R.drawable.ic_tune, "#30D158", R.string.ig_feat_remove_bottom_space, "removeEmptyBottomSpace")));
 
         showSectionDialog(context, I18n.t(context, R.string.menu_navigation), layout, () -> {});
     }
@@ -1438,7 +1440,12 @@ public class DialogUtils {
                 flagSwitch(context, R.drawable.ic_sparkle, "#64D2FF", R.string.ig_dialog_clean_feed_hide_plus, "hidePlusUpsells"),
                 flagSwitch(context, R.drawable.ic_sparkle, "#64D2FF", R.string.ig_dialog_clean_feed_following_only, "followingOnlyFeed"),
                 extraSwitch(context, "#64D2FF", "hideStoriesTray"),
-                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_dialog_misc_disable_discover_people, "disableDiscoverPeople")));
+                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_dialog_misc_disable_discover_people, "disableDiscoverPeople"),
+                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_feat_hide_feed_share, "hideFeedShareButton"),
+                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_feat_hide_feed_save, "hideFeedSaveButton"),
+                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_feat_hide_feed_repost, "hideFeedRepostButton"),
+                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_feat_hide_feed_like_count, "hideFeedLikeCount"),
+                flagSwitch(context, R.drawable.ic_block, "#64D2FF", R.string.ig_feat_disable_highlights, "disableHighlights")));
 
         // feat_options reads "Options:" (written for the companion app), so drop the colon for a header.
         layout.addView(sectionHeader(context, I18n.t(context, R.string.feat_options).replaceAll("[:：]\\s*$", "")));

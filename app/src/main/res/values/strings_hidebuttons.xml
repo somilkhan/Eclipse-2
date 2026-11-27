@@ -6,4 +6,11 @@
     <string name="ig_feat_hide_threads">Hide Threads</string>
     <string name="ig_hide_chat">Hide chat</string>
     <string name="ig_unhide_chat">Unhide chat</string>
+    <string name="ig_feat_hide_feed_share">Hide share button on posts</string>
+    <string name="ig_feat_hide_feed_save">Hide save button on posts</string>
+    <string name="ig_feat_hide_feed_repost">Hide repost button on posts</string>
+    <string name="ig_feat_hide_feed_like_count">Hide like count on posts</string>
+    <string name="ig_feat_disable_highlights">Hide highlights on profiles</string>
+    <string name="ig_feat_hide_hidden_requests">Hide \"Hidden requests\" in message requests</string>
+    <string name="ig_feat_remove_bottom_space">Remove empty space under the tab bar</string>
 </resources>
