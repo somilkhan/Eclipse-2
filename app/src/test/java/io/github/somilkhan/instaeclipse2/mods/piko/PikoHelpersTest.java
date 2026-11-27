@@ -77,6 +77,24 @@ public class PikoHelpersTest {
         assertNull(LikeAnimations.pick(LikeAnimations.RANDOM, Collections.singletonList("UNRECOGNIZED"), new Random()));
     }
 
+    @Test public void defaultHeartIsNotACustomAnimation() {
+        assertTrue(!LikeAnimations.isSelectable(LikeAnimations.DEFAULT_HEART));
+        assertNull(LikeAnimations.pick(LikeAnimations.RANDOM,
+                Collections.singletonList(LikeAnimations.DEFAULT_HEART), new Random(1)));
+    }
+
+    @Test public void metadataNameMatchesAcrossEnums() {
+        java.util.List<String> meta = Arrays.asList("ARES_LIKE_ACTIVATION", "RINGS_LIKE_AKI_KOCHI",
+                "RINGS_LIKE_NINA", "RINGS_LIKE_NIGEL", "UNRECOGNIZED");
+        assertEquals("RINGS_LIKE_NINA", LikeAnimations.metadataName("RINGS_LIKE_NINA", meta));
+        assertEquals("RINGS_LIKE_AKI_KOCHI", LikeAnimations.metadataName("RINGS_LIKE_AKI_KOICHI", meta));
+        assertNull(LikeAnimations.metadataName("RINGS_LIKE_ZARNA", meta));
+        assertNull(LikeAnimations.metadataName("ARES_LIKE_ACTIVATION", meta));
+        assertNull(LikeAnimations.metadataName(null, meta));
+        // NINO is 1 away from both NINA and... only NINA; NIGEL is farther.
+        assertEquals("RINGS_LIKE_NINA", LikeAnimations.metadataName("RINGS_LIKE_NINO", meta));
+    }
+
     @Test public void knownNamesAreSelectable() {
         for (String k : LikeAnimations.KNOWN) assertTrue(k, LikeAnimations.isSelectable(k));
     }

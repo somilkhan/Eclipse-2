@@ -10,6 +10,8 @@ public final class LikeAnimations {
 
     public static final String RANDOM = "RANDOM";
     private static final String RINGS = "RINGS_LIKE_";
+    /** Instagram's plain heart in the metadata enum: not a custom animation. */
+    public static final String DEFAULT_HEART = "ARES_LIKE_ACTIVATION";
 
     /** 458.0.0.0.57 render enum names (X.052j), for the settings picker; resolved by name at runtime. */
     public static final String[] KNOWN = {
@@ -26,7 +28,8 @@ public final class LikeAnimations {
 
     /** Real animations only: the enum's UNRECOGNIZED fallback (and anything unknown-shaped) is out. */
     public static boolean isSelectable(String name) {
-        return name != null && (name.startsWith(RINGS) || name.endsWith("_LIKE_ACTIVATION"));
+        return name != null && !DEFAULT_HEART.equals(name)
+                && (name.startsWith(RINGS) || name.endsWith("_LIKE_ACTIVATION"));
     }
 
     public static List<String> selectable(Iterable<String> names) {
@@ -60,5 +63,45 @@ public final class LikeAnimations {
         if (ok.isEmpty() || pref == null || pref.isEmpty()) return null;
         if (RANDOM.equals(pref)) return ok.get(random.nextInt(ok.size()));
         return ok.contains(pref) ? pref : null;
+    }
+
+    /**
+     * The constant in {@code names} for a picked name. The metadata and render enums spell a few
+     * names differently (e.g. AKI_KOICHI / AKI_KOCHI), so when there is no exact match the one
+     * selectable name within edit distance 2 is used. Null when none, or more than one, is close.
+     */
+    public static String metadataName(String pick, Iterable<String> names) {
+        if (pick == null) return null;
+        String best = null;
+        int bestDist = 3;
+        boolean tie = false;
+        for (String n : names) {
+            if (!isSelectable(n)) continue;
+            if (n.equals(pick)) return n;
+            int d = distance(pick, n, 3);
+            if (d < bestDist) { best = n; bestDist = d; tie = false; }
+            else if (d == bestDist) tie = true;
+        }
+        return tie ? null : best;
+    }
+
+    /** Levenshtein distance, stopping early at {@code cap}. */
+    static int distance(String a, String b, int cap) {
+        if (Math.abs(a.length() - b.length()) >= cap) return cap;
+        int[] prev = new int[b.length() + 1];
+        int[] cur = new int[b.length() + 1];
+        for (int j = 0; j <= b.length(); j++) prev[j] = j;
+        for (int i = 1; i <= a.length(); i++) {
+            cur[0] = i;
+            int rowMin = cur[0];
+            for (int j = 1; j <= b.length(); j++) {
+                int c = a.charAt(i - 1) == b.charAt(j - 1) ? 0 : 1;
+                cur[j] = Math.min(Math.min(cur[j - 1] + 1, prev[j] + 1), prev[j - 1] + c);
+                rowMin = Math.min(rowMin, cur[j]);
+            }
+            if (rowMin >= cap) return cap;
+            int[] t = prev; prev = cur; cur = t;
+        }
+        return Math.min(prev[b.length()], cap);
     }
 }

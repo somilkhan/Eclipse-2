@@ -1,4 +1,17 @@
 # Changelog
+
+## Unreleased
+
+### Fixes
+- Feed → Custom like animation did nothing. Only `LikeActionView` was hooked, but Instagram picks
+  the like animation from `XDTUserActivationMetadataImpl(animation, Boolean enabled, ...)` and
+  plays the plain heart when it is missing or disabled. Its constructor now gets the picked
+  animation and `enabled = TRUE`, as in Piko, and the view uses Instagram's own metadata → render
+  mapping so both agree. Random picks one animation per app start for both. The plain heart
+  (`ARES_LIKE_ACTIVATION`) is no longer offered as a "custom" pick, and names spelled differently
+  in the two enums (AKI_KOICHI / AKI_KOCHI) are matched. The log now shows which layers hooked and
+  the first animation applied.
+
 ## 0.9.0 (versionCode 23), for Instagram 458.0.0.0.67
 
 Clone app support, automatic crash reports, the story download fix for Instagram 458 and 19
