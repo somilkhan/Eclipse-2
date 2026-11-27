@@ -67,6 +67,36 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
+    <!-- Inter defaults for views without an explicit appearance (dialogs, menus, inputs). -->
+    <style name="TextAppearance.IE.Default" parent="android:TextAppearance.Material">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+    </style>
+    <style name="TextAppearance.IE.Default.Small" parent="android:TextAppearance.Material.Small">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+    </style>
+    <style name="TextAppearance.IE.Default.Medium" parent="android:TextAppearance.Material.Medium">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+    </style>
+    <style name="TextAppearance.IE.Default.Large" parent="android:TextAppearance.Material.Large">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+    </style>
+    <style name="TextAppearance.IE.Display.Large" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+    </style>
+    <style name="TextAppearance.IE.Display.Medium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+    </style>
+    <style name="TextAppearance.IE.Display.Small" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+    </style>
+
     <!-- ================= 0.8.4 type scale: iOS Dynamic Type "Large" sizes in Inter =================
          Large Title 34/41 bold · Title1 28/34 · Title2 22/28 · Title3 20/25 · Headline 17/22 semibold ·
          Body 17/22 · Callout 16/21 · Subhead 15/20 · Footnote 13/18 · Caption 12/16 · Caption2 11/13.
@@ -74,9 +104,9 @@
     <style name="TextAppearance.IE.LargeTitle" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textSize">34sp</item>
         <item name="lineHeight">41sp</item>
-        <item name="android:fontFamily">@font/inter_display</item>
-        <item name="fontFamily">@font/inter_display</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:textFontWeight">700</item>
         <item name="android:letterSpacing">-0.006</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
@@ -84,34 +114,34 @@
     <style name="TextAppearance.IE.Title1" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="android:textSize">28sp</item>
         <item name="lineHeight">34sp</item>
-        <item name="android:fontFamily">@font/inter_display</item>
-        <item name="fontFamily">@font/inter_display</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:textFontWeight">700</item>
         <item name="android:letterSpacing">-0.004</item>
     </style>
     <style name="TextAppearance.IE.Title2" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="android:textSize">22sp</item>
         <item name="lineHeight">28sp</item>
-        <item name="android:fontFamily">@font/inter_display</item>
-        <item name="fontFamily">@font/inter_display</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:textFontWeight">700</item>
         <item name="android:letterSpacing">-0.004</item>
     </style>
     <style name="TextAppearance.IE.Title3" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textSize">20sp</item>
         <item name="lineHeight">25sp</item>
-        <item name="android:fontFamily">@font/inter_display</item>
-        <item name="fontFamily">@font/inter_display</item>
+        <item name="android:fontFamily">@font/inter_display_semibold</item>
+        <item name="fontFamily">@font/inter_display_semibold</item>
         <item name="android:textFontWeight">600</item>
         <item name="android:letterSpacing">-0.002</item>
     </style>
     <style name="TextAppearance.IE.Headline" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:textSize">17sp</item>
         <item name="lineHeight">22sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:textFontWeight">600</item>
         <item name="android:letterSpacing">-0.022</item>
     </style>
@@ -140,6 +170,8 @@
         <item name="android:letterSpacing">-0.014</item>
     </style>
     <style name="TextAppearance.IE.Subhead.Emphasized">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:textFontWeight">600</item>
     </style>
     <style name="TextAppearance.IE.Footnote" parent="TextAppearance.Material3.BodySmall">
@@ -153,8 +185,8 @@
     <style name="TextAppearance.IE.Label" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:textSize">15sp</item>
         <item name="lineHeight">20sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:textFontWeight">600</item>
         <item name="android:letterSpacing">-0.014</item>
         <item name="android:textAllCaps">false</item>
@@ -168,19 +200,23 @@
         <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Caption.Emphasized">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
         <item name="android:textFontWeight">500</item>
     </style>
     <style name="TextAppearance.IE.Caption2" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">11sp</item>
         <item name="lineHeight">13sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:letterSpacing">0.006</item>
     </style>
     <!-- Bold dashboard section header ("Quick actions") -->
     <style name="TextAppearance.IE.SectionTitle" parent="TextAppearance.IE.Title3">
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/inter_display_bold</item>
+        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:textFontWeight">700</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
@@ -189,12 +225,12 @@
     <style name="IeHomeSection">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:paddingStart">4dp</item>
-        <item name="android:paddingEnd">4dp</item>
-        <item name="android:paddingBottom">10dp</item>
+        <item name="android:layout_marginTop">28dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">7dp</item>
         <item name="android:accessibilityHeading">true</item>
-        <item name="android:textAppearance">@style/TextAppearance.IE.SectionTitle</item>
+        <item name="android:textAppearance">@style/IeSectionLabel</item>
     </style>
 
     <!-- ================= shapes ================= -->
@@ -255,6 +291,40 @@
     <style name="Widget.IE.Button.DialogText" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:minHeight">48dp</item>
         <item name="android:textAppearance">@style/TextAppearance.IE.Headline</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+    </style>
+    <!-- iOS "bezeled gray" capsule: tertiary fill, accent label + glyph, 36dp tall. -->
+    <style name="Widget.IE.Button.Capsule" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">40dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">11sp</item>
+        <item name="autoSizeMaxTextSize">15sp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Subhead.Emphasized</item>
+        <item name="android:textColor">@color/ie_capsule_fg</item>
+        <item name="backgroundTint">@color/ie_fill_capsule</item>
+        <item name="iconTint">@color/ie_capsule_fg</item>
+        <item name="iconSize">17dp</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="rippleColor">@color/ie_ripple</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+    </style>
+    <!-- Plain accent glyph button (iOS borderless bar button). -->
+    <style name="Widget.IE.Button.PlainIcon" parent="Widget.Material3.Button.IconButton">
+        <item name="android:minWidth">44dp</item>
+        <item name="android:minHeight">44dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="iconTint">?attr/colorPrimary</item>
+        <item name="iconSize">20dp</item>
+        <item name="rippleColor">@color/ie_ripple</item>
         <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
     </style>
     <!-- 48dp round glass icon button (toolbar actions, edit) -->

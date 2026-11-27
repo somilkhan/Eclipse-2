@@ -54,6 +54,11 @@ public class HomeFragment extends Fragment {
 
     // px/s scroll speed — feels like a gentle conveyor belt
     private static final float SCROLL_SPEED_DP_PER_SEC = 48f;
+    /** Carousels rest on the content margin for a moment before drifting. */
+    private static final long AUTO_SCROLL_DELAY_MS = 3000L;
+    /** Screenshot tests turn the drift off so cards are captured at their resting position. */
+    @androidx.annotation.VisibleForTesting
+    public static boolean autoScrollEnabled = true;
 
     private static final String PREFS_NAME = "instaeclipse_cache";
     private static final String PREF_PINNED = "homePinnedShortcuts";
@@ -557,7 +562,7 @@ public class HomeFragment extends Fragment {
         textLp.setMarginEnd(dp(12));
         row.addView(texts, textLp);
 
-        MaterialSwitch sw = new MaterialSwitch(ctx);
+        MaterialSwitch sw = new ps.reso.instaeclipse.ui.glass.IosSwitch(ctx);
         sw.setChecked(localCache.getBoolean(s.key, false));
         sw.setContentDescription(getString(s.labelRes));
         row.addView(sw, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -796,10 +801,18 @@ public class HomeFragment extends Fragment {
         }
 
         void start() {
-            if (running || halfWidth <= 0) return;
+            if (running || halfWidth <= 0 || !autoScrollEnabled) return;
+            // Reduce motion / TalkBack: the strip stays still and scrolls only by hand.
+            if (ps.reso.instaeclipse.ui.glass.Motion.reduceMotion() || touchExploring()) return;
             running = true;
             lastFrame = 0;
-            sv.postOnAnimation(this);
+            sv.postOnAnimationDelayed(this, sv.getScrollX() == 0 ? AUTO_SCROLL_DELAY_MS : 0L);
+        }
+
+        private boolean touchExploring() {
+            android.view.accessibility.AccessibilityManager am = (android.view.accessibility.AccessibilityManager)
+                    sv.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            return am != null && am.isTouchExplorationEnabled();
         }
 
         void stop() {

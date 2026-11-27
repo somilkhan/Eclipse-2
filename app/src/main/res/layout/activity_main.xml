@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Edge-to-edge shell: content scrolls under a blurred compact top bar and a floating glass
-     navigation pill. Insets are applied in MainActivity. -->
+<!-- Edge-to-edge shell (iOS 26): content scrolls under a scroll-edge effect at the top (progressive
+     blur + fade, no bar, no hairline) and a floating Liquid Glass tab bar. Insets and the
+     edge effect implementation (library ScrollEdgeBlurView or in-house fallback) are set up in
+     MainActivity. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Everything glass may refract. Opaque so lenses never sample "nothing" (renders black). -->
     <FrameLayout
-        android:id="@+id/fragment_container"
+        android:id="@+id/content_stage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <!-- Compact bar: invisible over the large title, frosts in once it scrolls underneath. -->
-    <ps.reso.instaeclipse.ui.glass.BackdropBlurLayout
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ie_mesh_base" />
+    </FrameLayout>
+
+    <!-- Compact title: invisible over the large title, fades in once it scrolls underneath. -->
+    <FrameLayout
         android:id="@+id/top_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:alpha="0"
-        android:importantForAccessibility="no"
-        app:ieBlurRadius="24dp"
-        app:ieCornerRadius="0dp">
+        android:importantForAccessibility="no">
 
         <TextView
             android:id="@+id/toolbar_title_name"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="44dp"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginHorizontal="72dp"
             android:ellipsize="end"
@@ -35,14 +43,7 @@
             android:maxLines="1"
             android:text="@string/app_name"
             android:textAppearance="@style/TextAppearance.IE.Headline" />
-
-        <View
-            android:id="@+id/top_app_bar_hairline"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_gravity="bottom"
-            android:background="@color/ie_separator" />
-    </ps.reso.instaeclipse.ui.glass.BackdropBlurLayout>
+    </FrameLayout>
 
     <ps.reso.instaeclipse.ui.glass.GlassNavPill
         android:id="@+id/bottom_navigation"
@@ -52,7 +53,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="12dp"
         android:maxWidth="480dp"
-        app:ieBlurRadius="30dp"
+        app:ieBlurRadius="22dp"
         app:ieMenu="@menu/bottom_navigation_menu" />
 
 </FrameLayout>

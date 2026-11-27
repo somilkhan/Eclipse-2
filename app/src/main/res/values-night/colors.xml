@@ -57,6 +57,8 @@
     <color name="ie_icon_tile">#298B89FF</color>
     <color name="ie_fill_tertiary">#2C2C2E</color>
     <color name="ie_switch_track_off">#39393D</color>
+    <color name="ie_switch_on">#30D158</color>
     <color name="ie_switch_thumb">#FFFFFF</color>
     <color name="ie_glass_rim">#33FFFFFF</color>
+    <color name="ie_fill_capsule">#3D767680</color> <!-- iOS tertiarySystemFill: capsule buttons, search field -->
 </resources>

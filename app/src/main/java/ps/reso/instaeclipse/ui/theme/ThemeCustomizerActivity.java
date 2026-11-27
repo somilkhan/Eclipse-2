@@ -78,7 +78,7 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         setContentView(R.layout.activity_theme_customizer);
 
         MaterialToolbar toolbar = findViewById(R.id.theme_toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.theme_back).setOnClickListener(v -> finish());
         lightMode = (getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
                 != android.content.res.Configuration.UI_MODE_NIGHT_YES;
@@ -372,7 +372,8 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         public void onBindViewHolder(Holder holder, int position) {
             ThemePreset preset = presets.get(position);
             holder.name.setText(ThemePresets.getDisplayName(holder.itemView.getContext(), preset.id));
-            bindPreview(holder.preview, preset.palette.previewColors());
+            // Only the two colours that define a preset: background and accent (no error swatch).
+            bindPreview(holder.preview, new int[]{preset.palette.background, preset.palette.accent});
             boolean selected = !customMode && preset.id == selectedPresetId;
             // Unselected cards rely on the glass hairline; the selection gets an accent ring.
             holder.card.setStrokeColor(MaterialColors.getColor(holder.card, com.google.android.material.R.attr.colorPrimary));

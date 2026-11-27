@@ -50,7 +50,7 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <com.google.android.material.materialswitch.MaterialSwitch
+        <ps.reso.instaeclipse.ui.glass.IosSwitch
             android:id="@+id/sw_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
