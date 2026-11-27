@@ -49,9 +49,48 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
   - Unchanged and OK on 457: DisableRepost, DisableDoubleTapLike, DoubleTapExtras, ExpandCaptions,
     FeedPhotoZoom, FollowingOnlyFeed, HideCommunityNotes, HideSuggestedFeedItems.
   - Not verified on a device (no phone): row injection/click, scrubber gate semantics.
-- [~] Hooks B — partial: api.schemas video classes, profile Saved, Save Instants, follow-list export,
-  notes tray, high-res images done. Not done: max upload quality, DMs/ghost, stories, downloads;
-  checker report not re-run after Hooks B.
+- [x] Hooks B — earlier: api.schemas video classes, profile Saved, Save Instants, follow-list export,
+  notes tray, high-res images. Checker on 457.0.0.55.73: before Hooks B OK=61 PARTIAL=9 FAIL=4 NO-HOOK=5
+  -> after OK=72 PARTIAL=1 FAIL=1 NO-HOOK=5 (`docs/hook-verify/report-457-hooks_b.md`). The remaining
+  PARTIAL (VoiceMessageDownload compose rows) and FAIL (LocationSpoof, `Location.CREATOR`) are tagged
+  `(harness)`: the lookups resolve, and the module then calls real IG or framework code the host
+  can't run. The 5 NO-HOOK steps (NotificationRegistration, JumpToFirstMessage, ReadReceiptChat,
+  ExternalBrowser, FeedVideoDownload.install) install lazily at runtime. All fixes are fallbacks after
+  the old lookups.
+  - StringTables: plain `usingStrings` also matched the table method `static String A00(int)`
+    itself; `withoutTables` drops it and ExtrasLookup unions table users (fixes AccountLimit, X.0BJH.A01).
+  - MaxUploadQuality: high_quality_media_upload getter via string table (X.0BWS.A00).
+  - KeepUnsent / GhostEphemeralKeep: DirectThreadStore anchors via tables; ()Z ambiguity is resolved
+    by picking the instance ()Z that calls Iterator.remove (X.03GI.A0Z).
+  - FeedVideoDownload: isVideo falls back to "video_versions"; the Media author getter is preferred
+    over the dict user getter.
+  - LikeUndo: StringTables.findMethodUsingStrings fallback, then a void(Media) user of "media/%s/%s/".
+  - PlaybackSpeed: hero set/prepare via "HeroManager.prepareAndMayPlay" / "HeroServicePlayer…"
+    table users or a static wrapper in the same class (fixes device "prepare=null").
+  - Post/Caption menus: enum constants matched by `name()`, because IG enums override `toString()`.
+  - StoryMention: mentionsConverter via "StoryTappableObjectExt.mentionStickerstoReelInteractives".
+  - InstantUpload: 457 photo handoff is the instance QuickSnapCameraViewModel.A1C(Context, Bitmap, …);
+    the static File variant is video and stays out. Unit tests cover the binding.
+  - DevOptions: a Tier 1 miss is now an info line, because Tier 2 (structural) resolves on 457.
+  - Harness: dex `declared-synchronized`, real enum constants (EnumSupport), report header with
+    versionName/versionCode, `(harness)` tag, `IG_APK` / `--apk` for a second build.
+  - Root causes of the device and checker disagreement (device log 0.8.4-merged):
+    1. The phone runs beta 457.0.0.6.73 and the checker ran 457.0.0.55.73. Obfuscated names and
+       string-table placement differ per build (device: gate X.0EKw.A07, sheet X.09Cp, tray X.0emF,
+       HD getter User.A18; 55.73: X.071o.A07, X.0Ckr, X.0O1f, User.A1D). An OK on 55.73 never proved
+       6.73. The report header now names the exact build.
+    2. The string-table self-match bug above, which made several anchors hit the wrong method.
+    3. Harness gaps (synchronized flag, enum `values()`, `toString()`-overriding enums) hid real
+       failures or reported false ones.
+  - The merged device build 6949fcc predates every fix above (a86cc78 onward), so MaxUploadQuality,
+    dictUserGetter/isVideo, LikeUndo and PlaybackSpeed prepare=null in that log are expected.
+    PaidPartnershipFilter, ReelContentFilter, ProfileSpoof bio and SelectedMediaDownloads "capture
+    unavailable" appear only in the log section from an older build. Those classes don't exist in
+    this repo or in maintainer/0.8.4, so there's nothing to fix here.
+  - OPEN: not verified against 457.0.0.6.73. That APK (a beta) couldn't be fetched from the sandbox:
+    APKMirror/APKCombo returned 403, Uptodown is behind Turnstile and APKPure has no betas. Once it's
+    available: `IG_APK=~/ig/ig457_6.apk tools/hook-verify/run.sh`, then commit the report as
+    `docs/hook-verify/report-457-6-hooks_b.md`.
 - [x] Features (wip/features: repo links, maintainer docs, log export, release workflow, 0.8.4/22, safe pacing)
 - [~] UI — partial: glass design system, nav pill shell, Features screen. Not done: Home, Help,
   Logging, theme customizer, location picker screens (screenshot tests exist for review).

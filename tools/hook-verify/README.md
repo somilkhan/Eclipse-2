@@ -36,6 +36,25 @@ hooked members and the module's own log lines (failure lines are prefixed `!!`).
 - **NO-HOOK** — nothing hooked, nothing logged. Usually a hook that installs lazily (e.g. after an
   Activity exists) or a feature that only hooks framework classes at runtime; check by hand.
 - **ERROR** — the install call threw.
+- A `(harness)` suffix means every failure line of the step matches a known harness gap
+  (`hook-verify stub`, `CREATOR is null`, `Stub!`): the lookups resolved, but the module then tried
+  to *run* Instagram or framework code, which the host cannot do. Check those on a device.
+
+The report header names the exact Instagram build (`versionName (versionCode)`, read with `aapt`).
+**Results hold for that build only.** IG obfuscates per build, so 457.0.0.55.73 and the beta
+457.0.0.6.73 have different class/method names and string-table placement; an OK on one build says
+nothing about another. Check the device's versionName against the header before trusting a report,
+and run with `IG_APK=/path/to/other.apk` (or `--apk`) to verify a second build.
+
+## Fidelity details
+
+- Access flags are copied from dex, including dex-only `declared-synchronized` (0x20000), mapped to
+  `ACC_SYNCHRONIZED` so `Modifier.isSynchronized` matches ART.
+- Enums get real constants: `EnumSupport` decodes `<clinit>` (direct `new`+`<init>`, same-class static
+  factories, register moves), maps name/ordinal from each ctor's `Enum.<init>` super call, and fills
+  the static fields, `values()` and `valueOf()`. IG enums often override `toString()` with a server
+  value (e.g. `"normal"`), so module code should match constants with `Enum.name()`. A decoding
+  failure only logs to stderr and falls back to a plain synthesised class.
 
 ## Limits
 
