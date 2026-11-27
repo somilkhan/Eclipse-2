@@ -140,6 +140,49 @@ public class RemoveMetaAIHook {
         installMenuOptionFilter(bridge, classLoader);     // GEN_AI MediaOption rows in overflow menus
         installSearchSerpMetaAiHcm(bridge, classLoader);  // "Ask Meta AI" card in search results (446+)
         installReelContentDeepDive(bridge, classLoader);  // reel "Ask Meta AI about this" (Content Deep Dive)
+        installSheetRowFilter(bridge, classLoader);       // 457+: per-row adders of the reel ⋮ sheet
+    }
+
+    /**
+     * 457+: the reel ⋮ sheet (ClipsOrganicMediaItemViewMoreOptionsController) no longer builds an
+     * option list — each row is added by a void helper taking a MediaOption$Option (five of them on
+     * 457, e.g. add(Option, holder) and add(Context, Option, section, item)). Every such helper the
+     * controller invokes is hooked and skipped for Meta-AI options (GEN_AI_INFO,
+     * CONTENT_DEEP_DIVE, ...), so those rows are never added. Older builds still go through the
+     * list builders above; this just adds coverage.
+     */
+    private void installSheetRowFilter(DexKitBridge bridge, ClassLoader cl) {
+        final String option = "com.instagram.feed.media.mediaoption.MediaOption$Option";
+        XC_MethodHook skipMetaAi = new XC_MethodHook() {
+            @Override protected void beforeHookedMethod(MethodHookParam p) { ps.reso.instaeclipse.utils.core.JitGuard.tick(p.method);
+                if (!FeatureFlags.removeMetaAI) return;
+                for (Object a : p.args) {
+                    if (a instanceof Enum<?> e && e.getClass().getName().startsWith(option)
+                            && isMetaAiOption(e.name())) { p.setResult(null); return; }
+                }
+            }
+        };
+        int n = 0;
+        try {
+            java.util.Set<String> controllers = new java.util.LinkedHashSet<>();
+            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                    .usingStrings("ClipsOrganicMediaItemViewMoreOptionsController")))) controllers.add(md.getClassName());
+            java.util.Set<String> seen = new HashSet<>();
+            for (String c : controllers) {
+                var cd = bridge.getClassData(c);
+                if (cd == null) continue;
+                for (MethodData m : cd.getMethods()) {
+                    for (MethodData inv : m.getInvokes()) {
+                        if (!inv.isMethod() || !"void".equals(inv.getReturnTypeName())) continue;
+                        if (!inv.getParamTypeNames().contains(option) || !seen.add(inv.getDescriptor())) continue;
+                        try { XposedBridge.hookMethod(inv.getMethodInstance(cl), skipMetaAi); n++; } catch (Throwable ignored) {}
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|RemoveMetaAI) ⚠️ sheet-row filter: " + t.getMessage());
+        }
+        ModuleLog.line("(IE|RemoveMetaAI) sheet-row filter: " + n + " method(s)");
     }
 
     /**
@@ -449,7 +492,7 @@ public class RemoveMetaAIHook {
         }
     }
 
-    private static boolean isMetaAiOption(String name) {
+    static boolean isMetaAiOption(String name) {
         String n = name.toUpperCase();
         return n.contains("GEN_AI") || n.contains("GENAI") || n.contains("META_AI")
                 || n.contains("METAAI") || n.contains("ASK_META")
