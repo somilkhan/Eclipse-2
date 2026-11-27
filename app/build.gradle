@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace 'ps.reso.instaeclipse'
+    namespace 'io.github.somilkhan.instaeclipse2'
     compileSdk 34
     buildFeatures { buildConfig true }
 
     defaultConfig {
-        applicationId "ps.reso.instaeclipse"
+        applicationId "io.github.somilkhan.instaeclipse2"
         minSdkVersion 28
         targetSdk 36
         versionCode 22
@@ -16,7 +16,7 @@ android {
 
         // Single source of truth for the GitHub "owner/name" of this project.
         // Everything in code derives its links from RepoLinks, which reads this field.
-        buildConfigField "String", "GITHUB_REPO", "\"somilkhan/InstaEclipse\""
+        buildConfigField "String", "GITHUB_REPO", "\"somilkhan/InstaEclipse-2\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

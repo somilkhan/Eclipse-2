@@ -5,7 +5,7 @@ resume from GitHub alone: read this file, then the `wip/*` branches listed below
 
 ## Goal of 0.8.4
 
-Maintained continuation of InstaEclipse (original author: ReSo7200) at `somilkhan/InstaEclipse`.
+Maintained continuation of InstaEclipse (original author: ReSo7200) at `somilkhan/InstaEclipse-2`.
 Base: `contribute/remaining-fork-improvements` (real 0.8.1, versionCode 19).
 Target Instagram: **457.0.0.55.73** (arm64 build 386314341).
 
@@ -13,7 +13,7 @@ Target Instagram: **457.0.0.55.73** (arm64 build 386314341).
 |---|---|---|
 | Hooks A | `wip/hooks_a` | Offline DexKit verification harness against IG 457; Meta AI removal; Reels & posts (double-tap like, repost, Reels auto-scroll / scroll lock, reel scrubber, reel download menu, undo-like); feed |
 | Hooks B | `wip/hooks_b` | All other hooks: follow-list export, notes tray, Save Instants, profile Saved button, media classes that moved package, max upload quality, high-res images, DMs/ghost, stories, downloads |
-| Features | `wip/features` | Repo links -> somilkhan/InstaEclipse (single constant), maintainer docs (README credit, NOTICE, MAINTAINERS.md, CONTRIBUTING.md), log export "Save to storage", release workflow + RELEASING.md, version 0.8.4 (22), safe pacing for bulk actions |
+| Features | `wip/features` | Repo links -> somilkhan/InstaEclipse-2 (single constant), maintainer docs (README credit, NOTICE, MAINTAINERS.md, CONTRIBUTING.md), log export "Save to storage", release workflow + RELEASING.md, version 0.8.4 (22), safe pacing for bulk actions |
 | UI | `wip/ui` | Companion app redesign: liquid-glass look, floating nav pill, Apple-quality polish |
 | Bugs | `wip/bugs` | Bug audit + fixes across companion app and module, with tests |
 
@@ -99,7 +99,7 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 
 ## UI notes
 - iOS 26 "Liquid Glass" redesign (wip/ui). Glass is used only for chrome (tab bar, top scroll edge, back/search controls, dialogs); content cards are opaque grouped-inset rows on #F2F2F7 / black. Single accent: indigo #5856D6 (dark #8B89FF).
-- Glass components in `app/src/main/java/ps/reso/instaeclipse/ui/glass/`:
+- Glass components in `app/src/main/java/io/github/somilkhan/instaeclipse2/ui/glass/`:
   - `LiquidSupport` decides whether the `com.github.QWEA0:liquidglass` library may run (API 33+, native `nativegauss` loads, not battery saver / high contrast, not `-Dinstaeclipse.softBlur`/`noLiquid`). Any library failure calls `markBroken` and everything falls back to `BackdropBlurLayout`.
   - `SafeLiquidGlassView` wraps the library `LiquidGlassView` and catches `Throwable` while drawing (the library only catches `Exception`, but a missing `.so` throws `UnsatisfiedLinkError`).
   - `GlassNavPill` is our own tab bar (TalkBack tabs, RTL, haptics). It uses the library glass body plus a clear droplet lens when available, otherwise the in-house glass. It shrinks to a compact capsule when you scroll down and expands when you scroll up or tap it; it doesn't shrink with TalkBack and skips the animation with reduce motion. We don't use the library's `LiquidGlassTabBar` because it swallows every touch, has no accessibility and has an RTL index bug.

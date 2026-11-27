@@ -12,11 +12,11 @@
 |---|---|
 | [@ReSo7200](https://github.com/ReSo7200) | Creator of InstaEclipse and maintainer of the original repository ([ReSo7200/InstaEclipse](https://github.com/ReSo7200/InstaEclipse)) up to 0.8.x |
 
-This repository, [somilkhan/InstaEclipse](https://github.com/somilkhan/InstaEclipse), continues
+This repository, [somilkhan/InstaEclipse-2](https://github.com/somilkhan/InstaEclipse-2), continues
 InstaEclipse from the original codebase with the original history preserved. All credit for the
 project's design and most of its features goes to ReSo7200 and the contributors listed in the
 companion app and on the
-[contributors graph](https://github.com/somilkhan/InstaEclipse/graphs/contributors).
+[contributors graph](https://github.com/somilkhan/InstaEclipse-2/graphs/contributors).
 
 ## What maintainers do
 

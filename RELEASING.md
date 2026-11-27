@@ -65,10 +65,10 @@ Paste the contents of `keystore.b64` as `RELEASE_KEYSTORE_BASE64`, then delete `
 Or with the GitHub CLI:
 
 ```sh
-gh secret set RELEASE_KEYSTORE_BASE64 --repo somilkhan/InstaEclipse < keystore.b64
-gh secret set RELEASE_KEYSTORE_PASSWORD --repo somilkhan/InstaEclipse
-gh secret set RELEASE_KEY_ALIAS --repo somilkhan/InstaEclipse --body instaeclipse
-gh secret set RELEASE_KEY_PASSWORD --repo somilkhan/InstaEclipse
+gh secret set RELEASE_KEYSTORE_BASE64 --repo somilkhan/InstaEclipse-2 < keystore.b64
+gh secret set RELEASE_KEYSTORE_PASSWORD --repo somilkhan/InstaEclipse-2
+gh secret set RELEASE_KEY_ALIAS --repo somilkhan/InstaEclipse-2 --body instaeclipse
+gh secret set RELEASE_KEY_PASSWORD --repo somilkhan/InstaEclipse-2
 ```
 
 Also make sure **Settings -> Actions -> General -> Workflow permissions** allows the workflow token
@@ -98,7 +98,7 @@ new key (0.8.4). Later releases update in place.
      `0.8.5` is accepted; the workflow fails if neither matches).
    - `versionCode` = previous + 1 (must always increase, including for betas).
 3. If the tested Instagram build changed, update `TESTED_INSTAGRAM` in
-   [`ExportBrand.java`](app/src/main/java/ps/reso/instaeclipse/utils/core/ExportBrand.java) and the
+   [`ExportBrand.java`](app/src/main/java/io/github/somilkhan/instaeclipse2/utils/core/ExportBrand.java) and the
    README Compatibility section.
 4. Add a section to [`CHANGELOG.md`](CHANGELOG.md). The heading must be one of `## 0.8.4`,
    `## v0.8.4` or `## [0.8.4]` (text after the version, like ` - 2026-11-27`, is fine). For

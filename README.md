@@ -1,15 +1,15 @@
 <div align="center">
-  <img src="assets/logo.png" alt="InstaEclipse" width="120" />
-  <h1>InstaEclipse</h1>
+  <img src="assets/logo.png" alt="InstaEclipse 2 logo" width="120" />
+  <h1>InstaEclipse 2</h1>
   <p><b>Instagram, the way you want it.</b><br/>
   An LSPosed module for privacy, downloads, a cleaner feed, smarter stories and DMs, and your own look. Everything is a switch inside Instagram.</p>
 
   <p>
-    <a href="https://github.com/somilkhan/InstaEclipse/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/somilkhan/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
-    <a href="https://github.com/somilkhan/InstaEclipse/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/somilkhan/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
-    <a href="https://github.com/somilkhan/InstaEclipse/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/somilkhan/InstaEclipse/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/InstaEclipse-2/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/somilkhan/InstaEclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/InstaEclipse-2/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/somilkhan/InstaEclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/InstaEclipse-2/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/somilkhan/InstaEclipse-2/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="https://t.me/InstaEclipse"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-Channel-26A5E4?style=for-the-badge&logo=telegram&labelColor=0d0d0d"/></a>
-    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/somilkhan/InstaEclipse?style=for-the-badge&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/somilkhan/InstaEclipse-2?style=for-the-badge&color=1a1a2e&labelColor=0d0d0d"/></a>
   </p>
 
   <p>
@@ -24,26 +24,14 @@
 
 ---
 
-> **This is the maintained continuation of InstaEclipse.** InstaEclipse was created by
+> **InstaEclipse 2 is the maintained continuation of InstaEclipse.** The original was written by
 > [ReSo7200](https://github.com/ReSo7200) ([original repository](https://github.com/ReSo7200/InstaEclipse)).
-> Development continues here at [somilkhan/InstaEclipse](https://github.com/somilkhan/InstaEclipse)
-> with the full history preserved. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
-
-<p align="center">
-  <a href="https://trendshift.io/repositories/14145?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14145" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/14145/daily?language=Java" alt="ReSo7200%2FInstaEclipse | Trendshift" width="250" height="55"/>
-  </a>
-</p>
-
-## What is it
-
-InstaEclipse is a module for [LSPosed](https://github.com/JingMatrix/LSPosed) (rooted phones) and [LSPatch](https://github.com/JingMatrix/LSPatch) (no root). Long press the Explore (search) tab inside Instagram and the InstaEclipse menu slides up. Flip what you want, and most things apply right away.
-
-It comes with a companion app too. That is where you see whether the module is running, read its logs, back up your settings, edit themes, and get help.
-
-Under the hood, InstaEclipse uses [DexKit](https://github.com/LuckyPray/DexKit) to find what it needs inside Instagram every time Instagram updates, instead of relying on names that change with each build. So when Instagram ships a new version, most features keep working without waiting for a module update.
-
-> InstaEclipse is a personal, educational project. It is not affiliated with Meta or Instagram. See the [Disclaimer](DISCLAIMER.md).
+> This fork keeps the full history. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
+>
+> **Upgrading from the original InstaEclipse?** InstaEclipse 2 uses its own package name
+> (`io.github.somilkhan.instaeclipse2`), so it installs next to the original instead of replacing it.
+> Settings do not carry over. Back them up in the old app first, then restore them here, and enable the
+> new module in LSPosed. If you use LSPatch, patch Instagram again.
 
 ---
 
@@ -311,7 +299,7 @@ A big Instagram update can still knock a feature out until it is patched. The me
 
 > Get Instagram [457.0.0.55.73 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) rather than the Play Store. The Play build is not always fully supported.
 
-Download the latest InstaEclipse APK from [**Releases**](https://github.com/somilkhan/InstaEclipse/releases/latest), then follow the path for your phone.
+Download the latest InstaEclipse APK from [**Releases**](https://github.com/somilkhan/InstaEclipse-2/releases/latest), then follow the path for your phone.
 
 ### Rooted, with LSPosed
 
@@ -408,8 +396,8 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 ### Everyone who has pitched in
 
-<a href="https://github.com/somilkhan/InstaEclipse/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=somilkhan/InstaEclipse" alt="Contributors"/>
+<a href="https://github.com/somilkhan/InstaEclipse-2/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=somilkhan/InstaEclipse-2" alt="Contributors"/>
 </a>
 
 <sub>Made with <a href="https://contrib.rocks">contrib.rocks</a></sub>
@@ -434,8 +422,8 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 Pull requests, bug reports, ideas and translations are all welcome.
 
-- Found a bug? [Open a bug report](https://github.com/somilkhan/InstaEclipse/issues/new/choose)
-- Have an idea? [Request a feature](https://github.com/somilkhan/InstaEclipse/issues/new/choose)
+- Found a bug? [Open a bug report](https://github.com/somilkhan/InstaEclipse-2/issues/new/choose)
+- Have an idea? [Request a feature](https://github.com/somilkhan/InstaEclipse-2/issues/new/choose)
 - Want to build something? Fork the repo and open a pull request. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
 - Maintainers: see [MAINTAINERS.md](MAINTAINERS.md) and [RELEASING.md](RELEASING.md).
 

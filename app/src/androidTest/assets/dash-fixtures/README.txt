@@ -34,8 +34,8 @@ hard resolution ceilings, and the Android XML parser. It does not launch or hook
 Build: gradlew.bat :app:assembleDebug :app:assembleDebugAndroidTest
 Run only after device-test authorization and explicit device selection:
   adb -s SERIAL shell am instrument -w -r -e class
-    ps.reso.instaeclipse.utils.download.NativeDownloadEngineTest
-    ps.reso.instaeclipse.test/androidx.test.runner.AndroidJUnitRunner
+    io.github.somilkhan.instaeclipse2.utils.download.NativeDownloadEngineTest
+    io.github.somilkhan.instaeclipse2.test/androidx.test.runner.AndroidJUnitRunner
 Both target and test APKs must already be installed with matching signatures. Do not replace
 an upstream-signed target APK or uninstall it to bypass a mismatch.
 

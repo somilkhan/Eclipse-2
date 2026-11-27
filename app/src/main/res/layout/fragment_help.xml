@@ -44,7 +44,7 @@
             android:accessibilityHeading="true"
             android:textAppearance="@style/IeSectionLabel" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:id="@+id/faq_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                 android:orientation="vertical"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp" />
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
         <!-- ===== Troubleshooting (LSPosed / LSPatch links) ===== -->
         <TextView
@@ -69,7 +69,7 @@
             android:accessibilityHeading="true"
             android:textAppearance="@style/IeSectionLabel" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:id="@+id/module_not_working_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -203,7 +203,7 @@
                     android:layout_marginBottom="4dp"
                     android:text="@string/help_lspatch_guide" />
             </LinearLayout>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
         <!-- ===== Community / Get help ===== -->
         <TextView
@@ -215,7 +215,7 @@
             android:accessibilityHeading="true"
             android:textAppearance="@style/IeSectionLabel" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:id="@+id/get_help_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -278,7 +278,7 @@
                         app:iconSize="18dp" />
                 </LinearLayout>
             </LinearLayout>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
         <!-- ===== About ===== -->
         <TextView
@@ -290,7 +290,7 @@
             android:accessibilityHeading="true"
             android:textAppearance="@style/IeSectionLabel" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:id="@+id/about_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -354,7 +354,7 @@
                     app:icon="@drawable/ic_github_logo"
                     app:iconSize="18dp" />
             </LinearLayout>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

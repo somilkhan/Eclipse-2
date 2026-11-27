@@ -45,7 +45,7 @@
             android:textAppearance="@style/TextAppearance.IE.Headline" />
     </FrameLayout>
 
-    <ps.reso.instaeclipse.ui.glass.GlassNavPill
+    <io.github.somilkhan.instaeclipse2.ui.glass.GlassNavPill
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

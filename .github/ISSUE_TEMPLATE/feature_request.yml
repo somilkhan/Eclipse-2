@@ -14,7 +14,7 @@ body:
       label: Pre-submission checklist
       description: You must check every box before submitting.
       options:
-        - label: I have searched [existing issues](https://github.com/somilkhan/InstaEclipse/issues) and this feature has **not already been requested**.
+        - label: I have searched [existing issues](https://github.com/somilkhan/InstaEclipse-2/issues) and this feature has **not already been requested**.
           required: true
         - label: This is a feature request for **InstaEclipse**, not a general Instagram feature.
           required: true

@@ -98,19 +98,19 @@ public final class Runner {
 
     /** Flags on (so every feature's install path runs), statics the hooks read from Module. */
     private void prepareModuleState() throws Exception {
-        Class<?> flags = Class.forName("ps.reso.instaeclipse.utils.feature.FeatureFlags", true, moduleLoader);
+        Class<?> flags = Class.forName("io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags", true, moduleLoader);
         int on = 0;
         for (Field f : flags.getDeclaredFields()) {
             if (!Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())) continue;
             if (f.getType() == boolean.class) { f.setAccessible(true); f.setBoolean(null, true); on++; }
         }
         System.out.println("[hook-verify] FeatureFlags: " + on + " boolean flags forced on");
-        Class<?> module = Class.forName("ps.reso.instaeclipse.Xposed.Module", true, moduleLoader);
+        Class<?> module = Class.forName("io.github.somilkhan.instaeclipse2.Xposed.Module", true, moduleLoader);
         setStatic(module, "dexKitBridge", bridge);
         setStatic(module, "hostClassLoader", igLoader);
         setStatic(module, "moduleSourceDir", moduleSource);
         try { // same as Module.handleLoadPackage on the device
-            Class.forName("ps.reso.instaeclipse.utils.core.StringTables", true, moduleLoader)
+            Class.forName("io.github.somilkhan.instaeclipse2.utils.core.StringTables", true, moduleLoader)
                     .getMethod("init", String.class).invoke(null, apk);
         } catch (ClassNotFoundException ignored) {}
     }
@@ -144,7 +144,7 @@ public final class Runner {
         if (varTypes.containsKey(q)) q = varTypes.get(q);
         if (q.contains(".")) return q;
         if (imports.containsKey(q)) return imports.get(q);
-        return "ps.reso.instaeclipse.Xposed." + q;
+        return "io.github.somilkhan.instaeclipse2.Xposed." + q;
     }
 
     private Object arg(String a) {

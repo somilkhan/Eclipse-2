@@ -257,7 +257,7 @@ Log:
 
 ## OK — UnsentThreadButtonHook
 
-`new ps.reso.instaeclipse.mods.ghost.UnsentThreadButtonHook().install(lpparam.classLoader)` (58 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.UnsentThreadButtonHook().install(lpparam.classLoader)` (58 ms)
 
 Hooked (5):
 - `android.app.Activity#onPostResume()void`
@@ -273,7 +273,7 @@ Log:
 
 ## OK — HideChatsHook
 
-`new ps.reso.instaeclipse.mods.ghost.HideChatsHook().install(dexKitBridge, lpparam.classLoader)` (324 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.HideChatsHook().install(dexKitBridge, lpparam.classLoader)` (324 ms)
 
 Hooked (3):
 - `X.00BN#<init>(android.content.Context,X.04om,com.instagram.common.session.UserSession,com.instagram.direct.store.impl.DirectThreadStoreImpl,com.instagram.direct.store.impl.sqlite.DirectSQLiteDiskIO,X.00B6,java.lang.Object)`
@@ -288,7 +288,7 @@ Log:
 
 ## OK — CustomFontHook
 
-`new ps.reso.instaeclipse.mods.ui.CustomFontHook().install(lpparam.classLoader)` (75 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.CustomFontHook().install(lpparam.classLoader)` (75 ms)
 
 Hooked (9):
 - `android.graphics.Typeface#createFromAsset(android.content.res.AssetManager,java.lang.String)android.graphics.Typeface`
@@ -356,7 +356,7 @@ Log:
 
 ## OK — DisableRepostHook
 
-`new ps.reso.instaeclipse.mods.ui.DisableRepostHook().install(dexKitBridge, lpparam.classLoader)` (416 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.DisableRepostHook().install(dexKitBridge, lpparam.classLoader)` (416 ms)
 
 Hooked (2):
 - `X.0Mnv#EF5(android.view.View,X.010B,X.0Gv1,java.lang.String,java.lang.String,java.lang.String,kotlin.jvm.functions.Function0,int)void`
@@ -370,7 +370,7 @@ Log:
 
 ## OK — LockDirectMessagesHook
 
-`new ps.reso.instaeclipse.mods.ui.LockDirectMessagesHook().install(lpparam.classLoader)` (52 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.LockDirectMessagesHook().install(lpparam.classLoader)` (52 ms)
 
 Hooked (1):
 - `com.instagram.modal.ModalActivity#onResume()void`
@@ -419,7 +419,7 @@ Hooked (5):
 
 ## OK — ExactTimestampHook
 
-`new ps.reso.instaeclipse.mods.misc.ExactTimestampHook().install(dexKitBridge)` (135 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.ExactTimestampHook().install(dexKitBridge)` (135 ms)
 
 Hooked (1):
 - `X.03fs#A08(android.content.res.Resources,X.04TA,X.03fs,java.lang.Integer,double,double,boolean,boolean,boolean,boolean)java.lang.String`
@@ -431,7 +431,7 @@ Log:
 
 ## OK — ExpandCaptionsHook
 
-`new ps.reso.instaeclipse.mods.feed.ExpandCaptionsHook().install(dexKitBridge)` (179 ms)
+`new io.github.somilkhan.instaeclipse2.mods.feed.ExpandCaptionsHook().install(dexKitBridge)` (179 ms)
 
 Hooked (2):
 - `X.02oM#A03(android.content.Context,X.05i1,com.instagram.search.common.analytics.SearchContext,X.02oM,java.lang.String,java.lang.String,boolean)android.text.SpannableStringBuilder`
@@ -444,7 +444,7 @@ Log:
 
 ## OK — HideCommunityNotesHook
 
-`new ps.reso.instaeclipse.mods.feed.HideCommunityNotesHook().install(dexKitBridge, hostClassLoader)` (66 ms)
+`new io.github.somilkhan.instaeclipse2.mods.feed.HideCommunityNotesHook().install(dexKitBridge, hostClassLoader)` (66 ms)
 
 Hooked (2):
 - `com.instagram.api.schemas.ImmutablePandoMediaOverlayPayloadSchema#Cqf()X.02ES`
@@ -457,7 +457,7 @@ Log:
 
 ## OK — ReelsControlsHook
 
-`new ps.reso.instaeclipse.mods.extras.ReelsControlsHook().install(dexKitBridge, hostClassLoader)` (917 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.ReelsControlsHook().install(dexKitBridge, hostClassLoader)` (917 ms)
 
 Hooked (3):
 - `X.0AMH#A09(com.instagram.common.session.UserSession,boolean)boolean`
@@ -472,7 +472,7 @@ Log:
 
 ## OK — AccountLimitHook
 
-`new ps.reso.instaeclipse.mods.extras.AccountLimitHook().install(dexKitBridge, hostClassLoader)` (1007 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.AccountLimitHook().install(dexKitBridge, hostClassLoader)` (1007 ms)
 
 Hooked (1):
 - `X.0BJH#A01(X.08Ji,int)boolean`
@@ -484,7 +484,7 @@ Log:
 
 ## OK — AirplaneModeHook
 
-`new ps.reso.instaeclipse.mods.extras.AirplaneModeHook().install(hostClassLoader)` (55 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.AirplaneModeHook().install(hostClassLoader)` (55 ms)
 
 Hooked (3):
 - `com.instagram.realtimeclient.RealtimeClientManager#<init>(android.content.Context,com.instagram.common.session.UserSession,com.instagram.realtimeclient.clientconfig.RealtimeClientConfig,com.instagram.realtimeclient.MainRealtimeEventHandler,X.0GeL)`
@@ -498,7 +498,7 @@ Log:
 
 ## OK — HighResolutionImageHook
 
-`new ps.reso.instaeclipse.mods.extras.HighResolutionImageHook().install(dexKitBridge, hostClassLoader)` (173 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.HighResolutionImageHook().install(dexKitBridge, hostClassLoader)` (173 ms)
 
 Hooked (1):
 - `X.03kB#A02(java.lang.Integer,java.util.List,int)com.instagram.common.typedurl.ImageUrl`
@@ -510,7 +510,7 @@ Log:
 
 ## OK — OnboardingPromptHook
 
-`new ps.reso.instaeclipse.mods.extras.OnboardingPromptHook().install(dexKitBridge, hostClassLoader)` (167 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.OnboardingPromptHook().install(dexKitBridge, hostClassLoader)` (167 ms)
 
 Hooked (1):
 - `X.0dcp#A09(android.content.Context,com.instagram.bloks.hosting.IgBloksScreenConfig)void`
@@ -522,11 +522,11 @@ Log:
 
 ## NO-HOOK — NotificationRegistrationHook
 
-`new ps.reso.instaeclipse.mods.extras.NotificationRegistrationHook().install()` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.NotificationRegistrationHook().install()` (51 ms)
 
 ## OK — StartupTabHook
 
-`new ps.reso.instaeclipse.mods.ui.StartupTabHook().install(hostClassLoader)` (53 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.StartupTabHook().install(hostClassLoader)` (53 ms)
 
 Hooked (4):
 - `android.app.Instrumentation#callActivityOnCreate(android.app.Activity,android.os.Bundle,android.os.PersistableBundle)void`
@@ -541,7 +541,7 @@ Log:
 
 ## OK — SwipeToCameraHook
 
-`new ps.reso.instaeclipse.mods.extras.SwipeToCameraHook().install(hostClassLoader)` (53 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.SwipeToCameraHook().install(hostClassLoader)` (53 ms)
 
 Hooked (1):
 - `com.instagram.ui.swipenavigation.container.SwipeNavigationContainer#setInternalPosition(com.instagram.ui.swipenavigation.container.PositionConfig)void`
@@ -553,7 +553,7 @@ Log:
 
 ## OK — FollowingOnlyFeedHook
 
-`new ps.reso.instaeclipse.mods.feed.FollowingOnlyFeedHook().install(dexKitBridge, hostClassLoader)` (168 ms)
+`new io.github.somilkhan.instaeclipse2.mods.feed.FollowingOnlyFeedHook().install(dexKitBridge, hostClassLoader)` (168 ms)
 
 Hooked (5):
 - `X.03dn#A01(android.content.Context,X.08Ci,X.0TXl,com.instagram.common.session.UserSession,X.03dA,X.02vf)void`
@@ -569,7 +569,7 @@ Log:
 
 ## OK — ProfileFollowsYouHook
 
-`new ps.reso.instaeclipse.mods.ui.ProfileFollowsYouHook().install(dexKitBridge, hostClassLoader)` (125 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.ProfileFollowsYouHook().install(dexKitBridge, hostClassLoader)` (125 ms)
 
 Hooked (2):
 - `com.instagram.profile.fragment.UserDetailFragment#A0m(com.instagram.profile.fragment.UserDetailFragment,boolean)void`
@@ -582,7 +582,7 @@ Log:
 
 ## OK — PlaybackSpeedHook
 
-`new ps.reso.instaeclipse.mods.media.PlaybackSpeedHook().install(dexKitBridge, hostClassLoader)` (1314 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.PlaybackSpeedHook().install(dexKitBridge, hostClassLoader)` (1314 ms)
 
 Hooked (23):
 - `X.06mS#A0O(com.instagram.feed.media.Media,X.0Kel,X.09tm,X.010B,X.0KcA,int,boolean)boolean`
@@ -620,7 +620,7 @@ Log:
 
 ## OK — HideNotesTrayHook
 
-`new ps.reso.instaeclipse.mods.ui.HideNotesTrayHook().install(dexKitBridge)` (188 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.HideNotesTrayHook().install(dexKitBridge)` (188 ms)
 
 Hooked (1):
 - `X.0BUT#invoke(java.lang.Object,java.lang.Object,java.lang.Object)java.lang.Object`
@@ -632,7 +632,7 @@ Log:
 
 ## PARTIAL — VoiceMessageDownloadHook
 
-`new ps.reso.instaeclipse.mods.media.VoiceMessageDownloadHook().install(dexKitBridge, hostClassLoader)` (642 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.VoiceMessageDownloadHook().install(dexKitBridge, hostClassLoader)` (642 ms)
 
 Hooked (6):
 - `X.0QCO#A00(X.0QCO,java.lang.String,java.lang.String,boolean)X.02wO`
@@ -652,7 +652,7 @@ Log:
 
 ## OK — EditHistoryHook
 
-`new ps.reso.instaeclipse.mods.ghost.EditHistoryHook().install(dexKitBridge, hostClassLoader)` (246 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.EditHistoryHook().install(dexKitBridge, hostClassLoader)` (246 ms)
 
 Hooked (2):
 - `X.02wO#A19(com.instagram.common.session.UserSession,X.02wO,X.02yO)void`
@@ -665,7 +665,7 @@ Log:
 
 ## NO-HOOK — JumpToFirstMessageHook
 
-`new ps.reso.instaeclipse.mods.ghost.JumpToFirstMessageHook().install()` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.JumpToFirstMessageHook().install()` (51 ms)
 
 Log:
 ```
@@ -674,7 +674,7 @@ Log:
 
 ## NO-HOOK — ReadReceiptChatHook
 
-`new ps.reso.instaeclipse.mods.ghost.ReadReceiptChatHook().install(hostClassLoader)` (52 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.ReadReceiptChatHook().install(hostClassLoader)` (52 ms)
 
 Log:
 ```
@@ -683,7 +683,7 @@ Log:
 
 ## OK — StoryViewerSearchHook
 
-`new ps.reso.instaeclipse.mods.ui.StoryViewerSearchHook().install(dexKitBridge, hostClassLoader)` (316 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.StoryViewerSearchHook().install(dexKitBridge, hostClassLoader)` (316 ms)
 
 Hooked (1):
 - `X.0TVX#A07(java.util.List,boolean,boolean,boolean)void`
@@ -695,7 +695,7 @@ Log:
 
 ## OK — CommentSearchHook
 
-`new ps.reso.instaeclipse.mods.misc.CommentSearchHook().install(dexKitBridge, hostClassLoader)` (475 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.CommentSearchHook().install(dexKitBridge, hostClassLoader)` (475 ms)
 
 Hooked (2):
 - `com.instagram.comments.mvvm.viewmodel.CommentListViewModel#A07(X.0Cwz,X.0Cwy,X.0Cwy,X.0Cxi,X.0D3l,X.0DBq,X.0DBr,X.0Cvj,X.0Cwv,X.0D7l,com.instagram.comments.mvvm.viewmodel.CommentListViewModel,X.0Nxz,X.0DBs,X.0Gom,boolean,boolean,boolean)X.0ejk`
@@ -709,7 +709,7 @@ Log:
 
 ## OK — ChatExportHook
 
-`new ps.reso.instaeclipse.mods.ghost.ChatExportHook().install(dexKitBridge, hostClassLoader)` (345 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.ChatExportHook().install(dexKitBridge, hostClassLoader)` (345 ms)
 
 Hooked (1):
 - `X.03GI#<init>(com.instagram.common.session.UserSession,X.02yB,java.util.List)`
@@ -721,7 +721,7 @@ Log:
 
 ## OK — FollowListExportHook
 
-`new ps.reso.instaeclipse.mods.misc.FollowListExportHook().install(dexKitBridge, hostClassLoader)` (390 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.FollowListExportHook().install(dexKitBridge, hostClassLoader)` (390 ms)
 
 Hooked (1):
 - `X.0T5x#onViewCreated(android.view.View,android.os.Bundle)void`
@@ -734,7 +734,7 @@ Log:
 
 ## OK — LikeUndoHook
 
-`new ps.reso.instaeclipse.mods.misc.LikeUndoHook().install(dexKitBridge)` (391 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.LikeUndoHook().install(dexKitBridge)` (391 ms)
 
 Hooked (1):
 - `X.0Sm8#A03(android.content.Context,X.09rh,com.instagram.common.session.UserSession,X.0Whp,com.instagram.feed.media.Media,X.01Yz,com.instagram.search.common.analytics.SearchContext,java.lang.Double,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Long,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.util.Map,boolean)void`
@@ -746,7 +746,7 @@ Log:
 
 ## OK — ShareSheetCleanupHook
 
-`new ps.reso.instaeclipse.mods.ui.ShareSheetCleanupHook().install(hostClassLoader)` (56 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.ShareSheetCleanupHook().install(hostClassLoader)` (56 ms)
 
 Hooked (2):
 - `instagram.features.direct.fragment.sharesheet.DirectShareSheetFragment#onViewCreated(android.view.View,android.os.Bundle)void`
@@ -759,7 +759,7 @@ Log:
 
 ## NO-HOOK — ExternalBrowserHook
 
-`new ps.reso.instaeclipse.mods.misc.ExternalBrowserHook().install()` (52 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.ExternalBrowserHook().install()` (52 ms)
 
 Log:
 ```
@@ -802,7 +802,7 @@ Log:
 
 ## OK — StoryLinksHook
 
-`new ps.reso.instaeclipse.mods.misc.StoryLinksHook().install(dexKitBridge, lpparam.classLoader)` (389 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.StoryLinksHook().install(dexKitBridge, lpparam.classLoader)` (389 ms)
 
 Hooked (9):
 - `X.0NnR#A0x(X.00I2,X.0NnR,X.0BT1,boolean)java.lang.CharSequence[]`
@@ -823,7 +823,7 @@ Log:
 
 ## OK — StoryInfoHook
 
-`new ps.reso.instaeclipse.mods.misc.StoryInfoHook().install(dexKitBridge, lpparam.classLoader)` (1507 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.StoryInfoHook().install(dexKitBridge, lpparam.classLoader)` (1507 ms)
 
 Hooked (9):
 - `X.0NnR#A0x(X.00I2,X.0NnR,X.0BT1,boolean)java.lang.CharSequence[]`
@@ -901,7 +901,7 @@ Log:
 
 ## OK — DoubleTapExtrasHook
 
-`new ps.reso.instaeclipse.mods.misc.DoubleTapExtrasHook().install(dexKitBridge, lpparam.classLoader)` (293 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.DoubleTapExtrasHook().install(dexKitBridge, lpparam.classLoader)` (293 ms)
 
 Hooked (6):
 - `X.0EcE#onDoubleTap(android.view.MotionEvent)boolean`
@@ -984,7 +984,7 @@ Log:
 
 ## OK — MaxUploadQualityHook
 
-`new ps.reso.instaeclipse.mods.media.MaxUploadQualityHook().install(dexKitBridge, lpparam.classLoader)` (512 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.MaxUploadQualityHook().install(dexKitBridge, lpparam.classLoader)` (512 ms)
 
 Hooked (1):
 - `X.0BWS#A00(X.02nf)boolean`
@@ -1087,7 +1087,7 @@ Log:
 
 ## OK — InstantSaveHook
 
-`new ps.reso.instaeclipse.mods.media.InstantSaveHook().install(lpparam.classLoader)` (53 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.InstantSaveHook().install(lpparam.classLoader)` (53 ms)
 
 Hooked (2):
 - `com.instagram.quicksnap.viewer.compose.QuickSnapMediaViewerScreenKt$QuickSnapMediaViewerScreen$30$1$1$21$1#<init>(androidx.compose.runtime.MutableState,androidx.compose.runtime.MutableState,androidx.compose.runtime.MutableState,X.0X94,com.instagram.common.session.UserSession,com.instagram.compose.ui.emitter.AnimatedParticleEffectState,X.03Et,java.util.List,java.util.List,X.0UAG,int,boolean)`
@@ -1101,7 +1101,7 @@ Log:
 
 ## OK — InstantUploadHook
 
-`new ps.reso.instaeclipse.mods.media.InstantUploadHook().install(lpparam.classLoader)` (55 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.InstantUploadHook().install(lpparam.classLoader)` (55 ms)
 
 Hooked (10):
 - `com.instagram.quicksnap.camera.domain.QuickSnapCameraViewModel#A1C(android.content.Context,android.graphics.Bitmap,X.07aN,X.0SYs,X.0TL7,X.0ZCd,java.lang.Long,java.lang.String,java.lang.String,X.0UAG,X.02oc,X.0mym,float,long,boolean)java.lang.Object`
@@ -1171,7 +1171,7 @@ Log:
 
 ## OK — LockedCollectionsHook
 
-`new ps.reso.instaeclipse.mods.ui.LockedCollectionsHook().install(hostClassLoader)` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.LockedCollectionsHook().install(hostClassLoader)` (51 ms)
 
 Hooked (1):
 - `androidx.fragment.app.Fragment#onResume()void`
@@ -1183,7 +1183,7 @@ Log:
 
 ## OK — SavedOnProfileHook
 
-`new ps.reso.instaeclipse.mods.ui.SavedOnProfileHook().install(dexKitBridge, hostClassLoader)` (57 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.SavedOnProfileHook().install(dexKitBridge, hostClassLoader)` (57 ms)
 
 Hooked (1):
 - `androidx.fragment.app.Fragment#onResume()void`
@@ -1195,7 +1195,7 @@ Log:
 
 ## OK — HideHeaderButtonsHook
 
-`new ps.reso.instaeclipse.mods.ui.HideHeaderButtonsHook().install(hostClassLoader)` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.HideHeaderButtonsHook().install(hostClassLoader)` (51 ms)
 
 Hooked (1):
 - `android.app.Activity#onResume()void`
@@ -1207,7 +1207,7 @@ Log:
 
 ## OK — ShareLinkDownloadHook
 
-`new ps.reso.instaeclipse.mods.media.ShareLinkDownloadHook().install(hostClassLoader)` (52 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.ShareLinkDownloadHook().install(hostClassLoader)` (52 ms)
 
 Hooked (3):
 - `com.instagram.common.session.UserSession#<init>(X.08Jf,java.lang.String,X.02as,boolean,boolean)`
@@ -1298,7 +1298,7 @@ Log:
 
 ## OK — TerminatedExecutorGuard
 
-`new ps.reso.instaeclipse.mods.core.TerminatedExecutorGuard().install(lpparam.classLoader)` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.core.TerminatedExecutorGuard().install(lpparam.classLoader)` (51 ms)
 
 Hooked (1):
 - `java.util.concurrent.ThreadPoolExecutor$AbortPolicy#rejectedExecution(java.lang.Runnable,java.util.concurrent.ThreadPoolExecutor)void`

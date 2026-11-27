@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ps.reso.instaeclipse.ui.glass.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/theme_preset_card"
     android:layout_width="match_parent"
@@ -31,4 +31,4 @@
             android:ellipsize="end" />
 
     </LinearLayout>
-</ps.reso.instaeclipse.ui.glass.GlassCardView>
+</io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>

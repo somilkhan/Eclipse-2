@@ -155,7 +155,7 @@
     </LinearLayout>
 
     <!-- Log console -->
-    <ps.reso.instaeclipse.ui.glass.GlassCardView
+    <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -247,5 +247,5 @@
                 android:indeterminate="true"
                 android:visibility="gone" />
         </FrameLayout>
-    </ps.reso.instaeclipse.ui.glass.GlassCardView>
+    </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 </LinearLayout>

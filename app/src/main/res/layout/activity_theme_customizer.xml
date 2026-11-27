@@ -50,7 +50,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
             <!-- Master enable switch -->
-            <ps.reso.instaeclipse.ui.glass.GlassCardView
+            <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp">
@@ -84,13 +84,13 @@
                         android:textAppearance="@style/TextAppearance.IE.Body"
                         android:textColor="?attr/colorOnSurface" />
 
-                    <ps.reso.instaeclipse.ui.glass.IosSwitch
+                    <io.github.somilkhan.instaeclipse2.ui.glass.IosSwitch
                         android:id="@+id/theme_enable_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/theme_enable" />
                 </LinearLayout>
-            </ps.reso.instaeclipse.ui.glass.GlassCardView>
+            </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
             <!-- Presets section -->
             <LinearLayout
@@ -183,7 +183,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ps.reso.instaeclipse.ui.glass.GlassCardView
+                <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -194,7 +194,7 @@
                         android:nestedScrollingEnabled="false"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp" />
-                </ps.reso.instaeclipse.ui.glass.GlassCardView>
+                </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/theme_reset_custom"
@@ -210,7 +210,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <!-- Compact bar: transparent over the large title, frosts in once it scrolls underneath. -->
-    <ps.reso.instaeclipse.ui.glass.BackdropBlurLayout
+    <io.github.somilkhan.instaeclipse2.ui.glass.BackdropBlurLayout
         android:id="@+id/theme_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -238,7 +238,7 @@
             android:layout_height="0.5dp"
             android:layout_gravity="bottom"
             android:background="@color/ie_separator" />
-    </ps.reso.instaeclipse.ui.glass.BackdropBlurLayout>
+    </io.github.somilkhan.instaeclipse2.ui.glass.BackdropBlurLayout>
 
     <!-- Toolbar only hosts the back button (always visible, glass circle). -->
     <com.google.android.material.appbar.MaterialToolbar

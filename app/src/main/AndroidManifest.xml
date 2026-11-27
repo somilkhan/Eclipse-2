@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="ps.reso.instaeclipse">
+    package="io.github.somilkhan.instaeclipse2">
 
 
     <application
@@ -74,7 +74,7 @@
              Only supported Instagram packages may open it (checked in openFile). -->
         <provider
             android:name=".utils.log.LogMirrorProvider"
-            android:authorities="ps.reso.instaeclipse.logmirror"
+            android:authorities="io.github.somilkhan.instaeclipse2.logmirror"
             android:exported="true" />
 
         <!-- Settings sync, Instagram -> companion: the hooked Instagram process pushes its
@@ -82,7 +82,7 @@
              supported Instagram packages may call it (checked in call()). -->
         <provider
             android:name=".utils.core.PrefsSyncProvider"
-            android:authorities="ps.reso.instaeclipse.prefsync"
+            android:authorities="io.github.somilkhan.instaeclipse2.prefsync"
             android:exported="true" />
 
         <activity android:name=".mods.media.VideoFramePickerActivity" android:exported="false" android:theme="@style/Theme.InstaEclipse" />
@@ -135,9 +135,9 @@
          registered inside the hooked process require senders to hold it, so only this APK
          (signed with the same key) can change settings there. See IpcSecurity. -->
     <permission
-        android:name="ps.reso.instaeclipse.permission.MODULE_IPC"
+        android:name="io.github.somilkhan.instaeclipse2.permission.MODULE_IPC"
         android:protectionLevel="signature" />
-    <uses-permission android:name="ps.reso.instaeclipse.permission.MODULE_IPC" />
+    <uses-permission android:name="io.github.somilkhan.instaeclipse2.permission.MODULE_IPC" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
 

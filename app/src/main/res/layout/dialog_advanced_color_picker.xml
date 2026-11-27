@@ -12,7 +12,7 @@
     android:paddingEnd="24dp"
     android:paddingBottom="4dp">
 
-    <ps.reso.instaeclipse.ui.theme.AdvancedColorPickerView
+    <io.github.somilkhan.instaeclipse2.ui.theme.AdvancedColorPickerView
         android:id="@+id/color_picker_view"
         android:layout_width="match_parent"
         android:layout_height="220dp" />

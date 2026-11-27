@@ -52,7 +52,7 @@
 
         <!-- ============ STATUS HERO ============
              Grouped inset card: identity header, then hairline-separated status rows. -->
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:id="@+id/instagram_status_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                             android:layout_height="30dp"
                             android:layout_gravity="center"
                             android:contentDescription="@string/instagram_logo"
-                            android:src="@drawable/ic_instagram_logo" />
+                            android:src="@drawable/ic_app_mark" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -295,7 +295,7 @@
                         app:icon="@drawable/ic_ui_download" />
                 </LinearLayout>
             </LinearLayout>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
         <!-- ============ QUICK SHORTCUTS ============ -->
         <LinearLayout
@@ -326,7 +326,7 @@
                 tools:ignore="SpeakableTextPresentCheck" />
         </LinearLayout>
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -360,7 +360,7 @@
                     app:drawableTint="?attr/colorOnSurfaceVariant"
                     app:drawableTopCompat="@drawable/ic_ui_edit" />
             </LinearLayout>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
         <TextView
             android:id="@+id/home_shortcuts_hint"
@@ -378,7 +378,7 @@
             style="@style/IeHomeSection"
             android:text="@string/how_to_use" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView
             android:id="@+id/how_to_use_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -415,14 +415,14 @@
                     android:textAppearance="@style/TextAppearance.IE.Subhead"
                     android:textColor="?attr/colorOnSurface" />
             </LinearLayout>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+        </io.github.somilkhan.instaeclipse2.ui.glass.GlassCardView>
 
         <!-- ============ CONTRIBUTORS ============ -->
         <TextView
             style="@style/IeHomeSection"
             android:text="@string/contributors" />
 
-        <ps.reso.instaeclipse.utils.ui.LoopScrollView
+        <io.github.somilkhan.instaeclipse2.utils.ui.LoopScrollView
             android:id="@+id/contributors_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -442,14 +442,14 @@
                 android:orientation="horizontal"
                 android:paddingStart="0dp"
                 android:paddingEnd="4dp" />
-        </ps.reso.instaeclipse.utils.ui.LoopScrollView>
+        </io.github.somilkhan.instaeclipse2.utils.ui.LoopScrollView>
 
         <!-- ============ SPECIAL THANKS ============ -->
         <TextView
             style="@style/IeHomeSection"
             android:text="@string/special_thanks" />
 
-        <ps.reso.instaeclipse.utils.ui.LoopScrollView
+        <io.github.somilkhan.instaeclipse2.utils.ui.LoopScrollView
             android:id="@+id/special_thanks_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -469,7 +469,7 @@
                 android:orientation="horizontal"
                 android:paddingStart="0dp"
                 android:paddingEnd="4dp" />
-        </ps.reso.instaeclipse.utils.ui.LoopScrollView>
+        </io.github.somilkhan.instaeclipse2.utils.ui.LoopScrollView>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

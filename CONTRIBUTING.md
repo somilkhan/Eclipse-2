@@ -1,12 +1,12 @@
 # Contributing to InstaEclipse
 
 Thanks for helping. InstaEclipse is maintained at
-[somilkhan/InstaEclipse](https://github.com/somilkhan/InstaEclipse) as the continuation of the
+[somilkhan/InstaEclipse-2](https://github.com/somilkhan/InstaEclipse-2) as the continuation of the
 project created by [ReSo7200](https://github.com/ReSo7200).
 
 ## Reporting bugs
 
-1. Search [existing issues](https://github.com/somilkhan/InstaEclipse/issues) first.
+1. Search [existing issues](https://github.com/somilkhan/InstaEclipse-2/issues) first.
 2. Use the bug report template and include:
    - InstaEclipse version and Instagram version (Instagram build matters: hooks are found per build).
    - Root (LSPosed) or no-root (LSPatch), Android version and device.

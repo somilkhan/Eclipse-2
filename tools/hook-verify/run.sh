@@ -82,6 +82,6 @@ APKVER=""
 heavy java -Xmx"${HOOKVERIFY_XMX:-3g}" -XX:+UnlockDiagnosticVMOptions -XX:-BytecodeVerificationRemote -XX:-BytecodeVerificationLocal \
   -cp "$FW:$MOCK:$ASM:$DEXLIB" \
   -Dhookverify.apk="$APK" -Dhookverify.dexkit="$LIB" -Dhookverify.moduleCp="$MODULE_CP" \
-  -Dhookverify.moduleJava="$REPO/app/src/main/java/ps/reso/instaeclipse/Xposed/Module.java" \
+  -Dhookverify.moduleJava="$REPO/app/src/main/java/io/github/somilkhan/instaeclipse2/Xposed/Module.java" \
   -Dhookverify.report="$REPORT" -Dhookverify.apkVersion="$APKVER" -Dhookverify.filter="$FILTER" -Dhookverify.echo="$ECHO" \
   hookverify.Main

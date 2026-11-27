@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *   hookverify.apk        Instagram APK (required)
  *   hookverify.dexkit     path to the host libdexkit.so (required)
  *   hookverify.moduleCp   module runtime classpath incl. runner classes (required, ':'-separated)
- *   hookverify.moduleJava path to app/src/main/java/ps/reso/instaeclipse/Xposed/Module.java (required)
+ *   hookverify.moduleJava path to app/src/main/java/io/github/somilkhan/instaeclipse2/Xposed/Module.java (required)
  *   hookverify.report     output markdown report (default build/hook-verify/report.md)
  *   hookverify.filter     regex on step keys to run only some steps
  *   hookverify.timeout    per-step timeout seconds (default 300)

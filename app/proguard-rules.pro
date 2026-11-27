@@ -4,7 +4,7 @@
 -keepattributes *Annotation*, SourceFile, LineNumberTable
 
 # Keep ALL classes & members (methods, fields)
--keep class ps.reso.instaeclipse.** { *; }
+-keep class io.github.somilkhan.instaeclipse2.** { *; }
 
 # Keep everything related to Xposed API
 -keep class de.robv.android.xposed.** { *; }
