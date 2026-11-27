@@ -61,9 +61,9 @@ android {
         // Robolectric screenshot tests (ScreenshotTest) need merged resources + assets.
         unitTests.includeAndroidResources = true
         unitTests.all {
-            // Pass -Pie.screenshots=true to write PNGs to docs/screenshots/.
+            // Pass -Pie.screenshots=true to write PNGs to docs/screenshots/0.8.4/.
             if (project.hasProperty('ie.screenshots')) {
-                systemProperty 'instaeclipse.screenshotDir', rootProject.file('docs/screenshots').absolutePath
+                systemProperty 'instaeclipse.screenshotDir', rootProject.file('docs/screenshots/0.8.4').absolutePath
             }
             systemProperty 'robolectric.pixelCopyRenderMode', 'hardware'
             // Robolectric's RenderEffect doesn't really blur: screenshots use the CPU blur path

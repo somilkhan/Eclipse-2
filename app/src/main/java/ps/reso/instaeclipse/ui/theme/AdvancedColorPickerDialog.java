@@ -152,7 +152,14 @@ public class AdvancedColorPickerDialog extends DialogFragment {
     }
 
     private void syncUiFromColor(int color) {
-        if (previewSwatch != null) previewSwatch.setBackgroundColor(color);
+        if (previewSwatch != null) {
+            android.graphics.drawable.GradientDrawable sw = new android.graphics.drawable.GradientDrawable();
+            sw.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+            sw.setColor(color);
+            sw.setStroke(Math.max(1, Math.round(getResources().getDisplayMetrics().density)),
+                    androidx.core.content.ContextCompat.getColor(requireContext(), R.color.ie_separator));
+            previewSwatch.setBackground(sw);
+        }
         if (rgbLabel != null) {
             rgbLabel.setText(getString(R.string.theme_rgba_format, Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color)));
         }

@@ -74,6 +74,7 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_theme_customizer);
 
         MaterialToolbar toolbar = findViewById(R.id.theme_toolbar);
@@ -81,7 +82,9 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         lightMode = (getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
                 != android.content.res.Configuration.UI_MODE_NIGHT_YES;
-        toolbar.setSubtitle(lightMode ? R.string.theme_set_light : R.string.theme_set_dark);
+        ((TextView) findViewById(R.id.theme_subtitle))
+                .setText(lightMode ? R.string.theme_set_light : R.string.theme_set_dark);
+        setupGlassChrome(toolbar);
 
         enableSwitch = findViewById(R.id.theme_enable_switch);
         presetsContent = findViewById(R.id.theme_presets_content);
@@ -193,6 +196,52 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         icon.setContentDescription(getString(expanded ? R.string.theme_collapse_section : R.string.theme_expand_section));
     }
 
+    /**
+     * Edge-to-edge chrome shared with the main tabs: the scroller is padded for the status and
+     * navigation bars, the back button floats below the status bar and the frosted compact bar
+     * fades in as the large title scrolls underneath it.
+     */
+    private void setupGlassChrome(MaterialToolbar toolbar) {
+        androidx.core.widget.NestedScrollView scroll = findViewById(R.id.theme_scroll);
+        View content = findViewById(R.id.theme_content);
+        ps.reso.instaeclipse.ui.glass.BackdropBlurLayout topBar = findViewById(R.id.theme_top_bar);
+        View largeTitle = findViewById(R.id.theme_large_title);
+        topBar.setBlurSource(scroll);
+        topBar.setRimVisible(false);
+        final int baseTop = content.getPaddingTop();
+        final int baseBottom = content.getPaddingBottom();
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.theme_root), (v, insets) -> {
+            androidx.core.graphics.Insets bars = insets.getInsets(
+                    androidx.core.view.WindowInsetsCompat.Type.systemBars()
+                            | androidx.core.view.WindowInsetsCompat.Type.displayCutout());
+            content.setPadding(content.getPaddingLeft(), baseTop + bars.top,
+                    content.getPaddingRight(), baseBottom + bars.bottom);
+            v.setPadding(bars.left, 0, bars.right, 0);
+            topBar.setPadding(0, bars.top, 0, 0);
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+            lp.topMargin = bars.top;
+            toolbar.setLayoutParams(lp);
+            return insets;
+        });
+        scroll.setOnScrollChangeListener((androidx.core.widget.NestedScrollView.OnScrollChangeListener)
+                (v, x, y, ox, oy) -> {
+                    float start = largeTitle.getTop() - dp(56) + largeTitle.getHeight() * 0.35f;
+                    float range = Math.max(1f, largeTitle.getHeight() * 0.65f);
+                    float p = Math.max(0f, Math.min(1f, (y - start) / range));
+                    if (topBar.getAlpha() != p) topBar.setAlpha(p);
+                });
+    }
+
+    /** Hairline around preview swatches so near-white / near-black colours stay visible on glass. */
+    private void outlineSwatches(ViewGroup container) {
+        int outline = androidx.core.content.ContextCompat.getColor(this, R.color.ie_separator);
+        for (int i = 0; i < container.getChildCount(); i++) {
+            if (container.getChildAt(i).getBackground() instanceof GradientDrawable) {
+                ((GradientDrawable) container.getChildAt(i).getBackground()).setStroke(Math.max(1, dp(1) / 2 + 1), outline);
+            }
+        }
+    }
+
     private static String formatColorHex(int color) {
         if (Color.alpha(color) == 255) return String.format("#%06X", 0xFFFFFF & color);
         return String.format("#%08X", color);
@@ -298,6 +347,7 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
 
     private void bindPreview(LinearLayout container, int[] colors) {
         IgThemePalette.bindCardPreview(this, container, colors);
+        outlineSwatches(container);
     }
 
     private int dp(int value) {
@@ -323,11 +373,10 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
             holder.name.setText(ThemePresets.getDisplayName(holder.itemView.getContext(), preset.id));
             bindPreview(holder.preview, preset.palette.previewColors());
             boolean selected = !customMode && preset.id == selectedPresetId;
-            int stroke = selected
-                    ? MaterialColors.getColor(holder.card, com.google.android.material.R.attr.colorPrimary)
-                    : MaterialColors.getColor(holder.card, com.google.android.material.R.attr.colorOutline);
-            holder.card.setStrokeColor(stroke);
-            holder.card.setStrokeWidth(selected ? dp(2) : dp(1));
+            // Unselected cards rely on the glass hairline; the selection gets an accent ring.
+            holder.card.setStrokeColor(MaterialColors.getColor(holder.card, com.google.android.material.R.attr.colorPrimary));
+            holder.card.setStrokeWidth(selected ? dp(2) : 0);
+            holder.card.setSelected(selected);
             holder.card.setOnClickListener(v -> selectPreset(preset));
         }
 
@@ -367,7 +416,10 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
             GradientDrawable swatch = new GradientDrawable();
             swatch.setCornerRadius(dp(10));
             swatch.setColor(color);
+            swatch.setStroke(Math.max(1, dp(1) / 2 + 1),
+                    androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.ie_separator));
             holder.swatch.setBackground(swatch);
+            holder.divider.setVisibility(position == getItemCount() - 1 ? View.GONE : View.VISIBLE);
             holder.itemView.setOnClickListener(v -> {
                 if (!customMode && selectedPresetId > 0) {
                     workingPalette = ThemePresets.getById(selectedPresetId).palette.copy();
@@ -385,12 +437,14 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
             final View swatch;
             final TextView label;
             final TextView hex;
+            final View divider;
 
             Holder(View itemView) {
                 super(itemView);
                 swatch = itemView.findViewById(R.id.theme_slot_swatch);
                 label = itemView.findViewById(R.id.theme_slot_label);
                 hex = itemView.findViewById(R.id.theme_slot_hex);
+                divider = itemView.findViewById(R.id.theme_slot_divider);
             }
         }
     }
