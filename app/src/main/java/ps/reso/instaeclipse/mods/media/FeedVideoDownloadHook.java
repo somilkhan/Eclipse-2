@@ -801,7 +801,8 @@ public class FeedVideoDownloadHook {
             });
 
     static boolean isMediaVideo(Object media) {
-        if (media == null || resolvedIsVideoMethod == null) return false;
+        if (media == null) return false;
+        if (resolvedIsVideoMethod == null) return hasVideoVersions(media);
         try {
             Object target = resolvedIsVideoMethod.getDeclaringClass().isInstance(media)
                     ? media
@@ -813,6 +814,27 @@ public class FeedVideoDownloadHook {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    /**
+     * 457+ fallback for {@link #isMediaVideo}: the media-type check moved into Pando helpers and
+     * no longer sits on a Media ()Z method the "is_video" logger calls, so a non-empty
+     * video_versions list (photos have none) decides.
+     */
+    private static boolean hasVideoVersions(Object media) {
+        for (Method getter : resolvedVideoVersionsGetters) {
+            try {
+                Object owner = getter.getDeclaringClass().isInstance(media)
+                        ? media
+                        : MediaModelResolver.findObjectOfType(media, getter.getDeclaringClass(), 5);
+                if (owner == null) continue;
+                Object result;
+                ForceReelQualityHook.RAW.set(Boolean.TRUE);
+                try { result = getter.invoke(owner); } finally { ForceReelQualityHook.RAW.remove(); }
+                if (result instanceof List<?> l && !l.isEmpty()) return true;
+            } catch (Throwable ignored) {}
+        }
+        return false;
     }
 
     /**
@@ -1753,8 +1775,13 @@ public class FeedVideoDownloadHook {
                     if (resolvedIsVideoMethod != null) break;
                 }
             }
-            ModuleLog.line("(IE|DL|DexKit) isVideo="
-                    + (resolvedIsVideoMethod == null ? "not found" : resolvedIsVideoMethod.getName()));
+            if (resolvedIsVideoMethod == null && !resolvedVideoVersionsGetters.isEmpty()) {
+                // 457+: "is_video" is read from the Pando tree, not a Media ()Z method.
+                ModuleLog.line("(IE|DL|DexKit) isVideo: no Media ()Z getter (457+ layout), using video_versions presence");
+            } else {
+                ModuleLog.line("(IE|DL|DexKit) isVideo="
+                        + (resolvedIsVideoMethod == null ? "not found" : resolvedIsVideoMethod.getName()));
+            }
         } catch (Throwable t) {
             ModuleLog.line("(IE|DL|DexKit) isVideo resolution failed: " + t);
         }
@@ -1777,8 +1804,8 @@ public class FeedVideoDownloadHook {
                     if (cachedGetter != null) {
                         UserUtils.userUsernameGetter = cachedGetter;
                     }
-                    resolveDictUserGetter(bridge, classLoader);
                     resolveMediaAuthorGetter(bridge, classLoader);
+                    resolveDictUserGetter(bridge, classLoader);
                     return;
                 } catch (Throwable ignored) {}
             }
@@ -1847,8 +1874,8 @@ public class FeedVideoDownloadHook {
                 ModuleLog.line("(IE|DL|Username) ❌ userUsernameGetter resolution: " + t);
             }
 
-            resolveDictUserGetter(bridge, classLoader);
             resolveMediaAuthorGetter(bridge, classLoader);
+            resolveDictUserGetter(bridge, classLoader);
 
         } catch (Throwable t) {
             ModuleLog.line("(IE|DL|Username) ❌ resolveUsernameGetter: " + t);
@@ -1960,6 +1987,12 @@ public class FeedVideoDownloadHook {
             }
         }
 
+        if (mediaAuthorGetter != null) {
+            // 446+: no media dict carries the author any more; Media's own "user" getter does.
+            ModuleLog.line("(IE|DL|Username) dictUserGetter: no dict author getter (446+ layout), using Media."
+                    + mediaAuthorGetter.getName());
+            return;
+        }
         ModuleLog.line("(IE|DL|Username) ❌ Failed to resolve dictUserGetter in hierarchy");
     }
 
