@@ -74,12 +74,7 @@ public class FollowListExportHook {
 
     public void install(DexKitBridge bridge, ClassLoader cl) {
         try {
-            Class<?> frag = null;
-            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .usingStrings("Invalid entry type for FollowListFragment")))) {
-                frag = cl.loadClass(md.getClassName());
-                break;
-            }
+            Class<?> frag = findFragment(bridge, cl);
             if (frag == null) { ModuleLog.line(TAG + "❌ FollowListFragment not found"); return; }
             for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
                     .declaredClass(USER).paramCount(0).returnType("java.lang.String").usingNumbers(-1677176261)))) {
@@ -114,6 +109,36 @@ public class FollowListExportHook {
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);
         }
+    }
+
+    /** IG <= 452: the only user of "Invalid entry type for FollowListFragment". IG 457 throws a
+     *  generic "Invalid entry type" there, so fall back to the fragment's own analytics/arguments
+     *  strings, keeping only a Fragment subclass that declares onViewCreated (the arguments
+     *  builder X.0E7E uses the same strings). */
+    /** Old anchor (substring match, IG <= 452) first, then the exact 457 strings. */
+    static final String LEGACY_ANCHOR = "Invalid entry type for FollowListFragment";
+    static final String[] EXACT_ANCHORS = {"FollowListFragment", "FollowListFragment.LazyLoading"};
+
+    private static Class<?> findFragment(DexKitBridge bridge, ClassLoader cl) throws Throwable {
+        for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                .usingStrings(LEGACY_ANCHOR)))) {
+            return cl.loadClass(md.getClassName());
+        }
+        Class<?> fragmentBase = cl.loadClass("androidx.fragment.app.Fragment");
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (String anchor : EXACT_ANCHORS) {
+            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                    .usingEqStrings(List.of(anchor))))) {
+                if (!seen.add(md.getClassName())) continue;
+                Class<?> c;
+                try { c = cl.loadClass(md.getClassName()); } catch (Throwable t) { continue; }
+                if (!fragmentBase.isAssignableFrom(c)) continue;
+                try { c.getDeclaredMethod("onViewCreated", View.class, android.os.Bundle.class); }
+                catch (NoSuchMethodException e) { continue; }
+                return c;
+            }
+        }
+        return null;
     }
 
     /** Live list fragments → their root view (followers / following / mutual tabs each have one). */

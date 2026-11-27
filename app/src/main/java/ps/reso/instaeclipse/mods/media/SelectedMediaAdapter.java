@@ -45,14 +45,14 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
                     "is_story_image_with_music"}) adapter.resolve(bridge, loader, MEDIA, key);
             adapter.resolve(bridge, loader, "com.instagram.user.model.User", "username");
             for (String key : new String[]{"url", "width", "height", "frame_rate", "codecs", "bitrate"}) {
-                adapter.resolve(bridge, loader, "com.instagram.api.schemas.ImmutablePandoVideoVersion", key);
-                adapter.resolve(bridge, loader, "com.instagram.model.mediasize.VideoVersion", key);
+                for (String type : MediaClassNames.IMMUTABLE_PANDO_VIDEO_VERSION) adapter.resolve(bridge, loader, type, key);
+                for (String type : MediaClassNames.VIDEO_VERSION) adapter.resolve(bridge, loader, type, key);
             }
             adapter.resolve(bridge, loader, "com.instagram.model.mediasize.ImmutablePandoImageInfo", "candidates");
             adapter.named(loader, MEDIA, "id", "getId");
             adapter.resolveStoryItem(bridge, loader);
             for (String type : new String[]{"com.instagram.common.typedurl.ImageUrl",
-                    "com.instagram.model.mediasize.VideoVersionIntf"}) {
+                    MediaClassNames.VIDEO_VERSION_INTF[0], MediaClassNames.VIDEO_VERSION_INTF[1]}) {
                 adapter.named(loader, type, "url", "getUrl");
                 adapter.named(loader, type, "width", "getWidth");
                 adapter.named(loader, type, "height", "getHeight");

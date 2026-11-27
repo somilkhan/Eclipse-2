@@ -194,8 +194,8 @@ public class StoryDownloadHook {
             ModuleLog.line("(IE|Highlight) " + t);
         }
         try {
-            videoVersionIntfClass = classLoader.loadClass("com.instagram.model.mediasize.VideoVersionIntf");
-            videoVersionGetUrl    = videoVersionIntfClass.getMethod("getUrl");
+            videoVersionIntfClass = MediaClassNames.loadFirst(classLoader, MediaClassNames.VIDEO_VERSION_INTF);
+            if (videoVersionIntfClass != null) videoVersionGetUrl = videoVersionIntfClass.getMethod("getUrl");
         } catch (Throwable ignored) {}
 
         installButtonInjectorHook(bridge, classLoader);

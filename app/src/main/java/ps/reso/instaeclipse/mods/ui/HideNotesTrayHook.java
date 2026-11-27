@@ -52,6 +52,10 @@ public class HideNotesTrayHook {
         } catch (Throwable t) {
             ModuleLog.line(TAG + "⚠️ compose tray: " + t);
         }
+        // IG 457: the inbox tray is the composable lambda that lays out the LazyRow tagged
+        // "DirectInboxNotesTray" (X.0BUT.invoke(LazyItemScope, Composer, Int) on 457; it is wrapped by
+        // rememberComposableLambda, so returning Unit just leaves that group empty).
+        if (installTaggedTray(bridge)) return;
         try {
             Member ctor = null;
             for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
@@ -83,6 +87,35 @@ public class HideNotesTrayHook {
             FeatureStatusTracker.setHooked("HideNotesTray");
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);
+        }
+    }
+
+    static final String TRAY_TAG = "DirectInboxNotesTray";
+
+    private static boolean installTaggedTray(DexKitBridge bridge) {
+        try {
+            ClassLoader cl = ps.reso.instaeclipse.Xposed.Module.hostClassLoader;
+            Object unit = Class.forName("kotlin.Unit", false, cl).getField("INSTANCE").get(null);
+            int n = 0;
+            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                    .usingEqStrings(java.util.List.of(TRAY_TAG)).name("invoke")
+                    .returnType("java.lang.Object")))) {
+                java.lang.reflect.Method m = md.getMethodInstance(cl);
+                if (m.getParameterCount() < 2) continue; // composable lambdas get (…, Composer, Int)
+                XposedBridge.hookMethod(m, new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) { ps.reso.instaeclipse.utils.core.JitGuard.tick(param.method);
+                        if (FeatureFlags.hideNotesTray) param.setResult(unit);
+                    }
+                });
+                n++;
+                ModuleLog.line(TAG + "✅ tagged tray " + md.getClassName() + "." + md.getName());
+            }
+            if (n > 0) FeatureStatusTracker.setHooked("HideNotesTray");
+            return n > 0;
+        } catch (Throwable t) {
+            ModuleLog.line(TAG + "⚠️ tagged tray: " + t);
+            return false;
         }
     }
 
