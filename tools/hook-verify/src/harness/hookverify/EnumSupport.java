@@ -69,7 +69,7 @@ public final class EnumSupport {
                 if (!mr.getDefiningClass().equals(type) || !mr.getName().equals("<init>")) continue;
                 int[] im = inits.get(key("<init>", mr.getParameterTypes()));
                 int[] r = regsOf(i);
-                if (im == null || im[0] >= r.length || im[1] >= r.length) continue;
+                if (im == null || im[0] < 0 || im[1] < 0 || im[0] >= r.length || im[1] >= r.length) continue;
                 int n = r[im[0]] - base, o = r[im[1]] - base;
                 if (n >= 0 && o >= 0 && n < ins && o < ins) factories.put(key(m.getName(), m.getParameterTypes()), new int[]{n, o});
             }
@@ -104,7 +104,7 @@ public final class EnumSupport {
                 if (!mr.getDefiningClass().equals(type) || !mr.getName().equals("<init>")) continue;
                 int[] im = inits.get(key("<init>", mr.getParameterTypes()));
                 int[] regs = regsOf(ins);
-                if (im == null || im[0] >= regs.length || im[1] >= regs.length) continue;
+                if (im == null || im[0] < 0 || im[1] < 0 || im[0] >= regs.length || im[1] >= regs.length) continue;
                 String name = strings.get(regs[im[0]]);
                 Integer ord = ints.get(regs[im[1]]);
                 Object[] o = objs.get(regs[0]);
@@ -113,7 +113,7 @@ public final class EnumSupport {
                 MethodReference mr = (MethodReference) ((ReferenceInstruction) ins).getReference();
                 int[] f = mr.getDefiningClass().equals(type) ? factories.get(key(mr.getName(), mr.getParameterTypes())) : null;
                 lastFactory = null;
-                if (f == null) continue;
+                if (f == null || f[0] < 0 || f[1] < 0) continue;
                 int[] regs = regsOf(ins);
                 String name = f[0] < regs.length ? strings.get(regs[f[0]]) : null;
                 Integer ord = f[1] < regs.length ? ints.get(regs[f[1]]) : null;

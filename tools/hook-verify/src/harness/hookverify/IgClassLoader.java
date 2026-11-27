@@ -127,7 +127,12 @@ public final class IgClassLoader extends ClassLoader {
         }
 
         String internal = toInternal(def.getType());
-        boolean realEnum = "java/lang/Enum".equals(superName) && EnumSupport.register(def);
+        boolean realEnum = false;
+        if ("java/lang/Enum".equals(superName)) {
+            // A harness bug in enum decoding must never break class loading for the module under test.
+            try { realEnum = EnumSupport.register(def); }
+            catch (RuntimeException e) { System.err.println("[hook-verify] enum decode " + def.getType() + ": " + e); }
+        }
         if (realEnum) {
             MethodVisitor ci = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
             ci.visitCode();
