@@ -234,7 +234,7 @@ public class HomeFragment extends Fragment {
         restartInstagramButton.setOnClickListener(v -> restartInstagram());
         downloadButton.setOnClickListener(v -> {
             String url = ps.reso.instaeclipse.utils.core.ExportBrand.TESTED_INSTAGRAM_APK;
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            safeStart(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
         view.findViewById(R.id.home_shortcuts_edit).setOnClickListener(v -> showEditShortcutsDialog());
 
@@ -342,19 +342,30 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intent.setData(Uri.parse("package:" + pkg));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            safeStart(intent);
         });
 
         launchInstagramButton.setOnClickListener(v -> launchPackage(pkg));
+    }
+
+    /** No browser / restricted Settings (work profile, kiosk ROMs) must not crash the app. */
+    private void safeStart(Intent intent) {
+        if (!isAdded()) return;
+        try {
+            startActivity(intent);
+        } catch (android.content.ActivityNotFoundException | SecurityException e) {
+            ps.reso.instaeclipse.utils.toast.IeToast.makeText(requireContext(),
+                    getString(R.string.ig_toast_no_app_to_open), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void launchPackage(String pkg) {
         if (!isAdded()) return;
         Intent launchIntent = requireContext().getPackageManager().getLaunchIntentForPackage(pkg);
         if (launchIntent != null) {
-            startActivity(launchIntent);
+            safeStart(launchIntent);
         } else {
-            ps.reso.instaeclipse.utils.toast.IeToast.makeText(getActivity(), getString(R.string.not_installed_instagram), Toast.LENGTH_SHORT).show();
+            ps.reso.instaeclipse.utils.toast.IeToast.makeText(requireContext(), getString(R.string.not_installed_instagram), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -427,9 +438,15 @@ public class HomeFragment extends Fragment {
             boolean ok = false;
             try {
                 Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "am force-stop " + pkg});
-                if (p.waitFor(15, TimeUnit.SECONDS)) {
-                    ok = p.exitValue() == 0;
-                } else {
+                try {
+                    p.getOutputStream().close(); // su must not wait on stdin
+                    if (p.waitFor(15, TimeUnit.SECONDS)) {
+                        ok = p.exitValue() == 0;
+                    }
+                } finally {
+                    // Close the pipes (fd leak otherwise) and never leave a hung su behind.
+                    try { p.getInputStream().close(); } catch (Throwable ignored) { }
+                    try { p.getErrorStream().close(); } catch (Throwable ignored) { }
                     p.destroy();
                 }
             } catch (Throwable ignored) { }

@@ -107,7 +107,7 @@ public class CacheAutoClear {
             File[] kids = files != null ? files.listFiles() : null;
             if (kids != null) {
                 for (File k : kids) {
-                    if (k.isDirectory() && k.getName().toLowerCase().contains("cache")) addIfDir(out, k);
+                    if (k.isDirectory() && k.getName().toLowerCase(java.util.Locale.ROOT).contains("cache")) addIfDir(out, k);
                 }
             }
         } catch (Throwable ignored) {}

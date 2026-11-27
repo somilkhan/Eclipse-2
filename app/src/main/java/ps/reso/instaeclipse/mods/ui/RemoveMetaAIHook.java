@@ -450,7 +450,7 @@ public class RemoveMetaAIHook {
     }
 
     private static boolean isMetaAiOption(String name) {
-        String n = name.toUpperCase();
+        String n = name.toUpperCase(java.util.Locale.ROOT);
         return n.contains("GEN_AI") || n.contains("GENAI") || n.contains("META_AI")
                 || n.contains("METAAI") || n.contains("ASK_META")
                 || n.contains("CONTENT_DEEP_DIVE"); // reel ⋮ "Ask Meta AI about this" (446+)

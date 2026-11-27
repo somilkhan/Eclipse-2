@@ -47,13 +47,17 @@ public class CommonUtils {
      * "cc.honista.app"        → "Honista"
      */
     public static String getVariantLabel(String packageName) {
+        if (packageName == null || packageName.isEmpty()) return "";
         if (IG_PACKAGE_NAME.equals(packageName)) return "Official";
         String[] parts = packageName.split("\\.");
         // Use the most descriptive segment: skip generic TLDs and short segments
         String best = parts.length >= 2 ? parts[1] : packageName;
         // If second segment is very short or generic, try third
         if (best.length() <= 2 && parts.length >= 3) best = parts[2];
-        return Character.toUpperCase(best.charAt(0)) + best.substring(1).toLowerCase();
+        if (best.isEmpty()) return packageName; // e.g. "a..b": charAt(0) used to throw
+        // Locale.ROOT: with a Turkish device locale "INSTANDER".toLowerCase() gives "ınstander".
+        return best.substring(0, 1).toUpperCase(java.util.Locale.ROOT)
+                + best.substring(1).toLowerCase(java.util.Locale.ROOT);
     }
 
     /**

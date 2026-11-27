@@ -78,6 +78,7 @@ public class LocationPickerActivity extends AppCompatActivity {
     private LinearLayout resultsList;
 
     private final Handler main = new Handler(Looper.getMainLooper());
+    private static final int MAX_RESPONSE_CHARS = 512 * 1024;
     private final ExecutorService io = Executors.newSingleThreadExecutor();
 
     /** Name of the place under the pin; empty until reverse geocoding answers. */
@@ -237,9 +238,10 @@ public class LocationPickerActivity extends AppCompatActivity {
             try {
                 JSONArray arr = new JSONArray(fetch("https://nominatim.openstreetmap.org/search?format=json&limit=6&q="
                         + URLEncoder.encode(query, "UTF-8")));
-                main.post(() -> showResults(arr));
+                main.post(() -> { if (alive()) showResults(arr); });
             } catch (Throwable t) {
                 main.post(() -> {
+                    if (!alive()) return;
                     searchProgress.setVisibility(View.GONE);
                     ps.reso.instaeclipse.utils.toast.IeToast.makeText(this, getString(R.string.loc_picker_search_error, String.valueOf(t.getMessage())),
                             Toast.LENGTH_SHORT).show();
@@ -306,6 +308,7 @@ public class LocationPickerActivity extends AppCompatActivity {
             }
             String result = name;
             main.post(() -> {
+                if (!alive()) return;
                 GeoPoint now = (GeoPoint) map.getMapCenter();
                 if (labelLocked || Math.abs(now.getLatitude() - lat) > 1e-6 || Math.abs(now.getLongitude() - lng) > 1e-6) {
                     return; // the map moved on since this request
@@ -325,8 +328,13 @@ public class LocationPickerActivity extends AppCompatActivity {
             conn.setRequestProperty("Accept-Language", Locale.getDefault().toLanguageTag() + ",en;q=0.5");
             StringBuilder sb = new StringBuilder();
             try (BufferedReader r = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
-                String line;
-                while ((line = r.readLine()) != null) sb.append(line);
+                char[] buf = new char[4096];
+                int n;
+                while ((n = r.read(buf)) != -1) {
+                    sb.append(buf, 0, n);
+                    // Nominatim answers are a few KB; never buffer an unbounded body in memory.
+                    if (sb.length() > MAX_RESPONSE_CHARS) throw new java.io.IOException("response too large");
+                }
             }
             return sb.toString();
         } finally {
@@ -351,6 +359,11 @@ public class LocationPickerActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (map != null) map.onPause();
+    }
+
+    /** Worker results can arrive after the user left the picker (HTTP ignores interrupts). */
+    private boolean alive() {
+        return !isFinishing() && !isDestroyed();
     }
 
     @Override

@@ -113,7 +113,14 @@ public class DownloadSaveService extends Service {
             if (cancellations.isEmpty()) stopSelfResult(latestStartId);
             return START_NOT_STICKY;
         }
-        startForeground(NOTIF_ID, buildProgressNotification("Starting…", 0, 0, true));
+        if (!enterForeground()) {
+            // Android 12+ refuses the start (background restriction) and Android 15+ refuses it
+            // once the daily dataSync budget is spent. Without this catch the whole companion
+            // process crashed; now the request fails visibly instead.
+            showToast(getString(R.string.ie_download_fgs_blocked));
+            if (cancellations.isEmpty()) stopSelfResult(latestStartId);
+            return START_NOT_STICKY;
+        }
 
         if (intent == null) { if (cancellations.isEmpty()) stopSelfResult(latestStartId); return START_NOT_STICKY; }
 
@@ -149,7 +156,9 @@ public class DownloadSaveService extends Service {
         String saveUri          = cache.getString("downloaderCustomUri", "");
         boolean usernameFolder  = cache.getBoolean("downloaderUsernameFolder", false);
 
-        if (saveUri.isEmpty()) {
+        if (saveUri.isEmpty() || !hasPersistedWriteGrant(saveUri)) {
+            // Also covers a folder restored from a backup / device transfer (the URI string is
+            // restored, the SAF grant is not) and a grant revoked in system settings.
             showToast(getString(R.string.ig_toast_no_download_folder));
             if (cancellations.isEmpty()) stopSelfResult(latestStartId);
             return START_NOT_STICKY;
@@ -751,6 +760,43 @@ public class DownloadSaveService extends Service {
             ch.setSound(null, null);
             nm.createNotificationChannel(ch);
         }
+    }
+
+    private boolean enterForeground() {
+        try {
+            startForeground(NOTIF_ID, buildProgressNotification("Starting…", 0, 0, true));
+            return true;
+        } catch (RuntimeException refused) { // ForegroundServiceStartNotAllowedException (API 31+)
+            ModuleLog.line("(IE|Download) foreground start refused: " + refused.getClass().getSimpleName());
+            return false;
+        }
+    }
+
+    /** True when this app still holds a persisted write grant covering the picked SAF tree. */
+    private boolean hasPersistedWriteGrant(String saveUri) {
+        if (!saveUri.startsWith("content://")) return true; // not a SAF tree; nothing to check
+        try {
+            Uri wanted = Uri.parse(saveUri);
+            for (android.content.UriPermission p : getContentResolver().getPersistedUriPermissions()) {
+                if (p.isWritePermission() && wanted.equals(p.getUri())) return true;
+            }
+            return false;
+        } catch (RuntimeException e) {
+            return true; // let the write itself report the problem
+        }
+    }
+
+    /**
+     * Android 15+ (API 35): a dataSync foreground service gets ~6h per 24h. When that runs out
+     * the system calls this and kills the process with ForegroundServiceDidNotStopInTimeException
+     * unless the service stops within seconds. Not annotated @Override so it compiles against
+     * compileSdk 34; the framework still dispatches to it on API 35+.
+     */
+    public void onTimeout(int startId, int fgsType) {
+        ModuleLog.line("(IE|Download) foreground time limit reached; cancelling active downloads");
+        for (DownloadEngine.Cancellation cancellation : cancellations.values()) cancellation.cancel();
+        try { stopForeground(STOP_FOREGROUND_REMOVE); } catch (RuntimeException ignored) { }
+        stopSelf();
     }
 
     @Override public void onDestroy() {

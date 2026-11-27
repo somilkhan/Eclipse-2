@@ -148,23 +148,29 @@ public class FeaturesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         restoreFileLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
             if (uri == null) return;
-            try (InputStream is = requireContext().getContentResolver().openInputStream(uri);
-                 Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
-                String json = scanner.hasNext() ? scanner.next() : "";
-                JSONObject root = new JSONObject(json);
-                JSONObject s = root.has("settings") ? root.getJSONObject("settings") : root;
+            // Bounded read (BrokerPayload.readConfig caps the size) instead of slurping an arbitrary
+            // picked file into memory; only known, correctly typed settings are applied.
+            try (InputStream is = requireContext().getContentResolver().openInputStream(uri)) {
+                String json = ps.reso.instaeclipse.utils.ipc.BrokerPayload.readConfig(is);
+                Map<String, Object> restored = ps.reso.instaeclipse.utils.backup.SettingsRestore.parse(json);
+                if (restored.isEmpty()) throw new IllegalArgumentException(getString(R.string.json_not_valid));
                 SharedPreferences.Editor editor = localCache.edit();
-                Iterator<String> keys = s.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    Object val = s.get(key);
+                for (Map.Entry<String, Object> entry : restored.entrySet()) {
+                    String key = entry.getKey();
+                    Object val = entry.getValue();
+                    Intent intent = new Intent(ps.reso.instaeclipse.utils.backup.SettingsRestore.actionFor(val));
+                    intent.putExtra("key", key);
                     if (val instanceof Boolean) {
                         editor.putBoolean(key, (Boolean) val);
-                        Intent intent = new Intent("ps.reso.instaeclipse.ACTION_UPDATE_PREF");
-                        intent.putExtra("key", key);
                         intent.putExtra("value", (boolean) (Boolean) val);
-                        ps.reso.instaeclipse.utils.core.CommonUtils.broadcastToInstagram(requireContext(), intent);
+                    } else if (val instanceof Integer) {
+                        editor.putInt(key, (Integer) val);
+                        intent.putExtra("value", (int) (Integer) val);
+                    } else {
+                        editor.putString(key, (String) val);
+                        intent.putExtra("value", (String) val);
                     }
+                    ps.reso.instaeclipse.utils.core.CommonUtils.broadcastToInstagram(requireContext(), intent);
                 }
                 editor.apply();
                 refreshVisibleMenu();

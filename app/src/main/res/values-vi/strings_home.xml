@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Thay đổi được gửi đến Instagram ngay lập tức.</string>
     <string name="home_shortcuts_limit">Bạn có thể ghim tối đa %1$d lối tắt</string>
     <string name="home_shortcuts_locked_extreme">Đã bị khóa bởi Chế độ Nghiêm ngặt</string>
+    <string name="ig_toast_no_app_to_open">Không tìm thấy ứng dụng để mở</string>
 </resources>

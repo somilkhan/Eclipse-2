@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Οι αλλαγές αποστέλλονται αμέσως στο Instagram.</string>
     <string name="home_shortcuts_limit">Μπορείτε να καρφιτσώσετε έως %1$d συντομεύσεις</string>
     <string name="home_shortcuts_locked_extreme">Κλειδωμένο από την Ακραία Λειτουργία</string>
+    <string name="ig_toast_no_app_to_open">Δεν βρέθηκε εφαρμογή για άνοιγμα</string>
 </resources>

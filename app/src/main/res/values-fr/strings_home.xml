@@ -23,4 +23,5 @@
     <string name="home_shortcuts_hint">Les modifications sont envoyées instantanément à Instagram.</string>
     <string name="home_shortcuts_limit">Vous pouvez épingler jusqu\'à %1$d raccourcis</string>
     <string name="home_shortcuts_locked_extreme">Verrouillé par le Mode Extrême</string>
+    <string name="ig_toast_no_app_to_open">Aucune application trouvée pour ouvrir ceci</string>
 </resources>

@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">變更會立即同步到 Instagram。</string>
     <string name="home_shortcuts_limit">最多只能釘選 %1$d 個快速開關</string>
     <string name="home_shortcuts_locked_extreme">已被極端模式鎖定</string>
+    <string name="ig_toast_no_app_to_open">找不到可開啟此內容的應用程式</string>
 </resources>

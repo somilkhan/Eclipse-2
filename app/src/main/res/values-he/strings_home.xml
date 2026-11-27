@@ -24,4 +24,5 @@
     <string name="home_shortcuts_hint">השינויים נשלחים ל-Instagram באופן מיידי.</string>
     <string name="home_shortcuts_limit">ניתן להצמיד עד %1$d קיצורים</string>
     <string name="home_shortcuts_locked_extreme">נעול על ידי המצב הקיצוני</string>
+    <string name="ig_toast_no_app_to_open">לא נמצאה אפליקציה לפתיחה</string>
 </resources>

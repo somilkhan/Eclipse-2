@@ -26,4 +26,5 @@
     <string name="home_shortcuts_hint">تُرسَل التغييرات إلى Instagram فورًا.</string>
     <string name="home_shortcuts_limit">يمكنك إضافة %1$d اختصارات كحد أقصى</string>
     <string name="home_shortcuts_locked_extreme">مقفل بواسطة الوضع المتطرف</string>
+    <string name="ig_toast_no_app_to_open">لم يتم العثور على تطبيق لفتح هذا</string>
 </resources>

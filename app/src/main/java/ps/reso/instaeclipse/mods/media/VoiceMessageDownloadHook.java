@@ -620,7 +620,9 @@ public class VoiceMessageDownloadHook {
         if (System.currentTimeMillis() - lastDownloadAt < 1500) return; // both tap paths fired
         lastDownloadAt = System.currentTimeMillis();
         if (ctx == null) ctx = ps.reso.instaeclipse.mods.ui.UIHookManager.getCurrentActivity();
-        if (ctx == null) return;
+        if (ctx == null) {
+            return;
+        }
         voiceMediaId = null;
         String user = voiceUsername(recentMessage());
         String id = voiceMediaId != null ? voiceMediaId : String.valueOf(System.currentTimeMillis());
@@ -715,7 +717,7 @@ public class VoiceMessageDownloadHook {
                 // the action enum is the constructor's 3rd param type; its values have names like REPLY
                 if (v instanceof Enum<?> e && e.getDeclaringClass() == (saveMediaAction != null ? saveMediaAction.getClass() : e.getDeclaringClass())) {
                     String n = e.name();
-                    if (n.equals(n.toUpperCase()) && n.length() > 2) return n;
+                    if (n.equals(n.toUpperCase(java.util.Locale.ROOT)) && n.length() > 2) return n;
                 }
             }
         } catch (Throwable ignored) {}
