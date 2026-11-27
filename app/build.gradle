@@ -11,8 +11,8 @@ android {
         applicationId "ps.reso.instaeclipse"
         minSdkVersion 28
         targetSdk 36
-        versionCode 19
-        versionName '0.8.1'
+        versionCode 22
+        versionName '0.8.4'
 
         // Single source of truth for the GitHub "owner/name" of this project.
         // Everything in code derives its links from RepoLinks, which reads this field.
