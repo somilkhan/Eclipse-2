@@ -661,4 +661,12 @@
     <string name="ig_highlight_loading">A carregar destaque…</string>
     <string name="ig_highlight_downloading">A transferir %1$d itens do destaque…</string>
     <string name="ig_highlight_done">Destaque guardado: %1$d de %2$d itens</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Ritmo seguro para ações em massa</string>
+    <string name="ie_safe_pacing_hint">Aguarda aleatoriamente 0,7–1,6 s entre itens e 3–6 s a cada 8 itens ao cancelar envios em massa, Baixar tudo e pesquisa de comentários. Recomendado.</string>
+    <string name="ie_pacing_progress">%1$d de %2$d concluídos</string>
+    <string name="ie_pacing_stop">Parar</string>
+    <string name="ie_pacing_hide">Ocultar</string>
+    <string name="ie_pacing_stopped">Parado após %1$d de %2$d</string>
 </resources>

@@ -424,4 +424,12 @@
     <string name="ig_update_button">Cập nhật ngay</string>
     <string name="ig_update_later">Để sau</string>
     <string name="ig_update_error_message">Không thể kiểm tra bản cập nhật. Vui lòng thử lại sau.</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Nhịp độ an toàn cho thao tác hàng loạt</string>
+    <string name="ie_safe_pacing_hint">Chờ ngẫu nhiên 0,7–1,6 giây giữa các mục và 3–6 giây sau mỗi 8 mục khi thu hồi hàng loạt, Tải xuống tất cả và tìm bình luận. Khuyên dùng.</string>
+    <string name="ie_pacing_progress">Đã xong %1$d/%2$d</string>
+    <string name="ie_pacing_stop">Dừng</string>
+    <string name="ie_pacing_hide">Ẩn</string>
+    <string name="ie_pacing_stopped">Đã dừng sau %1$d/%2$d</string>
 </resources>

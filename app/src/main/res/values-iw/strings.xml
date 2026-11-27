@@ -693,4 +693,12 @@
     <string name="share_dl_label">הורד עם InstaEclipse</string>
     <string name="share_dl_no_instagram">אינסטגרם לא מותקן</string>
     <string name="share_dl_no_link">לא נמצא קישור לפוסט או לריל של אינסטגרם</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">קצב בטוח לפעולות מרובות</string>
+    <string name="ie_safe_pacing_hint">ממתין באופן אקראי 0.7–1.6 שנ׳ בין פריטים ו־3–6 שנ׳ כל 8 פריטים בביטול שליחה מרובה, הורדת הכול וחיפוש תגובות. מומלץ.</string>
+    <string name="ie_pacing_progress">%1$d מתוך %2$d הושלמו</string>
+    <string name="ie_pacing_stop">עצור</string>
+    <string name="ie_pacing_hide">הסתר</string>
+    <string name="ie_pacing_stopped">נעצר אחרי %1$d מתוך %2$d</string>
 </resources>

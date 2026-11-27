@@ -171,8 +171,9 @@ public class FeedVideoDownloadHook {
 
         // Load VideoVersionIntf (stable public interface with getUrl())
         try {
-            videoVersionIntfClass = classLoader.loadClass("com.instagram.model.mediasize.VideoVersionIntf");
-            videoVersionGetUrl = videoVersionIntfClass.getMethod("getUrl");
+            // api.schemas on IG 457, model.mediasize on older builds
+            videoVersionIntfClass = MediaClassNames.loadFirst(classLoader, MediaClassNames.VIDEO_VERSION_INTF);
+            if (videoVersionIntfClass != null) videoVersionGetUrl = videoVersionIntfClass.getMethod("getUrl");
         } catch (Throwable ignored) {}
 
         // Resolve the old interface and modern concrete model independently. In recent
@@ -1169,10 +1170,13 @@ public class FeedVideoDownloadHook {
         }
 
         try {
-            List<ClassData> classes = bridge.findClass(FindClass.create()
-                    .matcher(ClassMatcher.create()
-                            .addInterface("com.instagram.model.mediasize.VideoVersionIntf",
-                                    StringMatchType.Equals, false)));
+            List<ClassData> classes = new ArrayList<>();
+            for (String intf : MediaClassNames.VIDEO_VERSION_INTF) {
+                classes.addAll(bridge.findClass(FindClass.create()
+                        .matcher(ClassMatcher.create()
+                                .addInterface(intf, StringMatchType.Equals, false))));
+                if (!classes.isEmpty()) break; // newest name that exists wins
+            }
 
             ModuleLog.line("(IE|DL|DexKit) VideoVersionIntf implementors found: " + classes.size());
 

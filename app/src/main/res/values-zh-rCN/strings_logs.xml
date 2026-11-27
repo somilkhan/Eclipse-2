@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">条目已复制</string>
     <string name="logs_cleared">日志已清除</string>
     <string name="logs_source_companion">[应用]</string>
+    <string name="logs_save">保存到存储</string>
+    <string name="logs_saving">正在保存完整日志…</string>
+    <string name="logs_saved">日志已保存</string>
+    <string name="logs_save_failed">无法保存日志</string>
 </resources>

@@ -124,6 +124,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     // Initialize DexKitBridge with the target app's APK
                     dexKitBridge = DexKitBridge.create(lpparam.appInfo.sourceDir);
+                    // 457+: strings moved into shared switch tables; StringTables reads them from the APK.
+                    ps.reso.instaeclipse.utils.core.StringTables.init(lpparam.appInfo.sourceDir);
                     // ModuleLog.line("DexKitBridge initialized with target APK: " + lpparam.appInfo.sourceDir);
                 }
 

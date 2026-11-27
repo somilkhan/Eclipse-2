@@ -37,7 +37,11 @@ import ps.reso.instaeclipse.utils.log.ModuleLog;
  */
 public class SavedOnProfileHook {
     private static final String TAG = "(IE|SavedProfile) ";
-    private static final String HANDLER = "com.instagram.urlhandlers.saved.SavedUrlHandlerActivity";
+    // IG 457 moved the handler into com.instagram.save.*; older builds keep the first name.
+    private static final String[] HANDLERS = {
+            "com.instagram.save.urlhandlers.saved.SavedUrlHandlerActivity",
+            "com.instagram.urlhandlers.saved.SavedUrlHandlerActivity",
+    };
     private static final String FRAGMENT = "com.instagram.profile.fragment.UserDetailFragment";
     private static final String SESSION = "com.instagram.common.session.UserSession";
     private static final String BTN_TAG = "ie_saved_profile_btn";
@@ -51,8 +55,13 @@ public class SavedOnProfileHook {
     public void install(DexKitBridge bridge, ClassLoader cl) {
         if (!FeatureFlags.savedOnProfile) return; // applies after an Instagram restart
         try {
-            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .declaredClass(HANDLER).paramCount(3)))) {
+            java.util.List<MethodData> handlerMethods = new java.util.ArrayList<>();
+            for (String handler : HANDLERS) {
+                handlerMethods.addAll(bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .declaredClass(handler).paramCount(3))));
+                if (!handlerMethods.isEmpty()) break;
+            }
+            for (MethodData md : handlerMethods) {
                 for (MethodData inv : md.getInvokes()) {
                     if (!inv.isMethod()) continue;
                     Method m;
@@ -69,8 +78,7 @@ public class SavedOnProfileHook {
                     }
                     if (p.length == 2 && Activity.class.isAssignableFrom(p[0]) && m.getReturnType() != void.class
                             && !m.getReturnType().isPrimitive()) { navMake = m; continue; }
-                    if (p.length == 4 && p[1] == String.class && p[2] == boolean.class && p[3] == boolean.class
-                            && fragment.isAssignableFrom(m.getReturnType())) factory = m;
+                    if (isSavedFactory(p, m.getReturnType(), fragment)) factory = m;
                     else if (p.length == 3 && p[0] == fragment && Activity.class.isAssignableFrom(p[1])
                             && m.getReturnType() == void.class) {
                         navigator = m;
@@ -122,6 +130,23 @@ public class SavedOnProfileHook {
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);
         }
+    }
+
+    /** Saved fragment factory: (session, String userId, boolean...) -> Fragment. IG <= 452 takes
+     *  two flags (profile tab, modal); IG 457 adds a third (collections only). */
+    static boolean isSavedFactory(Class<?>[] p, Class<?> ret, Class<?> fragment) {
+        if (p.length < 4 || p.length > 5 || p[1] != String.class) return false;
+        for (int i = 2; i < p.length; i++) if (p[i] != boolean.class) return false;
+        return fragment.isAssignableFrom(ret);
+    }
+
+    /** Arguments for a plain (non-modal, full) Saved screen. */
+    static Object[] savedFactoryArgs(Object session, int paramCount) {
+        Object[] a = new Object[paramCount];
+        a[0] = session;
+        a[1] = null;
+        for (int i = 2; i < paramCount; i++) a[i] = Boolean.FALSE;
+        return a;
     }
 
     private static boolean isProfileFragment(Object f) {
@@ -194,7 +219,7 @@ public class SavedOnProfileHook {
                 ModuleLog.line(TAG + "⚠️ session=" + session + " activity=" + act);
                 return;
             }
-            Object saved = factory.invoke(null, session, null, false, false);
+            Object saved = factory.invoke(null, savedFactoryArgs(session, factory.getParameterCount()));
             if (navMake != null) {
                 Object nav = navMake.invoke(null, act, session);
                 navPush.invoke(nav, null, saved);

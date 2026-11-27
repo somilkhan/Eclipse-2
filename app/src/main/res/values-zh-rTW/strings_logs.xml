@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">已複製項目</string>
     <string name="logs_cleared">已清除日誌</string>
     <string name="logs_source_companion">[應用程式]</string>
+    <string name="logs_save">儲存到儲存空間</string>
+    <string name="logs_saving">正在儲存完整記錄…</string>
+    <string name="logs_saved">記錄已儲存</string>
+    <string name="logs_save_failed">無法儲存記錄</string>
 </resources>

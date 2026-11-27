@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Запись скопирована</string>
     <string name="logs_cleared">Логи очищены</string>
     <string name="logs_source_companion">[приложение]</string>
+    <string name="logs_save">Сохранить в память</string>
+    <string name="logs_saving">Сохранение полного журнала…</string>
+    <string name="logs_saved">Журнал сохранён</string>
+    <string name="logs_save_failed">Не удалось сохранить журнал</string>
 </resources>

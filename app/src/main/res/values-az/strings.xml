@@ -664,4 +664,12 @@
     <string name="ig_highlight_loading">Seçilmiş yüklənir…</string>
     <string name="ig_highlight_downloading">%1$d seçilmiş element yüklənir…</string>
     <string name="ig_highlight_done">Seçilmiş saxlanıldı: %2$d elementdən %1$d tanesi</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Toplu əməliyyatlar üçün təhlükəsiz temp</string>
+    <string name="ie_safe_pacing_hint">Toplu göndərmə ləğvi, Hamısını yüklə və şərh axtarışında elementlər arasında təsadüfi 0,7–1,6 san, hər 8 elementdən bir 3–6 san gözləyir. Tövsiyə olunur.</string>
+    <string name="ie_pacing_progress">%2$d-dən %1$d hazırdır</string>
+    <string name="ie_pacing_stop">Dayandır</string>
+    <string name="ie_pacing_hide">Gizlət</string>
+    <string name="ie_pacing_stopped">%2$d-dən %1$d sonra dayandırıldı</string>
 </resources>

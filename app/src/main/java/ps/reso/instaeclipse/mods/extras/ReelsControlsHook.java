@@ -43,6 +43,16 @@ public class ReelsControlsHook {
                     "android_purge_26_q2_ClipsViewerExperimentUtil_isOptInAutoscrollEnabled")) {
                 if ("boolean".equals(md.getReturnTypeName())) return md.getMethodInstance(cl);
             }
+            // 457+: the purge marker is gone; the opt-in gate is a static
+            // boolean (UserSession, boolean) that compares a MobileConfig string with "auto_scroll".
+            for (MethodData md : bridge.findMethod(org.luckypray.dexkit.query.FindMethod.create()
+                    .matcher(org.luckypray.dexkit.query.matchers.MethodMatcher.create()
+                            .usingStrings("auto_scroll")
+                            .modifiers(java.lang.reflect.Modifier.STATIC)
+                            .paramTypes("com.instagram.common.session.UserSession", "boolean")
+                            .returnType("boolean")))) {
+                return md.getMethodInstance(cl);
+            }
             return null;
         });
         if (gate == null) return;
@@ -58,8 +68,12 @@ public class ReelsControlsHook {
 
     private void installScrollLock(DexKitBridge bridge, ClassLoader cl) {
         Method bind = ExtrasLookup.method("Extras_ReelsPagerBind", cl, () -> {
-            for (MethodData md : ExtrasLookup.byStrings(bridge, "android_purge_26_q3_ClipsViewPagerImpl_getViewAtIndex")) {
-                if (!md.isConstructor()) return md.getMethodInstance(cl);
+            // 457+ dropped the "android_purge_26_q3_" prefix from the marker.
+            for (String marker : new String[]{"android_purge_26_q3_ClipsViewPagerImpl_getViewAtIndex",
+                    "ClipsViewPagerImpl_getViewAtIndex"}) {
+                for (MethodData md : ExtrasLookup.byStrings(bridge, marker)) {
+                    if (!md.isConstructor()) return md.getMethodInstance(cl);
+                }
             }
             return null;
         });

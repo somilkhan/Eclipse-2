@@ -672,4 +672,12 @@ Bleibe auf diesem Bildschirm, bis es fertig ist.</string>
     <string name="ig_highlight_loading">Highlight wird geladen…</string>
     <string name="ig_highlight_downloading">%1$d Highlight-Elemente werden heruntergeladen…</string>
     <string name="ig_highlight_done">Highlight gespeichert: %1$d von %2$d Elementen</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Sicheres Tempo für Massenaktionen</string>
+    <string name="ie_safe_pacing_hint">Wartet zufällig 0,7–1,6 s zwischen Elementen und alle 8 Elemente 3–6 s – bei Massen-Zurückziehen, „Alle herunterladen“ und Kommentarsuche. Empfohlen.</string>
+    <string name="ie_pacing_progress">%1$d von %2$d erledigt</string>
+    <string name="ie_pacing_stop">Stopp</string>
+    <string name="ie_pacing_hide">Ausblenden</string>
+    <string name="ie_pacing_stopped">Gestoppt nach %1$d von %2$d</string>
 </resources>

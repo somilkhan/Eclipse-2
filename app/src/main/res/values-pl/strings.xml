@@ -711,4 +711,12 @@ Pozostań na tym ekranie do zakończenia.</string>
     <string name="ig_highlight_loading">Wczytywanie wyróżnionego…</string>
     <string name="ig_highlight_downloading">Pobieranie %1$d elementów wyróżnionego…</string>
     <string name="ig_highlight_done">Zapisano wyróżnione: %1$d z %2$d elementów</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Bezpieczne tempo działań zbiorczych</string>
+    <string name="ie_safe_pacing_hint">Czeka losowo 0,7–1,6 s między elementami i 3–6 s co 8 elementów przy zbiorczym cofaniu wysłania, Pobierz wszystko i wyszukiwaniu komentarzy. Zalecane.</string>
+    <string name="ie_pacing_progress">Ukończono %1$d z %2$d</string>
+    <string name="ie_pacing_stop">Zatrzymaj</string>
+    <string name="ie_pacing_hide">Ukryj</string>
+    <string name="ie_pacing_stopped">Zatrzymano po %1$d z %2$d</string>
 </resources>

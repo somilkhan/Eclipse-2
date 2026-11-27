@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Qeyd kopyalandı</string>
     <string name="logs_cleared">Loglar təmizləndi</string>
     <string name="logs_source_companion">[tətbiq]</string>
+    <string name="logs_save">Yaddaşa saxla</string>
+    <string name="logs_saving">Tam jurnal saxlanılır…</string>
+    <string name="logs_saved">Jurnal saxlanıldı</string>
+    <string name="logs_save_failed">Jurnalı saxlamaq alınmadı</string>
 </resources>

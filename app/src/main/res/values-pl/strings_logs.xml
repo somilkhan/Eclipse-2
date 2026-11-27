@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Skopiowano wpis</string>
     <string name="logs_cleared">Wyczyszczono logi</string>
     <string name="logs_source_companion">[aplikacja]</string>
+    <string name="logs_save">Zapisz w pamięci</string>
+    <string name="logs_saving">Zapisywanie pełnego dziennika…</string>
+    <string name="logs_saved">Dziennik zapisany</string>
+    <string name="logs_save_failed">Nie udało się zapisać dziennika</string>
 </resources>

@@ -35,11 +35,13 @@ import ps.reso.instaeclipse.utils.log.ModuleLog;
  */
 public class InstantSaveHook {
 
-    // Compose renumbers this lambda between builds ($16$1$8$1 on 447, $16$1$11$1 on 451). Known
+    // Compose renumbers this lambda between builds ($16$1$8$1 on 447, $16$1$11$1 on 451,
+    // $30$1$1$21$1 on 457). Known
     // names first (newest first), then a DexKit search by the ctor's stable non-obfuscated types.
     private static final String VIEWER_PREFIX =
             "com.instagram.quicksnap.viewer.compose.QuickSnapMediaViewerScreenKt$QuickSnapMediaViewerScreen$";
     private static final String[] VIEWER_LAMBDAS = {
+            VIEWER_PREFIX + "30$1$1$21$1", // 457
             VIEWER_PREFIX + "16$1$11$1",
             VIEWER_PREFIX + "16$1$8$1",
     };
@@ -165,7 +167,8 @@ public class InstantSaveHook {
                             if (orig == null || !function1.isInstance(orig)) return;
                             if (orig.getClass().getName().startsWith("$Proxy")) return; // already wrapped
                             Object wrapper = Proxy.newProxyInstance(cl, new Class[]{function1}, (proxy, method, a) -> {
-                                if ("invoke".equals(method.getName()) && FeatureFlags.saveInstants) {
+                                if ("invoke".equals(method.getName()) && FeatureFlags.saveInstants
+                                        && isLongPressStart(a)) {
                                     long now = android.os.SystemClock.uptimeMillis();
                                     if (now - lastSaveMs > 1000) { lastSaveMs = now; saveCurrent(); }
                                 }
@@ -181,6 +184,12 @@ public class InstantSaveHook {
         } catch (Throwable t) {
             ModuleLog.line("(IE|InstantSave) ⚠️ long-press: " + t.getMessage());
         }
+    }
+
+    /** IG 457 calls the long-press callback with true at the threshold and false on release;
+     *  older builds call it once (no Boolean). Save only on the start. */
+    static boolean isLongPressStart(Object[] args) {
+        return args == null || args.length == 0 || !(args[0] instanceof Boolean b) || b;
     }
 
     private static volatile java.lang.reflect.Field longPressField;

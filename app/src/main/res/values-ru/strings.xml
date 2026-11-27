@@ -663,4 +663,12 @@
     <string name="ig_highlight_loading">Загрузка «Актуального»…</string>
     <string name="ig_highlight_downloading">Загрузка %1$d элементов «Актуального»…</string>
     <string name="ig_highlight_done">«Актуальное» сохранено: %1$d из %2$d элементов</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Безопасный темп массовых действий</string>
+    <string name="ie_safe_pacing_hint">Случайная пауза 0,7–1,6 с между элементами и 3–6 с каждые 8 элементов при массовой отмене отправки, «Скачать всё» и поиске комментариев. Рекомендуется.</string>
+    <string name="ie_pacing_progress">Готово %1$d из %2$d</string>
+    <string name="ie_pacing_stop">Стоп</string>
+    <string name="ie_pacing_hide">Скрыть</string>
+    <string name="ie_pacing_stopped">Остановлено после %1$d из %2$d</string>
 </resources>

@@ -697,4 +697,12 @@ Restez sur cet écran jusqu\'à la fin.</string>
     <string name="ig_highlight_loading">Chargement de la story à la une…</string>
     <string name="ig_highlight_downloading">Téléchargement de %1$d éléments de la story à la une…</string>
     <string name="ig_highlight_done">Story à la une enregistrée : %1$d éléments sur %2$d</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Rythme sûr pour les actions groupées</string>
+    <string name="ie_safe_pacing_hint">Attend aléatoirement 0,7–1,6 s entre les éléments et 3–6 s tous les 8 éléments lors de l\'annulation d\'envoi groupée, Tout télécharger et la recherche de commentaires. Recommandé.</string>
+    <string name="ie_pacing_progress">%1$d sur %2$d terminés</string>
+    <string name="ie_pacing_stop">Arrêter</string>
+    <string name="ie_pacing_hide">Masquer</string>
+    <string name="ie_pacing_stopped">Arrêté après %1$d sur %2$d</string>
 </resources>

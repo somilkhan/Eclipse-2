@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import ps.reso.instaeclipse.utils.core.DexKitCache;
+import ps.reso.instaeclipse.utils.core.StringTables;
 import ps.reso.instaeclipse.utils.log.ModuleLog;
 
 /**
@@ -47,9 +48,14 @@ final class ExtrasLookup {
         return m;
     }
 
-    /** Methods whose body references every given string. */
+    /**
+     * Methods whose body references every given string — inline (older builds) or through a
+     * 457-style shared string table ({@link StringTables#findMethodUsingStrings}).
+     */
     static List<MethodData> byStrings(DexKitBridge bridge, String... strings) {
-        return bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create().usingStrings(strings)));
+        List<MethodData> direct = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create().usingStrings(strings)));
+        if (!direct.isEmpty()) return direct;
+        return StringTables.findMethodUsingStrings(bridge, null, strings);
     }
 
     /** First method invoked by {@code owner} that is static and satisfies {@code test}. */

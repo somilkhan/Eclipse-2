@@ -666,4 +666,12 @@
     <string name="ig_highlight_loading">Cargando historia destacada…</string>
     <string name="ig_highlight_downloading">Descargando %1$d elementos de la historia destacada…</string>
     <string name="ig_highlight_done">Historia destacada guardada: %1$d de %2$d elementos</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Ritmo seguro para acciones masivas</string>
+    <string name="ie_safe_pacing_hint">Espera al azar 0,7–1,6 s entre elementos y 3–6 s cada 8 elementos al anular envíos en masa, Descargar todo y buscar comentarios. Recomendado.</string>
+    <string name="ie_pacing_progress">%1$d de %2$d hechos</string>
+    <string name="ie_pacing_stop">Detener</string>
+    <string name="ie_pacing_hide">Ocultar</string>
+    <string name="ie_pacing_stopped">Detenido tras %1$d de %2$d</string>
 </resources>

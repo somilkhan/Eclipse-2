@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Voce copiata</string>
     <string name="logs_cleared">Log cancellati</string>
     <string name="logs_source_companion">[app]</string>
+    <string name="logs_save">Salva in memoria</string>
+    <string name="logs_saving">Salvataggio del log completo…</string>
+    <string name="logs_saved">Log salvato</string>
+    <string name="logs_save_failed">Impossibile salvare il log</string>
 </resources>
