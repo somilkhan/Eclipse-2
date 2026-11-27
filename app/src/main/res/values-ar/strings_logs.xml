@@ -8,10 +8,7 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">تحديث</string>
     <string name="logs_copy">نسخ</string>
-    <string name="logs_share">مشاركة</string>
     <string name="logs_clear">مسح</string>
-    <string name="logs_share_title">مشاركة سجلات InstaEclipse</string>
-    <string name="logs_share_subject">سجلات InstaEclipse</string>
     <string name="logs_loading">جارٍ تحميل السجلات…</string>
     <string name="logs_count_format">%1$d من أصل %2$d إدخال</string>
     <string name="logs_status_live">Instagram يعمل · مباشر</string>

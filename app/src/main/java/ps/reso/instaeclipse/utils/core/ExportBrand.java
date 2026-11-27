@@ -28,7 +28,7 @@ public final class ExportBrand {
                 + "<span style=\"opacity:.9;font-weight:500\">" + escape(what) + " · " + escape(now()) + "</span></div>";
     }
 
-    public static final String GITHUB   = "https://github.com/ReSo7200/InstaEclipse";
+    public static final String GITHUB   = RepoLinks.REPO_URL;
     public static final String TELEGRAM = "https://t.me/InstaEclipse";
 
     /** The Instagram build this release is tested on; "Get APK" opens its APKMirror page. */

@@ -2244,7 +2244,7 @@ public class FeaturesFragment extends Fragment {
         links.addView(aboutButton(ctx, R.drawable.ic_github_logo, getString(R.string.about_source), ExportBrand.GITHUB, d));
         links.addView(aboutButton(ctx, R.drawable.ic_telegram_logo, getString(R.string.about_channel), ExportBrand.TELEGRAM, d));
         links.addView(aboutButton(ctx, R.drawable.ic_github_logo, getString(R.string.about_contributors),
-                ExportBrand.GITHUB + "/graphs/contributors", d));
+                ps.reso.instaeclipse.utils.core.RepoLinks.CONTRIBUTORS_URL, d));
         android.widget.LinearLayout.LayoutParams llp = new android.widget.LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         llp.topMargin = (int) (20 * d);

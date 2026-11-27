@@ -1,0 +1,32 @@
+InstaEclipse
+Copyright 2024-2026 ReSo7200 (Abdalhaleem Altamimi) and InstaEclipse contributors
+
+InstaEclipse was created by ReSo7200 (https://github.com/ReSo7200).
+This repository (https://github.com/somilkhan/InstaEclipse) is the maintained
+continuation of that project, maintained by somilkhan.
+
+The original InstaEclipse code is licensed under the Apache License, Version 2.0
+(see LICENSE). Its copyright and attribution notices must be retained in all
+copies and derivative works.
+
+Third-party code
+----------------
+This distribution also contains code adapted from:
+
+  * HushGram (https://github.com/SysAdminDoc/HushGram) and
+    Hushfacebook (https://github.com/SysAdminDoc/Hushfacebook),
+    including work by Andrew Liang (morphe-patches) - GNU GPL version 3.
+    See third-party/HushGram/LICENSE and third-party/HushGram/NOTICE.md.
+
+Because GPL-3.0 code is included, the combined work (including the APK) must be
+distributed under the terms of the GNU GPL version 3, while the Apache-2.0 notices
+of the original InstaEclipse code remain in force. Do not distribute the combined
+APK as Apache-only.
+
+Libraries used at build/run time (each under its own license):
+  * DexKit - https://github.com/LuckyPray/DexKit
+  * LSPosed / Xposed API - https://github.com/JingMatrix/LSPosed
+  * AndroidX, Material Components, Gson, osmdroid, FilePrefs
+
+InstaEclipse is not affiliated with, endorsed by, or connected to Meta Platforms, Inc.
+or Instagram. See DISCLAIMER.md.

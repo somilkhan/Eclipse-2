@@ -5,11 +5,11 @@
   An LSPosed module for privacy, downloads, a cleaner feed, smarter stories and DMs, and your own look. Everything is a switch inside Instagram.</p>
 
   <p>
-    <a href="https://github.com/ReSo7200/InstaEclipse/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/ReSo7200/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
-    <a href="https://github.com/ReSo7200/InstaEclipse/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/ReSo7200/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
-    <a href="https://github.com/ReSo7200/InstaEclipse/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/ReSo7200/InstaEclipse/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/InstaEclipse/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/somilkhan/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/InstaEclipse/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/somilkhan/InstaEclipse?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="https://github.com/somilkhan/InstaEclipse/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/somilkhan/InstaEclipse/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="https://t.me/InstaEclipse"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-Channel-26A5E4?style=for-the-badge&logo=telegram&labelColor=0d0d0d"/></a>
-    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/ReSo7200/InstaEclipse?style=for-the-badge&color=1a1a2e&labelColor=0d0d0d"/></a>
+    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/somilkhan/InstaEclipse?style=for-the-badge&color=1a1a2e&labelColor=0d0d0d"/></a>
   </p>
 
   <p>
@@ -23,6 +23,11 @@
 </div>
 
 ---
+
+> **This is the maintained continuation of InstaEclipse.** InstaEclipse was created by
+> [ReSo7200](https://github.com/ReSo7200) ([original repository](https://github.com/ReSo7200/InstaEclipse)).
+> Development continues here at [somilkhan/InstaEclipse](https://github.com/somilkhan/InstaEclipse)
+> with the full history preserved. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
 
 <p align="center">
   <a href="https://trendshift.io/repositories/14145?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14145" target="_blank" rel="noopener noreferrer">
@@ -306,7 +311,7 @@ A big Instagram update can still knock a feature out until it is patched. The me
 
 > Get Instagram [451.0.0.20.80 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-451-0-0-20-80-release/) rather than the Play Store. The Play build is not always fully supported.
 
-Download the latest InstaEclipse APK from [**Releases**](https://github.com/ReSo7200/InstaEclipse/releases/latest), then follow the path for your phone.
+Download the latest InstaEclipse APK from [**Releases**](https://github.com/somilkhan/InstaEclipse/releases/latest), then follow the path for your phone.
 
 ### Rooted, with LSPosed
 
@@ -379,19 +384,32 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 <div align="center">
 
-### Maintainer
+### Original author
 
 <a href="https://github.com/ReSo7200">
   <img src="https://github.com/ReSo7200.png" width="80" alt="ReSo7200" style="border-radius:50%"/><br/>
   <b>ReSo7200</b>
 </a>
 
+<sub>Created InstaEclipse and led it through 0.8.x.</sub>
+
+<br/><br/>
+
+### Maintainer
+
+<a href="https://github.com/somilkhan">
+  <img src="https://github.com/somilkhan.png" width="80" alt="somilkhan" style="border-radius:50%"/><br/>
+  <b>somilkhan</b>
+</a>
+
+<sub>Maintains this continuation.</sub>
+
 <br/><br/>
 
 ### Everyone who has pitched in
 
-<a href="https://github.com/ReSo7200/InstaEclipse/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ReSo7200/InstaEclipse" alt="Contributors"/>
+<a href="https://github.com/somilkhan/InstaEclipse/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=somilkhan/InstaEclipse" alt="Contributors"/>
 </a>
 
 <sub>Made with <a href="https://contrib.rocks">contrib.rocks</a></sub>
@@ -416,9 +434,10 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 Pull requests, bug reports, ideas and translations are all welcome.
 
-- Found a bug? [Open a bug report](https://github.com/ReSo7200/InstaEclipse/issues/new/choose)
-- Have an idea? [Request a feature](https://github.com/ReSo7200/InstaEclipse/issues/new/choose)
-- Want to build something? Fork the repo and open a pull request
+- Found a bug? [Open a bug report](https://github.com/somilkhan/InstaEclipse/issues/new/choose)
+- Have an idea? [Request a feature](https://github.com/somilkhan/InstaEclipse/issues/new/choose)
+- Want to build something? Fork the repo and open a pull request. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+- Maintainers: see [MAINTAINERS.md](MAINTAINERS.md) and [RELEASING.md](RELEASING.md).
 
 ---
 

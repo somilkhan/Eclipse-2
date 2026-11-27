@@ -53,7 +53,9 @@ public final class Logging {
     private static final int IPC_MAX_CHARS = 150000;
     private static final long MAX_FILE_BYTES = 4 * 1024 * 1024;
     private static final int MAX_LINES = 10000;
-    private static final int MAX_LINE_CHARS = 4096;
+    // One entry (message + full stack trace with causes). 4096 used to cut real stack traces
+    // short; the byte budget above still bounds the whole buffer.
+    static final int MAX_LINE_CHARS = 32 * 1024;
     private static final int MAX_ENTRY_CHARS = MAX_LINE_CHARS + 128;
 
     private static final Object LOCK = new Object();
@@ -254,10 +256,7 @@ public final class Logging {
 
     public static void append(String line) {
         if (line == null || line.isEmpty()) return;
-        if (line.length() > MAX_LINE_CHARS) {
-            int end = Character.isHighSurrogate(line.charAt(MAX_LINE_CHARS - 1)) ? MAX_LINE_CHARS - 1 : MAX_LINE_CHARS;
-            line = line.substring(0, end) + " [truncated]";
-        }
+        line = LogExport.clampEntry(line, MAX_LINE_CHARS);
         String time = TS.get().format(new Date());
         synchronized (LOCK) {
             if (line.equals(lastBody) && !LINES.isEmpty()) {
@@ -404,6 +403,13 @@ public final class Logging {
             revision++;
             if (!initialized) clearedBeforeInit = true;
             scheduleFlushLocked(0);
+        }
+    }
+
+    /** Changes whenever the buffer changes; lets the Logs tab poll cheaply. */
+    public static long revision() {
+        synchronized (LOCK) {
+            return revision;
         }
     }
 

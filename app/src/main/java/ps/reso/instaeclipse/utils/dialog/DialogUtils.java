@@ -2580,7 +2580,7 @@ public class DialogUtils {
         links.addView(createActionRow(context, R.drawable.ic_telegram_logo, I18n.t(context, R.string.about_channel), "#29B6F6",
                 v -> openLink(context, ps.reso.instaeclipse.utils.core.ExportBrand.TELEGRAM)));
         links.addView(createActionRow(context, R.drawable.ic_github_logo, I18n.t(context, R.string.about_contributors), "#BF5AF2",
-                v -> openLink(context, ps.reso.instaeclipse.utils.core.ExportBrand.GITHUB + "/graphs/contributors")));
+                v -> openLink(context, ps.reso.instaeclipse.utils.core.RepoLinks.CONTRIBUTORS_URL)));
         layout.addView(links);
 
         TextView footer = new TextView(context);

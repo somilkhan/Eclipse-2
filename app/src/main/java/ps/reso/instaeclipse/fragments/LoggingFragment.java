@@ -6,7 +6,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -20,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -35,23 +39,32 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import ps.reso.instaeclipse.BuildConfig;
 import ps.reso.instaeclipse.R;
 import ps.reso.instaeclipse.utils.core.CommonUtils;
+import ps.reso.instaeclipse.utils.core.ExportBrand;
+import ps.reso.instaeclipse.utils.log.LogExport;
 import ps.reso.instaeclipse.utils.log.LogMirrorProvider;
+import ps.reso.instaeclipse.utils.log.LogWindow;
 import ps.reso.instaeclipse.utils.log.Logging;
 
 /**
@@ -60,13 +73,23 @@ import ps.reso.instaeclipse.utils.log.Logging;
  * when Instagram is backgrounded or dead. While Instagram is running we additionally ask it (via
  * broadcast) to re-sync that file; its inline reply is only used as a fallback when the file is
  * missing (e.g. an Instagram process started before this companion version was installed).
+ *
+ * <p>Threading: all file reads, parsing, sorting, filtering and diffing run on {@link #loadExecutor};
+ * the main thread only swaps in the prepared list and notifies the adapter with ranges. While the
+ * tab is visible the mirror files are polled cheaply (size/mtime) and new entries are appended
+ * incrementally. The on-screen list is bounded to {@link #MAX_ENTRIES}; "Save to storage" always
+ * writes the complete files.
  */
 public class LoggingFragment extends Fragment {
 
     private static final long INSTAGRAM_REPLY_TIMEOUT_MS = 3000;
     private static final int MAX_ENTRIES = 6000;
-    private static final long MAX_READ_BYTES = 3L * 1024 * 1024;
-    private static final int MAX_EXPORT_CHARS = 250_000;
+    // Logging caps each persisted file at 4 MiB; read all of it for the view (the list itself is
+    // bounded by MAX_ENTRIES). Save to storage has no cap at all.
+    private static final long MAX_READ_BYTES = 8L * 1024 * 1024;
+    /** Clipboard only (Binder-limited); Save to storage writes everything. */
+    private static final int MAX_COPY_CHARS = 250_000;
+    private static final long LIVE_POLL_MS = 1500;
 
     private static final int KIND_INFO = 0;
     private static final int KIND_OK = 1;
@@ -90,6 +113,27 @@ public class LoggingFragment extends Fragment {
             this.display = display;
             this.kind = kind;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Entry)) return false;
+            Entry e = (Entry) o;
+            return kind == e.kind && ts.equals(e.ts) && full.equals(e.full);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(ts, full, kind);
+        }
+    }
+
+    /** Everything the main thread needs to render one update; built on the load executor. */
+    private static final class Prepared {
+        List<Entry> all;
+        List<Entry> shown;
+        LogWindow.Delta<Entry> delta; // non-null only for an incremental append with FILTER_ALL
+        int total, ok, warn, err;
     }
 
     private RecyclerView listView;
@@ -113,6 +157,13 @@ public class LoggingFragment extends Fragment {
     private Runnable pendingTimeout;
 
     private final ExecutorService loadExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService exportExecutor = Executors.newSingleThreadExecutor();
+    private ActivityResultLauncher<String> saveLauncher;
+    private boolean saving;
+    private int totalEntries;
+    private volatile String liveSignature;
+    private boolean resumed;
+    private final Runnable livePoll = this::pollLive;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final AtomicInteger loadGeneration = new AtomicInteger(0);
 
@@ -134,6 +185,13 @@ public class LoggingFragment extends Fragment {
             reload();
         }
     };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        saveLauncher = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument(LogExport.MIME_TYPE), this::saveTo);
+    }
 
     @Nullable
     @Override
@@ -180,7 +238,7 @@ public class LoggingFragment extends Fragment {
         view.findViewById(R.id.logs_refresh).setOnClickListener(v -> loadLogs());
         emptyRefresh.setOnClickListener(v -> loadLogs());
         view.findViewById(R.id.logs_copy).setOnClickListener(v -> copyLogs());
-        view.findViewById(R.id.logs_share).setOnClickListener(v -> shareLogs());
+        view.findViewById(R.id.logs_save).setOnClickListener(v -> saveLogs());
         view.findViewById(R.id.logs_clear).setOnClickListener(v -> clearLogs());
     }
 
@@ -193,7 +251,16 @@ public class LoggingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        resumed = true;
         loadLogs();
+        scheduleLivePoll();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        resumed = false;
+        mainHandler.removeCallbacks(livePoll);
     }
 
     @Override
@@ -219,6 +286,8 @@ public class LoggingFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         loadExecutor.shutdownNow();
+        // A running export finishes writing; the executor just takes no new work.
+        exportExecutor.shutdown();
     }
 
     // ---------------------------------------------------------------- loading
@@ -268,15 +337,19 @@ public class LoggingFragment extends Fragment {
         Map<String, String> replies = new HashMap<>(liveReplies);
         String companionTag = getString(R.string.logs_source_companion);
         if (!loadedOnce) setProgress(true);
+        List<Entry> current = allEntries; // treated as immutable; replaced, never mutated
+        int filter = filterKind;
         try {
             loadExecutor.execute(() -> {
-                List<Entry> entries = readAllEntries(app, replies, companionTag);
+                liveSignature = signature(app);
+                List<Entry> fresh = new ArrayList<>();
+                int total = readAllEntries(app, replies, companionTag, fresh);
+                Prepared p = prepare(current, fresh, total, filter);
                 mainHandler.post(() -> {
                     if (listView == null || gen != loadGeneration.get()) return;
                     loadedOnce = true;
-                    allEntries = entries;
                     if (!waitingForInstagram) setProgress(false);
-                    applyFilter();
+                    render(p, filter);
                     updateStatus();
                 });
             });
@@ -285,7 +358,74 @@ public class LoggingFragment extends Fragment {
         }
     }
 
-    private static List<Entry> readAllEntries(Context ctx, Map<String, String> replies, String companionTag) {
+    /** Off main thread: diff against what is on screen, then filter and count. */
+    private static Prepared prepare(List<Entry> current, List<Entry> fresh, int total, int filter) {
+        Prepared p = new Prepared();
+        p.total = total;
+        LogWindow.Delta<Entry> d = LogWindow.diff(current, fresh, MAX_ENTRIES);
+        if (d.incremental) {
+            List<Entry> all = new ArrayList<>(current.size() + d.items.size());
+            all.addAll(current.subList(d.dropFromFront, current.size()));
+            all.addAll(d.items);
+            p.all = all;
+            if (filter == FILTER_ALL) p.delta = d;
+        } else {
+            p.all = d.items;
+        }
+        for (Entry e : p.all) {
+            if (e.kind == KIND_OK) p.ok++;
+            else if (e.kind == KIND_WARN) p.warn++;
+            else if (e.kind == KIND_ERROR) p.err++;
+        }
+        p.shown = filterEntries(p.all, filter);
+        return p;
+    }
+
+    private static List<Entry> filterEntries(List<Entry> all, int filter) {
+        if (filter == FILTER_ALL) return all;
+        List<Entry> shown = new ArrayList<>();
+        for (Entry e : all) if (e.kind == filter) shown.add(e);
+        return shown;
+    }
+
+    /** Cheap change detector for the live view: file sizes/mtimes plus the companion's revision. */
+    private static String signature(Context ctx) {
+        StringBuilder sb = new StringBuilder();
+        File[] files = LogMirrorProvider.mirrorDir(ctx).listFiles((d, n) -> n.endsWith(".log"));
+        if (files != null) {
+            java.util.Arrays.sort(files);
+            for (File f : files) sb.append(f.getName()).append(':').append(f.length()).append(':').append(f.lastModified()).append(';');
+        }
+        sb.append("app:").append(Logging.revision());
+        return sb.toString();
+    }
+
+    private void scheduleLivePoll() {
+        mainHandler.removeCallbacks(livePoll);
+        if (resumed) mainHandler.postDelayed(livePoll, LIVE_POLL_MS);
+    }
+
+    private void pollLive() {
+        Context ctx = getContext();
+        if (ctx == null || listView == null || !resumed) return;
+        Context app = ctx.getApplicationContext();
+        String known = liveSignature;
+        try {
+            loadExecutor.execute(() -> {
+                String now = signature(app);
+                mainHandler.post(() -> {
+                    if (listView == null) return;
+                    if (known != null && !now.equals(known)) reload();
+                    scheduleLivePoll();
+                });
+            });
+        } catch (Throwable ignored) {
+            // executor shut down
+        }
+    }
+
+    /** Fills {@code out} with the newest MAX_ENTRIES entries; returns the total before the cap. */
+    private static int readAllEntries(Context ctx, Map<String, String> replies, String companionTag, List<Entry> result) {
         List<Entry> out = new ArrayList<>();
         Map<String, Boolean> seen = new HashMap<>();
 
@@ -311,8 +451,8 @@ public class LoggingFragment extends Fragment {
 
         // Stable merge by timestamp so app + Instagram entries interleave correctly.
         Collections.sort(out, (a, b) -> a.ts.compareTo(b.ts));
-        if (out.size() > MAX_ENTRIES) out = new ArrayList<>(out.subList(out.size() - MAX_ENTRIES, out.size()));
-        return out;
+        result.addAll(LogWindow.tail(out, MAX_ENTRIES));
+        return out.size();
     }
 
     private static String sourcePrefix(String pkg) {
@@ -326,7 +466,25 @@ public class LoggingFragment extends Fragment {
         return lines;
     }
 
+    /**
+     * Instagram rewrites its mirror (truncate + write) on every flush. A read that races that
+     * rewrite sees a short or empty file, which looked like "cut off" logs; re-read until the
+     * size is stable across the read.
+     */
     private static List<String> readTail(File f) {
+        List<String> lines = new ArrayList<>();
+        for (int attempt = 0; attempt < 3; attempt++) {
+            long before = f.length();
+            lines = readTailOnce(f);
+            boolean stable = f.length() == before;
+            if (stable && !lines.isEmpty()) break;
+            if (!f.exists()) break;
+            try { Thread.sleep(120); } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
+        }
+        return lines;
+    }
+
+    private static List<String> readTailOnce(File f) {
         ArrayDeque<String> lines = new ArrayDeque<>();
         if (!f.isFile() || f.length() == 0) return new ArrayList<>();
         try (FileInputStream in = new FileInputStream(f)) {
@@ -406,39 +564,62 @@ public class LoggingFragment extends Fragment {
 
     // ---------------------------------------------------------------- rendering
 
+    /** Filter chip changed: re-filter off the main thread. */
     private void applyFilter() {
         if (listView == null) return;
-        List<Entry> shown;
-        int ok = 0, warn = 0, err = 0;
-        for (Entry e : allEntries) {
-            if (e.kind == KIND_OK) ok++;
-            else if (e.kind == KIND_WARN) warn++;
-            else if (e.kind == KIND_ERROR) err++;
+        List<Entry> current = allEntries;
+        int filter = filterKind;
+        int total = totalEntries;
+        int gen = loadGeneration.incrementAndGet();
+        try {
+            loadExecutor.execute(() -> {
+                Prepared p = prepare(Collections.emptyList(), current, total, filter);
+                mainHandler.post(() -> {
+                    if (listView == null || gen != loadGeneration.get()) return;
+                    render(p, filter);
+                });
+            });
+        } catch (Throwable ignored) {
+            // executor shut down
         }
-        if (filterKind == FILTER_ALL) {
-            shown = allEntries;
+    }
+
+    /** Main thread: swap in a prepared update. Only O(1) adapter work for live appends. */
+    private void render(Prepared p, int filter) {
+        if (listView == null) return;
+        if (filter != filterKind) { // chip changed while this update was being prepared
+            allEntries = p.all;
+            totalEntries = p.total;
+            applyFilter();
+            return;
+        }
+        boolean atBottom = !listView.canScrollVertically(1);
+        allEntries = p.all;
+        totalEntries = p.total;
+        chipAll.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_all), p.all.size()));
+        chipHooked.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_hooked), p.ok));
+        chipErrors.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_errors), p.err));
+        chipWarnings.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_warnings), p.warn));
+
+        boolean wasEmpty = adapter.items.isEmpty();
+        if (p.delta != null && !wasEmpty) {
+            if (!p.delta.isEmpty()) adapter.append(p.shown, p.delta.dropFromFront, p.delta.items.size());
         } else {
-            shown = new ArrayList<>();
-            for (Entry e : allEntries) if (e.kind == filterKind) shown.add(e);
+            adapter.setItems(p.shown);
         }
-        chipAll.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_all), allEntries.size()));
-        chipHooked.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_hooked), ok));
-        chipErrors.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_errors), err));
-        chipWarnings.setText(getString(R.string.logs_filter_count, getString(R.string.logs_filter_warnings), warn));
+        countView.setText(getString(R.string.logs_count_format, p.shown.size(), p.total));
 
-        adapter.setItems(shown);
-        countView.setText(getString(R.string.logs_count_format, shown.size(), allEntries.size()));
-
-        boolean empty = shown.isEmpty();
+        boolean empty = p.shown.isEmpty();
         emptyView.setVisibility(empty && loadedOnce ? View.VISIBLE : View.GONE);
         listView.setVisibility(empty ? View.INVISIBLE : View.VISIBLE);
         if (empty) {
-            boolean filtered = !allEntries.isEmpty();
+            boolean filtered = !p.all.isEmpty();
             emptyTitle.setText(filtered ? R.string.logs_empty_filter_title : R.string.logs_empty_title);
             emptyBody.setText(filtered ? R.string.logs_empty_filter_body : R.string.logs_empty_body);
             emptyRefresh.setVisibility(filtered ? View.GONE : View.VISIBLE);
-        } else {
-            listView.scrollToPosition(shown.size() - 1);
+        } else if (atBottom || wasEmpty || p.delta == null) {
+            // Follow the tail unless the user scrolled up to read something.
+            listView.scrollToPosition(p.shown.size() - 1);
         }
     }
 
@@ -481,22 +662,26 @@ public class LoggingFragment extends Fragment {
 
     // ---------------------------------------------------------------- actions
 
-    /** Text of the currently filtered entries (full timestamps), capped to the newest part. */
-    private String exportText() {
+    /** Text of the currently filtered entries (full timestamps), capped for the clipboard. */
+    private String copyText() {
         List<Entry> items = adapter.items;
-        StringBuilder sb = new StringBuilder();
-        for (int i = items.size() - 1; i >= 0; i--) {
-            String s = items.get(i).full;
-            if (sb.length() + s.length() + 1 > MAX_EXPORT_CHARS) break;
-            sb.insert(0, s + "\n");
+        int start = items.size();
+        long chars = 0;
+        while (start > 0) {
+            int len = items.get(start - 1).full.length() + 1;
+            if (chars + len > MAX_COPY_CHARS) break;
+            chars += len;
+            start--;
         }
+        StringBuilder sb = new StringBuilder((int) chars);
+        for (int i = start; i < items.size(); i++) sb.append(items.get(i).full).append('\n');
         return sb.toString();
     }
 
     private void copyLogs() {
         Context ctx = getContext();
         if (ctx == null) return;
-        String text = exportText();
+        String text = copyText();
         if (text.isEmpty()) {
             ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_nothing_to_copy, Toast.LENGTH_SHORT).show();
             return;
@@ -507,23 +692,106 @@ public class LoggingFragment extends Fragment {
         ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_copied, Toast.LENGTH_SHORT).show();
     }
 
-    private void shareLogs() {
+    // ---------------------------------------------------------------- save to storage
+
+    /** Opens the system "create document" picker; the full log is written once a file is chosen. */
+    private void saveLogs() {
         Context ctx = getContext();
-        if (ctx == null) return;
-        String text = exportText();
-        if (text.isEmpty()) {
-            ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_nothing_to_copy, Toast.LENGTH_SHORT).show();
+        if (ctx == null || saveLauncher == null) return;
+        if (saving) {
+            ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_saving, Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent send = new Intent(Intent.ACTION_SEND);
-        send.setType("text/plain");
-        send.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.logs_share_subject));
-        send.putExtra(Intent.EXTRA_TEXT, text);
         try {
-            startActivity(Intent.createChooser(send, getString(R.string.logs_share_title)));
+            saveLauncher.launch(LogExport.fileName(new Date(), TimeZone.getDefault()));
         } catch (Throwable t) {
-            ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, String.valueOf(t.getMessage()), Toast.LENGTH_SHORT).show();
+            ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_save_failed, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void saveTo(@Nullable Uri uri) {
+        Context ctx = getContext();
+        if (uri == null || ctx == null) return; // picker cancelled
+        Context app = ctx.getApplicationContext();
+        Map<String, String> replies = new HashMap<>(liveReplies);
+        String companionTitle = getString(R.string.logs_export_companion_section);
+        saving = true;
+        setProgress(true);
+        ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_saving, Toast.LENGTH_SHORT).show();
+        try {
+            exportExecutor.execute(() -> {
+                boolean ok = writeFullLog(app, uri, replies, companionTitle);
+                mainHandler.post(() -> {
+                    saving = false;
+                    if (!waitingForInstagram) setProgress(false);
+                    ps.reso.instaeclipse.utils.toast.IeToast.makeText(app,
+                            ok ? R.string.logs_saved : R.string.logs_save_failed, Toast.LENGTH_SHORT).show();
+                });
+            });
+        } catch (Throwable t) {
+            saving = false;
+            setProgress(false);
+            ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, R.string.logs_save_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** Background thread. Streams every log source completely: no entry or size cap. */
+    private static boolean writeFullLog(Context app, Uri uri, Map<String, String> replies, String companionTitle) {
+        try (OutputStream raw = app.getContentResolver().openOutputStream(uri, "wt")) {
+            if (raw == null) return false;
+            OutputStream out = new java.io.BufferedOutputStream(raw, 64 * 1024);
+            LogExport.writeText(out, LogExport.header(deviceInfo(app), new Date(), TimeZone.getDefault()));
+            Map<String, Boolean> written = new HashMap<>();
+            File[] files = LogMirrorProvider.mirrorDir(app).listFiles((d, n) -> n.endsWith(".log"));
+            if (files != null) {
+                java.util.Arrays.sort(files);
+                for (File f : files) {
+                    String pkg = f.getName().substring(0, f.getName().length() - 4);
+                    if (f.length() == 0 && replies.get(pkg) == null) continue;
+                    LogExport.writeText(out, LogExport.sectionTitle("Instagram log [" + pkg + "]"));
+                    long n = 0;
+                    try (InputStream in = new FileInputStream(f)) {
+                        n = LogExport.copyAll(in, out);
+                    }
+                    if (n == 0) LogExport.writeText(out, replies.get(pkg));
+                    written.put(pkg, true);
+                }
+            }
+            for (Map.Entry<String, String> r : replies.entrySet()) {
+                if (written.containsKey(r.getKey()) || r.getValue() == null || r.getValue().isEmpty()) continue;
+                LogExport.writeText(out, LogExport.sectionTitle("Instagram log [" + r.getKey() + "] (live reply)"));
+                LogExport.writeText(out, r.getValue());
+            }
+            LogExport.writeText(out, LogExport.sectionTitle(companionTitle));
+            LogExport.writeText(out, Logging.getSnapshot());
+            out.flush();
+            return true;
+        } catch (Throwable t) {
+            android.util.Log.w("InstaEclipse", "[Logs] save to storage failed", t);
+            return false;
+        }
+    }
+
+    private static LogExport.DeviceInfo deviceInfo(Context ctx) {
+        LogExport.DeviceInfo info = new LogExport.DeviceInfo();
+        info.appVersionName = BuildConfig.VERSION_NAME;
+        info.appVersionCode = BuildConfig.VERSION_CODE;
+        info.buildType = BuildConfig.BUILD_TYPE;
+        info.testedInstagram = ExportBrand.TESTED_INSTAGRAM;
+        info.instagram = new ArrayList<>();
+        PackageManager pm = ctx.getPackageManager();
+        for (String pkg : CommonUtils.SUPPORTED_PACKAGES) {
+            try {
+                PackageInfo pi = pm.getPackageInfo(pkg, 0);
+                info.instagram.add(new LogExport.TargetApp(pkg, pi.versionName, pi.getLongVersionCode()));
+            } catch (Throwable ignored) {}
+        }
+        info.androidRelease = Build.VERSION.RELEASE;
+        info.sdkInt = Build.VERSION.SDK_INT;
+        info.manufacturer = Build.MANUFACTURER;
+        info.model = Build.MODEL;
+        info.device = Build.DEVICE;
+        return info;
     }
 
     private void clearLogs() {
@@ -564,6 +832,13 @@ public class LoggingFragment extends Fragment {
         void setItems(List<Entry> list) {
             items = list;
             notifyDataSetChanged();
+        }
+
+        /** Live update: {@code list} is the old list minus {@code dropped} head items plus {@code added}. */
+        void append(List<Entry> list, int dropped, int added) {
+            items = list;
+            if (dropped > 0) notifyItemRangeRemoved(0, dropped);
+            if (added > 0) notifyItemRangeInserted(list.size() - added, added);
         }
 
         @NonNull
