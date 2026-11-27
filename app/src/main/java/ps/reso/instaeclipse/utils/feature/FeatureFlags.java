@@ -123,6 +123,13 @@ public class FeatureFlags {
     public static volatile boolean disableRepost = false;
     public static volatile boolean followListExport = false; // Export CSV pill on followers/following lists (#224)
     public static volatile boolean followersHistory = false; // who unfollowed / followed you, checked on your Followers tab
+    /** Safe pacing (default ON): random 0.7–1.6 s between bulk items, 3–6 s every 8 (SafePacer). */
+    public static volatile boolean safePacing = true;
+
+    /** Boolean prefs whose default is ON (companion UI must show the same default the module uses). */
+    public static boolean defaultOn(String key) {
+        return "downloaderUseOriginal".equals(key) || "lockUseFingerprint".equals(key) || "safePacing".equals(key);
+    }
     public static volatile boolean commentSearch = false; // search the loaded comments of a post (#230)
     public static volatile boolean storyInfo = false; // Story Info / Quiz Answer / Poll Results in the story menu
     public static volatile boolean storyLinks = false; // copy link-sticker urls from the story menu

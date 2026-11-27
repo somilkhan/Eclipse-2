@@ -150,9 +150,14 @@ public class StoryDownloadHook {
         final List<Object> copy = new ArrayList<>(items);
         ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_highlight_downloading, copy.size()), Toast.LENGTH_LONG).show();
         ModuleLog.line("(IE|Highlight) downloading " + copy.size() + " items");
+        ps.reso.instaeclipse.utils.pacing.PacedRun run = ps.reso.instaeclipse.utils.pacing.PacedRun.start(
+                ctx, I18n.t(ctx, R.string.ig_highlight_download_all), copy.size());
         new Thread(() -> {
             int ok = 0;
-            for (Object item : copy) {
+            for (int i = 0; i < copy.size(); i++) {
+                if (!run.awaitTurn(i)) break; // safe pacing + Stop
+                Object item = copy.get(i);
+                run.done(i);
                 try {
                     StoryMediaOptions m = extractStoryMediaOptions(ctx, item, true);
                     if (m == null) continue;
@@ -163,13 +168,16 @@ public class StoryDownloadHook {
                     String fn = FeedVideoDownloadHook.buildFilename(user, "highlight", id, video);
                     FeedVideoDownloadHook.downloadAndSave(ctx, url, fn, video, user);
                     ok++;
-                    Thread.sleep(400);
+                    if (!run.pacer.isEnabled()) Thread.sleep(400); // previous fixed gap when pacing is off
                 } catch (Throwable t) {
                     ModuleLog.line("(IE|Highlight) item: " + t);
                 }
             }
+            run.finish();
             final int done = ok;
-            mainHandler.post(() -> ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_highlight_done, done, copy.size()), Toast.LENGTH_LONG).show());
+            String stopped = run.stoppedText(done);
+            mainHandler.post(() -> ps.reso.instaeclipse.utils.toast.IeToast.makeText(ctx,
+                    stopped != null ? stopped : I18n.t(ctx, R.string.ig_highlight_done, done, copy.size()), Toast.LENGTH_LONG).show());
         }).start();
     }
 
