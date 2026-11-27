@@ -19,24 +19,33 @@ import ps.reso.instaeclipse.utils.log.ModuleLog;
 /**
  * Load the largest image Instagram already offers. The picker
  * {@code static ExtendedImageUrl (Integer, List candidates, int)} (IG 452: one per media-size
- * helper) chooses a candidate for the view's size; the hook returns the candidate with the
+ * helper; IG 457: a single {@code static ImageUrl (Integer, List, int)}) chooses a candidate for the view's size; the hook returns the candidate with the
  * biggest area instead. It only picks among the real candidates and never builds CDN URLs.
  */
 public final class HighResolutionImageHook {
 
     private static final String TAG = "(InstaEclipse | HighResImages): ";
     private static final String CACHE = "Extras_HighResImage";
-    private static final String IMAGE = "com.instagram.model.mediasize.ExtendedImageUrl";
+    /** Picker return type: ExtendedImageUrl up to IG 452; IG 457 has one shared generic picker
+     *  X.03kB.A02(Integer, List, int) returning the ImageUrl interface (callers cast it back). */
+    static final String[] RESULT_TYPES = {
+            "com.instagram.model.mediasize.ExtendedImageUrl",
+            "com.instagram.common.typedurl.ImageUrl",
+    };
 
     public void install(DexKitBridge bridge, ClassLoader cl) {
         List<Method> pickers = DexKitCache.isCacheValid() ? DexKitCache.loadMethods(CACHE, cl) : null;
         if (pickers == null || pickers.isEmpty()) {
             pickers = new ArrayList<>();
-            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .returnType(IMAGE).paramTypes("java.lang.Integer", "java.util.List", "int")))) {
-                try {
-                    pickers.add(md.getMethodInstance(cl));
-                } catch (Throwable ignored) {}
+            for (String rt : RESULT_TYPES) {
+                for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .returnType(rt).paramTypes("java.lang.Integer", "java.util.List", "int")))) {
+                    try {
+                        java.lang.reflect.Method m = md.getMethodInstance(cl);
+                        if (java.lang.reflect.Modifier.isStatic(m.getModifiers())) pickers.add(m);
+                    } catch (Throwable ignored) {}
+                }
+                if (!pickers.isEmpty()) break;
             }
             if (pickers.isEmpty()) {
                 ModuleLog.line(TAG + "❌ image picker not found");
