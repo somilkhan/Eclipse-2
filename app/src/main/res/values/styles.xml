@@ -316,6 +316,9 @@
         <item name="rippleColor">@color/ie_ripple</item>
         <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
     </style>
+    <style name="Widget.IE.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/ie_checkbox_tint</item>
+    </style>
     <!-- Plain accent glyph button (iOS borderless bar button). -->
     <style name="Widget.IE.Button.PlainIcon" parent="Widget.Material3.Button.IconButton">
         <item name="android:minWidth">44dp</item>

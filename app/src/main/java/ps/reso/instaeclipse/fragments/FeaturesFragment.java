@@ -279,6 +279,7 @@ public class FeaturesFragment extends Fragment {
         recyclerFeatures.setItemAnimator(null);
         adapter = new FeatureAdapter();
         recyclerFeatures.setAdapter(adapter);
+        installTopEdge();
 
         tvHeaderTitle = fragmentView.findViewById(R.id.tv_header_title);
         btnBack = fragmentView.findViewById(R.id.btn_back);
@@ -636,6 +637,45 @@ public class FeaturesFragment extends Fragment {
             chipBg.setCornerRadius(iconView.getResources().getDisplayMetrics().density * 8);
             iconView.setBackground(chipBg);
         }
+    }
+
+    /**
+     * iOS 26 scroll-edge: the list runs underneath the title + search bar, which sit on a soft
+     * blur/fade that appears once content is scrolled beneath them (no hard cut, no hairline).
+     */
+    private void installTopEdge() {
+        ViewGroup root = (ViewGroup) fragmentView;
+        View topBar = fragmentView.findViewById(R.id.top_bar);
+        View fab = fragmentView.findViewById(R.id.fab_save);
+        final ps.reso.instaeclipse.ui.glass.ScrollEdgeEffect edge =
+                ps.reso.instaeclipse.ui.glass.ScrollEdgeEffect.install(root, recyclerFeatures);
+        edge.bindScroller(recyclerFeatures);
+        edge.setProgress(0f);
+        topBar.bringToFront();
+        if (fab != null) fab.bringToFront();
+        final int fade = Math.round(20 * getResources().getDisplayMetrics().density);
+        final int gap = Math.round(4 * getResources().getDisplayMetrics().density);
+        topBar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            int h = b - t;
+            if (h <= 0) return;
+            edge.setHeight(h + fade);
+            if (recyclerFeatures.getPaddingTop() != h + gap) {
+                // Posted: a padding change requested mid-layout would be dropped until the next pass.
+                recyclerFeatures.post(() -> {
+                    boolean atTop = recyclerFeatures.computeVerticalScrollOffset() == 0;
+                    recyclerFeatures.setPadding(recyclerFeatures.getPaddingLeft(), h + gap,
+                            recyclerFeatures.getPaddingRight(), recyclerFeatures.getPaddingBottom());
+                    if (atTop) recyclerFeatures.scrollToPosition(0);
+                });
+            }
+        });
+        recyclerFeatures.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                float y = rv.computeVerticalScrollOffset();
+                edge.setProgress(Math.max(0f, Math.min(1f, y / (12 * getResources().getDisplayMetrics().density))));
+            }
+        });
     }
 
     // =========================================================

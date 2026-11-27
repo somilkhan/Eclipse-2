@@ -30,6 +30,15 @@ public final class ScrollEdgeEffect {
 
     /** Adds the effect as the top-most child of {@code stage} (which must contain {@code content}). */
     public static ScrollEdgeEffect install(@NonNull FrameLayout stage, @NonNull View content) {
+        return install((ViewGroup) stage, content);
+    }
+
+    /**
+     * Same as {@link #install(FrameLayout, View)} for any parent whose default child position is
+     * the top-left corner (FrameLayout, RelativeLayout without rules). Added last; callers that
+     * keep chrome above it should {@code bringToFront()} that chrome afterwards.
+     */
+    public static ScrollEdgeEffect install(@NonNull ViewGroup stage, @NonNull View content) {
         Context ctx = stage.getContext();
         boolean lib = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && !Boolean.getBoolean("instaeclipse.softBlur")
@@ -41,14 +50,14 @@ public final class ScrollEdgeEffect {
                 blur.setEdge(ScrollEdgeBlurView.Edge.TOP);
                 blur.setMaxBlurRadius(Motion.dp(ctx, 18));
                 blur.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-                stage.addView(blur, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+                stage.addView(blur, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
                 // Library blur has no tint; add a soft surface-coloured fade on top for legibility.
                 BackdropBlurLayout tint = new BackdropBlurLayout(ctx);
                 tint.setEdgeFade(true);
                 tint.setCornerRadius(0);
                 tint.setRimVisible(false);
                 tint.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-                stage.addView(tint, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+                stage.addView(tint, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
                 return new ScrollEdgeEffect(blur, tint);
             } catch (Throwable t) {
                 LiquidSupport.markBroken(t);
@@ -60,7 +69,7 @@ public final class ScrollEdgeEffect {
         glass.setRimVisible(false);
         glass.setBlurSource(content);
         glass.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        stage.addView(glass, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+        stage.addView(glass, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
         return new ScrollEdgeEffect(glass, null);
     }
 
