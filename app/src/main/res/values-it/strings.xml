@@ -597,4 +597,12 @@ Resta su questa schermata fino al termine.</string>
     <string name="ig_highlight_loading">Caricamento della storia in evidenza…</string>
     <string name="ig_highlight_downloading">Download di %1$d elementi in evidenza…</string>
     <string name="ig_highlight_done">Storia in evidenza salvata: %1$d di %2$d elementi</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Ritmo sicuro per azioni di massa</string>
+    <string name="ie_safe_pacing_hint">Attende in modo casuale 0,7–1,6 s tra gli elementi e 3–6 s ogni 8 elementi durante l\'annullamento invio di massa, Scarica tutto e la ricerca nei commenti. Consigliato.</string>
+    <string name="ie_pacing_progress">%1$d di %2$d completati</string>
+    <string name="ie_pacing_stop">Ferma</string>
+    <string name="ie_pacing_hide">Nascondi</string>
+    <string name="ie_pacing_stopped">Fermato dopo %1$d di %2$d</string>
 </resources>

@@ -701,4 +701,12 @@
     <string name="ig_highlight_loading">Öne çıkan yükleniyor…</string>
     <string name="ig_highlight_downloading">%1$d öne çıkan öğe indiriliyor…</string>
     <string name="ig_highlight_done">Öne çıkan kaydedildi: %2$d öğeden %1$d tanesi</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Toplu işlemler için güvenli tempo</string>
+    <string name="ie_safe_pacing_hint">Toplu gönderimi geri alma, Tümünü indir ve yorum aramada öğeler arasında rastgele 0,7–1,6 sn, her 8 öğede bir 3–6 sn bekler. Önerilir.</string>
+    <string name="ie_pacing_progress">%2$d öğeden %1$d tamamlandı</string>
+    <string name="ie_pacing_stop">Durdur</string>
+    <string name="ie_pacing_hide">Gizle</string>
+    <string name="ie_pacing_stopped">%2$d öğeden %1$d sonra durduruldu</string>
 </resources>

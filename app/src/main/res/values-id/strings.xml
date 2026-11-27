@@ -694,4 +694,12 @@ Tetap di layar ini sampai selesai.</string>
     <string name="ig_highlight_loading">Memuat Sorotan…</string>
     <string name="ig_highlight_downloading">Mengunduh %1$d item Sorotan…</string>
     <string name="ig_highlight_done">Sorotan disimpan: %1$d dari %2$d item</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Jeda aman untuk tindakan massal</string>
+    <string name="ie_safe_pacing_hint">Menunggu acak 0,7–1,6 dtk antar item dan 3–6 dtk setiap 8 item saat batal kirim massal, Unduh semua, dan pencarian komentar. Disarankan.</string>
+    <string name="ie_pacing_progress">%1$d dari %2$d selesai</string>
+    <string name="ie_pacing_stop">Hentikan</string>
+    <string name="ie_pacing_hide">Sembunyikan</string>
+    <string name="ie_pacing_stopped">Dihentikan setelah %1$d dari %2$d</string>
 </resources>

@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Η εγγραφή αντιγράφηκε</string>
     <string name="logs_cleared">Οι καταγραφές διαγράφηκαν</string>
     <string name="logs_source_companion">[εφαρμογή]</string>
+    <string name="logs_save">Αποθήκευση στον χώρο αποθήκευσης</string>
+    <string name="logs_saving">Αποθήκευση πλήρους αρχείου καταγραφής…</string>
+    <string name="logs_saved">Το αρχείο καταγραφής αποθηκεύτηκε</string>
+    <string name="logs_save_failed">Δεν ήταν δυνατή η αποθήκευση του αρχείου καταγραφής</string>
 </resources>

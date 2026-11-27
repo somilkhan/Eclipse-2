@@ -694,4 +694,12 @@
     <string name="ig_highlight_loading">正在加载精选…</string>
     <string name="ig_highlight_downloading">正在下载 %1$d 个精选项目…</string>
     <string name="ig_highlight_done">精选已保存：%1$d / %2$d 个项目</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">批量操作安全节奏</string>
+    <string name="ie_safe_pacing_hint">在批量撤回、全部下载和评论搜索中，每项之间随机等待 0.7–1.6 秒，每 8 项等待 3–6 秒。推荐开启。</string>
+    <string name="ie_pacing_progress">已完成 %1$d / %2$d</string>
+    <string name="ie_pacing_stop">停止</string>
+    <string name="ie_pacing_hide">隐藏</string>
+    <string name="ie_pacing_stopped">已在 %1$d / %2$d 后停止</string>
 </resources>

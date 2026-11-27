@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Entri disalin</string>
     <string name="logs_cleared">Log dibersihkan</string>
     <string name="logs_source_companion">[aplikasi]</string>
+    <string name="logs_save">Simpan ke penyimpanan</string>
+    <string name="logs_saving">Menyimpan log lengkap…</string>
+    <string name="logs_saved">Log disimpan</string>
+    <string name="logs_save_failed">Tidak dapat menyimpan log</string>
 </resources>

@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Post kopierad</string>
     <string name="logs_cleared">Loggar rensade</string>
     <string name="logs_source_companion">[app]</string>
+    <string name="logs_save">Spara i lagring</string>
+    <string name="logs_saving">Sparar hela loggen…</string>
+    <string name="logs_saved">Loggen sparad</string>
+    <string name="logs_save_failed">Kunde inte spara loggen</string>
 </resources>

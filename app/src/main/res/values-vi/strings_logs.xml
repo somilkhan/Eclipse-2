@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Đã sao chép mục</string>
     <string name="logs_cleared">Đã xóa nhật ký</string>
     <string name="logs_source_companion">[ứng dụng]</string>
+    <string name="logs_save">Lưu vào bộ nhớ</string>
+    <string name="logs_saving">Đang lưu toàn bộ nhật ký…</string>
+    <string name="logs_saved">Đã lưu nhật ký</string>
+    <string name="logs_save_failed">Không thể lưu nhật ký</string>
 </resources>

@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Entrada copiada</string>
     <string name="logs_cleared">Registos limpos</string>
     <string name="logs_source_companion">[app]</string>
+    <string name="logs_save">Salvar no armazenamento</string>
+    <string name="logs_saving">Salvando o log completo…</string>
+    <string name="logs_saved">Log salvo</string>
+    <string name="logs_save_failed">Não foi possível salvar o log</string>
 </resources>

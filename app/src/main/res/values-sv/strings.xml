@@ -663,4 +663,12 @@ Stanna på den här skärmen tills det är klart.</string>
     <string name="ig_highlight_loading">Laddar höjdpunkt…</string>
     <string name="ig_highlight_downloading">Laddar ned %1$d objekt från höjdpunkten…</string>
     <string name="ig_highlight_done">Höjdpunkt sparad: %1$d av %2$d objekt</string>
+
+    <!-- Safe pacing (0.8.4) -->
+    <string name="ie_safe_pacing">Säkert tempo för massåtgärder</string>
+    <string name="ie_safe_pacing_hint">Väntar slumpmässigt 0,7–1,6 s mellan objekt och 3–6 s var 8:e objekt vid massångring, Ladda ner alla och kommentarsökning. Rekommenderas.</string>
+    <string name="ie_pacing_progress">%1$d av %2$d klara</string>
+    <string name="ie_pacing_stop">Stoppa</string>
+    <string name="ie_pacing_hide">Dölj</string>
+    <string name="ie_pacing_stopped">Stoppad efter %1$d av %2$d</string>
 </resources>

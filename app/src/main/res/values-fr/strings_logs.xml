@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">Entrée copiée</string>
     <string name="logs_cleared">Journaux effacés</string>
     <string name="logs_source_companion">[app]</string>
+    <string name="logs_save">Enregistrer dans le stockage</string>
+    <string name="logs_saving">Enregistrement du journal complet…</string>
+    <string name="logs_saved">Journal enregistré</string>
+    <string name="logs_save_failed">Impossible d\'enregistrer le journal</string>
 </resources>

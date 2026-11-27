@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">הרשומה הועתקה</string>
     <string name="logs_cleared">היומנים נוקו</string>
     <string name="logs_source_companion">[אפליקציה]</string>
+    <string name="logs_save">שמור באחסון</string>
+    <string name="logs_saving">שומר את היומן המלא…</string>
+    <string name="logs_saved">היומן נשמר</string>
+    <string name="logs_save_failed">לא ניתן לשמור את היומן</string>
 </resources>

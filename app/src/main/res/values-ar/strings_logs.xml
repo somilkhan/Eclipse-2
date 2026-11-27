@@ -23,4 +23,8 @@
     <string name="logs_entry_copied">تم نسخ الإدخال</string>
     <string name="logs_cleared">تم مسح السجلات</string>
     <string name="logs_source_companion">[التطبيق]</string>
+    <string name="logs_save">حفظ في التخزين</string>
+    <string name="logs_saving">جارٍ حفظ السجل الكامل…</string>
+    <string name="logs_saved">تم حفظ السجل</string>
+    <string name="logs_save_failed">تعذّر حفظ السجل</string>
 </resources>
