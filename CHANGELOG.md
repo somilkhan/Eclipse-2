@@ -24,6 +24,10 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
   the model's own hashed accessor (id, user, video_versions, image_versions2, candidates, ...).
   `IgModels` also accepts the synthetic `x(int)` accessor that Pando models (image info, video
   versions) declare, but never on a List or Map. The capture error log now includes its reason.
+- First launch after an install or update: the background DexKit pass used every core while
+  Instagram was still starting, and Android killed it with "failed to complete startup" (ANR). It
+  now starts after Instagram's startup has finished, 1.5 s later, at minimum priority, using half
+  the cores. A cached launch that still takes longer than 1.5 s is logged.
 - Hide suggested posts: the FeedItem parser lookup matched Instagram's shared string table
   (`X.0000`) on 458 and hooked nothing. It now goes through `StringTables` and only accepts a class
   that has the parser bridge.
