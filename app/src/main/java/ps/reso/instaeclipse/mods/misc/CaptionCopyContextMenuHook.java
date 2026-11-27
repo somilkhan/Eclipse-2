@@ -413,7 +413,7 @@ public class CaptionCopyContextMenuHook {
     /** A MediaOption$Option enum name that represents a Meta AI menu row (GEN_AI_INFO / GEN_AI /
      *  CONTENT_DEEP_DIVE = "Ask Meta AI about this", etc.). Kept in sync with RemoveMetaAIHook. */
     private static boolean isMetaAiMenuOption(String name) {
-        String n = name.toUpperCase();
+        String n = name.toUpperCase(java.util.Locale.ROOT);
         return n.contains("GEN_AI") || n.contains("GENAI") || n.contains("META_AI")
                 || n.contains("METAAI") || n.contains("ASK_META") || n.contains("CONTENT_DEEP_DIVE");
     }

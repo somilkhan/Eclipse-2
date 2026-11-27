@@ -60,4 +60,5 @@
     <string name="ie_unsent_copy_removed">Local saved copy removed.</string>
     <string name="ie_unsent_copy_stale">This saved entry is no longer available. The history was refreshed.</string>
     <string name="ie_unsent_copy_remove_failed">Could not save the removal. The saved copy is still shown; try again.</string>
+    <string name="ie_download_fgs_blocked">Android blocked the background download. Open InstaEclipse and try again.</string>
 </resources>

@@ -292,7 +292,7 @@ public class UIHookManager {
             for (int i = 0; i < container.getChildCount(); i++) {
                 View child = container.getChildAt(i);
                 CharSequence description = child.getContentDescription();
-                if (description != null && description.toString().toLowerCase().contains("search")) {
+                if (description != null && description.toString().toLowerCase(java.util.Locale.ROOT).contains("search")) {
                     applySearchHook(activity, child);
                 }
             }

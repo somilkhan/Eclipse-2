@@ -23,4 +23,5 @@
     <string name="home_shortcuts_hint">Le modifiche vengono inviate subito a Instagram.</string>
     <string name="home_shortcuts_limit">Puoi fissare fino a %1$d scorciatoie</string>
     <string name="home_shortcuts_locked_extreme">Bloccato dalla Modalità Estrema</string>
+    <string name="ig_toast_no_app_to_open">Nessuna app trovata per aprirlo</string>
 </resources>

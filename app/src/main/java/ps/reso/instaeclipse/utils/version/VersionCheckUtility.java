@@ -38,11 +38,9 @@ public class VersionCheckUtility {
             new Handler(Looper.getMainLooper()).post(() -> {
                 Activity a = ref.get();
                 if (a == null || a.isFinishing() || a.isDestroyed()) return;
-                if (result != null) {
-                    handleVersionCheckResult(a, result);
-                } else {
-                    showErrorDialog(a);
-                }
+                // A failed background check (offline, captive portal, GitHub rate limit) is only
+                // logged: a modal error on every app start without network was pure noise.
+                if (result != null) handleVersionCheckResult(a, result);
             });
         });
     }
@@ -105,14 +103,6 @@ public class VersionCheckUtility {
                     }
                 })
                 .setNegativeButton(activity.getString(R.string.ig_update_later), (dialogInterface, which) -> dialogInterface.dismiss())
-                .show();
-    }
-
-    private static void showErrorDialog(Activity activity) {
-        new MaterialAlertDialogBuilder(activity)
-                .setTitle(activity.getString(R.string.ig_dialog_error))
-                .setMessage(activity.getString(R.string.ig_update_error_message))
-                .setPositiveButton(activity.getString(R.string.ig_dialog_ok), (dialogInterface, which) -> dialogInterface.dismiss())
                 .show();
     }
 

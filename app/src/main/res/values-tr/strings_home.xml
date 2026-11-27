@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Değişiklikler Instagram\'a anında gönderilir.</string>
     <string name="home_shortcuts_limit">En fazla %1$d kısayol sabitleyebilirsiniz</string>
     <string name="home_shortcuts_locked_extreme">Aşırı Mod tarafından kilitlendi</string>
+    <string name="ig_toast_no_app_to_open">Bunu açacak uygulama bulunamadı</string>
 </resources>

@@ -46,7 +46,7 @@ public final class CommentMedia {
                     if (u != null && !u.isEmpty()) return u;
                     continue;
                 }
-                if (c.getName().toLowerCase().contains("giphy")) {
+                if (c.getName().toLowerCase(java.util.Locale.ROOT).contains("giphy")) {
                     String g = giphyUrl(o);
                     if (g != null) { out.add(g); return out; }
                 }

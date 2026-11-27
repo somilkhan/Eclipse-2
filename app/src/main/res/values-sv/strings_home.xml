@@ -23,4 +23,5 @@
     <string name="home_shortcuts_hint">Ändringar skickas direkt till Instagram.</string>
     <string name="home_shortcuts_limit">Du kan fästa upp till %1$d genvägar</string>
     <string name="home_shortcuts_locked_extreme">Låst av Extremläge</string>
+    <string name="ig_toast_no_app_to_open">Ingen app hittades för att öppna detta</string>
 </resources>

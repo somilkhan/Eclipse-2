@@ -50,7 +50,7 @@ public class GhostChannelMarkAsReadHook {
                             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                                 CharSequence description = viewGroup.getChildAt(i).getContentDescription();
                                 if (description != null) {
-                                    String descStr = description.toString().toLowerCase();
+                                    String descStr = description.toString().toLowerCase(java.util.Locale.ROOT);
                                     if (descStr.contains("audio call") ||
                                             descStr.contains("video call") ||
                                             descStr.contains("blend")) {

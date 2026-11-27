@@ -22,4 +22,5 @@
     <string name="home_shortcuts_hint">Dəyişikliklər dərhal Instagram-a göndərilir.</string>
     <string name="home_shortcuts_limit">Ən çox %1$d qısayol sabitləyə bilərsiniz</string>
     <string name="home_shortcuts_locked_extreme">Ekstremal Rejim tərəfindən kilidlənib</string>
+    <string name="ig_toast_no_app_to_open">Bunu açmaq üçün tətbiq tapılmadı</string>
 </resources>

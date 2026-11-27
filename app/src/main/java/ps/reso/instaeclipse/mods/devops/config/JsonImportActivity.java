@@ -21,6 +21,9 @@ public class JsonImportActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Recreated while the picker is open: its result is delivered to this instance; a second
+        // chooser on top would make the user pick twice.
+        if (savedInstanceState != null) return;
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/json");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -32,6 +35,11 @@ public class JsonImportActivity extends Activity {
         if (requestCode == PICK_JSON_FILE) {
             if (resultCode == RESULT_OK && data != null) {
                 Uri uri = data.getData();
+                if (uri == null) {
+                    ps.reso.instaeclipse.utils.toast.IeToast.makeText(this, getString(R.string.json_cancelled), Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
                 try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
                     String json = ps.reso.instaeclipse.utils.ipc.BrokerPayload.readConfig(inputStream);
                     if (json.startsWith("{") && json.endsWith("}")) {
