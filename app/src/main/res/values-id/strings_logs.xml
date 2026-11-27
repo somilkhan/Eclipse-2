@@ -8,10 +8,7 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">Muat ulang</string>
     <string name="logs_copy">Salin</string>
-    <string name="logs_share">Bagikan</string>
     <string name="logs_clear">Bersihkan</string>
-    <string name="logs_share_title">Bagikan log InstaEclipse</string>
-    <string name="logs_share_subject">Log InstaEclipse</string>
     <string name="logs_loading">Memuat log…</string>
     <string name="logs_count_format">%1$d dari %2$d entri</string>
     <string name="logs_status_live">Instagram sedang berjalan · langsung</string>

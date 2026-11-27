@@ -8,10 +8,7 @@
     <string name="logs_filter_count">%1$s · %2$d</string>
     <string name="logs_refresh">Actualiser</string>
     <string name="logs_copy">Copier</string>
-    <string name="logs_share">Partager</string>
     <string name="logs_clear">Effacer</string>
-    <string name="logs_share_title">Partager les journaux InstaEclipse</string>
-    <string name="logs_share_subject">Journaux InstaEclipse</string>
     <string name="logs_loading">Chargement des journaux…</string>
     <string name="logs_count_format">%1$d sur %2$d entrées</string>
     <string name="logs_status_live">Instagram en cours d\'exécution · en direct</string>
