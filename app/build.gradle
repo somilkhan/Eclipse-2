@@ -21,8 +21,32 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Release signing comes from the environment (see RELEASING.md / .github/workflows/release.yml).
+    // Local builds without these variables still produce an unsigned release APK.
+    def releaseKeystore = System.getenv("IE_KEYSTORE_PATH")
+    def releaseSigningReady = releaseKeystore && System.getenv("IE_KEYSTORE_PASSWORD") \
+            && System.getenv("IE_KEY_ALIAS") && System.getenv("IE_KEY_PASSWORD")
+    if (System.getenv("IE_REQUIRE_SIGNING") == "true" && !releaseSigningReady) {
+        throw new GradleException("Release signing required but IE_KEYSTORE_PATH, IE_KEYSTORE_PASSWORD, " +
+                "IE_KEY_ALIAS or IE_KEY_PASSWORD is not set. See RELEASING.md.")
+    }
+    signingConfigs {
+        if (releaseSigningReady) {
+            release {
+                storeFile file(releaseKeystore)
+                storePassword System.getenv("IE_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("IE_KEY_ALIAS")
+                keyPassword System.getenv("IE_KEY_PASSWORD")
+                enableV1Signing true
+                enableV2Signing true
+                enableV3Signing true
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (releaseSigningReady) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
