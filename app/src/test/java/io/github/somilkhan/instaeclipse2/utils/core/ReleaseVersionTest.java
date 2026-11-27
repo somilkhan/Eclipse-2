@@ -10,9 +10,9 @@ import io.github.somilkhan.instaeclipse2.BuildConfig;
 public class ReleaseVersionTest {
 
     @Test
-    public void versionIs084AboveOriginalBeta() {
-        assertEquals("0.8.4", BuildConfig.VERSION_NAME);
-        assertEquals(22, BuildConfig.VERSION_CODE);
+    public void versionIs090AboveOriginalBeta() {
+        assertEquals("0.9.0", BuildConfig.VERSION_NAME);
+        assertEquals(23, BuildConfig.VERSION_CODE);
         assertTrue("must update over the original 0.8.3 beta (code 21)", BuildConfig.VERSION_CODE > 21);
     }
 
