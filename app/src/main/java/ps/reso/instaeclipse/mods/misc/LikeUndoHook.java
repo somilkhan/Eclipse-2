@@ -52,19 +52,36 @@ public class LikeUndoHook {
     private static final ThreadLocal<Boolean> REPLAYING = new ThreadLocal<>();
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
+    static final String[] LIKE_PATH_STRINGS = {"media/%s/%s/", "like", "unlike"};
+
+    private static Method firstTakingMedia(List<MethodData> found) {
+        for (MethodData md : found) {
+            try {
+                Method m = md.getMethodInstance(Module.hostClassLoader);
+                for (Class<?> p : m.getParameterTypes())
+                    if (p.getName().equals("com.instagram.feed.media.Media")) return m;
+            } catch (Throwable ignored) { }
+        }
+        return null;
+    }
+
     public void install(DexKitBridge bridge) {
         Method target = DexKitCache.isCacheValid() ? DexKitCache.loadMethod(CACHE_KEY, Module.hostClassLoader) : null;
         if (target == null) {
             try {
+                // 452 and older: the builder itself logs "source_of_like" + "fetchLikeCount".
                 List<MethodData> found = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
                         .usingStrings("source_of_like", "fetchLikeCount")
                         .returnType("void")));
-                for (MethodData md : found) {
-                    Method m = md.getMethodInstance(Module.hostClassLoader);
-                    for (Class<?> p : m.getParameterTypes()) {
-                        if (p.getName().equals("com.instagram.feed.media.Media")) { target = m; break; }
-                    }
-                    if (target != null) break;
+                target = firstTakingMedia(found);
+                if (target == null) {
+                    // 457+: "source_of_like" moved into a params helper and "fetchLikeCount" into a
+                    // GraphQL builder; the sender still formats "media/%s/%s/" with "like"/"unlike".
+                    List<MethodData> alt = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                            .usingStrings(LIKE_PATH_STRINGS)
+                            .returnType("void")));
+                    found = alt;
+                    target = firstTakingMedia(found);
                 }
                 if (target == null) {
                     ModuleLog.line(TAG + "❌ like sender not found (" + found.size() + " candidates)");
