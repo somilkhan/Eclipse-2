@@ -309,6 +309,17 @@ public class FeatureManager {
         reg(FeatureFlags.disableHighlights, "DisableHighlights", R.string.ig_feat_disable_highlights);
         reg(FeatureFlags.hideHiddenRequests, "HideHiddenRequests", R.string.ig_feat_hide_hidden_requests);
         reg(FeatureFlags.removeEmptyBottomSpace, "RemoveEmptyBottomSpace", R.string.ig_feat_remove_bottom_space);
+        reg(FeatureFlags.hideStoryFollowButton, "HideStoryFollowButton", R.string.ig_feat_hide_story_follow);
+        reg(FeatureFlags.hideReelsFollowButton, "HideReelsFollowButton", R.string.ig_feat_hide_reels_follow);
+        reg(FeatureFlags.loopStories, "LoopStories", R.string.ig_feat_loop_stories);
+        reg(FeatureFlags.disableDisappearingSwipe, "DisableDisappearingSwipe", R.string.ig_feat_disable_disappearing_swipe);
+        reg(FeatureFlags.hideChatCallButtons, "HideChatCallButtons", R.string.ig_feat_hide_chat_call_buttons);
+        reg(FeatureFlags.filterStoryTray, "FilterStoryTray", R.string.ig_feat_filter_story_tray);
+        reg(FeatureFlags.customLikeAnimation, "CustomLikeAnimation", R.string.ig_feat_custom_like_animation);
+        reg(FeatureFlags.customStoryRingSize, "CustomStoryRingSize", R.string.ig_feat_story_ring_size);
+        reg(FeatureFlags.resumeReels, "ResumeReels", R.string.ig_feat_resume_reels);
+        reg(FeatureFlags.externalDownloader, "ExternalDownloader", R.string.ig_feat_external_downloader);
+        reg(FeatureFlags.markReadAfterReply, "MarkReadAfterReply", R.string.ig_feat_mark_read_after_reply);
         reg(FeatureFlags.readReceiptChats,     "ReadReceiptChats",     R.string.ig_feat_read_receipt_chats);
         reg(FeatureFlags.hideThreadsButton,    "HideThreadsButton",    R.string.ig_feat_hide_threads);
         reg(FeatureFlags.offerPlaybackSpeed,   "PlaybackSpeed",        R.string.ig_playback_speed_title);

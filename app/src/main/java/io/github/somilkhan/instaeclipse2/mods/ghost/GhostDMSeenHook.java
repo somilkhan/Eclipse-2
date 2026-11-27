@@ -36,6 +36,8 @@ public class GhostDMSeenHook {
                         break;
                     }
                 }
+                if (param.method instanceof Method m)
+                    io.github.somilkhan.instaeclipse2.mods.piko.MarkReadAfterReplyHook.hold(m, param.args);
                 param.setResult(null);
             }
         };

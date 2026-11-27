@@ -565,6 +565,7 @@ public class FeaturesFragment extends Fragment {
                                     .setPositiveButton(getString(R.string.ig_dialog_yes), (dialog, which) -> {
                                         stageChange(item.prefKey, true);
                                         stageChange("isDistractionFree", true);
+                                        putStringPref("focusLockUntil", ""); // permanent, no end time
                                         updateMasterSwitches();
                                         refreshConditionalItems();
                                     })
@@ -1169,7 +1170,10 @@ public class FeaturesFragment extends Fragment {
                 createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_distraction_hide_notes_tray), "hideNotesTray"),
                 createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_hide_dm_blend), "hideDmBlend"),
                 createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_share_create_group), "hideShareCreateGroup"),
-                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_feat_hide_hidden_requests), "hideHiddenRequests")
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_feat_hide_hidden_requests), "hideHiddenRequests"),
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_feat_hide_chat_call_buttons), "hideChatCallButtons"),
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_feat_disable_disappearing_swipe), "disableDisappearingSwipe"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_feat_mark_read_after_reply), "markReadAfterReply")
         ));
 
         return defs;
@@ -1255,7 +1259,9 @@ public class FeaturesFragment extends Fragment {
                 createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_save), "hideFeedSaveButton"),
                 createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_repost), "hideFeedRepostButton"),
                 createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_like_count), "hideFeedLikeCount"),
-                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_disable_highlights), "disableHighlights")
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_disable_highlights), "disableHighlights"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_feat_custom_like_animation), "customLikeAnimation"),
+                likeAnimationItem()
         ));
 
         defs.add(getString(R.string.feat_options));
@@ -1277,6 +1283,7 @@ public class FeaturesFragment extends Fragment {
     }
 
     private List<Object> buildDistractionDefs() {
+        expireFocusLockLocal();
         List<Object> defs = new ArrayList<>();
 
         List<String> distractionKeys = Arrays.asList(
@@ -1291,7 +1298,7 @@ public class FeaturesFragment extends Fragment {
         extreme.requiresAnyOf = distractionKeys;
 
         defs.add(getString(R.string.feat_danger_zone));
-        defs.add(Arrays.asList(extreme));
+        defs.add(Arrays.asList(extreme, focusLockItem()));
 
         // Master switch and all feature toggles: locked once extreme mode is active
         FeatureItem masterSwitch = createMasterSwitch(getString(R.string.ig_dialog_enable_disable_all), distractionKeys);
@@ -1752,6 +1759,201 @@ public class FeaturesFragment extends Fragment {
                 getString(R.string.not_installed_instagram), Toast.LENGTH_SHORT).show();
     }
 
+    /** Saves a string setting locally and pushes it to Instagram. */
+    private void putStringPref(String key, String value) {
+        localCache.edit().putString(key, value).commit();
+        makeLocalCacheWorldReadable();
+        Intent b = new Intent("io.github.somilkhan.instaeclipse2.ACTION_UPDATE_PREF_STRING");
+        b.putExtra("key", key);
+        b.putExtra("value", value);
+        io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.broadcastToInstagram(requireContext(), b);
+    }
+
+    /** Saves a boolean setting locally (outside the staged Save flow) and pushes it to Instagram. */
+    private void putBoolPref(String key, boolean value) {
+        stagedChanges.remove(key);
+        localCache.edit().putBoolean(key, value).commit();
+        makeLocalCacheWorldReadable();
+        Intent b = new Intent("io.github.somilkhan.instaeclipse2.ACTION_UPDATE_PREF");
+        b.putExtra("key", key);
+        b.putExtra("value", value);
+        io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.broadcastToInstagram(requireContext(), b);
+    }
+
+    // ── Piko ports (batch 2): pickers ──────────────────────────────────────────
+
+    private String countOrNone(String csv) {
+        int n = io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilter.parseCsv(csv).size();
+        return n == 0 ? getString(R.string.ig_feat_any) : String.valueOf(n);
+    }
+
+    private FeatureItem likeAnimationItem() {
+        String v = localCache.getString("likeAnimation", io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimations.RANDOM);
+        String label = io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimations.RANDOM.equals(v)
+                ? getString(R.string.ig_feat_like_animation_random) : io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimations.label(v);
+        FeatureItem item = createClickable(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_feat_like_animation_pick) + "  ·  " + label,
+                this::pickLikeAnimation);
+        item.requiresAnyOf = Arrays.asList("customLikeAnimation");
+        return item;
+    }
+
+    private void pickLikeAnimation() {
+        String[] known = io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimations.KNOWN;
+        String[] values = new String[known.length + 1];
+        String[] labels = new String[known.length + 1];
+        values[0] = io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimations.RANDOM;
+        labels[0] = getString(R.string.ig_feat_like_animation_random);
+        for (int i = 0; i < known.length; i++) {
+            values[i + 1] = known[i];
+            labels[i + 1] = io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimations.label(known[i]);
+        }
+        int sel = Math.max(0, Arrays.asList(values).indexOf(localCache.getString("likeAnimation", values[0])));
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.ig_feat_like_animation_pick)
+                .setSingleChoiceItems(labels, sel, (d, which) -> {
+                    putStringPref("likeAnimation", values[which]);
+                    d.dismiss();
+                    loadFeedMenu();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void pickStoryFilterTypes() {
+        pickCsvSet(R.string.ig_feat_story_filter_types, io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilter.REEL_TYPES, "storyFilterTypes");
+    }
+
+    private void pickCsvSet(int titleRes, String[] choices, String key) {
+        java.util.Set<String> current = io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilter.parseCsv(localCache.getString(key, ""));
+        boolean[] checked = new boolean[choices.length];
+        for (int i = 0; i < choices.length; i++) checked[i] = current.contains(choices[i]);
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(titleRes)
+                .setMultiChoiceItems(choices, checked, (d, which, on) -> checked[which] = on)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    List<String> picked = new ArrayList<>();
+                    for (int i = 0; i < choices.length; i++) if (checked[i]) picked.add(choices[i]);
+                    putStringPref(key, io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilter.toCsv(picked));
+                    loadStoriesMenu();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void pickStoryRingSize() {
+        final int[] values = {40, 60, 80, 100, 120, 140, 160};
+        int current = io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSize.clamp(localCache.getInt("storyRingSizeDp",
+                io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSize.DEFAULT_DP));
+        String[] labels = new String[values.length];
+        int sel = 3;
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = values[i] + "%";
+            if (values[i] == current) sel = i;
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.ig_feat_story_ring_size_value)
+                .setMessage(R.string.ig_feat_restart_needed)
+                .setSingleChoiceItems(labels, sel, (d, which) -> {
+                    putIntPref("storyRingSizeDp", values[which]);
+                    d.dismiss();
+                    loadStoriesMenu();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private FeatureItem externalPackageItem() {
+        String pkg = localCache.getString("externalDownloaderPackage", "");
+        FeatureItem item = createClickable(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_feat_external_downloader_pkg) + "  ·  "
+                + (pkg.isEmpty() ? getString(R.string.ig_feat_any) : pkg),
+                () -> editStringPref(R.string.ig_feat_external_downloader_pkg, R.string.ig_feat_external_downloader_pkg_hint,
+                        "externalDownloaderPackage", this::loadPostMenuMenu));
+        item.requiresAnyOf = Arrays.asList("externalDownloader");
+        return item;
+    }
+
+    /** One-line text setting (usernames list or package name). */
+    private void editStringPref(int titleRes, int hintRes, String key, Runnable reload) {
+        final android.widget.EditText input = new android.widget.EditText(requireContext());
+        input.setSingleLine(true);
+        input.setHint(hintRes);
+        input.setText(localCache.getString(key, ""));
+        int pad = (int) (20 * getResources().getDisplayMetrics().density);
+        android.widget.FrameLayout box = new android.widget.FrameLayout(requireContext());
+        box.setPadding(pad, pad / 2, pad, 0);
+        box.addView(input);
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(titleRes)
+                .setView(box)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    String v = input.getText().toString().trim();
+                    putStringPref(key, v);
+                    reload.run();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    // ── Focus Lock (Piko port): Extreme Mode with an end time ──────────────────
+
+    private long focusLockLeft() {
+        return io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.until(localCache.getString("focusLockUntil", ""))
+                - System.currentTimeMillis();
+    }
+
+    /** A finished lock releases Extreme Mode (the chosen switches stay as they are). */
+    private void expireFocusLockLocal() {
+        if (!io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.isExpired(
+                localCache.getString("focusLockUntil", ""), System.currentTimeMillis())) return;
+        putStringPref("focusLockUntil", "");
+        putBoolPref("isExtremeMode", false);
+    }
+
+    private FeatureItem focusLockItem() {
+        long left = focusLockLeft();
+        boolean locked = getCurrentState("isExtremeMode") && left > 0;
+        String title = getString(R.string.ig_focus_lock) + (locked ? "  ·  " + getString(R.string.ig_focus_lock_active,
+                io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.format(left)) : "");
+        return createClickable(R.drawable.ic_ui_timer, "#FF9F0A", title, this::showFocusLockDialog);
+    }
+
+    private void showFocusLockDialog() {
+        expireFocusLockLocal();
+        if (getCurrentState("isExtremeMode")) {
+            long left = focusLockLeft();
+            if (left > 0) io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_focus_lock_locked_toast,
+                    io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.format(left)), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        boolean any = false;
+        for (String k : Arrays.asList("disableStories", "disableFeed", "disableReels", "disableReelsExceptDM", "disableExplore", "disableComments"))
+            if (getCurrentState(k)) { any = true; break; }
+        if (!any) {
+            io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_focus_lock_none), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        long[] durations = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.DURATIONS_MS;
+        String[] labels = new String[durations.length];
+        for (int i = 0; i < durations.length; i++) labels[i] = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.format(durations[i]);
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.ig_focus_lock_pick)
+                .setItems(labels, (d, which) -> new MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.ig_focus_lock)
+                        .setMessage(getString(R.string.ig_focus_lock_confirm, labels[which]))
+                        .setPositiveButton(R.string.ig_focus_lock_start, (d2, w2) -> {
+                            commitStagedChanges(); // the switches the user picked, before they lock
+                            putStringPref("focusLockUntil", io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.endFor(
+                                    System.currentTimeMillis(), durations[which]));
+                            putBoolPref("isDistractionFree", true);
+                            putBoolPref("isExtremeMode", true);
+                            loadDistractionMenu();
+                        })
+                        .setNegativeButton(R.string.ig_dialog_cancel, null)
+                        .show())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
     /** Saves an int setting locally and pushes it to Instagram. */
     private void putIntPref(String key, int value) {
         localCache.edit().putInt(key, value).commit();
@@ -2024,7 +2226,9 @@ public class FeaturesFragment extends Fragment {
                 createExtrasSwitch("#32D74B", "reelsLockScroll"),
                 createSwitch(R.drawable.ic_ui_movie, "#32D74B", getString(R.string.ig_dialog_downloader_reel_scrubber), "forceReelScrubber"),
                 createSwitch(R.drawable.ic_ui_movie, "#32D74B", getString(R.string.ig_dialog_reels_hold_left_slow), "holdLeftSlowMotion"),
-                createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_dialog_misc_disable_repost), "disableRepost")
+                createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_dialog_misc_disable_repost), "disableRepost"),
+                createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_feat_hide_reels_follow), "hideReelsFollowButton"),
+                createSwitch(R.drawable.ic_ui_movie, "#32D74B", getString(R.string.ig_feat_resume_reels), "resumeReels")
         ));
 
         return defs;
@@ -2037,7 +2241,28 @@ public class FeaturesFragment extends Fragment {
                 createSwitch(R.drawable.ic_ui_at, "#32D74B", getString(R.string.ig_dialog_misc_view_story_mentions), "enableStoryMentions"),
                 createSwitch(R.drawable.ic_ui_link, "#32D74B", getString(R.string.ig_dialog_misc_story_links), "storyLinks"),
                 createSwitch(R.drawable.ic_ui_info, "#32D74B", getString(R.string.ig_dialog_misc_story_info), "storyInfo"),
-                createSwitch(R.drawable.ic_ui_search, "#32D74B", getString(R.string.ig_dialog_misc_viewer_search), "storyViewerSearch")
+                createSwitch(R.drawable.ic_ui_search, "#32D74B", getString(R.string.ig_dialog_misc_viewer_search), "storyViewerSearch"),
+                createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_feat_hide_story_follow), "hideStoryFollowButton"),
+                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_loop_stories), "loopStories")
+        ));
+
+        FeatureItem types = createClickable(R.drawable.ic_ui_tune, "#32D74B", getString(R.string.ig_feat_story_filter_types) + "  ·  "
+                + countOrNone(localCache.getString("storyFilterTypes", "")), this::pickStoryFilterTypes);
+        types.requiresAnyOf = Arrays.asList("filterStoryTray");
+        FeatureItem users = createClickable(R.drawable.ic_ui_tune, "#32D74B", getString(R.string.ig_feat_story_filter_users) + "  ·  "
+                + countOrNone(localCache.getString("storyFilterUsers", "")), () -> pickCsvSet(R.string.ig_feat_story_filter_users,
+                io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilter.USER_CHOICES, "storyFilterUsers"));
+        users.requiresAnyOf = Arrays.asList("filterStoryTray");
+        FeatureItem ring = createClickable(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_story_ring_size_value) + "  ·  "
+                + io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSize.clamp(localCache.getInt("storyRingSizeDp",
+                        io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSize.DEFAULT_DP)) + "%", this::pickStoryRingSize);
+        ring.requiresAnyOf = Arrays.asList("customStoryRingSize");
+        defs.add(getString(R.string.ig_feat_filter_story_tray));
+        defs.add(Arrays.asList(
+                createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_feat_filter_story_tray), "filterStoryTray"),
+                types, users,
+                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_story_ring_size) + " (" + getString(R.string.ig_feat_restart_needed) + ")", "customStoryRingSize"),
+                ring
         ));
 
         return defs;
@@ -2162,7 +2387,9 @@ public class FeaturesFragment extends Fragment {
                 createSwitch(R.drawable.ic_ui_link, "#FF9F0A", getString(R.string.ig_dialog_downloader_copy_link), "copyMediaLink"),
                 createSwitch(R.drawable.ic_ui_content_copy, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_copy_image), "offerCopyImage"),
                 createSwitch(R.drawable.ic_ui_search, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_media_info), "offerMediaInfo"),
-                createSwitch(R.drawable.ic_ui_movie, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_speed), "offerPlaybackSpeed")
+                createSwitch(R.drawable.ic_ui_movie, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_speed), "offerPlaybackSpeed"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_feat_external_downloader), "externalDownloader"),
+                externalPackageItem()
         ));
 
         defs.add(getString(R.string.feat_options));

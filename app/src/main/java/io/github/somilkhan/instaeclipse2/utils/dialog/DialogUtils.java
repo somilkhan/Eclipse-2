@@ -1137,6 +1137,7 @@ public class DialogUtils {
 
 
     private static void showDistractionOptions(Context context) {
+        SettingsManager.expireFocusLock(); // a finished Focus Lock unlocks the switches again
         LinearLayout layout = createSwitchLayout(context);
 
         // Child switches
@@ -1175,7 +1176,7 @@ public class DialogUtils {
         updateExtremeSwitchEnabled.run();
 
         extremeModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
+            if (isChecked && !FeatureFlags.isExtremeMode) { // Focus Lock sets the flag before checking it
                 IeDialog builder = new IeDialog(context)
                         .title(I18n.t(context, R.string.ig_dialog_distraction_extreme_title))
                         .message(I18n.t(context, R.string.ig_dialog_distraction_extreme_message));
@@ -1185,6 +1186,7 @@ public class DialogUtils {
                 builder.primary(I18n.t(context, R.string.ig_dialog_yes), () -> {
                     FeatureFlags.isExtremeMode = true;
                     FeatureFlags.isDistractionFree = true;
+                    FeatureFlags.focusLockUntil = ""; // permanent: no Focus Lock end time
 
                     // Save user’s current selections before freezing them
                     FeatureFlags.disableStories = disableStoriesSwitch.isChecked();
@@ -1260,8 +1262,65 @@ public class DialogUtils {
         // Init "Except in DMs" state
         onlyInDMSwitch.setEnabled(disableReelsSwitch.isChecked());
 
+        // Focus Lock (Piko port): Extreme Mode with an end time.
+        final View[] focusRow = new View[1];
+        long lockLeft = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.until(FeatureFlags.focusLockUntil) - System.currentTimeMillis();
+        String focusLabel = FeatureFlags.isExtremeMode && lockLeft > 0
+                ? I18n.t(context, R.string.ig_focus_lock) + " · " + I18n.t(context, R.string.ig_focus_lock_active,
+                        io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.format(lockLeft))
+                : I18n.t(context, R.string.ig_focus_lock);
+        focusRow[0] = createActionRow(context, R.drawable.ic_timer, focusLabel, "#FF9F0A", v -> {
+            if (FeatureFlags.isExtremeMode) {
+                long left = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.until(FeatureFlags.focusLockUntil) - System.currentTimeMillis();
+                if (left > 0) io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(context, I18n.t(context, R.string.ig_focus_lock_locked_toast,
+                        io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.format(left)), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            boolean any = false;
+            for (ToggleRow s : switches) if (s.isChecked()) { any = true; break; }
+            if (!any) {
+                io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(context, I18n.t(context, R.string.ig_focus_lock_none), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            long[] durations = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.DURATIONS_MS;
+            CharSequence[] labels = new CharSequence[durations.length];
+            for (int i = 0; i < durations.length; i++)
+                labels[i] = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.format(durations[i]);
+            new IeDialog(context).title(I18n.t(context, R.string.ig_focus_lock_pick))
+                    .message(I18n.t(context, R.string.ig_focus_lock_desc))
+                    .choices(labels, -1, idx -> {
+                        IeDialog confirm = new IeDialog(context)
+                                .title(I18n.t(context, R.string.ig_focus_lock))
+                                .message(I18n.t(context, R.string.ig_focus_lock_confirm, labels[idx]));
+                        confirm.secondary(I18n.t(context, R.string.ig_dialog_cancel), () -> {});
+                        confirm.primary(I18n.t(context, R.string.ig_focus_lock_start), () -> {
+                                FeatureFlags.disableStories = disableStoriesSwitch.isChecked();
+                                FeatureFlags.disableFeed = disableFeedSwitch.isChecked();
+                                FeatureFlags.disableReels = disableReelsSwitch.isChecked();
+                                FeatureFlags.disableReelsExceptDM = onlyInDMSwitch.isChecked();
+                                FeatureFlags.disableExplore = disableExploreSwitch.isChecked();
+                                FeatureFlags.disableComments = disableCommentsSwitch.isChecked();
+                                FeatureFlags.focusLockUntil = io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.endFor(System.currentTimeMillis(), durations[idx]);
+                                FeatureFlags.isDistractionFree = true;
+                                FeatureFlags.isExtremeMode = true;
+                                SettingsManager.saveAllFlags();
+                                extremeModeSwitch.setChecked(true);
+                                disableAllSwitches(switches, enableAllSwitch, onlyInDMSwitch);
+                                extremeModeSwitch.setEnabled(false);
+                                if (focusRow[0] != null) {
+                                    View t = findFirstText(focusRow[0]);
+                                    if (t instanceof TextView) ((TextView) t).setText(I18n.t(context, R.string.ig_focus_lock) + " · "
+                                            + I18n.t(context, R.string.ig_focus_lock_active, labels[idx]));
+                                }
+                            });
+                        confirm.show();
+                    })
+                    .show();
+        });
+
         // Layout building
         layout.addView(extremeModeSwitch);
+        layout.addView(focusRow[0]);
         layout.addView(createDivider(context));
         layout.addView(createEnableAllSwitch(context, enableAllSwitch));
         layout.addView(createDivider(context));

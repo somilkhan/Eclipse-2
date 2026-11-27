@@ -189,6 +189,17 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         return skipped.contains(name);
     }
 
+    /** Installs one Piko-port hook unless skipped ("Hook" or "Hook.part"); a throw only loses that hook. */
+    private static void pikoInstall(String name, Runnable install) {
+        int dot = name.indexOf('.');
+        if (skip(name) || (dot > 0 && skip(name.substring(0, dot)))) return;
+        try {
+            install.run();
+        } catch (Throwable t) {
+            ModuleLog.line("(InstaEclipse | PikoPorts): ❌ " + name + ": " + t);
+        }
+    }
+
     /** Reads a system property (debug switches); empty string when unavailable. */
     static String debugProp(String key) {
         try {
@@ -541,6 +552,20 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     } catch (Throwable t) {
                         ModuleLog.line("(InstaEclipse | PikoPorts): ❌ " + t);
                     }
+
+                    // Ported from Piko (batch 2). One try per hook so a failure can't take the
+                    // others down; each install also logs and skips on its own when its target
+                    // isn't found.
+                    pikoInstall("FollowButtonsHook.stories", () -> new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installStories(dexKitBridge));
+                    pikoInstall("FollowButtonsHook.reels", () -> new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installReels());
+                    pikoInstall("LoopStoryHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LoopStoryHook().install(dexKitBridge));
+                    pikoInstall("DisappearingSwipeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.DisappearingSwipeHook().install(dexKitBridge));
+                    pikoInstall("ChatCallButtonsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ChatCallButtonsHook().install(dexKitBridge));
+                    pikoInstall("StoryTrayFilterHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilterHook().install(dexKitBridge));
+                    pikoInstall("LikeAnimationHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimationHook().install());
+                    pikoInstall("StoryRingSizeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSizeHook().install(dexKitBridge));
+                    pikoInstall("ResumeReelsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ResumeReelsHook().install(dexKitBridge));
+                    pikoInstall("MarkReadAfterReplyHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.MarkReadAfterReplyHook().install(dexKitBridge));
 
                     // Download DM voice messages (#223)
                     try {

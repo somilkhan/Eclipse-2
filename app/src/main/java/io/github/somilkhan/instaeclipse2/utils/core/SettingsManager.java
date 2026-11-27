@@ -173,6 +173,23 @@ public class SettingsManager {
         editor.putBoolean("disableHighlights", FeatureFlags.disableHighlights);
         editor.putBoolean("hideHiddenRequests", FeatureFlags.hideHiddenRequests);
         editor.putBoolean("removeEmptyBottomSpace", FeatureFlags.removeEmptyBottomSpace);
+        editor.putBoolean("hideStoryFollowButton", FeatureFlags.hideStoryFollowButton);
+        editor.putBoolean("hideReelsFollowButton", FeatureFlags.hideReelsFollowButton);
+        editor.putBoolean("loopStories", FeatureFlags.loopStories);
+        editor.putBoolean("disableDisappearingSwipe", FeatureFlags.disableDisappearingSwipe);
+        editor.putBoolean("hideChatCallButtons", FeatureFlags.hideChatCallButtons);
+        editor.putBoolean("filterStoryTray", FeatureFlags.filterStoryTray);
+        editor.putBoolean("customLikeAnimation", FeatureFlags.customLikeAnimation);
+        editor.putBoolean("customStoryRingSize", FeatureFlags.customStoryRingSize);
+        editor.putBoolean("resumeReels", FeatureFlags.resumeReels);
+        editor.putBoolean("externalDownloader", FeatureFlags.externalDownloader);
+        editor.putBoolean("markReadAfterReply", FeatureFlags.markReadAfterReply);
+        editor.putString("storyFilterTypes", FeatureFlags.storyFilterTypes);
+        editor.putString("storyFilterUsers", FeatureFlags.storyFilterUsers);
+        editor.putString("likeAnimation", FeatureFlags.likeAnimation);
+        editor.putString("externalDownloaderPackage", FeatureFlags.externalDownloaderPackage);
+        editor.putString("focusLockUntil", FeatureFlags.focusLockUntil);
+        editor.putInt("storyRingSizeDp", FeatureFlags.storyRingSizeDp);
         editor.putBoolean("exactTimestamps", FeatureFlags.exactTimestamps);
         editor.putBoolean("likeUndo", FeatureFlags.likeUndo);
         editor.putBoolean("profileFollowsYouLabel", FeatureFlags.profileFollowsYouLabel);
@@ -265,6 +282,19 @@ public class SettingsManager {
             e.putLong("__igts_" + k, now);
         }
         if (e != null) e.apply();
+    }
+
+    /**
+     * Releases Extreme Mode once a timed Focus Lock is over. Idempotent, so it is safe on every
+     * load in both processes; returns true when it changed something.
+     */
+    public static boolean expireFocusLock() {
+        if (!io.github.somilkhan.instaeclipse2.utils.feature.FocusLock.isExpired(
+                FeatureFlags.focusLockUntil, System.currentTimeMillis())) return false;
+        FeatureFlags.isExtremeMode = false;
+        FeatureFlags.focusLockUntil = "";
+        if (prefs != null) prefs.edit().putBoolean("isExtremeMode", false).putString("focusLockUntil", "").apply();
+        return true;
     }
 
     public static void loadAllFlags(Context context) {
@@ -388,6 +418,23 @@ public class SettingsManager {
         FeatureFlags.disableHighlights = prefs.getBoolean("disableHighlights", false);
         FeatureFlags.hideHiddenRequests = prefs.getBoolean("hideHiddenRequests", false);
         FeatureFlags.removeEmptyBottomSpace = prefs.getBoolean("removeEmptyBottomSpace", false);
+        FeatureFlags.hideStoryFollowButton = prefs.getBoolean("hideStoryFollowButton", false);
+        FeatureFlags.hideReelsFollowButton = prefs.getBoolean("hideReelsFollowButton", false);
+        FeatureFlags.loopStories = prefs.getBoolean("loopStories", false);
+        FeatureFlags.disableDisappearingSwipe = prefs.getBoolean("disableDisappearingSwipe", false);
+        FeatureFlags.hideChatCallButtons = prefs.getBoolean("hideChatCallButtons", false);
+        FeatureFlags.filterStoryTray = prefs.getBoolean("filterStoryTray", false);
+        FeatureFlags.customLikeAnimation = prefs.getBoolean("customLikeAnimation", false);
+        FeatureFlags.customStoryRingSize = prefs.getBoolean("customStoryRingSize", false);
+        FeatureFlags.resumeReels = prefs.getBoolean("resumeReels", false);
+        FeatureFlags.externalDownloader = prefs.getBoolean("externalDownloader", false);
+        FeatureFlags.markReadAfterReply = prefs.getBoolean("markReadAfterReply", false);
+        FeatureFlags.storyFilterTypes = prefs.getString("storyFilterTypes", "");
+        FeatureFlags.storyFilterUsers = prefs.getString("storyFilterUsers", "");
+        FeatureFlags.likeAnimation = prefs.getString("likeAnimation", "RANDOM");
+        FeatureFlags.externalDownloaderPackage = prefs.getString("externalDownloaderPackage", "");
+        FeatureFlags.focusLockUntil = prefs.getString("focusLockUntil", "");
+        FeatureFlags.storyRingSizeDp = prefs.getInt("storyRingSizeDp", 100);
         FeatureFlags.exactTimestamps = prefs.getBoolean("exactTimestamps", false);
         FeatureFlags.likeUndo = prefs.getBoolean("likeUndo", false);
         FeatureFlags.profileFollowsYouLabel = prefs.getBoolean("profileFollowsYouLabel", false);
@@ -450,6 +497,7 @@ public class SettingsManager {
         FeatureFlags.themePaletteJson = prefs.getString("themePaletteJson", "");
 
         for (String flag : ExtrasFeatures.flags()) ExtrasFeatures.set(flag, prefs.getBoolean(flag, false));
+        expireFocusLock();
 
         FeatureManager.refreshFeatureStatus();
         if (hostProcess) {

@@ -174,6 +174,24 @@ public class FeatureFlags {
     public static volatile boolean disableHighlights = false; // hide the story highlights row on profiles (Piko port)
     public static volatile boolean hideHiddenRequests = false; // hide the Hidden requests row in message requests (Piko port)
     public static volatile boolean removeEmptyBottomSpace = false; // drop the empty strip under the tab bar (Piko port)
+    // Piko ports, batch 2
+    public static volatile boolean hideStoryFollowButton = false; // hide Follow on stories of people you don't follow
+    public static volatile boolean hideReelsFollowButton = false; // hide the inline Follow next to the author on Reels
+    public static volatile boolean loopStories = false; // replay the current story instead of advancing
+    public static volatile boolean disableDisappearingSwipe = false; // swipe up in a chat can't turn ON vanish mode
+    public static volatile boolean hideChatCallButtons = false; // hide audio/video call buttons in the chat header
+    public static volatile boolean filterStoryTray = false; // filter the story tray by type / user
+    public static volatile String  storyFilterTypes = ""; // CSV of reel types to hide (ads_reel, ...)
+    public static volatile String  storyFilterUsers = ""; // "" = everyone, "verified" / "unverified" = hide those
+    public static volatile boolean customLikeAnimation = false; // force a specific like animation
+    public static volatile String  likeAnimation = "RANDOM"; // render enum name or RANDOM
+    public static volatile boolean customStoryRingSize = false; // custom story tray avatar size
+    public static volatile int     storyRingSizeDp = 100; // dp, 40..160
+    public static volatile boolean resumeReels = false; // resume a reel where you left off
+    public static volatile boolean externalDownloader = false; // "Open in external downloader" in the media menu
+    public static volatile String  externalDownloaderPackage = ""; // "" = system chooser
+    public static volatile boolean markReadAfterReply = false; // ghost seen: send the pending seen receipt after you reply
+    public static volatile String  focusLockUntil = ""; // epoch ms; while in the future, extreme mode can't be turned off
 
 
     public static volatile boolean enableStoryMentions = false;

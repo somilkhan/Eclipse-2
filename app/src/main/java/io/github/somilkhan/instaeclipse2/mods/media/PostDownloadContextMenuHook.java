@@ -67,6 +67,9 @@ public class PostDownloadContextMenuHook {
     static final String SPEED_CARRIER = "PROMOTE_DEBUG";
     private static Object   mediaInfoOptionValue;
     private static Object   speedOptionValue;
+    // "Open in external downloader" (Piko port): the first present of ExternalDownloader.CARRIERS.
+    static String externalCarrier;
+    private static Object   externalOptionValue;
 
     // Obfuscated creator class found via "MediaOptionsOverflowMenuCreator" string
     private static Class<?> menuCreatorClass;
@@ -121,6 +124,15 @@ public class PostDownloadContextMenuHook {
                     speedOptionValue = v;
                 }
             }
+            for (String carrier : io.github.somilkhan.instaeclipse2.mods.piko.ExternalDownloader.CARRIERS) {
+                for (Object v : values) if (v != null && enumName(v).equals(carrier)) { externalOptionValue = v; break; }
+                if (externalOptionValue != null) { externalCarrier = carrier; break; }
+            }
+            if (externalCarrier != null) {
+                io.github.somilkhan.instaeclipse2.mods.misc.CaptionCopyContextMenuHook.EXTRA_REEL_LABELS.put(externalCarrier, R.string.ig_external_downloader_title);
+                io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker.setHooked("ExternalDownloader");
+            }
+            else ModuleLog.line("(IE|Post) ⚠️ no carrier for External downloader on this build");
             io.github.somilkhan.instaeclipse2.mods.misc.CaptionCopyContextMenuHook.EXTRA_REEL_LABELS.put(MEDIA_INFO_CARRIER, R.string.ig_media_info_title);
             io.github.somilkhan.instaeclipse2.mods.misc.CaptionCopyContextMenuHook.EXTRA_REEL_LABELS.put(SPEED_CARRIER, R.string.ig_playback_speed_title);
             for (Object v : values) {
@@ -295,6 +307,8 @@ public class PostDownloadContextMenuHook {
                     param.setResult(null);
                 } else if (FeatureFlags.offerPlaybackSpeed && opt == speedOptionValue) {
                     param.setResult(null);
+                } else if (FeatureFlags.externalDownloader && opt != null && opt == externalOptionValue) {
+                    param.setResult(null);
                 }
             }
 
@@ -307,13 +321,14 @@ public class PostDownloadContextMenuHook {
                 boolean wantCopyImage = FeatureFlags.offerCopyImage && copyImageOptionValue != null;
                 boolean wantInfo = FeatureFlags.offerMediaInfo && mediaInfoOptionValue != null;
                 boolean wantSpeed = FeatureFlags.offerPlaybackSpeed && speedOptionValue != null;
-                if (!wantDownload && !wantCopyLink && !wantCopyImage && !wantInfo && !wantSpeed) return;
+                boolean wantExternal = FeatureFlags.externalDownloader && externalOptionValue != null;
+                if (!wantDownload && !wantCopyLink && !wantCopyImage && !wantInfo && !wantSpeed && !wantExternal) return;
 
                 // Don't react to our own target option types (suppressed in beforeHook)
                 Object opt = param.args[idxOption];
                 if (opt == downloadOptionValue || opt == copyLinkOptionValue
                         || (opt != null && (opt == copyImageOptionValue || opt == mediaInfoOptionValue
-                                || opt == speedOptionValue))) return;
+                                || opt == speedOptionValue || opt == externalOptionValue))) return;
 
                 Object self = param.args[idxSelf];
                 boolean alreadyProcessed;
@@ -328,8 +343,9 @@ public class PostDownloadContextMenuHook {
                 if (wantCopyImage) injectRow(param, copyImageOptionValue, R.string.ig_download_choice_copy_image);
                 if (wantInfo) injectRow(param, mediaInfoOptionValue, R.string.ig_media_info_title);
                 if (wantSpeed) injectRow(param, speedOptionValue, R.string.ig_playback_speed_title);
+                if (wantExternal) injectRow(param, externalOptionValue, R.string.ig_external_downloader_title);
                 // Our carriers are debug options Instagram draws with the Meta logo; give them real icons.
-                if (wantCopyImage || wantInfo || wantSpeed) io.github.somilkhan.instaeclipse2.mods.ui.MenuIcons.fixSoon();
+                if (wantCopyImage || wantInfo || wantSpeed || wantExternal) io.github.somilkhan.instaeclipse2.mods.ui.MenuIcons.fixSoon();
             }
         });
 
@@ -487,7 +503,9 @@ public class PostDownloadContextMenuHook {
                             && !original.contains(mediaInfoOptionValue);
                     boolean addSpeed = FeatureFlags.offerPlaybackSpeed && speedOptionValue != null
                             && !original.contains(speedOptionValue);
-                    if (!addDownload && !addCopyLink && !addCopyImage && !addInfo && !addSpeed) return;
+                    boolean addExternal = FeatureFlags.externalDownloader && externalOptionValue != null
+                            && !original.contains(externalOptionValue);
+                    if (!addDownload && !addCopyLink && !addCopyImage && !addInfo && !addSpeed && !addExternal) return;
 
                     List<Object> patched = new ArrayList<>(original);
                     if (addDownload) patched.add(downloadOptionValue);
@@ -495,6 +513,7 @@ public class PostDownloadContextMenuHook {
                     if (addCopyImage) patched.add(copyImageOptionValue);
                     if (addInfo) patched.add(mediaInfoOptionValue);
                     if (addSpeed) patched.add(speedOptionValue);
+                    if (addExternal) patched.add(externalOptionValue);
                     param.setResult(patched);
                 } catch (Throwable t) {
                     ModuleLog.line("(IE|Post) ❌ allowlist patch failed: " + t);
@@ -575,7 +594,8 @@ public class PostDownloadContextMenuHook {
             boolean isCopyImage = option.equals(COPY_IMAGE_CARRIER) && FeatureFlags.offerCopyImage;
             boolean isInfo = option.equals(MEDIA_INFO_CARRIER) && FeatureFlags.offerMediaInfo;
             boolean isSpeed = option.equals(SPEED_CARRIER) && FeatureFlags.offerPlaybackSpeed;
-            if (!isDownload && !isCopyLink && !isCopyImage && !isInfo && !isSpeed) return;
+            boolean isExternal = externalCarrier != null && option.equals(externalCarrier) && FeatureFlags.externalDownloader;
+            if (!isDownload && !isCopyLink && !isCopyImage && !isInfo && !isSpeed && !isExternal) return;
 
             param.setResult(null); // consume the event
 
@@ -589,7 +609,8 @@ public class PostDownloadContextMenuHook {
 
             if (isSpeed) { PlaybackSpeedHook.showChooser(ctx); return; }
             Object media;
-            if (isDownload) {
+            if (isDownload || isExternal) {
+                // External links must point at exactly this post, so it gets Download's strict lookup.
                 media = SelectedMediaAdapter.findPostMenuMedia(thisObj, menuCreatorClass);
                 if (media == null && reelClickDispatcher != null && param.method.equals(reelClickDispatcher))
                     media = SelectedMediaAdapter.findReelMenuMedia(thisObj, reelClickDispatcher.getDeclaringClass());
@@ -616,6 +637,7 @@ public class PostDownloadContextMenuHook {
             }
 
             if (isInfo) { MediaInfo.show(ctx, media, thisObj); return; }
+            if (isExternal) { io.github.somilkhan.instaeclipse2.mods.piko.ExternalDownloader.open(ctx, media); return; }
             if (isCopyLink)       triggerCopyLink(ctx, media, thisObj);
             else if (isCopyImage) triggerCopyImage(ctx, media, thisObj);
             else                  triggerDownload(ctx, media, thisObj);
