@@ -153,7 +153,8 @@ public class FeatureFlags {
 
     /** Boolean prefs whose default is ON (companion UI must show the same default the module uses). */
     public static boolean defaultOn(String key) {
-        return "downloaderUseOriginal".equals(key) || "lockUseFingerprint".equals(key) || "safePacing".equals(key);
+        return "downloaderUseOriginal".equals(key) || "lockUseFingerprint".equals(key) || "safePacing".equals(key)
+                || "crashReports".equals(key);
     }
     public static volatile boolean commentSearch = false; // search the loaded comments of a post (#230)
     public static volatile boolean storyInfo = false; // Story Info / Quiz Answer / Poll Results in the story menu

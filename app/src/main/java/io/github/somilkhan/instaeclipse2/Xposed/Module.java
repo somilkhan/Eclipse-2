@@ -121,6 +121,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             if (lpparam.processName != null && !lpparam.processName.equals(lpparam.packageName)) {
                 return;
             }
+            // Earliest point: catches crashes during our own hook setup too.
+            io.github.somilkhan.instaeclipse2.utils.crash.CrashReporter.install(lpparam.packageName);
             try {
                 if (dexKitBridge == null) {
                     // Load the .so file from your module (if not already loaded)
@@ -266,6 +268,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     // Mirror the buffer into a file owned by the companion app (LogMirrorProvider)
                     // so its Logs tab works even when Instagram is backgrounded or killed.
                     Logging.enableMirror(context);
+                    // Hand pending/previous-session crash reports to the companion (saved to the chosen folder).
+                    io.github.somilkhan.instaeclipse2.utils.crash.CrashReporter.onAppReady(context);
 
                     // Pull downloader path from companion app's cache so it's available even
                     // when Instagram was started without ever receiving the sync broadcast.

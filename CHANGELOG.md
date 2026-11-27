@@ -5,6 +5,23 @@
 First release of Eclipse 2, the maintained continuation at `somilkhan/Eclipse-2` (original author: ReSo7200).
 Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 
+### Supported apps
+- Added InstaAlpha (`com.instaalpha.android`) next to Instafel (`com.instafel.android`). The
+  unclone builds of both use `com.instagram.android` and were already covered.
+- LSPosed scope (`xposedscope`) now lists every supported package instead of only
+  `com.instagram.android`, so clones are pre-selected when the module is enabled.
+- DM conversation menu hook no longer checks for `com.instagram.android` only.
+
+### Crash reports
+- New "Crash reports" section (App settings, default on). When a hooked Instagram crashes, the
+  module writes a report (type, time, app/module/device/Android versions, stack trace, last 400
+  Eclipse 2 log lines) and the companion saves it as `Crash reports/crash_<pkg>_<time>_<kind>.txt`
+  in the chosen folder, else the download folder, else `Download/Eclipse 2/Crash reports`.
+- Java crashes are caught live (`Thread.dispatchUncaughtException`). Native crashes and ANRs are
+  read on the next start from `ApplicationExitInfo` (Android 11+); on Android 12+ the native
+  tombstone is decoded (signal, abort message, crashing-thread backtrace) and the raw
+  `.tombstone.pb` is saved next to it. Undelivered reports stay pending and are retried.
+
 ### Settings
 - Ghost Mode master switch: `isGhostModeEnabled` was never tied to the "Enable/disable all"
   switch, so it was always saved and synced as `false`, even with every Ghost Mode feature on. It

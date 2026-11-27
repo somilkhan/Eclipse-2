@@ -77,6 +77,12 @@
             android:authorities="io.github.somilkhan.instaeclipse2.logmirror"
             android:exported="true" />
 
+        <!-- Receives crash reports from hooked Instagram processes and saves them to the chosen folder. -->
+        <provider
+            android:name=".utils.crash.CrashReportProvider"
+            android:authorities="io.github.somilkhan.instaeclipse2.crashreport"
+            android:exported="true" />
+
         <!-- Settings sync, Instagram -> companion: the hooked Instagram process pushes its
              settings into the companion's copy after changes made in its own menu. Only
              supported Instagram packages may call it (checked in call()). -->
@@ -120,6 +126,7 @@
         <package android:name="cc.honista.app" />
         <package android:name="com.instaprime.android" />
         <package android:name="com.instafel.android" />
+        <package android:name="com.instaalpha.android" />
         <package android:name="com.instadm.android" />
         <package android:name="com.dfistagram.android" />
         <package android:name="com.Instander.android" />

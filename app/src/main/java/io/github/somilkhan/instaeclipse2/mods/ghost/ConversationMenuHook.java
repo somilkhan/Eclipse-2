@@ -43,7 +43,7 @@ public final class ConversationMenuHook {
         XposedBridge.hookAllMethods(Activity.class, "onPostResume", new XC_MethodHook() {
             @Override protected void afterHookedMethod(MethodHookParam p) {
                 Activity a = (Activity) p.thisObject;
-                if (!"com.instagram.android".equals(a.getPackageName())) return;
+                if (!io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.SUPPORTED_PACKAGES.contains(a.getPackageName())) return;
                 register(a);
             }
         });
