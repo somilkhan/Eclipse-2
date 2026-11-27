@@ -80,6 +80,7 @@ public class ReelDownloadHook {
             }
             ModuleLog.line("(IE|Reel) string matches=" + methods.size()
                     + " candidateClasses=" + candidates.size());
+            installEligibilityGate457(bridge, classLoader, candidates);
 
             // Options-builder: void(com.instagram.feed.media.Media, <ButtonAdder>), where the
             // ButtonAdder param exposes an (Context, OnClickListener, String, int) add method.
@@ -110,6 +111,8 @@ public class ReelDownloadHook {
             }
 
             if (target == null) {
+                // 457+: no (Media, ButtonAdder) builder any more — rows are added one by one.
+                if (installSheetRowInjection(bridge, classLoader, candidates)) return;
                 ModuleLog.line("(IE|Reel) ❌ hook method (Media, ButtonAdder)V not found");
                 return;
             }
@@ -167,26 +170,26 @@ public class ReelDownloadHook {
     // app-wide click-handler hook already covers whatever dispatches its click.
     private static void installReduceOptionsListPatch(DexKitBridge bridge, ClassLoader classLoader) {
         try {
-            Object downloadOption = null, copyLinkOption = null, infoOption = null, speedOption = null;
-            Class<?> optionClass = classLoader.loadClass("com.instagram.feed.media.mediaoption.MediaOption$Option");
-            for (Object v : (Object[]) optionClass.getMethod("values").invoke(null)) {
-                String n = v.toString();
-                if (n.equals("DOWNLOAD")) downloadOption = v;
-                else if (n.equals("COPY_LINK")) copyLinkOption = v;
-                else if (n.equals(PostDownloadContextMenuHook.MEDIA_INFO_CARRIER)) infoOption = v;
-                else if (n.equals(PostDownloadContextMenuHook.SPEED_CARRIER)) speedOption = v;
-            }
-            if (downloadOption == null && copyLinkOption == null) {
-                ModuleLog.line("(IE|Reel) ❌ DOWNLOAD/COPY_LINK enum values not found");
-                return;
-            }
-            final Object download = downloadOption;
-            final Object copyLink = copyLinkOption;   // #117 — clicks handled by PostDownloadContextMenuHook
-            final Object info = infoOption, speedRow = speedOption; // #231 / #247 — same click handler
+            // Enum constants are resolved lazily on first call: the lookup below must not depend
+            // on running Instagram code at install time.
+            final Object[] opts = new Object[4]; // DOWNLOAD, COPY_LINK, info carrier, speed carrier
+            final boolean[] resolved = {false};
+            final Runnable resolve = () -> {
+                if (resolved[0]) return;
+                resolved[0] = true;
+                opts[0] = mediaOption(classLoader, "DOWNLOAD");
+                opts[1] = mediaOption(classLoader, "COPY_LINK");   // #117 — clicks handled by PostDownloadContextMenuHook
+                opts[2] = mediaOption(classLoader, PostDownloadContextMenuHook.MEDIA_INFO_CARRIER); // #231
+                opts[3] = mediaOption(classLoader, PostDownloadContextMenuHook.SPEED_CARRIER);      // #247
+                if (opts[0] == null && opts[1] == null)
+                    ModuleLog.line("(IE|Reel) ❌ DOWNLOAD/COPY_LINK enum values not found");
+            };
 
             XC_MethodHook hook = new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { ps.reso.instaeclipse.utils.core.JitGuard.tick(param.method);
+                    resolve.run();
+                    final Object download = opts[0], copyLink = opts[1], info = opts[2], speedRow = opts[3];
                     boolean wantDl = FeatureFlags.enableReelDownload && download != null;
                     boolean wantCl = FeatureFlags.copyMediaLink && copyLink != null;
                     boolean wantInfo = FeatureFlags.offerMediaInfo && info != null;
@@ -242,6 +245,208 @@ public class ReelDownloadHook {
         }
     }
 
+    /** {@code MediaOption$Option.valueOf(name)}, or null when this build has no such constant. */
+    static Object mediaOption(ClassLoader cl, String name) {
+        try {
+            Class<?> c = cl.loadClass(MEDIA_OPTION);
+            for (Object v : c.getEnumConstants()) if (((Enum<?>) v).name().equals(name)) return v;
+        } catch (Throwable ignored) { }
+        return null;
+    }
+
+    static final String MEDIA_OPTION = "com.instagram.feed.media.mediaoption.MediaOption$Option";
+
+    // ── 457+: per-row sheet builder ─────────────────────────────────────────────
+    //
+    // On 457 the reel overflow sheet (ClipsOrganicMediaItemViewMoreOptionsController) is built
+    // by one big static method (X.0Ckr.A0B) that reads the Media from the clips item and adds
+    // each row through a private add-row helper void(MediaOption$Option, RowHolder). DOWNLOAD
+    // is only added behind server/MobileConfig eligibility. We remember the Media while the
+    // builder runs and, right after the always-present SHARE row, add our own Download row via
+    // the holder's (String, int, OnClickListener) adder; a later native DOWNLOAD row on the
+    // same holder is skipped so it never shows twice.
+    private static final ThreadLocal<Object[]> SHEET = new ThreadLocal<>(); // {media, controller}
+    private static final java.util.Set<Object> ROWS_ADDED =
+            java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+    private static boolean installSheetRowInjection(DexKitBridge bridge, ClassLoader cl,
+                                                    java.util.Collection<Class<?>> candidates) {
+        String opt = "L" + MEDIA_OPTION.replace('.', '/') + ";";
+        try {
+            for (Class<?> ctrl : candidates) {
+                String ctrlName = ctrl.getName();
+                var builders = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .declaredClass(ctrlName)
+                        .returnType("void")
+                        .addUsingField(opt + "->SHARE:" + opt)
+                        .addUsingField(opt + "->DOWNLOAD:" + opt)));
+                if (builders.isEmpty()) continue;
+                var adders = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .declaredClass(ctrlName)
+                        .returnType("void")
+                        .paramTypes(MEDIA_OPTION, null)));
+                java.util.List<Method> rowAdders = new java.util.ArrayList<>();
+                java.util.Map<Method, Method> holderAdd = new java.util.HashMap<>();
+                for (var md : adders) {
+                    try {
+                        Method m = md.getMethodInstance(cl);
+                        if (java.lang.reflect.Modifier.isStatic(m.getModifiers())) continue;
+                        if (!m.getParameterTypes()[0].getName().equals(MEDIA_OPTION)) continue;
+                        Method add = null;
+                        for (var inv : md.getInvokes()) {
+                            if (!inv.isMethod() || !inv.getReturnTypeName().equals("void")) continue;
+                            var pt = inv.getParamTypeNames();
+                            if (pt.size() == 3 && pt.get(0).equals("java.lang.String") && pt.get(1).equals("int")
+                                    && pt.get(2).equals("android.view.View$OnClickListener")) {
+                                add = inv.getMethodInstance(cl);
+                                break;
+                            }
+                        }
+                        if (add == null) continue;
+                        add.setAccessible(true);
+                        rowAdders.add(m);
+                        holderAdd.put(m, add);
+                    } catch (Throwable ignored) { }
+                }
+                if (rowAdders.isEmpty()) continue;
+
+                XC_MethodHook ctx = new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) { ps.reso.instaeclipse.utils.core.JitGuard.tick(param.method);
+                        Object media = null, controller = param.thisObject;
+                        for (Object a : param.args) {
+                            if (a == null) continue;
+                            if (controller == null && ctrl.isInstance(a)) controller = a;
+                            if (media == null) media = findMedia(a);
+                        }
+                        SHEET.set(new Object[]{media, controller});
+                    }
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) { SHEET.remove(); }
+                };
+                int hooked = 0;
+                for (var md : builders) {
+                    try { XposedBridge.hookMethod(md.getMethodInstance(cl), ctx); hooked++; } catch (Throwable ignored) { }
+                }
+                for (Method m : rowAdders) {
+                    m.setAccessible(true);
+                    final Method add = holderAdd.get(m);
+                    XposedBridge.hookMethod(m, new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) { ps.reso.instaeclipse.utils.core.JitGuard.tick(param.method);
+                            if (!FeatureFlags.enableReelDownload || param.args[1] == null) return;
+                            if ("DOWNLOAD".equals(((Enum<?>) param.args[0]).name())
+                                    && ROWS_ADDED.contains(param.args[1])) param.setResult(null);
+                        }
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            if (!FeatureFlags.enableReelDownload) return;
+                            Object[] sheet = SHEET.get();
+                            Object holder = param.args[1];
+                            if (sheet == null || sheet[0] == null || holder == null) return;
+                            if (!"SHARE".equals(((Enum<?>) param.args[0]).name()) || ROWS_ADDED.contains(holder)) return;
+                            try {
+                                Activity act = findActivity(param.thisObject);
+                                if (act == null) return;
+                                final Object media = sheet[0], controller = sheet[1];
+                                add.invoke(holder, I18n.t(act, R.string.ig_dl_title), resolveDownloadIcon(act),
+                                        (View.OnClickListener) v -> startReelDownload(act, media, controller));
+                                ROWS_ADDED.add(holder);
+                            } catch (Throwable t) {
+                                ModuleLog.line("(IE|Reel) ❌ add download row: " + t);
+                            }
+                        }
+                    });
+                }
+                controllerClass = ctrl;
+                FeatureStatusTracker.setHooked("ReelDownload");
+                ModuleLog.line("(IE|Reel) ✅ sheet row injection: " + ctrlName + " builders=" + hooked
+                        + " rowAdders=" + rowAdders.size());
+                return true;
+            }
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|Reel) ❌ installSheetRowInjection: " + t);
+        }
+        return false;
+    }
+
+    /**
+     * 457+: "can this reel be downloaded" is an instance boolean(MediaRef, UserSession) on the
+     * clips download util (the class logging "ClipsDownloadUtil.saveVideoToLocalStorage"); the
+     * reel sheet builders call it before adding the native DOWNLOAD row. Of the util's
+     * boolean(X, UserSession) methods, the one the sheet controller invokes is the gate.
+     * (The second, "restricted viewer" check is now an inline MobileConfig read and is not hooked.)
+     */
+    private static void installEligibilityGate457(DexKitBridge bridge, ClassLoader cl,
+                                                  java.util.Collection<Class<?>> controllers) {
+        try {
+            Method gate = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("ReelDownloadGate_457", cl) : null;
+            if (gate == null) {
+                java.util.Set<String> utilGates = new java.util.HashSet<>();
+                for (var md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .usingStrings("ClipsDownloadUtil.saveVideoToLocalStorage")))) {
+                    var cd = bridge.getClassData(md.getClassName());
+                    if (cd == null) continue;
+                    for (var m : cd.getMethods()) {
+                        var pt = m.getParamTypeNames();
+                        if (m.isMethod() && "boolean".equals(m.getReturnTypeName()) && pt.size() == 2
+                                && pt.get(1).equals("com.instagram.common.session.UserSession")
+                                && !java.lang.reflect.Modifier.isStatic(m.getModifiers()))
+                            utilGates.add(m.getDescriptor());
+                    }
+                }
+                outer:
+                for (Class<?> ctrl : controllers) {
+                    var cd = bridge.getClassData(ctrl.getName());
+                    if (cd == null) continue;
+                    for (var m : cd.getMethods()) {
+                        for (var inv : m.getInvokes()) {
+                            if (utilGates.contains(inv.getDescriptor())) { gate = inv.getMethodInstance(cl); break outer; }
+                        }
+                    }
+                }
+                if (gate == null) return;
+                DexKitCache.saveMethod("ReelDownloadGate_457", gate);
+            }
+            gate.setAccessible(true);
+            XposedBridge.hookMethod(gate, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) { ps.reso.instaeclipse.utils.core.JitGuard.tick(param.method);
+                    if (FeatureFlags.enableReelDownload) param.setResult(true);
+                }
+            });
+            FeatureStatusTracker.setHooked("ReelDownload");
+            ModuleLog.line("(IE|Reel) ✅ 457 eligibility gate: " + gate.getDeclaringClass().getName() + "." + gate.getName());
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|Reel) ❌ 457 eligibility gate: " + t);
+        }
+    }
+
+    /** The Media itself, or the first Media-typed field of a model object (e.g. the clips item). */
+    static Object findMedia(Object o) {
+        if (o == null) return null;
+        if (o.getClass().getName().equals("com.instagram.feed.media.Media")) return o;
+        for (Class<?> c = o.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            if (c.getName().startsWith("android.") || c.getName().startsWith("java.")) break;
+            for (Field f : c.getDeclaredFields()) {
+                if (!f.getType().getName().equals("com.instagram.feed.media.Media")) continue;
+                try { f.setAccessible(true); Object v = f.get(o); if (v != null) return v; } catch (Throwable ignored) { }
+            }
+        }
+        return null;
+    }
+
+    private static Activity findActivity(Object controller) {
+        if (controller == null) return null;
+        for (Class<?> c = controller.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field f : c.getDeclaredFields()) {
+                if (!Activity.class.isAssignableFrom(f.getType())) continue;
+                try { f.setAccessible(true); return (Activity) f.get(controller); } catch (Throwable ignored) { }
+            }
+        }
+        return null;
+    }
+
     // ── Native download-row unlock ──────────────────────────────────────────────
     //
     // IG 437+ moved the reel overflow menu to the same shared row-builder (QIy) used
@@ -294,7 +499,7 @@ public class ReelDownloadHook {
                             .usingNumbers(configId)));
 
             if (methods.isEmpty()) {
-                ModuleLog.line("(IE|Reel) ⚠️ Gate method not found for config " + configId);
+                ModuleLog.line("(IE|Reel) gate config " + configId + " absent (pre-457 gate; 457 uses the sheet row injection)");
                 return;
             }
 
