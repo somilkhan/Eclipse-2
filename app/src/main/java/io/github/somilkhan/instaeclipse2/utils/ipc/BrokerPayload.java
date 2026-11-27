@@ -82,8 +82,10 @@ public final class BrokerPayload {
         }
         if (IMPORT.equals(target)) {
             String pkg = copy.get("target_package");
-            if (pkg != null && !pkg.isEmpty() && !HOST.equals(pkg)) invalid();
-            copy.put("target_package", HOST);
+            boolean named = pkg != null && !pkg.isEmpty();
+            if (named && !io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.SUPPORTED_PACKAGES.contains(pkg)) invalid();
+            // The broker replaces this with the verified caller package; HOST is only the default.
+            copy.put("target_package", named ? pkg : HOST);
             String action = copy.get("broadcast_action");
             String importAction = BuildConfig.APPLICATION_ID + ".ACTION_IMPORT_CONFIG";
             String restoreAction = BuildConfig.APPLICATION_ID + ".ACTION_RESTORE_SETTINGS";

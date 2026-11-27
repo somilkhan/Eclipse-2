@@ -27,7 +27,8 @@ public class CommonUtils {
             "com.myinsta.android",
             "cc.honista.app",
             "com.instaprime.android",
-            "com.instafel.android",
+            "com.instafel.android",   // Instafel clone build (unclone uses com.instagram.android)
+            "com.instaalpha.android", // InstaAlpha clone build (unclone uses com.instagram.android)
             "com.instadm.android",
             "com.dfistagram.android",
             "com.Instander.android",

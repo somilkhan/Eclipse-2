@@ -31,7 +31,8 @@ public final class SettingsRestore {
             // Passcode hash and salt stay inside Instagram's process.
             "lockDirectPasscode", "lockDirectSalt",
             // SAF grant and file paths belong to the device/install that made the backup.
-            "downloaderCustomUri", "downloaderCustomPath", "customFontPath", "customEmojiPath")));
+            "downloaderCustomUri", "downloaderCustomPath", "customFontPath", "customEmojiPath",
+            "crashReportUri", "crashReportPath")));
 
     private SettingsRestore() {}
 

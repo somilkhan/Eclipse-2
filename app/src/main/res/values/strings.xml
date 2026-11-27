@@ -735,6 +735,22 @@ Stay on this screen until it finishes.</string>
     <!-- Safe pacing (0.8.4) -->
     <string name="ie_safe_pacing">Safe pacing for bulk actions</string>
     <string name="ie_safe_pacing_hint">Waits a random 0.7–1.6 s between items, and 3–6 s every 8 items, in bulk unsend, Download all and comment search. Recommended.</string>
+    <string name="ie_clone_section">Clone apps</string>
+    <string name="ie_clone_hint">Clones are signed by their makers, not by Instagram. Trust one to give it live settings sync, downloads to your folder and config import. Its signing key is pinned: if it changes, trust it again.</string>
+    <string name="ie_clone_trusted">Trusted · %1$s</string>
+    <string name="ie_clone_not_trusted">Not trusted · %1$s</string>
+    <string name="ie_clone_dialog">Package: %1$s\n\nSigning key (SHA-256):\n%2$s\n\nOnly trust a clone you installed from a source you trust.</string>
+    <string name="ie_clone_trust">Trust</string>
+    <string name="ie_clone_untrust">Stop trusting</string>
+    <string name="ie_clone_trusted_toast">Trusted. Restart the clone app to apply.</string>
+    <string name="ie_clone_trust_failed">Could not read a single signing key for this app</string>
+    <string name="ie_crash_reports_section">Crash reports</string>
+    <string name="ie_crash_reports">Save a report when Instagram crashes</string>
+    <string name="ie_crash_reports_hint">Java crashes are saved right away; native crashes and freezes (ANR) on the next Instagram start. Includes the stack trace and the last Eclipse 2 log lines.</string>
+    <string name="ie_crash_folder_default">Folder: same as download folder</string>
+    <string name="ie_crash_folder_reset">Use download folder</string>
+    <string name="ie_crash_folder_updated">Crash report folder updated</string>
+    <string name="ie_crash_folder_failed">Could not get access to that folder</string>
     <string name="ie_pacing_progress">%1$d of %2$d done</string>
     <string name="ie_pacing_stop">Stop</string>
     <string name="ie_pacing_hide">Hide</string>

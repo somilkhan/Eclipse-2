@@ -80,6 +80,7 @@ public class FeaturesFragment extends Fragment {
     /** True while the search text is being changed programmatically (skip re-filtering). */
     private boolean suppressSearchWatcher = false;
     private ActivityResultLauncher<Uri> dirPickerLauncher;
+    private ActivityResultLauncher<Uri> crashDirPickerLauncher;
     private ActivityResultLauncher<String[]> restoreFileLauncher;
     private ActivityResultLauncher<String> notifPermLauncher;
     private ActivityResultLauncher<Intent> locationPickerLauncher;
@@ -212,6 +213,29 @@ public class FeaturesFragment extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if ("theme".equals(currentMenu)) loadThemeMenu();
                 });
+
+        // Crash-report folder: only the companion writes there (CrashReportProvider), so it is
+        // not pushed to Instagram.
+        crashDirPickerLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), uri -> {
+            if (uri == null) return;
+            try {
+                requireContext().getContentResolver().takePersistableUriPermission(uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            } catch (SecurityException e) {
+                io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ie_crash_folder_failed), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String path = uri.getPath();
+            path = path != null
+                    ? path.replace("/tree/primary:", "/storage/emulated/0/").replace("/document/primary:", "/storage/emulated/0/")
+                    : uri.toString();
+            localCache.edit()
+                    .putString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, uri.toString())
+                    .putString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_PATH, path)
+                    .commit();
+            io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ie_crash_folder_updated), Toast.LENGTH_SHORT).show();
+            if ("app".equals(currentMenu)) loadAppMenu();
+        });
 
         dirPickerLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), uri -> {
             if (uri != null) {
@@ -1638,7 +1662,77 @@ public class FeaturesFragment extends Fragment {
                         this::pickAutoClearSize)
         ));
 
+        // Crash reports: Instagram hands each crash to the companion, which saves it here.
+        String crashPath = localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_PATH, "");
+        FeatureItem crashSwitch = createSwitch(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.ie_crash_reports), "crashReports");
+        crashSwitch.subtitle = getString(R.string.ie_crash_reports_hint);
+        defs.add(getString(R.string.ie_crash_reports_section));
+        defs.add(Arrays.asList(
+                crashSwitch,
+                createClickable(R.drawable.ic_ui_folder, "#FF453A",
+                        crashPath.isEmpty() ? getString(R.string.ie_crash_folder_default)
+                                : getString(R.string.feat_downloader_selected, crashPath),
+                        () -> crashDirPickerLauncher.launch(null)),
+                createClickable(R.drawable.ic_ui_delete, "#FF453A", getString(R.string.ie_crash_folder_reset), this::resetCrashFolder)
+        ));
+
+        // Clone apps: each one is trusted only after the user approves its signing key here.
+        List<String> clones = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.installedClones(requireContext());
+        if (!clones.isEmpty()) {
+            List<FeatureItem> rows = new ArrayList<>();
+            for (String pkg : clones) {
+                boolean trusted = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.isTrusted(requireContext(), pkg);
+                FeatureItem row = createClickable(R.drawable.ic_ui_shield, trusted ? "#30D158" : "#FF9F0A",
+                        appLabel(pkg), () -> showCloneTrustDialog(pkg));
+                row.subtitle = getString(trusted ? R.string.ie_clone_trusted : R.string.ie_clone_not_trusted, pkg);
+                rows.add(row);
+            }
+            defs.add(getString(R.string.ie_clone_section));
+            defs.add(rows);
+            defs.add(getString(R.string.ie_clone_hint));
+        }
+
         return defs;
+    }
+
+    private String appLabel(String pkg) {
+        try {
+            android.content.pm.PackageManager pm = requireContext().getPackageManager();
+            return String.valueOf(pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)));
+        } catch (Exception e) { return pkg; }
+    }
+
+    private void showCloneTrustDialog(String pkg) {
+        Context ctx = requireContext();
+        boolean trusted = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.isTrusted(ctx, pkg);
+        String sha = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.signerSha256(ctx, pkg);
+        MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(ctx)
+                .setTitle(appLabel(pkg))
+                .setMessage(getString(R.string.ie_clone_dialog, pkg,
+                        io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.pretty(sha)))
+                .setNegativeButton(android.R.string.cancel, null);
+        if (trusted) {
+            b.setPositiveButton(R.string.ie_clone_untrust, (d, w) -> {
+                io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.untrust(ctx, pkg);
+                if ("app".equals(currentMenu)) loadAppMenu();
+            });
+        } else if (sha != null) {
+            b.setPositiveButton(R.string.ie_clone_trust, (d, w) -> {
+                boolean ok = io.github.somilkhan.instaeclipse2.utils.ipc.CloneTrust.trust(ctx, pkg);
+                io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx,
+                        getString(ok ? R.string.ie_clone_trusted_toast : R.string.ie_clone_trust_failed), Toast.LENGTH_LONG).show();
+                if ("app".equals(currentMenu)) loadAppMenu();
+            });
+        }
+        b.show();
+    }
+
+    private void resetCrashFolder() {
+        localCache.edit()
+                .remove(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI)
+                .remove(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_PATH)
+                .commit();
+        if ("app".equals(currentMenu)) loadAppMenu();
     }
 
     private void openInstagram() {
