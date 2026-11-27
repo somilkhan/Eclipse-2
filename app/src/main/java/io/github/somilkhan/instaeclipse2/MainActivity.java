@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         // Only on a fresh launch: recreation (rotation, dark-mode/locale change, process-death
         // restore) must not re-run the network check and stack another dialog.
         if (savedInstanceState == null) VersionCheckUtility.checkForUpdates(this);
+        if (savedInstanceState == null) warnIfLegacyModuleInstalled();
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_main);
@@ -88,18 +89,25 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment f,
                                                       @NonNull View view, Bundle s) {
-                        if (f.getId() == R.id.fragment_container) {
+                        // Only the visible tab owns the chrome. Pre-warmed / hidden tabs are wired
+                        // when they are shown (showTab).
+                        if (f.getId() == R.id.fragment_container && !f.isHidden()
+                                && tagFor(currentTab).equals(f.getTag())) {
                             onContentView(view);
                         }
                     }
                 }, false);
 
+        if (savedInstanceState != null) {
+            currentTab = savedInstanceState.getInt(STATE_TAB, R.id.nav_home);
+        }
+
         // Load the HomeFragment by default
         if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment())
-                    .commit();
+            showTab(R.id.nav_home, false);
+            // Inflate the other tabs (hidden, paused) once the first frame is on screen, so the
+            // first tap on a tab never pays for inflating a 2000-line screen mid-animation.
+            if (prewarmTabs) nav.postDelayed(this::prewarmNextTab, PREWARM_DELAY_MS);
         }
 
         // Select Home only on a fresh launch. After recreation the pill restores its own
@@ -107,25 +115,125 @@ public class MainActivity extends AppCompatActivity {
         // Re-tapping the current tab is a no-op inside the pill (keeps scroll/search state).
         if (savedInstanceState == null) nav.setSelectedItemId(R.id.nav_home);
 
-        nav.setOnItemSelectedListener(id -> {
-            Fragment selectedFragment = null;
-            if (id == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
-            } else if (id == R.id.nav_features) {
-                selectedFragment = new FeaturesFragment();
-            } else if (id == R.id.nav_logs) {
-                selectedFragment = new LoggingFragment();
-            } else if (id == R.id.nav_help) {
-                selectedFragment = new HelpFragment();
-            }
-            if (selectedFragment != null) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.ie_fade_in, R.anim.ie_fade_out)
-                        .replace(R.id.fragment_container, selectedFragment)
-                        .commit();
-            }
-        });
+        nav.setOnItemSelectedListener(id -> showTab(id, true));
+    }
+
+    // ------------------------------------------------------------------ legacy module
+
+    /** Package of the original InstaEclipse; older forks of this project used it too. */
+    static final String LEGACY_PACKAGE = "ps.reso.instaeclipse";
+
+    /**
+     * Both modules hook the same Instagram methods when both are enabled in LSPosed: features
+     * run twice, cold start pays for two DexKit scans, and the old hooks' failures fill the log.
+     */
+    private void warnIfLegacyModuleInstalled() {
+        try {
+            getPackageManager().getPackageInfo(LEGACY_PACKAGE, 0);
+        } catch (Throwable notInstalled) {
+            return;
+        }
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.legacy_module_title)
+                .setMessage(R.string.legacy_module_message)
+                .setPositiveButton(R.string.legacy_module_uninstall, (d, w) -> {
+                    try {
+                        startActivity(new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                android.net.Uri.parse("package:" + LEGACY_PACKAGE)));
+                    } catch (Throwable ignored) {
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    // ------------------------------------------------------------------ tabs
+
+    /** Tests switch this off so screenshots only contain the selected tab. */
+    public static boolean prewarmTabs = true;
+    private static final long PREWARM_DELAY_MS = 700;
+    private static final String STATE_TAB = "ie_current_tab";
+    private static final int[] TABS = {R.id.nav_home, R.id.nav_features, R.id.nav_logs, R.id.nav_help};
+    private int currentTab = R.id.nav_home;
+
+    private static String tagFor(int navId) {
+        return "ie_tab_" + navId;
+    }
+
+    @androidx.annotation.Nullable
+    private static Fragment newTab(int navId) {
+        if (navId == R.id.nav_home) return new HomeFragment();
+        if (navId == R.id.nav_features) return new FeaturesFragment();
+        if (navId == R.id.nav_logs) return new LoggingFragment();
+        if (navId == R.id.nav_help) return new HelpFragment();
+        return null;
+    }
+
+    /**
+     * Tabs are created once and then shown / hidden (like a UITabBarController), instead of being
+     * re-inflated on every tap. Hidden tabs are capped at STARTED, so their onPause stops polling,
+     * auto-scroll and IPC, and onResume refreshes them when they come back.
+     */
+    private void showTab(int navId, boolean animate) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.isStateSaved()) return;
+        String tag = tagFor(navId);
+        Fragment target = fm.findFragmentByTag(tag);
+        boolean created = target == null;
+        if (created) {
+            target = newTab(navId);
+            if (target == null) return;
+        }
+        currentTab = navId;
+        androidx.fragment.app.FragmentTransaction tx = fm.beginTransaction().setReorderingAllowed(true);
+        for (Fragment f : fm.getFragments()) {
+            if (f == target || f.getId() != R.id.fragment_container) continue;
+            if (!f.isHidden()) tx.hide(f);
+            tx.setMaxLifecycle(f, androidx.lifecycle.Lifecycle.State.STARTED);
+        }
+        if (created) tx.add(R.id.fragment_container, target, tag);
+        else tx.show(target);
+        tx.setMaxLifecycle(target, androidx.lifecycle.Lifecycle.State.RESUMED);
+        tx.commitNow();
+        View v = target.getView();
+        if (v == null) return; // first launch: the lifecycle callback wires it once the view exists
+        if (!created) onContentView(v);
+        if (animate && !Motion.reduceMotion()) {
+            v.animate().cancel();
+            v.setAlpha(0f);
+            v.setTranslationY(Motion.dp(this, 6));
+            v.animate().alpha(1f).translationY(0f).setDuration(180)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f))
+                    .withLayer().start();
+        } else {
+            v.setAlpha(1f);
+            v.setTranslationY(0f);
+        }
+    }
+
+    private void prewarmNextTab() {
+        if (isFinishing() || isDestroyed()) return;
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.isStateSaved()) return;
+        for (int id : TABS) {
+            if (id == currentTab || fm.findFragmentByTag(tagFor(id)) != null) continue;
+            Fragment f = newTab(id);
+            if (f == null) continue;
+            fm.beginTransaction().setReorderingAllowed(true)
+                    .add(R.id.fragment_container, f, tagFor(id))
+                    .hide(f)
+                    .setMaxLifecycle(f, androidx.lifecycle.Lifecycle.State.STARTED)
+                    .commit();
+            // One tab per pass keeps every single main-thread block short.
+            nav.postDelayed(this::prewarmNextTab, 250);
+            return;
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle out) {
+        super.onSaveInstanceState(out);
+        out.putInt(STATE_TAB, currentTab);
     }
 
     /** Selects a tab exactly like a user tap would (used by tests and deep links). */
@@ -167,7 +275,19 @@ public class MainActivity extends AppCompatActivity {
         View scroller = view.findViewWithTag("ie_scroll");
         View s = scroller != null ? scroller : view.findViewWithTag("ie_scroll_list");
         edge.bindScroller(s);
-        wireScroll(s, scroller != null ? title : null);
+        if (s == null) return;
+        // Tabs are kept alive, so a scroller is wired once; on re-show only the chrome is synced
+        // to where that tab was left (RecyclerView listeners would otherwise stack up).
+        ScrollSink sink = (ScrollSink) s.getTag(R.id.ie_scroll_sink);
+        if (sink == null) {
+            sink = wireScroll(s, scroller != null ? title : null);
+            s.setTag(R.id.ie_scroll_sink, sink);
+        }
+        if (sink != null) sink.syncChrome(scrollY(s));
+    }
+
+    private static int scrollY(View s) {
+        return s instanceof RecyclerView ? ((RecyclerView) s).computeVerticalScrollOffset() : s.getScrollY();
     }
 
     private static final String[] INSET_TAGS = {"ie_scroll", "ie_inset_top", "ie_inset_bottom",
@@ -223,33 +343,51 @@ public class MainActivity extends AppCompatActivity {
         if (v instanceof ViewGroup) ((ViewGroup) v).setClipToPadding(false);
     }
 
-    private void wireScroll(View scroller, View largeTitle) {
-        if (scroller == null) return;
+    @androidx.annotation.Nullable
+    private ScrollSink wireScroll(View scroller, View largeTitle) {
+        if (scroller == null) return null;
         final int slop = Math.round(Motion.dp(this, 6));
-        final int[] last = {0};
-        ScrollSink sink = y -> {
-            // Compact bar frosts in as the large title passes under it.
-            if (largeTitle != null) {
-                float start = largeTitle.getTop() + largeTitle.getHeight() * 0.35f;
-                float range = Math.max(1f, largeTitle.getHeight() * 0.65f);
-                float p = Math.max(0f, Math.min(1f, (y - start) / range));
-                if (topBar.getAlpha() != p) topBar.setAlpha(p);
-                edge.setProgress(Math.min(1f, Math.max(0f, y / Motion.dp(this, 12))));
+        final float edgeRange = Motion.dp(this, 12);
+        final float minimizeAt = Motion.dp(this, 160);
+        final float restoreAt = Motion.dp(this, 80);
+        ScrollSink sink = new ScrollSink() {
+            private int last;
+
+            @Override
+            public void syncChrome(int y) {
+                // Compact bar frosts in as the large title passes under it.
+                if (largeTitle != null) {
+                    float start = largeTitle.getTop() + largeTitle.getHeight() * 0.35f;
+                    float range = Math.max(1f, largeTitle.getHeight() * 0.65f);
+                    float p = Math.max(0f, Math.min(1f, (y - start) / range));
+                    if (topBar.getAlpha() != p) topBar.setAlpha(p);
+                    edge.setProgress(Math.min(1f, Math.max(0f, y / edgeRange)));
+                }
+                last = y;
             }
-            int dy = y - last[0];
-            if (Math.abs(dy) > slop) {
-                // iOS 26 tabBarMinimizeBehavior(.onScrollDown): shrink while reading, restore on
-                // scroll up or near the top.
-                if (dy > 0 && y > Motion.dp(this, 160)) nav.setMinimized(true);
-                else if (dy < 0 || y < Motion.dp(this, 80)) nav.setMinimized(false);
-                last[0] = y;
+
+            @Override
+            public void onScroll(int y) {
+                if (largeTitle != null) {
+                    float start = largeTitle.getTop() + largeTitle.getHeight() * 0.35f;
+                    float range = Math.max(1f, largeTitle.getHeight() * 0.65f);
+                    float p = Math.max(0f, Math.min(1f, (y - start) / range));
+                    if (topBar.getAlpha() != p) topBar.setAlpha(p);
+                    edge.setProgress(Math.min(1f, Math.max(0f, y / edgeRange)));
+                }
+                int dy = y - last;
+                if (Math.abs(dy) > slop) {
+                    // iOS 26 tabBarMinimizeBehavior(.onScrollDown): shrink while reading, restore on
+                    // scroll up or near the top.
+                    if (dy > 0 && y > minimizeAt) nav.setMinimized(true);
+                    else if (dy < 0 || y < restoreAt) nav.setMinimized(false);
+                    last = y;
+                }
             }
         };
         if (scroller instanceof NestedScrollView) {
             ((NestedScrollView) scroller).setOnScrollChangeListener(
-                    (NestedScrollView.OnScrollChangeListener) (v, x, y, ox, oy) -> {
-                        sink.onScroll(y);
-                    });
+                    (NestedScrollView.OnScrollChangeListener) (v, x, y, ox, oy) -> sink.onScroll(y));
         } else if (scroller instanceof RecyclerView) {
             ((RecyclerView) scroller).addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -258,9 +396,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+        return sink;
     }
 
-    private interface ScrollSink { void onScroll(int y); }
+    private interface ScrollSink {
+        void onScroll(int y);
+
+        void syncChrome(int y);
+    }
 
     @Override
     public void onBackPressed() {

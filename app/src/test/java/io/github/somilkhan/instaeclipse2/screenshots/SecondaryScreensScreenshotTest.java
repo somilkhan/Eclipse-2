@@ -52,6 +52,7 @@ public class SecondaryScreensScreenshotTest {
     @Before
     public void setUp() {
         io.github.somilkhan.instaeclipse2.fragments.HomeFragment.autoScrollEnabled = false;
+        io.github.somilkhan.instaeclipse2.MainActivity.prewarmTabs = false;
         org.robolectric.shadows.ShadowChoreographer.setPaused(true);
         org.robolectric.shadows.ShadowChoreographer.setFrameDelay(java.time.Duration.ofMillis(16));
     }

@@ -786,18 +786,23 @@ public class HomeFragment extends Fragment {
      * the finger left off (the content is duplicated, so the wrap is invisible). Momentum fling is
      * disabled on the view (LoopScrollView), which is what removes the old snap-back / random jump.
      */
-    private final class AutoScroller implements Runnable {
+    private final class AutoScroller implements android.view.Choreographer.FrameCallback {
+        /** Off-screen (scrolled away, other tab, screen off): check again at this low rate. */
+        private static final long OFFSCREEN_POLL_MS = 300L;
         private final HorizontalScrollView sv;
         private final int halfWidth;
-        private final float stepPxPerMs;
+        private final float stepPxPerNs;
+        private final android.graphics.Rect visible = new android.graphics.Rect();
         private boolean running;
         private boolean paused;
-        private long lastFrame;
+        private long lastFrameNs;
+        /** Exact (sub-pixel) loop position; scrollX is its integer part. */
+        private float pos = -1f;
 
         AutoScroller(HorizontalScrollView sv, int halfWidth) {
             this.sv = sv;
             this.halfWidth = halfWidth;
-            this.stepPxPerMs = SCROLL_SPEED_DP_PER_SEC * getResources().getDisplayMetrics().density / 1000f;
+            this.stepPxPerNs = SCROLL_SPEED_DP_PER_SEC * getResources().getDisplayMetrics().density / 1e9f;
         }
 
         void start() {
@@ -805,8 +810,10 @@ public class HomeFragment extends Fragment {
             // Reduce motion / TalkBack: the strip stays still and scrolls only by hand.
             if (io.github.somilkhan.instaeclipse2.ui.glass.Motion.reduceMotion() || touchExploring()) return;
             running = true;
-            lastFrame = 0;
-            sv.postOnAnimationDelayed(this, sv.getScrollX() == 0 ? AUTO_SCROLL_DELAY_MS : 0L);
+            lastFrameNs = 0;
+            pos = -1f;
+            android.view.Choreographer.getInstance().postFrameCallbackDelayed(this,
+                    sv.getScrollX() == 0 ? AUTO_SCROLL_DELAY_MS : 0L);
         }
 
         private boolean touchExploring() {
@@ -817,23 +824,40 @@ public class HomeFragment extends Fragment {
 
         void stop() {
             running = false;
-            sv.removeCallbacks(this);
+            android.view.Choreographer.getInstance().removeFrameCallback(this);
+            setFraction(0f);
+        }
+
+        private void setFraction(float f) {
+            View child = sv.getChildCount() > 0 ? sv.getChildAt(0) : null;
+            if (child != null && child.getTranslationX() != -f) child.setTranslationX(-f);
         }
 
         @Override
-        public void run() {
+        public void doFrame(long now) {
             if (!running) return;
-            long now = android.view.animation.AnimationUtils.currentAnimationTimeMillis();
-            if (lastFrame == 0) lastFrame = now;
-            long dt = now - lastFrame;
-            lastFrame = now;
-            if (!paused && halfWidth > 0) {
-                int x = sv.getScrollX() + Math.round(stepPxPerMs * dt);
-                x %= halfWidth;
-                if (x < 0) x += halfWidth;
-                sv.scrollTo(x, 0);
+            android.view.Choreographer ch = android.view.Choreographer.getInstance();
+            // Nothing to animate while the strip is off screen: don't keep the app drawing at the
+            // display's full refresh rate (120 Hz on most phones) for an invisible carousel.
+            if (!sv.isShown() || !sv.getGlobalVisibleRect(visible)) {
+                lastFrameNs = 0;
+                ch.postFrameCallbackDelayed(this, OFFSCREEN_POLL_MS);
+                return;
             }
-            sv.postOnAnimation(this);
+            if (lastFrameNs == 0) lastFrameNs = now;
+            // Clamp so a long pause (GC, background) doesn't make the strip jump.
+            long dt = Math.min(now - lastFrameNs, 50_000_000L);
+            lastFrameNs = now;
+            if (!paused && halfWidth > 0) {
+                if (pos < 0f || Math.abs(pos - sv.getScrollX()) >= 1f) pos = sv.getScrollX();
+                pos = (pos + stepPxPerNs * dt) % halfWidth;
+                int x = (int) pos;
+                if (sv.getScrollX() != x) sv.scrollTo(x, 0);
+                // Sub-pixel remainder as a translation: a constant-speed glide instead of the
+                // 0/1/2 px steps integer scrolling produces at high refresh rates.
+                setFraction(pos - x);
+            }
+            ch.postFrameCallback(this);
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -843,11 +867,14 @@ public class HomeFragment extends Fragment {
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_MOVE:
                         paused = true;      // let the user drag freely
+                        setFraction(0f);
+                        pos = -1f;
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
                         paused = false;     // resume from the live position (no fling to fight)
-                        lastFrame = 0;
+                        lastFrameNs = 0;
+                        pos = -1f;
                         break;
                 }
                 return false; // keep normal drag handling

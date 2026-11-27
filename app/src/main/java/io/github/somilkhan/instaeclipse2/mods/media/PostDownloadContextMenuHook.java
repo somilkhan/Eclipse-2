@@ -593,12 +593,23 @@ public class PostDownloadContextMenuHook {
                 media = SelectedMediaAdapter.findPostMenuMedia(thisObj, menuCreatorClass);
                 if (media == null && reelClickDispatcher != null && param.method.equals(reelClickDispatcher))
                     media = SelectedMediaAdapter.findReelMenuMedia(thisObj, reelClickDispatcher.getDeclaringClass());
+                // Strict lookup gives up when the adapter isn't resolved on this build or the
+                // creator holds more than one Media (carousel parent + slide). The tapped menu's
+                // own creator still owns this post, so its first Media is the right fallback;
+                // the deep findMedia() walk stays off here because it can reach other posts.
+                if (media == null) {
+                    media = findMediaViaMenuCreator(thisObj);
+                    if (media != null) ModuleLog.line("(IE|Post) download: strict media lookup missed, used menu creator ("
+                            + SelectedMediaAdapter.describeMiss(thisObj, menuCreatorClass) + ")");
+                }
             } else {
                 media = findMediaViaMenuCreator(thisObj);
                 if (media == null) media = findMedia(thisObj);
             }
             if (media == null) {
-                ModuleLog.line("(IE|Post) ❌ Media not found in click handler");
+                ModuleLog.line("(IE|Post) ❌ Media not found in click handler ("
+                        + (isDownload ? SelectedMediaAdapter.describeMiss(thisObj, menuCreatorClass) + ", " : "")
+                        + "handler=" + thisObj.getClass().getName() + ")");
                 io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_toast_no_media_for_post), Toast.LENGTH_SHORT).show();
                 return;
             }

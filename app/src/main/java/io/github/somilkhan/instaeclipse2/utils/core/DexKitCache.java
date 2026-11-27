@@ -12,7 +12,7 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 
 /**
  * Caches DexKit-resolved method signatures in SharedPreferences, keyed by
- * Instagram's version code. On the first run (or after an IG update), DexKit
+ * Instagram's version code plus the module build (see Module#moduleBuildId). On the first run (or after an IG update), DexKit
  * runs as normal and saves each resolved {@link Method} descriptor. On every
  * subsequent launch of the same IG version, the saved descriptor is used to
  * look up the {@link Method} via reflection — skipping DexKit entirely.
@@ -37,7 +37,7 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
  */
 public class DexKitCache {
 
-    private static final String PREF_NAME  = "instaeclipse_dexkit_cache";
+    private static final String PREF_NAME  = "eclipse2_dexkit_cache";
     private static final String KEY_VER    = "_v";
     private static final char   SEP        = '\u0000';
 
@@ -53,6 +53,8 @@ public class DexKitCache {
      */
     public static void init(Context context, String igVersion) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        // Older builds shared "instaeclipse_dexkit_cache" with the original module; stop reading it.
+        // It is left in place because the original module may still be installed and using it.
         String stored = prefs.getString(KEY_VER, "");
         if (stored.equals(igVersion)) {
             cacheValid = true;

@@ -8,7 +8,12 @@ import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureManager;
 
 public class SettingsManager {
-    private static final String PREF_NAME = "instaeclipse_prefs";
+    /**
+     * Own file name. Inside Instagram's data dir "instaeclipse_prefs" is also the original
+     * InstaEclipse's settings file, so with both modules installed they overwrote each other.
+     */
+    public static final String PREF_NAME = "eclipse2_prefs";
+    static final String LEGACY_PREF_NAME = "instaeclipse_prefs";
     private static SharedPreferences prefs;
     private static Boolean appliedHideState;
     private static boolean hostProcess;
@@ -22,6 +27,31 @@ public class SettingsManager {
         }
         if (prefs == null) {
             prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            // Companion only: carry settings over from builds that used the old name. Inside
+            // Instagram the old file may belong to the original module, and CompanionSync.pull
+            // refills ours from the companion anyway.
+            if (!hostProcess && prefs.getAll().isEmpty()) migrateLegacy(context, prefs);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void migrateLegacy(Context context, SharedPreferences target) {
+        try {
+            java.util.Map<String, ?> old = context.getSharedPreferences(LEGACY_PREF_NAME, Context.MODE_PRIVATE).getAll();
+            if (old.isEmpty()) return;
+            SharedPreferences.Editor e = target.edit();
+            for (java.util.Map.Entry<String, ?> en : old.entrySet()) {
+                Object v = en.getValue();
+                String k = en.getKey();
+                if (v instanceof Boolean) e.putBoolean(k, (Boolean) v);
+                else if (v instanceof Integer) e.putInt(k, (Integer) v);
+                else if (v instanceof Long) e.putLong(k, (Long) v);
+                else if (v instanceof Float) e.putFloat(k, (Float) v);
+                else if (v instanceof String) e.putString(k, (String) v);
+                else if (v instanceof java.util.Set) e.putStringSet(k, (java.util.Set<String>) v);
+            }
+            e.apply();
+        } catch (Throwable ignored) {
         }
     }
 
@@ -219,6 +249,10 @@ public class SettingsManager {
     public static void loadAllFlags(Context context) {
         if (prefs == null) {
             prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            // Companion only: carry settings over from builds that used the old name. Inside
+            // Instagram the old file may belong to the original module, and CompanionSync.pull
+            // refills ours from the companion anyway.
+            if (!hostProcess && prefs.getAll().isEmpty()) migrateLegacy(context, prefs);
         }
 
         FeatureFlags.isDevEnabled = prefs.getBoolean("isDevEnabled", false);

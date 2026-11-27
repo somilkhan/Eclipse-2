@@ -65,7 +65,7 @@ public final class CompanionSync {
             Map<String, ?> all = companion.getAll();
             if (all == null || all.isEmpty()) return false;
 
-            SharedPreferences ig = context.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE);
+            SharedPreferences ig = context.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE);
             SharedPreferences.Editor e = ig.edit();
             int applied = 0;
             boolean airplaneChanged = false;
@@ -120,7 +120,7 @@ public final class CompanionSync {
 
     private static void push(Context context) {
         try {
-            Map<String, ?> all = context.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE).getAll();
+            Map<String, ?> all = context.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE).getAll();
             android.os.Bundle b = new android.os.Bundle();
             for (Map.Entry<String, ?> entry : all.entrySet()) {
                 String k = entry.getKey();
@@ -145,7 +145,7 @@ public final class CompanionSync {
     /** Live broadcast applied: remember its stamp so the next pull doesn't apply it again. */
     public static void markApplied(Context context, String key, long ts) {
         if (key == null || ts <= 0) return;
-        context.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE)
+        context.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE)
                 .edit().putLong(APPLIED + key, ts).apply();
     }
 }

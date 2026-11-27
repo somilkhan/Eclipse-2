@@ -54,6 +54,8 @@ public class InsetOverlapTest {
     public void setUp() {
         org.robolectric.shadows.ShadowChoreographer.setPaused(true);
         org.robolectric.shadows.ShadowChoreographer.setFrameDelay(java.time.Duration.ofMillis(16));
+        io.github.somilkhan.instaeclipse2.MainActivity.prewarmTabs = false;
+        io.github.somilkhan.instaeclipse2.fragments.HomeFragment.autoScrollEnabled = false;
     }
 
     @Test public void home() { tab(0, null); }

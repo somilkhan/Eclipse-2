@@ -104,7 +104,9 @@ public class BackdropBlurLayout extends FrameLayout {
     private int margin;
 
     private final ViewTreeObserver.OnPreDrawListener preDraw = () -> {
-        if (source != null && source.isDirty() && isShown() && getAlpha() > 0f) invalidate();
+        // Only the in-house glass samples the source; with a library lens on top this view just
+        // hosts children and must not redraw for every content frame.
+        if (glassDrawingEnabled && source != null && source.isDirty() && isShown() && getAlpha() > 0f) invalidate();
         return true;
     };
 

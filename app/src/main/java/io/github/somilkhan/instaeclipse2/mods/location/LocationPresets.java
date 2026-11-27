@@ -126,7 +126,7 @@ public final class LocationPresets {
                 {"spoofLabel", picked.label},
                 {"spoofRecent", recent},
         };
-        for (String store : new String[]{"instaeclipse_prefs", "instaeclipse_cache"}) {
+        for (String store : new String[]{io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, "instaeclipse_cache"}) {
             android.content.SharedPreferences.Editor e = ("instaeclipse_cache".equals(store)
                     ? CommonUtils.companionCache(context) : context.getSharedPreferences(store, Context.MODE_PRIVATE)).edit();
             for (String[] kv : values) e.putString(kv[0], kv[1]);

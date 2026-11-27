@@ -85,7 +85,10 @@ public class GlassNavPill extends BackdropBlurLayout {
     private final float density;
     private final int touchSlop;
     private final boolean night;
+    private final int platterBaseAlpha;
     private boolean indicatorPlaced;
+    // Fallback lens rim gradient, rebuilt only when the lens height/position changes.
+    private float rimShaderTop = Float.NaN, rimShaderBottom = Float.NaN;
     private int selectedId = View.NO_ID;
     private boolean minimized;
     @Nullable private OnItemSelectedListener listener;
@@ -109,7 +112,9 @@ public class GlassNavPill extends BackdropBlurLayout {
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         night = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
                 == Configuration.UI_MODE_NIGHT_YES;
-        platterPaint.setColor(ContextCompat.getColor(context, R.color.ie_glass_indicator));
+        int platter = ContextCompat.getColor(context, R.color.ie_glass_indicator);
+        platterPaint.setColor(platter);
+        platterBaseAlpha = Color.alpha(platter);
         lensRimPaint.setStyle(Paint.Style.STROKE);
         lensRimPaint.setStrokeWidth(Math.max(1f, density));
         setRefraction(true);
@@ -154,7 +159,11 @@ public class GlassNavPill extends BackdropBlurLayout {
         try {
             SafeLiquidGlassView b = new SafeLiquidGlassView(getContext());
             b.setEnablePressEffect(false);
-            b.setEnableDynamicBackground(true);
+            // No self-driven redraw loop: with "dynamic background" the library invalidates
+            // itself from onDraw, i.e. re-captures the whole screen at the display refresh rate
+            // (120 Hz) forever, even when nothing moves. We redraw only when the content under
+            // the bar changed (see backdropWatcher) or the lens moves.
+            b.setEnableDynamicBackground(false);
             b.setCornerRadius(999f);
             b.setOverLight(!night);
             b.setEnableEdgeHighlight(true);
@@ -165,7 +174,7 @@ public class GlassNavPill extends BackdropBlurLayout {
 
             SafeLiquidGlassView d = new SafeLiquidGlassView(getContext());
             d.setEnablePressEffect(false);
-            d.setEnableDynamicBackground(true);
+            d.setEnableDynamicBackground(false);
             d.setEnableBackdropBlur(false); // clear magnifier, like the iOS selection lens
             d.setCornerRadius(999f);
             d.setBevelWidth(8 * density);
@@ -176,6 +185,7 @@ public class GlassNavPill extends BackdropBlurLayout {
             d.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
             d.setClickable(false);
             addView(d, new LayoutParams(0, 0, Gravity.TOP | Gravity.LEFT));
+            // Sized and placed by syncDroplet(); onLayout re-applies it after FrameLayout's pass.
 
             body = b;
             droplet = d;
@@ -188,6 +198,7 @@ public class GlassNavPill extends BackdropBlurLayout {
     }
 
     private void fallBackToInHouseGlass() {
+        watchBackdrop(false);
         if (body != null) removeView(body);
         if (droplet != null) removeView(droplet);
         body = null;
@@ -199,10 +210,55 @@ public class GlassNavPill extends BackdropBlurLayout {
     /** True when the library lens is drawing this bar (false = in-house fallback glass). */
     public boolean usesLibraryLens() { return body != null && !body.hasFailed(); }
 
+    /**
+     * Redraws the library lens only in frames where the content behind the bar changed (scroll,
+     * carousel, tab fade, a switch flipping...). Invalidating the lens never dirties the source,
+     * so this can't loop.
+     */
+    private final android.view.ViewTreeObserver.OnPreDrawListener backdropWatcher = () -> {
+        View src = blurSource;
+        if (src != null && src.isDirty() && isShown()) invalidateLens();
+        return true;
+    };
+    @Nullable private android.view.ViewTreeObserver watchedObserver;
+
+    private void invalidateLens() {
+        if (body != null) body.invalidate();
+        if (droplet != null) droplet.invalidate();
+    }
+
+    private void watchBackdrop(boolean on) {
+        if (watchedObserver != null) {
+            if (watchedObserver.isAlive()) watchedObserver.removeOnPreDrawListener(backdropWatcher);
+            watchedObserver = null;
+        }
+        if (on && blurSource != null && body != null && isAttachedToWindow()) {
+            watchedObserver = blurSource.getViewTreeObserver();
+            watchedObserver.addOnPreDrawListener(backdropWatcher);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        watchBackdrop(true);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        watchBackdrop(false);
+        leftSpring.cancel();
+        rightSpring.cancel();
+        minimizeSpring.cancel();
+        pressSpring.cancel();
+        super.onDetachedFromWindow();
+    }
+
     @Override
     public void setBlurSource(@Nullable View source) {
         super.setBlurSource(source);
         blurSource = source;
+        watchBackdrop(true);
         if (body != null) {
             try {
                 body.setBackdropSource(source);
@@ -306,15 +362,18 @@ public class GlassNavPill extends BackdropBlurLayout {
         if (droplet == null || !indicatorPlaced) return;
         lensRect(indicatorRect);
         int w = Math.round(indicatorRect.width()), h = Math.round(indicatorRect.height());
-        LayoutParams lp = (LayoutParams) droplet.getLayoutParams();
-        if (lp.width != w || lp.height != h) {
-            lp.width = w;
-            lp.height = h;
-            droplet.setLayoutParams(lp);
+        // Size the lens directly. setLayoutParams() here used to requestLayout() the whole window
+        // on every spring frame (the lens stretches while it glides), which is what made the tab
+        // switch stutter.
+        if (droplet.getWidth() != w || droplet.getHeight() != h || droplet.isLayoutRequested()) {
+            droplet.measure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY));
+            droplet.layout(0, 0, w, h);
         }
         droplet.setTranslationX(indicatorRect.left);
         droplet.setTranslationY(indicatorRect.top);
-        droplet.setAlpha(1f - minimizeHolder.getValue());
+        float alpha = 1f - minimizeHolder.getValue();
+        if (droplet.getAlpha() != alpha) droplet.setAlpha(alpha);
         droplet.invalidate();
     }
 
@@ -369,16 +428,19 @@ public class GlassNavPill extends BackdropBlurLayout {
         if (m >= 0.99f) return;
         lensRect(indicatorRect);
         float rad = indicatorRect.height() / 2f;
-        int baseA = Color.alpha(ContextCompat.getColor(getContext(), R.color.ie_glass_indicator));
         float press = pressHolder.getValue();
-        platterPaint.setAlpha(Math.round(baseA * (1f - m) * (1f + 0.6f * press)));
+        platterPaint.setAlpha(Math.min(255, Math.round(platterBaseAlpha * (1f - m) * (1f + 0.6f * press))));
         canvas.drawRoundRect(indicatorRect, rad, rad, platterPaint);
         if (body == null) {
             // Fallback lens rim: bright top edge, faint bottom (the library lens draws its own).
             int top = night ? 0x59FFFFFF : 0xE6FFFFFF;
             int bottom = night ? 0x14FFFFFF : 0x40FFFFFF;
-            lensRimPaint.setShader(new LinearGradient(0, indicatorRect.top, 0, indicatorRect.bottom,
-                    top, bottom, Shader.TileMode.CLAMP));
+            if (indicatorRect.top != rimShaderTop || indicatorRect.bottom != rimShaderBottom) {
+                rimShaderTop = indicatorRect.top;
+                rimShaderBottom = indicatorRect.bottom;
+                lensRimPaint.setShader(new LinearGradient(0, indicatorRect.top, 0, indicatorRect.bottom,
+                        top, bottom, Shader.TileMode.CLAMP));
+            }
             lensRimPaint.setAlpha(Math.round(255 * (1f - m) * (0.55f + 0.45f * press)));
             float hs = lensRimPaint.getStrokeWidth() / 2f;
             indicatorRect.inset(hs, hs);

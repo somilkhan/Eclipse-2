@@ -141,6 +141,31 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         }
     }
 
+    /** Identifies this exact module APK: versionCode plus the APK's size and mtime. */
+    static String moduleBuildId() {
+        String id = String.valueOf(io.github.somilkhan.instaeclipse2.BuildConfig.VERSION_CODE);
+        try {
+            java.io.File apk = new java.io.File(moduleSourceDir);
+            if (apk.isFile()) id += "-" + apk.length() + "-" + apk.lastModified();
+        } catch (Throwable ignored) {
+        }
+        return id;
+    }
+
+    /** First line of every Instagram session, so a shared log always says which build wrote it. */
+    private static void logSessionBanner(Context context) {
+        String ig = "?";
+        try {
+            android.content.pm.PackageInfo pi = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            ig = pi.versionName + " (" + pi.getLongVersionCode() + ")";
+        } catch (Throwable ignored) {
+        }
+        ModuleLog.line("(Eclipse 2) session start: module "
+                + io.github.somilkhan.instaeclipse2.BuildConfig.VERSION_NAME + " ("
+                + io.github.somilkhan.instaeclipse2.BuildConfig.VERSION_CODE + "), "
+                + context.getPackageName() + " " + ig);
+    }
+
     /** DexKitCache key set once every feature hook has been installed for this IG version. */
     private static final String CACHE_COMPLETE_KEY = "InstallComplete";
 
@@ -187,7 +212,10 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         android.content.pm.PackageInfo pi =
                                 context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
                         long vc = pi.getLongVersionCode();
-                        DexKitCache.init(context, String.valueOf(vc));
+                        // Key = Instagram build + this exact module APK. Keyed on Instagram alone, a
+                        // module update kept replaying descriptors resolved by the older lookup code
+                        // (and debug rebuilds share one versionCode), so fixed hooks still failed.
+                        DexKitCache.init(context, String.valueOf(vc) + "|" + moduleBuildId());
                     } catch (Throwable e) {
                         ModuleLog.line("(DexKitCache) ❌ init failed: " + e.getMessage());
                     }
@@ -224,7 +252,12 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     // In-app log viewer: every ModuleLog.line(...) call across the hook codebase
                     // appends to this buffer, which the companion app can read via IPC.
-                    Logging.init(context, "instaeclipse_module.log");
+                    // Own file name: the original InstaEclipse (ps.reso.instaeclipse) and older
+                    // forks write "instaeclipse_module.log" in this same Instagram data dir, and
+                    // reading that history mixed their stale failures into our log viewer.
+                    Logging.init(context, "eclipse2_module.log");
+                    logSessionBanner(context);
+                    LegacyModuleCheck.schedule(context);
                     // Mirror the buffer into a file owned by the companion app (LogMirrorProvider)
                     // so its Logs tab works even when Instagram is backgrounded or killed.
                     Logging.enableMirror(context);
@@ -807,7 +840,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     ModuleLog.line("(InstaEclipse) Sync: Updating " + key + " to " + value);
 
-                    android.content.SharedPreferences prefs = ctx.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE);
+                    android.content.SharedPreferences prefs = ctx.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE);
                     prefs.edit().putBoolean(key, value).apply();
 
                     SettingsManager.loadAllFlags(ctx);
@@ -823,7 +856,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     ModuleLog.line("(InstaEclipse) Sync: Updating string pref " + key);
 
-                    android.content.SharedPreferences prefs = ctx.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE);
+                    android.content.SharedPreferences prefs = ctx.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE);
                     prefs.edit().putString(key, value).apply();
 
                     SettingsManager.loadAllFlags(ctx);
@@ -837,7 +870,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     ModuleLog.line("(InstaEclipse) Sync: Updating int pref " + key + " to " + value);
 
-                    android.content.SharedPreferences prefs = ctx.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE);
+                    android.content.SharedPreferences prefs = ctx.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE);
                     prefs.edit().putInt(key, value).apply();
 
                     SettingsManager.loadAllFlags(ctx);
@@ -874,7 +907,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 } else if ("io.github.somilkhan.instaeclipse2.ACTION_REQUEST_PREFS".equals(action)) {
                     ModuleLog.line("(InstaEclipse) Sync: Companion app requested current preferences.");
 
-                    android.content.SharedPreferences prefs = ctx.getSharedPreferences("instaeclipse_prefs", Context.MODE_PRIVATE);
+                    android.content.SharedPreferences prefs = ctx.getSharedPreferences(io.github.somilkhan.instaeclipse2.utils.core.SettingsManager.PREF_NAME, Context.MODE_PRIVATE);
                     Intent reply = new Intent("io.github.somilkhan.instaeclipse2.ACTION_SEND_PREFS");
                     reply.setPackage("io.github.somilkhan.instaeclipse2");
 

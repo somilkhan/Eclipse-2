@@ -58,6 +58,7 @@ public class ScreenshotTest {
         // Infinite animations (auto-scrolling carousels, indeterminate progress) would otherwise
         // keep the paused looper busy forever: give frames a real 16 ms cadence.
         io.github.somilkhan.instaeclipse2.fragments.HomeFragment.autoScrollEnabled = false;
+        io.github.somilkhan.instaeclipse2.MainActivity.prewarmTabs = false;
         org.robolectric.shadows.ShadowChoreographer.setPaused(true);
         org.robolectric.shadows.ShadowChoreographer.setFrameDelay(java.time.Duration.ofMillis(16));
     }

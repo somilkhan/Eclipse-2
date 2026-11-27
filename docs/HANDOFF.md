@@ -28,6 +28,15 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 
 ## Status
 
+- [x] Device build check (2026-11-27): harness on Instagram 457.0.0.55.73 build 386314291 (the
+  tester's device build): OK=72 PARTIAL=1 FAIL=1 NO-HOOK=5. The PARTIAL (VoiceMessageDownload) and
+  FAIL (LocationSpoof) lines come from harness stubs. Report:
+  `docs/hook-verify/report-457.0.0.55.73-386314291.md`.
+  - The tester's failing log (LikeUndo, MaxUploadQuality, HighRes, NotesTray, SavedOnProfile,
+    StoryMention, RoundedReels) came from older module builds: line numbers don't match HEAD and
+    RoundedReelsHook never existed in this repo. Cause: the original module and old forks write
+    `instaeclipse_module.log` in Instagram's files dir and our logger read that history. Fixed:
+    own log file, session banner, `Xposed/LegacyModuleCheck` warning, companion dialog.
 - [x] Hooks A — harness `tools/hook-verify/` (see its README); shared helper
   `utils/core/StringTables` (+ `DexSwitchTable`) for 457's shared string tables. Harness on 457:
   baseline 79 steps OK=53 PARTIAL=10 FAIL=11 NO-HOOK=5 (`docs/hook-verify/report-457-baseline.md`)

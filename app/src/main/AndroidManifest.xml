@@ -112,6 +112,8 @@
          so no storage permissions are needed. -->
     <queries>
         <package android:name="com.instagram.android" />
+        <!-- Original InstaEclipse: warn when both modules are installed (they double-hook). -->
+        <package android:name="ps.reso.instaeclipse" />
         <package android:name="com.instagold.android" />
         <package android:name="com.instaflux.app" />
         <package android:name="com.myinsta.android" />

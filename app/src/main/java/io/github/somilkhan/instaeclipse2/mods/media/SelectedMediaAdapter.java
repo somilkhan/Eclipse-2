@@ -132,6 +132,25 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
         return adapter == null ? null : ownedMenuMedia(handler, creatorType, adapter.mediaClass);
     }
 
+    /** Short reason for a failed {@link #findPostMenuMedia}, for the log only. */
+    static String describeMiss(Object handler, Class<?> creatorType) {
+        SelectedMediaAdapter adapter = installed;
+        if (adapter == null) return "adapter not resolved";
+        if (creatorType == null) return "menu creator class not resolved";
+        Object creator = uniqueDirectTypedField(handler, creatorType);
+        if (creator == null) return "no unique creator field";
+        int n = 0;
+        try {
+            for (Class<?> c = creator.getClass(); c != null && c != Object.class; c = c.getSuperclass())
+                for (Field f : c.getDeclaredFields())
+                    if (!Modifier.isStatic(f.getModifiers()) && f.getType() == adapter.mediaClass) {
+                        f.setAccessible(true);
+                        if (f.get(creator) != null) n++;
+                    }
+        } catch (Throwable ignored) {}
+        return n == 0 ? "creator has no Media" : n + " Media fields on creator";
+    }
+
     static Object ownedMenuMedia(Object handler, Class<?> creatorType, Class<?> mediaType) {
         // The tapped feed menu owns its selected Media. Its unrelated fragment and
         // listener fields can reach other posts and must not affect this selection.
