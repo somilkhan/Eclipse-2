@@ -84,6 +84,24 @@ public class GhostEphemeralKeepHook {
                     if (m.getParameterCount() == 0 && m.getReturnType() == boolean.class
                             && !java.lang.reflect.Modifier.isStatic(m.getModifiers())) { shh = m; candidates++; }
                 }
+                if (candidates > 1) {
+                    // 457+: the class gained a plain ()Z state getter; the purge is the one that
+                    // removes entries from the message list while iterating it.
+                    shh = null;
+                    int purging = 0;
+                    for (MethodData c : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                            .declaredClass(expired.getDeclaringClass().getName())
+                            .paramCount(0).returnType("boolean")
+                            .addInvoke("Ljava/util/Iterator;->remove()V")))) {
+                        try {
+                            Method m = c.getMethodInstance(classLoader);
+                            if (java.lang.reflect.Modifier.isStatic(m.getModifiers())) continue;
+                            shh = m;
+                            purging++;
+                        } catch (Throwable ignored) { }
+                    }
+                    if (purging == 1) candidates = 1;
+                }
                 if (candidates == 1) found.add(shh);
                 else ModuleLog.line("(IE|Ephemeral) ⚠️ vanish-mode purge ambiguous (" + candidates + " ()Z methods)");
                 break;

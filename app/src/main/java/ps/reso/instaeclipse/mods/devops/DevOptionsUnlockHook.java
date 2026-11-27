@@ -102,7 +102,7 @@ public class DevOptionsUnlockHook {
             // MobileConfig directly and is reused from many unrelated classes. Survives
             // both string stripping and per-build MobileConfig ID churn.
             if (!found) {
-                ModuleLog.line("(InstaEclipse | DevOptionsEnable): ⚠️ Tier 1 failed. Discovery Tier 2 (Structural)...");
+                ModuleLog.line("(InstaEclipse | DevOptionsEnable): ℹ️ Tier 1 (String) found no gate on this build, trying Tier 2 (Structural)...");
                 MethodData structural = resolveEmployeeGateStructurally(bridge);
                 if (structural != null) {
                     try {

@@ -178,6 +178,43 @@ public class PlaybackSpeedHook {
         return null;
     }
 
+    /**
+     * Static void method with {@code params} parameters (first one {@code owner} when known) that
+     * uses one of {@code strings} — inline or through a 457-style string table — or that calls
+     * the instance method using it from its own class.
+     */
+    static Method findStaticWrapper(DexKitBridge bridge, ClassLoader cl, String key, Class<?> owner,
+                                    int params, String... strings) {
+        for (String str : strings) {
+            List<MethodData> users;
+            try { users = ps.reso.instaeclipse.utils.core.StringTables.findUsers(bridge, str); }
+            catch (Throwable t) { continue; }
+            for (int pass = 0; pass < 2; pass++) {
+                for (MethodData md : users) {
+                    try {
+                        List<MethodData> cands;
+                        if (pass == 0) {
+                            cands = java.util.Collections.singletonList(md);
+                        } else {
+                            cands = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                                    .declaredClass(md.getClassName()).returnType("void")
+                                    .paramCount(params).addInvoke(md.getDescriptor())));
+                        }
+                        for (MethodData c : cands) {
+                            if (!c.isMethod() || !"void".equals(c.getReturnTypeName())) continue;
+                            Method m = c.getMethodInstance(cl);
+                            if (!Modifier.isStatic(m.getModifiers()) || m.getParameterTypes().length != params) continue;
+                            if (owner != null && m.getParameterTypes()[0] != owner) continue;
+                            DexKitCache.saveMethod(key, m);
+                            return m;
+                        }
+                    } catch (Throwable ignored) { }
+                }
+            }
+        }
+        return null;
+    }
+
     private void installHero(DexKitBridge bridge, ClassLoader cl) {
         try {
             Method set = findStatic(bridge, cl, "PlaybackSpeed_heroSet", "HeroManager.setPlaybackSpeed", 3);
@@ -186,6 +223,16 @@ public class PlaybackSpeedHook {
             if (set == null) set = findStatic(bridge, cl, "PlaybackSpeed_heroSet",
                     "Before setPlaybackSpeed(), service player was evicted", 3);
             Method prepare = findStatic(bridge, cl, "PlaybackSpeed_heroPrepare", "HeroManager.prepareAndMayPlay", 1);
+            // Builds where the trace literals moved into a string table or into the instance
+            // method behind the static (player) wrapper: resolve through StringTables and walk up
+            // to the static caller in the same class. Anchors are log strings, not class names.
+            Class<?> owner = set != null ? set.getParameterTypes()[0] : null;
+            if (set == null) set = findStaticWrapper(bridge, cl, "PlaybackSpeed_heroSet", null, 3,
+                    "HeroManager.setPlaybackSpeed", "Before setPlaybackSpeed(), service player was evicted");
+            if (owner == null && set != null) owner = set.getParameterTypes()[0];
+            if (prepare == null) prepare = findStaticWrapper(bridge, cl, "PlaybackSpeed_heroPrepare", owner, 1,
+                    "HeroManager.prepareAndMayPlay", "HeroServicePlayer.prepareAndMayPlay",
+                    "id [%d]: prepareAndMayPlay, shouldPlay=%b, videoSource=%s");
             if (set == null || prepare == null) {
                 ModuleLog.line(TAG + "⚠️ hero set=" + set + " prepare=" + prepare);
                 return;

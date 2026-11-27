@@ -29,6 +29,20 @@ public final class Main {
     static final Pattern FAIL = Pattern.compile(
             "❌|⚠|not found|NOT FOUND|notfound|no match|No match|failed|Failed|FAILED|missing|Missing|unresolved|couldn't|could not|Cannot|cannot find|NoSuch|ClassNotFound|skipped:", 0);
 
+    /**
+     * Failure lines caused by the host JVM, not by a lookup: Instagram code is stubbed and
+     * android.jar is a mockable jar, so constructing IG objects or reading framework statics
+     * fails offline although the lookup itself resolved. Such steps are still counted as
+     * PARTIAL/FAIL but tagged "(harness)" so nobody mistakes them for device failures, and
+     * nobody mistakes them for passes either.
+     */
+    static final Pattern HARNESS = Pattern.compile("hook-verify stub|CREATOR\"? is null|Stub!", 0);
+
+    static boolean harnessOnly(Recorder.Step s) {
+        List<String> bad = s.logs.stream().filter(l -> FAIL.matcher(l).find()).toList();
+        return !bad.isEmpty() && bad.stream().allMatch(l -> HARNESS.matcher(l).find());
+    }
+
     public static void main(String[] a) throws Exception {
         String apk = req("hookverify.apk");
         String lib = req("hookverify.dexkit");
@@ -81,7 +95,8 @@ public final class Main {
         for (Recorder.Step s : steps) {
             String st = status(s);
             switch (st) { case "OK": ok++; break; case "PARTIAL": partial++; break; case "FAIL": fail++; break; case "NO-HOOK": nohook++; break; default: err++; }
-            sb.append(String.format(Locale.ROOT, "%-8s %-32s hooks=%-3d %6d ms%n", st, s.key, s.hooks.size(), s.millis));
+            sb.append(String.format(Locale.ROOT, "%-8s %-32s hooks=%-3d %6d ms%s%n", st, s.key, s.hooks.size(), s.millis,
+                    harnessOnly(s) ? "  (harness)" : ""));
         }
         sb.append(String.format(Locale.ROOT, "TOTAL: %d steps  OK=%d PARTIAL=%d FAIL=%d NO-HOOK=%d ERROR=%d%n",
                 steps.size(), ok, partial, fail, nohook, err));
@@ -91,11 +106,17 @@ public final class Main {
     static String render(List<Recorder.Step> steps, String apk) {
         StringBuilder sb = new StringBuilder();
         sb.append("# hook-verify report\n\n");
-        sb.append("APK: `").append(new File(apk).getName()).append("`\n\n");
+        String ver = System.getProperty("hookverify.apkVersion", "");
+        sb.append("APK: `").append(new File(apk).getName()).append("`");
+        if (!ver.isEmpty()) sb.append(" — Instagram ").append(ver);
+        sb.append("\n\nResults hold for this exact build only; a device running another build of the same ")
+          .append("major version can resolve different classes.\n\n");
         sb.append("Status legend: **OK** = hooks installed and no failure lines; **PARTIAL** = some hooks installed but ")
           .append("at least one sub-lookup logged a failure; **FAIL** = failure logged and nothing hooked; ")
           .append("**NO-HOOK** = nothing hooked and nothing logged (usually a hook that installs lazily at runtime, ")
-          .append("or one that only hooks framework classes once an Activity exists); **ERROR** = install threw.\n\n");
+          .append("or one that only hooks framework classes once an Activity exists); **ERROR** = install threw. ")
+          .append("**(harness)** = every failure line comes from the offline harness (stubbed Instagram code or ")
+          .append("mockable android.jar), not from a lookup; confirm on a device.\n\n");
         sb.append("```\n").append(summaryTable(steps)).append("```\n\n");
         for (Recorder.Step s : steps) {
             sb.append("## ").append(status(s)).append(" — ").append(s.key).append("\n\n");

@@ -21,6 +21,7 @@ import java.util.Set;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import ps.reso.instaeclipse.utils.core.DexKitCache;
+import ps.reso.instaeclipse.utils.core.StringTables;
 import ps.reso.instaeclipse.utils.feature.FeatureFlags;
 import ps.reso.instaeclipse.utils.feature.FeatureStatusTracker;
 import ps.reso.instaeclipse.utils.ghost.ThreadNames;
@@ -271,8 +272,11 @@ public class KeepUnsentMessagesHook {
         try {
             LinkedHashSet<Class<?>> stores = new LinkedHashSet<>();
             for (String anchor : STORE_ANCHORS) {
-                for (MethodData md : bridge.findMethod(FindMethod.create()
-                        .matcher(MethodMatcher.create().usingStrings(anchor)))) {
+                List<MethodData> users = StringTables.withoutTables(bridge.findMethod(FindMethod.create()
+                        .matcher(MethodMatcher.create().usingStrings(anchor))));
+                // 457+: the anchor lives in a shared string table (DirectThreadStoreImpl.H2v loads it by index).
+                if (users.isEmpty()) users = StringTables.findUsers(bridge, anchor);
+                for (MethodData md : users) {
                     try { stores.add(md.getMethodInstance(classLoader).getDeclaringClass()); } catch (Throwable ignored) {}
                 }
                 if (!stores.isEmpty()) break;

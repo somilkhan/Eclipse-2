@@ -128,6 +128,23 @@ public class StoryMentionHook {
                     break;
                 } catch (Throwable ignored) {}
             }
+            if (mentionsConverter == null) {
+                // 457+: the "user is null" log moved into a shared Kotlin logger lambda; the
+                // converter (static List -> List<Interactive>) is named by its trace section,
+                // inline or through a string table.
+                for (MethodData md : ps.reso.instaeclipse.utils.core.StringTables.findMethodUsingStrings(bridge,
+                        mm -> mm.paramCount(1), "StoryTappableObjectExt.mentionStickerstoReelInteractives")) {
+                    try {
+                        Method m = md.getMethodInstance(classLoader);
+                        if (!java.lang.reflect.Modifier.isStatic(m.getModifiers())
+                                || !List.class.isAssignableFrom(m.getReturnType())) continue;
+                        m.setAccessible(true);
+                        mentionsConverter = m;
+                        DexKitCache.saveMethod("MentionsConverter", m);
+                        break;
+                    } catch (Throwable ignored) {}
+                }
+            }
             if (mentionsConverter == null) ModuleLog.line("(IE|Mention) ❌ mentionsConverter not found");
         } catch (Throwable t) {
             ModuleLog.line("(IE|Mention) ❌ mentionsConverter query failed: " + t);

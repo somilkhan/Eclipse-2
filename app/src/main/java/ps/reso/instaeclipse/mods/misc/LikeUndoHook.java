@@ -28,6 +28,7 @@ import ps.reso.instaeclipse.Xposed.Module;
 import ps.reso.instaeclipse.mods.feed.HideSuggestedFeedItemsHook;
 import ps.reso.instaeclipse.mods.ui.UIHookManager;
 import ps.reso.instaeclipse.utils.core.DexKitCache;
+import ps.reso.instaeclipse.utils.core.StringTables;
 import ps.reso.instaeclipse.utils.feature.FeatureFlags;
 import ps.reso.instaeclipse.utils.feature.FeatureStatusTracker;
 import ps.reso.instaeclipse.utils.i18n.I18n;
@@ -82,6 +83,23 @@ public class LikeUndoHook {
                             .returnType("void")));
                     found = alt;
                     target = firstTakingMedia(found);
+                }
+                if (target == null) {
+                    // Builds that moved the path/verb literals into a shared string table
+                    // (String A00(int) packed-switch): match the sender by table index + invoke.
+                    List<MethodData> viaTable = StringTables.findMethodUsingStrings(bridge,
+                            m -> m.returnType("void"), LIKE_PATH_STRINGS);
+                    if (!viaTable.isEmpty()) found = viaTable;
+                    target = firstTakingMedia(viaTable);
+                }
+                if (target == null) {
+                    // Last resort: every user of the path format (inline or via a table) that
+                    // returns void and takes a Media.
+                    List<MethodData> users = new java.util.ArrayList<>();
+                    for (MethodData md : StringTables.findUsers(bridge, LIKE_PATH_STRINGS[0]))
+                        if ("void".equals(md.getReturnTypeName())) users.add(md);
+                    if (!users.isEmpty()) found = users;
+                    target = firstTakingMedia(users);
                 }
                 if (target == null) {
                     ModuleLog.line(TAG + "❌ like sender not found (" + found.size() + " candidates)");

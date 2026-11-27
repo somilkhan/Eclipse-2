@@ -53,9 +53,17 @@ final class ExtrasLookup {
      * 457-style shared string table ({@link StringTables#findMethodUsingStrings}).
      */
     static List<MethodData> byStrings(DexKitBridge bridge, String... strings) {
-        List<MethodData> direct = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create().usingStrings(strings)));
-        if (!direct.isEmpty()) return direct;
-        return StringTables.findMethodUsingStrings(bridge, null, strings);
+        List<MethodData> direct = StringTables.withoutTables(
+                bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create().usingStrings(strings))));
+        if (direct.isEmpty()) return StringTables.findMethodUsingStrings(bridge, null, strings);
+        if (strings.length != 1) return direct;
+        // 457 keeps some inline copies of a string and routes others through the shared table
+        // (e.g. "account_switcher_max_limit_reached": inline in a lambda, via the table in the
+        // add-account click handler), so append the table users after the direct ones.
+        java.util.Map<String, MethodData> all = new java.util.LinkedHashMap<>();
+        for (MethodData m : direct) all.put(m.getDescriptor(), m);
+        for (MethodData m : StringTables.findTableUsers(bridge, strings[0])) all.putIfAbsent(m.getDescriptor(), m);
+        return new java.util.ArrayList<>(all.values());
     }
 
     /** First method invoked by {@code owner} that is static and satisfies {@code test}. */

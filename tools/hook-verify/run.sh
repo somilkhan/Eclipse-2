@@ -74,9 +74,14 @@ fi
 
 MODULE_CP="$RUN:$(paste -sd: "$CPFILE")"
 REPORT="$BUILD/report.md"
+# versionName/versionCode of the checked APK go into the report header: an OK here only speaks for
+# that exact build (457.0.0.55.73 and the 457.0.0.6.73 beta obfuscate differently).
+AAPT="$(ls -d "${ANDROID_HOME:-$HOME/sdk}"/build-tools/*/aapt 2>/dev/null | tail -1)"
+APKVER=""
+[ -n "$AAPT" ] && APKVER="$("$AAPT" dump badging "$APK" 2>/dev/null | sed -n "s/^package: .*versionCode='\([0-9]*\)' versionName='\([^']*\)'.*/\2 (\1)/p" | head -1)"
 heavy java -Xmx"${HOOKVERIFY_XMX:-3g}" -XX:+UnlockDiagnosticVMOptions -XX:-BytecodeVerificationRemote -XX:-BytecodeVerificationLocal \
   -cp "$FW:$MOCK:$ASM:$DEXLIB" \
   -Dhookverify.apk="$APK" -Dhookverify.dexkit="$LIB" -Dhookverify.moduleCp="$MODULE_CP" \
   -Dhookverify.moduleJava="$REPO/app/src/main/java/ps/reso/instaeclipse/Xposed/Module.java" \
-  -Dhookverify.report="$REPORT" -Dhookverify.filter="$FILTER" -Dhookverify.echo="$ECHO" \
+  -Dhookverify.report="$REPORT" -Dhookverify.apkVersion="$APKVER" -Dhookverify.filter="$FILTER" -Dhookverify.echo="$ECHO" \
   hookverify.Main
