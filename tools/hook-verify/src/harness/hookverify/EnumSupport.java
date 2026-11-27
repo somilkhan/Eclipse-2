@@ -43,9 +43,41 @@ public final class EnumSupport {
         for (Method m : def.getMethods())
             if (m.getName().equals("<clinit>")) impl = m.getImplementation();
         if (impl == null) return false;
+        // <init>s: which argument (register-list index, 0 = this) carries the name / ordinal,
+        // read from their Enum.<init>(String, int) super call.
+        Map<String, int[]> inits = new HashMap<>();
+        for (Method m : def.getMethods()) {
+            if (!m.getName().equals("<init>") || m.getImplementation() == null) continue;
+            int base = m.getImplementation().getRegisterCount() - insSize(m.getParameterTypes(), false);
+            for (Instruction i : m.getImplementation().getInstructions()) {
+                if (i.getOpcode() != Opcode.INVOKE_DIRECT && i.getOpcode() != Opcode.INVOKE_DIRECT_RANGE) continue;
+                MethodReference mr = (MethodReference) ((ReferenceInstruction) i).getReference();
+                if (!mr.getDefiningClass().equals("Ljava/lang/Enum;") || !mr.getName().equals("<init>")) continue;
+                int[] r = regsOf(i);
+                if (r.length >= 3) inits.put(key("<init>", m.getParameterTypes()), new int[]{r[1] - base, r[2] - base});
+            }
+        }
+        // static factories T.X(..)T doing new-instance + <init>: argument index of name / ordinal
+        Map<String, int[]> factories = new HashMap<>();
+        for (Method m : def.getMethods()) {
+            if (!m.getReturnType().equals(type) || (m.getAccessFlags() & 0x8) == 0 || m.getImplementation() == null) continue;
+            int ins = insSize(m.getParameterTypes(), true);
+            int base = m.getImplementation().getRegisterCount() - ins;
+            for (Instruction i : m.getImplementation().getInstructions()) {
+                if (i.getOpcode() != Opcode.INVOKE_DIRECT && i.getOpcode() != Opcode.INVOKE_DIRECT_RANGE) continue;
+                MethodReference mr = (MethodReference) ((ReferenceInstruction) i).getReference();
+                if (!mr.getDefiningClass().equals(type) || !mr.getName().equals("<init>")) continue;
+                int[] im = inits.get(key("<init>", mr.getParameterTypes()));
+                int[] r = regsOf(i);
+                if (im == null || im[0] >= r.length || im[1] >= r.length) continue;
+                int n = r[im[0]] - base, o = r[im[1]] - base;
+                if (n >= 0 && o >= 0 && n < ins && o < ins) factories.put(key(m.getName(), m.getParameterTypes()), new int[]{n, o});
+            }
+        }
         Map<Integer, String> strings = new HashMap<>();
         Map<Integer, Integer> ints = new HashMap<>();
         Map<Integer, Object[]> objs = new HashMap<>();
+        Object[] lastFactory = null;
         List<Object[]> out = new ArrayList<>();
         for (Instruction ins : impl.getInstructions()) {
             Opcode op = ins.getOpcode();
@@ -70,15 +102,27 @@ public final class EnumSupport {
             } else if (op == Opcode.INVOKE_DIRECT || op == Opcode.INVOKE_DIRECT_RANGE) {
                 MethodReference mr = (MethodReference) ((ReferenceInstruction) ins).getReference();
                 if (!mr.getDefiningClass().equals(type) || !mr.getName().equals("<init>")) continue;
-                List<? extends CharSequence> p = mr.getParameterTypes();
-                if (p.size() < 2 || !p.get(0).toString().equals("Ljava/lang/String;") || !p.get(1).toString().equals("I")) continue;
-                int[] regs;
-                if (ins instanceof Instruction35c i) regs = new int[]{i.getRegisterC(), i.getRegisterD(), i.getRegisterE()};
-                else { Instruction3rc i = (Instruction3rc) ins; int s = i.getStartRegister(); regs = new int[]{s, s + 1, s + 2}; }
-                String name = strings.get(regs[1]);
-                Integer ord = ints.get(regs[2]);
+                int[] im = inits.get(key("<init>", mr.getParameterTypes()));
+                int[] regs = regsOf(ins);
+                if (im == null || im[0] >= regs.length || im[1] >= regs.length) continue;
+                String name = strings.get(regs[im[0]]);
+                Integer ord = ints.get(regs[im[1]]);
                 Object[] o = objs.get(regs[0]);
                 if (o != null && name != null && ord != null) { o[1] = name; o[2] = ord; }
+            } else if (op == Opcode.INVOKE_STATIC || op == Opcode.INVOKE_STATIC_RANGE) {
+                MethodReference mr = (MethodReference) ((ReferenceInstruction) ins).getReference();
+                int[] f = mr.getDefiningClass().equals(type) ? factories.get(key(mr.getName(), mr.getParameterTypes())) : null;
+                lastFactory = null;
+                if (f == null) continue;
+                int[] regs = regsOf(ins);
+                String name = f[0] < regs.length ? strings.get(regs[f[0]]) : null;
+                Integer ord = f[1] < regs.length ? ints.get(regs[f[1]]) : null;
+                if (name != null && ord != null) lastFactory = new Object[]{null, name, ord};
+            } else if (op == Opcode.MOVE_RESULT_OBJECT) {
+                int a = ((OneRegisterInstruction) ins).getRegisterA();
+                strings.remove(a); ints.remove(a);
+                if (lastFactory != null) objs.put(a, lastFactory); else objs.remove(a);
+                lastFactory = null;
             } else if (op == Opcode.SPUT_OBJECT) {
                 FieldReference fr = (FieldReference) ((ReferenceInstruction) ins).getReference();
                 Object[] c = objs.get(((OneRegisterInstruction) ins).getRegisterA());
@@ -89,9 +133,32 @@ public final class EnumSupport {
             }
         }
         if (out.isEmpty()) return false;
-        out.sort((a, b) -> Integer.compare((Integer) a[2], (Integer) b[2]));
+        out.sort((x, y) -> Integer.compare((Integer) x[2], (Integer) y[2]));
         REGISTRY.put(IgClassLoader.toBinary(type), out);
         return true;
+    }
+
+    private static int insSize(List<? extends CharSequence> params, boolean isStatic) {
+        int n = isStatic ? 0 : 1;
+        for (CharSequence pt : params) { String t = pt.toString(); n += (t.equals("J") || t.equals("D")) ? 2 : 1; }
+        return n;
+    }
+
+    private static int[] regsOf(Instruction ins) {
+        if (ins instanceof Instruction35c i) {
+            int[] all = {i.getRegisterC(), i.getRegisterD(), i.getRegisterE(), i.getRegisterF(), i.getRegisterG()};
+            return java.util.Arrays.copyOf(all, i.getRegisterCount());
+        }
+        Instruction3rc i = (Instruction3rc) ins;
+        int[] r = new int[i.getRegisterCount()];
+        for (int k = 0; k < r.length; k++) r[k] = i.getStartRegister() + k;
+        return r;
+    }
+
+    private static String key(String name, List<? extends CharSequence> params) {
+        StringBuilder b = new StringBuilder(name).append('(');
+        for (CharSequence c : params) b.append(c.toString());
+        return b.append(')').toString();
     }
 
     private static <V> void copy(Map<Integer, V> m, int to, int from) {
