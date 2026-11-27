@@ -465,12 +465,12 @@ public class FeaturesFragment extends Fragment {
                 itemHolder.cardView.setCardBackgroundColor(ContextCompat.getColor(
                         itemHolder.itemView.getContext(), R.color.ie_glass_fill));
                 if (isMaster) {
-                    itemHolder.tvTitle.setTextColor(MaterialColors.getColor(itemHolder.itemView, androidx.appcompat.R.attr.colorPrimary));
-                    itemHolder.tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+                    itemHolder.tvTitle.setTextColor(MaterialColors.getColor(itemHolder.itemView, com.google.android.material.R.attr.colorOnSurface));
+                    itemHolder.tvTitle.setTypeface(ps.reso.instaeclipse.ui.glass.Fonts.inter(itemHolder.itemView.getContext(), 600));
                 } else {
                     int defaultTextColor = MaterialColors.getColor(itemHolder.itemView, com.google.android.material.R.attr.colorOnSurface);
                     itemHolder.tvTitle.setTextColor(item.textColor != 0 ? item.textColor : defaultTextColor);
-                    itemHolder.tvTitle.setTypeface(null, android.graphics.Typeface.NORMAL);
+                    itemHolder.tvTitle.setTypeface(ps.reso.instaeclipse.ui.glass.Fonts.inter(itemHolder.itemView.getContext(), 400));
                 }
 
                 // Subtitle (category counts) + trailing chevron for rows that open a sub-menu
@@ -621,7 +621,8 @@ public class FeaturesFragment extends Fragment {
             }
             iconView.setVisibility(View.VISIBLE);
             // Settings-style tinted squircle with an accent glyph.
-            android.graphics.drawable.Drawable icon = ContextCompat.getDrawable(iconView.getContext(), iconRes);
+            android.graphics.drawable.Drawable icon = ContextCompat.getDrawable(iconView.getContext(),
+                    ps.reso.instaeclipse.ui.glass.IconMap.ui(iconRes));
             if (icon != null) {
                 icon = icon.mutate();
                 icon.setColorFilter(new android.graphics.PorterDuffColorFilter(
@@ -749,7 +750,7 @@ public class FeaturesFragment extends Fragment {
 
     /** Safe pacing for bulk actions (default ON); synced to Instagram like every other switch. */
     private FeatureItem safePacingSwitch() {
-        FeatureItem item = createSwitch(R.drawable.ic_timer, "#0A84FF", getString(R.string.ie_safe_pacing), "safePacing");
+        FeatureItem item = createSwitch(R.drawable.ic_ui_timer, "#0A84FF", getString(R.string.ie_safe_pacing), "safePacing");
         item.subtitle = getString(R.string.ie_safe_pacing_hint);
         return item;
     }
@@ -841,31 +842,31 @@ public class FeaturesFragment extends Fragment {
     /** All sub-menus, in main-menu order. Grouped to match the in-IG dialog: Appearance / Privacy / Media / Social / Tools. */
     private List<Category> getCategories() {
         List<Category> c = new ArrayList<>();
-        c.add(new Category("theme", GROUP_APPEARANCE, R.drawable.ic_palette, A_APPEARANCE, getString(R.string.ig_dialog_menu_theme), this::buildThemeDefs, this::loadThemeMenu));
-        c.add(new Category("feed", GROUP_APPEARANCE, R.drawable.ic_sparkle, A_APPEARANCE, getString(R.string.menu_feed), this::buildFeedDefs, this::loadFeedMenu));
-        c.add(new Category("navigation", GROUP_APPEARANCE, R.drawable.ic_tune, A_APPEARANCE, getString(R.string.menu_navigation), this::buildNavigationDefs, this::loadNavigationMenu));
-        c.add(new Category("reels", GROUP_APPEARANCE, R.drawable.ic_movie, A_APPEARANCE, getString(R.string.menu_reels), this::buildReelsDefs, this::loadReelsMenu));
-        c.add(new Category("stories", GROUP_APPEARANCE, R.drawable.ic_story_ring, A_APPEARANCE, getString(R.string.menu_stories), this::buildStoriesDefs, this::loadStoriesMenu));
+        c.add(new Category("theme", GROUP_APPEARANCE, R.drawable.ic_ui_palette, A_APPEARANCE, getString(R.string.ig_dialog_menu_theme), this::buildThemeDefs, this::loadThemeMenu));
+        c.add(new Category("feed", GROUP_APPEARANCE, R.drawable.ic_ui_sparkle, A_APPEARANCE, getString(R.string.menu_feed), this::buildFeedDefs, this::loadFeedMenu));
+        c.add(new Category("navigation", GROUP_APPEARANCE, R.drawable.ic_ui_tune, A_APPEARANCE, getString(R.string.menu_navigation), this::buildNavigationDefs, this::loadNavigationMenu));
+        c.add(new Category("reels", GROUP_APPEARANCE, R.drawable.ic_ui_movie, A_APPEARANCE, getString(R.string.menu_reels), this::buildReelsDefs, this::loadReelsMenu));
+        c.add(new Category("stories", GROUP_APPEARANCE, R.drawable.ic_ui_story_ring, A_APPEARANCE, getString(R.string.menu_stories), this::buildStoriesDefs, this::loadStoriesMenu));
 
-        c.add(new Category("ghost", GROUP_PRIVACY, R.drawable.ic_eye, A_PRIVACY, getString(R.string.ig_dialog_menu_ghost_settings), this::buildGhostDefs, this::loadGhostMenu));
-        c.add(new Category("messages", GROUP_PRIVACY, R.drawable.ic_chat, A_PRIVACY, getString(R.string.menu_messages), this::buildMessagesDefs, this::loadMessagesMenu));
-        c.add(new Category("hidechats", GROUP_PRIVACY, R.drawable.ic_eye_off, A_PRIVACY, getString(R.string.ig_hide_chats_title), this::buildHideChatsDefs, this::loadHideChatsMenu));
-        c.add(new Category("lock", GROUP_PRIVACY, R.drawable.ic_shield, A_PRIVACY, getString(R.string.ig_dialog_misc_lock_section), this::buildLockDefs, this::loadLockMenu));
-        c.add(new Category("ads", GROUP_PRIVACY, R.drawable.ic_block, A_PRIVACY, getString(R.string.menu_ads_tracking), this::buildAdsDefs, this::loadAdsMenu));
-        c.add(new Category("location", GROUP_PRIVACY, R.drawable.ic_pin, A_PRIVACY, getString(R.string.ig_dialog_menu_location), this::buildLocationDefs, this::loadLocationMenu));
-        c.add(new Category("distract", GROUP_PRIVACY, R.drawable.ic_notification, A_PRIVACY, getString(R.string.ig_dialog_menu_distraction_free), this::buildDistractionDefs, this::loadDistractionMenu));
+        c.add(new Category("ghost", GROUP_PRIVACY, R.drawable.ic_ui_eye, A_PRIVACY, getString(R.string.ig_dialog_menu_ghost_settings), this::buildGhostDefs, this::loadGhostMenu));
+        c.add(new Category("messages", GROUP_PRIVACY, R.drawable.ic_ui_chat, A_PRIVACY, getString(R.string.menu_messages), this::buildMessagesDefs, this::loadMessagesMenu));
+        c.add(new Category("hidechats", GROUP_PRIVACY, R.drawable.ic_ui_eye_off, A_PRIVACY, getString(R.string.ig_hide_chats_title), this::buildHideChatsDefs, this::loadHideChatsMenu));
+        c.add(new Category("lock", GROUP_PRIVACY, R.drawable.ic_ui_shield, A_PRIVACY, getString(R.string.ig_dialog_misc_lock_section), this::buildLockDefs, this::loadLockMenu));
+        c.add(new Category("ads", GROUP_PRIVACY, R.drawable.ic_ui_block, A_PRIVACY, getString(R.string.menu_ads_tracking), this::buildAdsDefs, this::loadAdsMenu));
+        c.add(new Category("location", GROUP_PRIVACY, R.drawable.ic_ui_pin, A_PRIVACY, getString(R.string.ig_dialog_menu_location), this::buildLocationDefs, this::loadLocationMenu));
+        c.add(new Category("distract", GROUP_PRIVACY, R.drawable.ic_ui_notification, A_PRIVACY, getString(R.string.ig_dialog_menu_distraction_free), this::buildDistractionDefs, this::loadDistractionMenu));
 
-        c.add(new Category("downloader", GROUP_MEDIA, R.drawable.ic_download, A_MEDIA, getString(R.string.ig_dialog_menu_downloader), this::buildDownloaderDefs, this::loadDownloaderMenu));
-        c.add(new Category("postmenu", GROUP_MEDIA, R.drawable.ic_save, A_MEDIA, getString(R.string.menu_post_menu), this::buildPostMenuDefs, this::loadPostMenuMenu));
+        c.add(new Category("downloader", GROUP_MEDIA, R.drawable.ic_ui_download, A_MEDIA, getString(R.string.ig_dialog_menu_downloader), this::buildDownloaderDefs, this::loadDownloaderMenu));
+        c.add(new Category("postmenu", GROUP_MEDIA, R.drawable.ic_ui_save, A_MEDIA, getString(R.string.menu_post_menu), this::buildPostMenuDefs, this::loadPostMenuMenu));
 
-        c.add(new Category("interactions", GROUP_SOCIAL, R.drawable.ic_heart, A_SOCIAL, getString(R.string.menu_likes_comments), this::buildInteractionsDefs, this::loadInteractionsMenu));
-        c.add(new Category("profiles", GROUP_SOCIAL, R.drawable.ic_eye, A_SOCIAL, getString(R.string.menu_profiles), this::buildProfilesDefs, this::loadProfilesMenu));
+        c.add(new Category("interactions", GROUP_SOCIAL, R.drawable.ic_ui_heart, A_SOCIAL, getString(R.string.menu_likes_comments), this::buildInteractionsDefs, this::loadInteractionsMenu));
+        c.add(new Category("profiles", GROUP_SOCIAL, R.drawable.ic_ui_eye, A_SOCIAL, getString(R.string.menu_profiles), this::buildProfilesDefs, this::loadProfilesMenu));
 
-        c.add(new Category("app", GROUP_TOOLS, R.drawable.ic_settings_gear, A_TOOLS, getString(R.string.menu_app), this::buildAppDefs, this::loadAppMenu));
-        c.add(new Category("dev", GROUP_TOOLS, R.drawable.ic_tune, A_TOOLS, getString(R.string.ig_dialog_menu_dev_options), this::buildDevDefs, this::loadDevMenu));
+        c.add(new Category("app", GROUP_TOOLS, R.drawable.ic_ui_settings_gear, A_TOOLS, getString(R.string.menu_app), this::buildAppDefs, this::loadAppMenu));
+        c.add(new Category("dev", GROUP_TOOLS, R.drawable.ic_ui_tune, A_TOOLS, getString(R.string.ig_dialog_menu_dev_options), this::buildDevDefs, this::loadDevMenu));
 
         // Quick toggles live inside Ghost Mode; searchable, but not a main-menu row.
-        c.add(new Category("qt", GROUP_HIDDEN, R.drawable.ic_tune, A_PRIVACY, getString(R.string.ig_dialog_section_quick_toggle), this::buildQuickTogglesDefs, this::loadQuickTogglesMenu));
+        c.add(new Category("qt", GROUP_HIDDEN, R.drawable.ic_ui_tune, A_PRIVACY, getString(R.string.ig_dialog_section_quick_toggle), this::buildQuickTogglesDefs, this::loadQuickTogglesMenu));
         return c;
     }
 
@@ -892,10 +893,10 @@ public class FeaturesFragment extends Fragment {
                 rows.add(nav);
             }
             if (g == GROUP_TOOLS) {
-                rows.add(createTool(R.drawable.ic_save, "#30D158", getString(R.string.ig_dialog_backup_settings), getString(R.string.tool_backup_sub), this::backupSettings));
-                rows.add(createTool(R.drawable.ic_folder, "#0A84FF", getString(R.string.ig_dialog_restore_settings), getString(R.string.tool_restore_sub), this::restoreSettings));
-                rows.add(createTool(R.drawable.ic_restart, "#FF9F0A", getString(R.string.ig_dialog_menu_restart), getString(R.string.tool_restart_sub), this::restartInstagram));
-                rows.add(createTool(R.drawable.ic_info, "#BF5AF2", getString(R.string.ig_dialog_menu_about), getString(R.string.tool_about_sub), this::showAboutDialog));
+                rows.add(createTool(R.drawable.ic_ui_save, "#30D158", getString(R.string.ig_dialog_backup_settings), getString(R.string.tool_backup_sub), this::backupSettings));
+                rows.add(createTool(R.drawable.ic_ui_folder, "#0A84FF", getString(R.string.ig_dialog_restore_settings), getString(R.string.tool_restore_sub), this::restoreSettings));
+                rows.add(createTool(R.drawable.ic_ui_restart, "#FF9F0A", getString(R.string.ig_dialog_menu_restart), getString(R.string.tool_restart_sub), this::restartInstagram));
+                rows.add(createTool(R.drawable.ic_ui_info, "#BF5AF2", getString(R.string.ig_dialog_menu_about), getString(R.string.tool_about_sub), this::showAboutDialog));
             }
             for (FeatureItem row : rows) row.isCategory = true;
             defs.add(getString(groupTitles[g]));
@@ -1024,17 +1025,17 @@ public class FeaturesFragment extends Fragment {
         List<Object> defs = new ArrayList<>();
 
         defs.add(getString(R.string.feat_features));
-        defs.add(Arrays.asList(createSwitch(R.drawable.ic_tune, "#0A84FF", getString(R.string.ig_dialog_dev_enable), "isDevEnabled")));
+        defs.add(Arrays.asList(createSwitch(R.drawable.ic_ui_tune, "#0A84FF", getString(R.string.ig_dialog_dev_enable), "isDevEnabled")));
 
         defs.add(getString(R.string.feat_config));
         defs.add(Arrays.asList(
-                createClickable(R.drawable.ic_download, "#30D158", getString(R.string.ig_dialog_dev_import), this::importDevConfig),
-                createClickable(R.drawable.ic_upload, "#0A84FF", getString(R.string.ig_dialog_dev_export), this::exportDevConfig),
-                createClickable(R.drawable.ic_restart, "#FF9F0A", getString(R.string.ig_dialog_dev_restore_default_config), this::restoreDefaultConfig)
+                createClickable(R.drawable.ic_ui_download, "#30D158", getString(R.string.ig_dialog_dev_import), this::importDevConfig),
+                createClickable(R.drawable.ic_ui_upload, "#0A84FF", getString(R.string.ig_dialog_dev_export), this::exportDevConfig),
+                createClickable(R.drawable.ic_ui_restart, "#FF9F0A", getString(R.string.ig_dialog_dev_restore_default_config), this::restoreDefaultConfig)
         ));
 
         defs.add(getString(R.string.feat_options));
-        defs.add(Arrays.asList(createSwitch(R.drawable.ic_block, "#FF453A", getString(R.string.ig_dialog_dev_remove_build_expired), "removeBuildExpiredPopup")));
+        defs.add(Arrays.asList(createSwitch(R.drawable.ic_ui_block, "#FF453A", getString(R.string.ig_dialog_dev_remove_build_expired), "removeBuildExpiredPopup")));
 
         return defs;
     }
@@ -1048,7 +1049,7 @@ public class FeaturesFragment extends Fragment {
         List<Object> defs = new ArrayList<>();
 
         defs.add(getString(R.string.feat_quick_toggle));
-        defs.add(Arrays.asList(createNav(R.drawable.ic_tune, "#5E5CE6", getString(R.string.ig_dialog_customize_quick_toggle), this::loadQuickTogglesMenu)));
+        defs.add(Arrays.asList(createNav(R.drawable.ic_ui_tune, "#5E5CE6", getString(R.string.ig_dialog_customize_quick_toggle), this::loadQuickTogglesMenu)));
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
@@ -1056,21 +1057,21 @@ public class FeaturesFragment extends Fragment {
                         "isGhostSeen", "isGhostTyping", "isGhostStory", "isGhostLive",
                         "isGhostScreenshot", "allowScreenshots", "isGhostViewOnce", "permanentViewMode"
                 )),
-                createSwitch(R.drawable.ic_eye_off, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_dm_seen), "isGhostSeen"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_typing), "isGhostTyping"),
-                createSwitch(R.drawable.ic_story_ring, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_story_views), "isGhostStory"),
-                createSwitch(R.drawable.ic_live, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_live_presence), "isGhostLive"),
-                createSwitch(R.drawable.ic_camera, "#5E5CE6", getString(R.string.ig_dialog_ghost_bypass_screenshot), "isGhostScreenshot"),
-                createSwitch(R.drawable.ic_camera, "#5E5CE6", getString(R.string.ig_dialog_ghost_allow_screenshots_dms), "allowScreenshots"),
-                createSwitch(R.drawable.ic_eye_off, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_view_once), "isGhostViewOnce"),
-                createSwitch(R.drawable.ic_eye, "#5E5CE6", getString(R.string.ig_dialog_ghost_permanent_view_once), "permanentViewMode")
+                createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_dm_seen), "isGhostSeen"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_typing), "isGhostTyping"),
+                createSwitch(R.drawable.ic_ui_story_ring, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_story_views), "isGhostStory"),
+                createSwitch(R.drawable.ic_ui_live, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_live_presence), "isGhostLive"),
+                createSwitch(R.drawable.ic_ui_camera, "#5E5CE6", getString(R.string.ig_dialog_ghost_bypass_screenshot), "isGhostScreenshot"),
+                createSwitch(R.drawable.ic_ui_camera, "#5E5CE6", getString(R.string.ig_dialog_ghost_allow_screenshots_dms), "allowScreenshots"),
+                createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_view_once), "isGhostViewOnce"),
+                createSwitch(R.drawable.ic_ui_eye, "#5E5CE6", getString(R.string.ig_dialog_ghost_permanent_view_once), "permanentViewMode")
         ));
 
         // Outside the master switch
         defs.add(getString(R.string.feat_options));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_eye, "#5E5CE6", getString(R.string.ig_dialog_ghost_read_receipt_chats), "readReceiptChats"),
-                createSwitch(R.drawable.ic_timer, "#5E5CE6", getString(R.string.ig_dialog_misc_spoof_last_seen), "spoofLastSeen"),
+                createSwitch(R.drawable.ic_ui_eye, "#5E5CE6", getString(R.string.ig_dialog_ghost_read_receipt_chats), "readReceiptChats"),
+                createSwitch(R.drawable.ic_ui_timer, "#5E5CE6", getString(R.string.ig_dialog_misc_spoof_last_seen), "spoofLastSeen"),
                 createExtrasSwitch("#5E5CE6", "airplaneMode")
         ));
 
@@ -1094,18 +1095,18 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_timer, "#5E5CE6", getString(R.string.ig_dialog_ghost_keep_disappearing), "keepEphemeralMessages"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_keep_unsent), "keepUnsentMessages"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ie_keep_unsent_in_chat), "keepUnsentInChat"),
-                createSwitch(R.drawable.ic_delete, "#5E5CE6", getString(R.string.ie_show_deleted_button), "showDeletedMessagesButton"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_edit_history), "keepEditHistory"),
-                createSwitch(R.drawable.ic_jump_first, "#5E5CE6", getString(R.string.ig_dialog_ghost_jump_first), "jumpToFirstMessage"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ig_dialog_translate_messages), "translateMessages"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ig_dialog_bulk_unsend), "bulkUnsend"),
-                createSwitch(R.drawable.ic_download, "#5E5CE6", getString(R.string.ig_dialog_ghost_chat_export), "chatExport"),
-                createSwitch(R.drawable.ic_block, "#5E5CE6", getString(R.string.ig_dialog_distraction_hide_notes_tray), "hideNotesTray"),
-                createSwitch(R.drawable.ic_block, "#5E5CE6", getString(R.string.ig_dialog_hide_dm_blend), "hideDmBlend"),
-                createSwitch(R.drawable.ic_block, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_share_create_group), "hideShareCreateGroup")
+                createSwitch(R.drawable.ic_ui_timer, "#5E5CE6", getString(R.string.ig_dialog_ghost_keep_disappearing), "keepEphemeralMessages"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_keep_unsent), "keepUnsentMessages"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ie_keep_unsent_in_chat), "keepUnsentInChat"),
+                createSwitch(R.drawable.ic_ui_delete, "#5E5CE6", getString(R.string.ie_show_deleted_button), "showDeletedMessagesButton"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_edit_history), "keepEditHistory"),
+                createSwitch(R.drawable.ic_ui_jump_first, "#5E5CE6", getString(R.string.ig_dialog_ghost_jump_first), "jumpToFirstMessage"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_translate_messages), "translateMessages"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_bulk_unsend), "bulkUnsend"),
+                createSwitch(R.drawable.ic_ui_download, "#5E5CE6", getString(R.string.ig_dialog_ghost_chat_export), "chatExport"),
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_distraction_hide_notes_tray), "hideNotesTray"),
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_hide_dm_blend), "hideDmBlend"),
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_share_create_group), "hideShareCreateGroup")
         ));
 
         return defs;
@@ -1127,15 +1128,15 @@ public class FeaturesFragment extends Fragment {
                         "quickToggleEphemeral", "quickTogglePermanentView",
                         "quickToggleAllowScreenshots"
                 )),
-                createSwitch(R.drawable.ic_eye_off, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_seen), "quickToggleSeen"),
-                createSwitch(R.drawable.ic_chat, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_typing), "quickToggleTyping"),
-                createSwitch(R.drawable.ic_camera, "#5E5CE6", getString(R.string.ig_dialog_quick_disable_screenshot), "quickToggleScreenshot"),
-                createSwitch(R.drawable.ic_eye_off, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_view_once), "quickToggleViewOnce"),
-                createSwitch(R.drawable.ic_story_ring, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_story_seen), "quickToggleStory"),
-                createSwitch(R.drawable.ic_live, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_live_seen), "quickToggleLive"),
-                createSwitch(R.drawable.ic_timer, "#5E5CE6", getString(R.string.ig_dialog_quick_keep_ephemeral), "quickToggleEphemeral"),
-                createSwitch(R.drawable.ic_eye, "#5E5CE6", getString(R.string.ig_dialog_quick_permanent_view), "quickTogglePermanentView"),
-                createSwitch(R.drawable.ic_camera, "#5E5CE6", getString(R.string.ig_dialog_quick_allow_screenshots), "quickToggleAllowScreenshots")
+                createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_seen), "quickToggleSeen"),
+                createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_typing), "quickToggleTyping"),
+                createSwitch(R.drawable.ic_ui_camera, "#5E5CE6", getString(R.string.ig_dialog_quick_disable_screenshot), "quickToggleScreenshot"),
+                createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_view_once), "quickToggleViewOnce"),
+                createSwitch(R.drawable.ic_ui_story_ring, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_story_seen), "quickToggleStory"),
+                createSwitch(R.drawable.ic_ui_live, "#5E5CE6", getString(R.string.ig_dialog_quick_hide_live_seen), "quickToggleLive"),
+                createSwitch(R.drawable.ic_ui_timer, "#5E5CE6", getString(R.string.ig_dialog_quick_keep_ephemeral), "quickToggleEphemeral"),
+                createSwitch(R.drawable.ic_ui_eye, "#5E5CE6", getString(R.string.ig_dialog_quick_permanent_view), "quickTogglePermanentView"),
+                createSwitch(R.drawable.ic_ui_camera, "#5E5CE6", getString(R.string.ig_dialog_quick_allow_screenshots), "quickToggleAllowScreenshots")
         ));
 
         return defs;
@@ -1152,17 +1153,17 @@ public class FeaturesFragment extends Fragment {
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
                 createMasterSwitch(getString(R.string.ig_dialog_enable_disable_all), Arrays.asList("isAdBlockEnabled", "isAnalyticsBlocked", "disableTrackingLinks", "openLinksExternally")),
-                createSwitch(R.drawable.ic_shield, "#FF453A", getString(R.string.ig_dialog_ad_block_ads), "isAdBlockEnabled"),
-                createSwitch(R.drawable.ic_shield, "#FF453A", getString(R.string.ig_dialog_ad_block_analytics), "isAnalyticsBlocked"),
-                createSwitch(R.drawable.ic_link, "#FF453A", getString(R.string.ig_dialog_ad_disable_tracking), "disableTrackingLinks"),
-                createSwitch(R.drawable.ic_link, "#FF453A", getString(R.string.ig_dialog_open_links_externally), "openLinksExternally"),
-                createClickable(R.drawable.ic_link, "#FF453A", shareDomainLabel(), this::showShareDomainDialog)
+                createSwitch(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.ig_dialog_ad_block_ads), "isAdBlockEnabled"),
+                createSwitch(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.ig_dialog_ad_block_analytics), "isAnalyticsBlocked"),
+                createSwitch(R.drawable.ic_ui_link, "#FF453A", getString(R.string.ig_dialog_ad_disable_tracking), "disableTrackingLinks"),
+                createSwitch(R.drawable.ic_ui_link, "#FF453A", getString(R.string.ig_dialog_open_links_externally), "openLinksExternally"),
+                createClickable(R.drawable.ic_ui_link, "#FF453A", shareDomainLabel(), this::showShareDomainDialog)
         ));
 
         // Outside the master switch
         defs.add(getString(R.string.feat_options));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_sparkle, "#FF453A", getString(R.string.ig_dialog_misc_remove_meta_ai), "removeMetaAI"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#FF453A", getString(R.string.ig_dialog_misc_remove_meta_ai), "removeMetaAI"),
                 createExtrasSwitch("#FF453A", "hideOnboardingPrompts")
         ));
 
@@ -1179,24 +1180,24 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.ig_dialog_menu_clean_feed));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_suggested), "hideSuggestionsInFeed"),
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_threads), "hideThreadsSuggestions"),
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_liked), "hideLikedPosts"),
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_community_notes), "hideCommunityNotes"),
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_plus), "hidePlusUpsells"),
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_following_only), "followingOnlyFeed"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_suggested), "hideSuggestionsInFeed"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_threads), "hideThreadsSuggestions"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_liked), "hideLikedPosts"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_community_notes), "hideCommunityNotes"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_plus), "hidePlusUpsells"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_following_only), "followingOnlyFeed"),
                 createExtrasSwitch("#64D2FF", "hideStoriesTray"),
-                createSwitch(R.drawable.ic_block, "#64D2FF", getString(R.string.ig_dialog_misc_disable_discover_people), "disableDiscoverPeople")
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_dialog_misc_disable_discover_people), "disableDiscoverPeople")
         ));
 
         defs.add(getString(R.string.feat_options));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_expand_captions), "expandCaptions"),
-                createSwitch(R.drawable.ic_timer, "#64D2FF", getString(R.string.ig_dialog_misc_exact_timestamps), "exactTimestamps"),
+                createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_expand_captions), "expandCaptions"),
+                createSwitch(R.drawable.ic_ui_timer, "#64D2FF", getString(R.string.ig_dialog_misc_exact_timestamps), "exactTimestamps"),
                 timestampFormatItem(),
                 createExtrasSwitch("#64D2FF", "highResolutionImages"),
-                createSwitch(R.drawable.ic_search, "#64D2FF", getString(R.string.ig_dialog_misc_photo_zoom), "enablePhotoZoom"),
-                createSwitch(R.drawable.ic_movie, "#64D2FF", getString(R.string.ig_dialog_misc_disable_video_autoplay), "disableVideoAutoPlay")
+                createSwitch(R.drawable.ic_ui_search, "#64D2FF", getString(R.string.ig_dialog_misc_photo_zoom), "enablePhotoZoom"),
+                createSwitch(R.drawable.ic_ui_movie, "#64D2FF", getString(R.string.ig_dialog_misc_disable_video_autoplay), "disableVideoAutoPlay")
         ));
 
         return defs;
@@ -1216,7 +1217,7 @@ public class FeaturesFragment extends Fragment {
         );
 
         // Extreme Mode: only enabled once the user has selected at least one feature
-        FeatureItem extreme = createSwitch(R.drawable.ic_block, "#FF453A", getString(R.string.ig_dialog_distraction_extreme_mode), "isExtremeMode");
+        FeatureItem extreme = createSwitch(R.drawable.ic_ui_block, "#FF453A", getString(R.string.ig_dialog_distraction_extreme_mode), "isExtremeMode");
         extreme.textColor = ContextCompat.getColor(requireContext(), R.color.ie_error);
         extreme.isExtreme = true;
         extreme.requiresAnyOf = distractionKeys;
@@ -1228,21 +1229,21 @@ public class FeaturesFragment extends Fragment {
         FeatureItem masterSwitch = createMasterSwitch(getString(R.string.ig_dialog_enable_disable_all), distractionKeys);
         masterSwitch.disabledWhenTrue = "isExtremeMode";
 
-        FeatureItem disableReels = createSwitchWithCascadeOff(R.drawable.ic_movie, "#30D158", getString(R.string.ig_dialog_distraction_disable_reels), "disableReels", "disableReelsExceptDM");
+        FeatureItem disableReels = createSwitchWithCascadeOff(R.drawable.ic_ui_movie, "#30D158", getString(R.string.ig_dialog_distraction_disable_reels), "disableReels", "disableReelsExceptDM");
         disableReels.disabledWhenTrue = "isExtremeMode";
 
-        FeatureItem disableReelsExceptDM = createSwitchWithDependency(R.drawable.ic_movie, "#30D158", getString(R.string.ig_dialog_distraction_disable_reels_except_dm), "disableReelsExceptDM", "disableReels");
+        FeatureItem disableReelsExceptDM = createSwitchWithDependency(R.drawable.ic_ui_movie, "#30D158", getString(R.string.ig_dialog_distraction_disable_reels_except_dm), "disableReelsExceptDM", "disableReels");
         disableReelsExceptDM.disabledWhenTrue = "isExtremeMode";
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
                 masterSwitch,
-                createSwitchLockedByExtreme(R.drawable.ic_story_ring, "#30D158", getString(R.string.ig_dialog_distraction_disable_stories), "disableStories"),
-                createSwitchLockedByExtreme(R.drawable.ic_block, "#30D158", getString(R.string.ig_dialog_distraction_disable_feed), "disableFeed"),
+                createSwitchLockedByExtreme(R.drawable.ic_ui_story_ring, "#30D158", getString(R.string.ig_dialog_distraction_disable_stories), "disableStories"),
+                createSwitchLockedByExtreme(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_dialog_distraction_disable_feed), "disableFeed"),
                 disableReels,
                 disableReelsExceptDM,
-                createSwitchLockedByExtreme(R.drawable.ic_search, "#30D158", getString(R.string.ig_dialog_distraction_disable_explore), "disableExplore"),
-                createSwitchLockedByExtreme(R.drawable.ic_chat, "#30D158", getString(R.string.ig_dialog_distraction_disable_comments), "disableComments")
+                createSwitchLockedByExtreme(R.drawable.ic_ui_search, "#30D158", getString(R.string.ig_dialog_distraction_disable_explore), "disableExplore"),
+                createSwitchLockedByExtreme(R.drawable.ic_ui_chat, "#30D158", getString(R.string.ig_dialog_distraction_disable_comments), "disableComments")
         ));
 
         return defs;
@@ -1259,18 +1260,18 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.menu_nav_tabs));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_block, "#30D158", getString(R.string.ig_nav_tab_home), "hideTabHome"),
-                createSwitch(R.drawable.ic_block, "#30D158", getString(R.string.ig_nav_tab_reels), "hideTabReels"),
-                createSwitch(R.drawable.ic_block, "#30D158", getString(R.string.ig_nav_tab_create), "hideTabCreate"),
-                createSwitch(R.drawable.ic_block, "#30D158", getString(R.string.ig_nav_tab_messages), "hideTabMessages"),
-                createSwitch(R.drawable.ic_block, "#30D158", getString(R.string.ig_nav_tab_activity), "hideTabActivity"),
-                createSwitch(R.drawable.ic_block, "#30D158", getString(R.string.ig_nav_tab_profile), "hideTabProfile")
+                createSwitch(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_nav_tab_home), "hideTabHome"),
+                createSwitch(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_nav_tab_reels), "hideTabReels"),
+                createSwitch(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_nav_tab_create), "hideTabCreate"),
+                createSwitch(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_nav_tab_messages), "hideTabMessages"),
+                createSwitch(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_nav_tab_activity), "hideTabActivity"),
+                createSwitch(R.drawable.ic_ui_block, "#30D158", getString(R.string.ig_nav_tab_profile), "hideTabProfile")
         ));
 
         defs.add(getString(R.string.menu_nav_order));
         defs.add(Arrays.asList(
-                createClickable(R.drawable.ic_tune, "#30D158", getString(R.string.ig_nav_tab_order), this::showTabOrderDialog),
-                createClickable(R.drawable.ic_tune, "#30D158", startupTabLabel(), this::showStartupTabDialog)
+                createClickable(R.drawable.ic_ui_tune, "#30D158", getString(R.string.ig_nav_tab_order), this::showTabOrderDialog),
+                createClickable(R.drawable.ic_ui_tune, "#30D158", startupTabLabel(), this::showStartupTabDialog)
         ));
 
         defs.add(getString(R.string.menu_nav_gestures));
@@ -1395,7 +1396,7 @@ public class FeaturesFragment extends Fragment {
 
     /** Date format row: greyed out until "Show exact dates" is on (#265). */
     private FeatureItem timestampFormatItem() {
-        FeatureItem item = createClickable(R.drawable.ic_timer, "#64D2FF",
+        FeatureItem item = createClickable(R.drawable.ic_ui_timer, "#64D2FF",
                 getString(R.string.ig_timestamp_format) + "  ·  " + timestampFormatName(localCache.getString("exactTimestampFormat", "")),
                 this::showTimestampFormatDialog);
         item.requiresAnyOf = Arrays.asList("exactTimestamps");
@@ -1542,11 +1543,11 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_heart, A_SOCIAL, getString(R.string.ig_dialog_misc_disable_double_tap_like), "disableDoubleTapLike"),
-                createSwitch(R.drawable.ic_heart, A_SOCIAL, getString(R.string.ig_dialog_misc_like_undo), "likeUndo"),
-                createSwitch(R.drawable.ic_content_copy, A_SOCIAL, getString(R.string.ig_dialog_misc_copy_comment), "enableCopyComment"),
-                createSwitch(R.drawable.ic_search, A_SOCIAL, getString(R.string.ig_dialog_misc_comment_search), "commentSearch"),
-                createSwitch(R.drawable.ic_content_copy, A_SOCIAL, getString(R.string.ig_dialog_misc_copy_caption), "enableCaptionCopy")
+                createSwitch(R.drawable.ic_ui_heart, A_SOCIAL, getString(R.string.ig_dialog_misc_disable_double_tap_like), "disableDoubleTapLike"),
+                createSwitch(R.drawable.ic_ui_heart, A_SOCIAL, getString(R.string.ig_dialog_misc_like_undo), "likeUndo"),
+                createSwitch(R.drawable.ic_ui_content_copy, A_SOCIAL, getString(R.string.ig_dialog_misc_copy_comment), "enableCopyComment"),
+                createSwitch(R.drawable.ic_ui_search, A_SOCIAL, getString(R.string.ig_dialog_misc_comment_search), "commentSearch"),
+                createSwitch(R.drawable.ic_ui_content_copy, A_SOCIAL, getString(R.string.ig_dialog_misc_copy_caption), "enableCaptionCopy")
         ));
 
         return defs;
@@ -1562,13 +1563,13 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_notification, A_SOCIAL, getString(R.string.ig_dialog_misc_profile_follows_label), "profileFollowsYouLabel"),
-                createSwitch(R.drawable.ic_notification, A_SOCIAL, getString(R.string.ig_dialog_fancy_bio_font), "fancyBioFont"),
-                createSwitch(R.drawable.ic_block, A_SOCIAL, getString(R.string.ig_dialog_hide_threads_button), "hideThreadsButton"),
-                createSwitch(R.drawable.ic_notification, A_SOCIAL, getString(R.string.ig_dialog_misc_show_follower_toast), "showFollowerToast"),
-                createSwitch(R.drawable.ic_download, A_SOCIAL, getString(R.string.ig_dialog_misc_follow_export), "followListExport"),
-                createSwitch(R.drawable.ic_eye, A_SOCIAL, getString(R.string.ig_feat_followers_history), "followersHistory"),
-                createSwitch(R.drawable.ic_save, A_SOCIAL, getString(R.string.ig_saved_on_profile), "savedOnProfile")
+                createSwitch(R.drawable.ic_ui_notification, A_SOCIAL, getString(R.string.ig_dialog_misc_profile_follows_label), "profileFollowsYouLabel"),
+                createSwitch(R.drawable.ic_ui_notification, A_SOCIAL, getString(R.string.ig_dialog_fancy_bio_font), "fancyBioFont"),
+                createSwitch(R.drawable.ic_ui_block, A_SOCIAL, getString(R.string.ig_dialog_hide_threads_button), "hideThreadsButton"),
+                createSwitch(R.drawable.ic_ui_notification, A_SOCIAL, getString(R.string.ig_dialog_misc_show_follower_toast), "showFollowerToast"),
+                createSwitch(R.drawable.ic_ui_download, A_SOCIAL, getString(R.string.ig_dialog_misc_follow_export), "followListExport"),
+                createSwitch(R.drawable.ic_ui_eye, A_SOCIAL, getString(R.string.ig_feat_followers_history), "followersHistory"),
+                createSwitch(R.drawable.ic_ui_save, A_SOCIAL, getString(R.string.ig_saved_on_profile), "savedOnProfile")
         ));
 
         return defs;
@@ -1586,15 +1587,15 @@ public class FeaturesFragment extends Fragment {
         defs.add(Arrays.asList(
                 createExtrasSwitch("#0A84FF", "unlimitedAccounts"),
                 createExtrasSwitch("#0A84FF", "fixNotificationRegistration"),
-                createSwitch(R.drawable.ic_notification, "#0A84FF", getString(R.string.ig_dialog_misc_show_feature_toasts), "showFeatureToasts"),
+                createSwitch(R.drawable.ic_ui_notification, "#0A84FF", getString(R.string.ig_dialog_misc_show_feature_toasts), "showFeatureToasts"),
                 safePacingSwitch()
         ));
 
         // Auto-clear cache (mirrors the in-IG dialog's Tools section).
         defs.add(getString(R.string.ig_dialog_section_auto_clear_cache));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_timer, "#FF9F0A", getString(R.string.ig_dialog_auto_clear_cache), "autoClearCache"),
-                createClickable(R.drawable.ic_folder, "#FF9F0A",
+                createSwitch(R.drawable.ic_ui_timer, "#FF9F0A", getString(R.string.ig_dialog_auto_clear_cache), "autoClearCache"),
+                createClickable(R.drawable.ic_ui_folder, "#FF9F0A",
                         getString(R.string.ig_dialog_auto_clear_cache_size, localCache.getInt("autoClearCacheSizeMb", 100)),
                         this::pickAutoClearSize)
         ));
@@ -1653,17 +1654,17 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_dms), "lockDirectMessages"),
-                createSwitch(R.drawable.ic_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_dms_always), "lockDirectAlways"),
-                createSwitch(R.drawable.ic_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_whole_app), "lockWholeApp"),
-                createSwitch(R.drawable.ic_shield, "#5E5CE6", getString(R.string.ig_locked_coll_setting), "lockSavedCollections"),
-                createSwitch(R.drawable.ic_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_fingerprint), "lockUseFingerprint")
+                createSwitch(R.drawable.ic_ui_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_dms), "lockDirectMessages"),
+                createSwitch(R.drawable.ic_ui_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_dms_always), "lockDirectAlways"),
+                createSwitch(R.drawable.ic_ui_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_whole_app), "lockWholeApp"),
+                createSwitch(R.drawable.ic_ui_shield, "#5E5CE6", getString(R.string.ig_locked_coll_setting), "lockSavedCollections"),
+                createSwitch(R.drawable.ic_ui_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_fingerprint), "lockUseFingerprint")
         ));
 
         // The passcode is set from inside Instagram (stored hashed in IG's own prefs), so the app
         // only points there; tapping opens Instagram.
         defs.add(Arrays.asList(
-                createTool(R.drawable.ic_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_dms_set),
+                createTool(R.drawable.ic_ui_shield, "#5E5CE6", getString(R.string.ig_dialog_misc_lock_dms_set),
                         getString(R.string.lock_code_set_in_ig), this::openInstagram)
         ));
 
@@ -1682,8 +1683,8 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_eye_off, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_chats), "hideSpecificChats"),
-                createSwitch(R.drawable.ic_eye_off, "#5E5CE6", getString(R.string.ie_show_hide_button), "showHideChatButton")
+                createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_chats), "hideSpecificChats"),
+                createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ie_show_hide_button), "showHideChatButton")
         ));
 
         // Note: hiding/unhiding a specific chat is done from inside Instagram.
@@ -1700,7 +1701,7 @@ public class FeaturesFragment extends Fragment {
         List<Object> defs = new ArrayList<>();
 
         defs.add(getString(R.string.feat_features));
-        defs.add(Arrays.asList(createSwitch(R.drawable.ic_pin, "#FFD60A", getString(R.string.ig_dialog_location_spoof_enable), "spoofLocation")));
+        defs.add(Arrays.asList(createSwitch(R.drawable.ic_ui_pin, "#FFD60A", getString(R.string.ig_dialog_location_spoof_enable), "spoofLocation")));
 
         double lat = 0.0, lng = 0.0;
         try { lat = Double.parseDouble(localCache.getString("spoofLat", "0")); } catch (Throwable ignored) {}
@@ -1712,7 +1713,7 @@ public class FeaturesFragment extends Fragment {
 
         final double curLat = lat, curLng = lng;
         defs.add(getString(R.string.ig_dialog_location_current_title));
-        defs.add(Arrays.asList(createNav(R.drawable.ic_search, "#FFD60A", place, () -> {
+        defs.add(Arrays.asList(createNav(R.drawable.ic_ui_search, "#FFD60A", place, () -> {
             Intent i = new Intent(requireContext(), LocationPickerActivity.class);
             i.putExtra(LocationPickerActivity.EXTRA_LAT, curLat);
             i.putExtra(LocationPickerActivity.EXTRA_LNG, curLng);
@@ -1724,7 +1725,7 @@ public class FeaturesFragment extends Fragment {
         if (!recent.isEmpty()) {
             List<FeatureItem> rows = new ArrayList<>();
             for (ps.reso.instaeclipse.mods.location.LocationPresets.Preset p : recent) {
-                rows.add(createNav(R.drawable.ic_timer, "#FFD60A", p.title(), () -> {
+                rows.add(createNav(R.drawable.ic_ui_timer, "#FFD60A", p.title(), () -> {
                     ps.reso.instaeclipse.mods.location.LocationPresets.applyFromCompanion(requireContext(), p);
                     ps.reso.instaeclipse.utils.toast.IeToast.makeText(requireContext(), R.string.ig_dialog_location_applied, Toast.LENGTH_SHORT).show();
                     loadLocationMenu();
@@ -1747,15 +1748,15 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.theme_section_colors));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_palette, "#FF375F", getString(R.string.theme_enable), "customThemeEnabled"),
-                createClickable(R.drawable.ic_palette, "#FF375F", getString(R.string.theme_customize), () ->
+                createSwitch(R.drawable.ic_ui_palette, "#FF375F", getString(R.string.theme_enable), "customThemeEnabled"),
+                createClickable(R.drawable.ic_ui_palette, "#FF375F", getString(R.string.theme_customize), () ->
                         themeCustomizerLauncher.launch(new Intent(requireContext(), ThemeCustomizerActivity.class))),
                 // Follows the phone's mode, like the customizer and the in-IG dialog.
                 isNightMode()
-                        ? createClickable(R.drawable.ic_palette, "#FF375F",
+                        ? createClickable(R.drawable.ic_ui_palette, "#FF375F",
                                 getString(R.string.theme_dark_mode) + ": " + darkModeLabel(localCache.getInt("themePresetId", 1)),
                                 this::pickDarkModeTheme)
-                        : createClickable(R.drawable.ic_palette, "#FF375F",
+                        : createClickable(R.drawable.ic_ui_palette, "#FF375F",
                                 getString(R.string.theme_light_mode) + ": " + lightModeLabel(localCache.getInt("themeLightPresetId", -1)),
                                 this::pickLightModeTheme)
         ));
@@ -1764,8 +1765,8 @@ public class FeaturesFragment extends Fragment {
         // inside Instagram; here the companion app only toggles the flags.
         defs.add(getString(R.string.theme_section_fonts));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_palette, "#FF375F", getString(R.string.ig_dialog_misc_custom_font), "customFontEnabled"),
-                createSwitch(R.drawable.ic_palette, "#FF375F", getString(R.string.ig_dialog_misc_custom_emoji), "customEmojiEnabled")
+                createSwitch(R.drawable.ic_ui_palette, "#FF375F", getString(R.string.ig_dialog_misc_custom_font), "customFontEnabled"),
+                createSwitch(R.drawable.ic_ui_palette, "#FF375F", getString(R.string.ig_dialog_misc_custom_emoji), "customEmojiEnabled")
         ));
         // Note: font & emoji files are picked from inside Instagram.
 
@@ -1873,16 +1874,16 @@ public class FeaturesFragment extends Fragment {
         int current = localCache.getInt("forceReelQuality", 0);
 
         defs.add(getString(R.string.ig_dialog_section_quality));
-        defs.add(Arrays.asList(createClickable(R.drawable.ic_movie, "#32D74B",
+        defs.add(Arrays.asList(createClickable(R.drawable.ic_ui_movie, "#32D74B",
                 getString(R.string.ig_dialog_quality_force_reels) + ": " + qualityLabel(current), () -> pickQuality(current))));
 
         defs.add(getString(R.string.ig_nav_name_reels));
         defs.add(Arrays.asList(
                 createExtrasSwitch("#32D74B", "reelsAutoScroll"),
                 createExtrasSwitch("#32D74B", "reelsLockScroll"),
-                createSwitch(R.drawable.ic_movie, "#32D74B", getString(R.string.ig_dialog_downloader_reel_scrubber), "forceReelScrubber"),
-                createSwitch(R.drawable.ic_movie, "#32D74B", getString(R.string.ig_dialog_reels_hold_left_slow), "holdLeftSlowMotion"),
-                createSwitch(R.drawable.ic_block, "#32D74B", getString(R.string.ig_dialog_misc_disable_repost), "disableRepost")
+                createSwitch(R.drawable.ic_ui_movie, "#32D74B", getString(R.string.ig_dialog_downloader_reel_scrubber), "forceReelScrubber"),
+                createSwitch(R.drawable.ic_ui_movie, "#32D74B", getString(R.string.ig_dialog_reels_hold_left_slow), "holdLeftSlowMotion"),
+                createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_dialog_misc_disable_repost), "disableRepost")
         ));
 
         return defs;
@@ -1891,11 +1892,11 @@ public class FeaturesFragment extends Fragment {
     private List<Object> buildStoriesDefs() {
         List<Object> defs = new ArrayList<>();
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_story_ring, "#32D74B", getString(R.string.ig_dialog_misc_disable_story_autoswipe), "disableStoryFlipping"),
-                createSwitch(R.drawable.ic_at, "#32D74B", getString(R.string.ig_dialog_misc_view_story_mentions), "enableStoryMentions"),
-                createSwitch(R.drawable.ic_link, "#32D74B", getString(R.string.ig_dialog_misc_story_links), "storyLinks"),
-                createSwitch(R.drawable.ic_info, "#32D74B", getString(R.string.ig_dialog_misc_story_info), "storyInfo"),
-                createSwitch(R.drawable.ic_search, "#32D74B", getString(R.string.ig_dialog_misc_viewer_search), "storyViewerSearch")
+                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_dialog_misc_disable_story_autoswipe), "disableStoryFlipping"),
+                createSwitch(R.drawable.ic_ui_at, "#32D74B", getString(R.string.ig_dialog_misc_view_story_mentions), "enableStoryMentions"),
+                createSwitch(R.drawable.ic_ui_link, "#32D74B", getString(R.string.ig_dialog_misc_story_links), "storyLinks"),
+                createSwitch(R.drawable.ic_ui_info, "#32D74B", getString(R.string.ig_dialog_misc_story_info), "storyInfo"),
+                createSwitch(R.drawable.ic_ui_search, "#32D74B", getString(R.string.ig_dialog_misc_viewer_search), "storyViewerSearch")
         ));
 
         return defs;
@@ -1948,29 +1949,29 @@ public class FeaturesFragment extends Fragment {
                 createMasterSwitch(getString(R.string.ig_dialog_enable_disable_all), Arrays.asList(
                         "enablePostDownload", "enableStoryDownload", "enableReelDownload", "enableProfileDownload"
                 )),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_posts), "enablePostDownload"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_stories), "enableStoryDownload"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_reels), "enableReelDownload"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_profiles), "enableProfileDownload")
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_posts), "enablePostDownload"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_stories), "enableStoryDownload"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_reels), "enableReelDownload"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_profiles), "enableProfileDownload")
         ));
 
         defs.add(getString(R.string.feat_options));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_folder, "#FF9F0A", getString(R.string.ig_dialog_downloader_username_subfolder), "downloaderUsernameFolder"),
-                createSwitch(R.drawable.ic_timer, "#FF9F0A", getString(R.string.ig_dialog_downloader_add_timestamp), "downloaderAddTimestamp"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_voice), "enableVoiceDownload"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_dm_media), "enableDmMediaDownload"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_audio), "offerAudioDownload"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_misc_save_instants), "saveInstants"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ig_dialog_misc_cache_stories), "cacheStories")
+                createSwitch(R.drawable.ic_ui_folder, "#FF9F0A", getString(R.string.ig_dialog_downloader_username_subfolder), "downloaderUsernameFolder"),
+                createSwitch(R.drawable.ic_ui_timer, "#FF9F0A", getString(R.string.ig_dialog_downloader_add_timestamp), "downloaderAddTimestamp"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_voice), "enableVoiceDownload"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_dm_media), "enableDmMediaDownload"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_audio), "offerAudioDownload"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_misc_save_instants), "saveInstants"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ig_dialog_misc_cache_stories), "cacheStories")
         ));
 
         defs.add(getString(R.string.ie_downloader_mode_hint));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ie_downloader_use_original), "downloaderUseOriginal"),
-                createClickable(R.drawable.ic_download, "#FF9F0A", getString(R.string.ie_download_quality), this::chooseDownloadQuality),
-                createSwitch(R.drawable.ic_tune, "#FF9F0A", getString(R.string.ie_download_compatibility), "downloaderCompatibility"),
-                createSwitch(R.drawable.ic_download, "#FF9F0A", getString(R.string.ie_download_fallback), "downloaderAllowFallback")
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ie_downloader_use_original), "downloaderUseOriginal"),
+                createClickable(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ie_download_quality), this::chooseDownloadQuality),
+                createSwitch(R.drawable.ic_ui_tune, "#FF9F0A", getString(R.string.ie_download_compatibility), "downloaderCompatibility"),
+                createSwitch(R.drawable.ic_ui_download, "#FF9F0A", getString(R.string.ie_download_fallback), "downloaderAllowFallback")
         ));
         defs.add(getString(R.string.ie_download_quality_hint));
 
@@ -1981,8 +1982,8 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_download_folder));
         defs.add(Arrays.asList(
-                createClickable(R.drawable.ic_folder, "#FF9F0A", folderTitle, this::pickDownloadFolder),
-                createClickable(R.drawable.ic_delete, "#FF453A", getString(R.string.feat_downloader_reset_folder), this::resetDownloadFolder)
+                createClickable(R.drawable.ic_ui_folder, "#FF9F0A", folderTitle, this::pickDownloadFolder),
+                createClickable(R.drawable.ic_ui_delete, "#FF453A", getString(R.string.feat_downloader_reset_folder), this::resetDownloadFolder)
         ));
 
         return defs;
@@ -2017,16 +2018,16 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_link, "#FF9F0A", getString(R.string.ig_dialog_downloader_copy_link), "copyMediaLink"),
-                createSwitch(R.drawable.ic_content_copy, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_copy_image), "offerCopyImage"),
-                createSwitch(R.drawable.ic_search, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_media_info), "offerMediaInfo"),
-                createSwitch(R.drawable.ic_movie, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_speed), "offerPlaybackSpeed")
+                createSwitch(R.drawable.ic_ui_link, "#FF9F0A", getString(R.string.ig_dialog_downloader_copy_link), "copyMediaLink"),
+                createSwitch(R.drawable.ic_ui_content_copy, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_copy_image), "offerCopyImage"),
+                createSwitch(R.drawable.ic_ui_search, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_media_info), "offerMediaInfo"),
+                createSwitch(R.drawable.ic_ui_movie, "#FF9F0A", getString(R.string.ig_dialog_downloader_offer_speed), "offerPlaybackSpeed")
         ));
 
         defs.add(getString(R.string.feat_options));
         defs.add(Arrays.asList(
-                createSwitch(R.drawable.ic_upload, "#FF9F0A", getString(R.string.ig_dialog_max_upload_quality), "maxUploadQuality"),
-                createSwitch(R.drawable.ic_upload, "#FF9F0A", getString(R.string.ig_dialog_misc_upload_instants), "uploadInstants")
+                createSwitch(R.drawable.ic_ui_upload, "#FF9F0A", getString(R.string.ig_dialog_max_upload_quality), "maxUploadQuality"),
+                createSwitch(R.drawable.ic_ui_upload, "#FF9F0A", getString(R.string.ig_dialog_misc_upload_instants), "uploadInstants")
         ));
 
         return defs;
@@ -2207,7 +2208,7 @@ public class FeaturesFragment extends Fragment {
         name.setText(R.string.app_name);
         name.setTextColor(onSurface);
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
-        name.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
+        name.setTypeface(ps.reso.instaeclipse.ui.glass.Fonts.inter(ctx, 600));
         android.widget.LinearLayout.LayoutParams nlp = new android.widget.LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         nlp.topMargin = (int) (14 * d);

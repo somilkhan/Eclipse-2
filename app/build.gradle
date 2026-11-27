@@ -93,6 +93,8 @@ dependencies {
     implementation "androidx.documentfile:documentfile:1.1.0"
     implementation "androidx.dynamicanimation:dynamicanimation:1.0.0"
     implementation libs.osmdroid
+    // Liquid Glass (MIT, View system): lens refraction tab bar, scroll-edge blur, glass buttons (API 33+).
+    implementation 'com.github.QWEA0:liquidglass:v2.0.11'
 
     // External library for shared preferences
     implementation libs.fileprefs

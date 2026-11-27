@@ -112,7 +112,7 @@ public class HelpFragment extends Fragment {
         header.addView(q, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         ImageView chevron = new ImageView(ctx);
-        chevron.setImageResource(R.drawable.ic_expand_more);
+        chevron.setImageResource(R.drawable.ic_ui_expand_more);
         chevron.setImageTintList(ColorStateList.valueOf(MaterialColors.getColor(parentCard,
                 com.google.android.material.R.attr.colorOnSurfaceVariant)));
         chevron.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);

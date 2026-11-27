@@ -31,7 +31,7 @@
                 android:layout_marginEnd="4dp"
                 android:background="@drawable/bg_glass_circle"
                 android:contentDescription="@string/back"
-                android:src="@drawable/ic_arrow_back"
+                android:src="@drawable/ic_ui_arrow_back"
                 android:visibility="gone"
                 app:tint="?attr/colorPrimary" />
 
@@ -68,7 +68,7 @@
             app:endIconMode="clear_text"
             app:endIconTint="?attr/colorOnSurfaceVariant"
             app:hintEnabled="false"
-            app:startIconDrawable="@drawable/ic_search"
+            app:startIconDrawable="@drawable/ic_ui_search"
             app:startIconTint="?attr/colorOnSurfaceVariant">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -110,6 +110,6 @@
         android:tag="ie_float_above_nav"
         android:text="@string/apply_changes"
         android:visibility="gone"
-        app:icon="@drawable/ic_save" />
+        app:icon="@drawable/ic_ui_save" />
 
 </RelativeLayout>

@@ -27,6 +27,14 @@ Libraries used at build/run time (each under its own license):
   * DexKit - https://github.com/LuckyPray/DexKit
   * LSPosed / Xposed API - https://github.com/JingMatrix/LSPosed
   * AndroidX, Material Components, Gson, osmdroid, FilePrefs
+  * Liquid-Glass-Android (com.github.QWEA0:liquidglass) - MIT,
+    https://github.com/QWEA0/Liquid-Glass-Android - see third-party/Liquid-Glass-Android/LICENSE
+
+Bundled assets:
+  * Inter typeface by Rasmus Andersson (app/src/main/res/font/inter*.ttf) - SIL Open Font
+    License 1.1, https://github.com/rsms/inter - see third-party/Inter/LICENSE.txt
+  * Phosphor Icons (app/src/main/res/drawable/ic_ui_*.xml, converted to vector drawables) - MIT,
+    https://github.com/phosphor-icons/core - see third-party/Phosphor/LICENSE
 
 InstaEclipse is not affiliated with, endorsed by, or connected to Meta Platforms, Inc.
 or Instagram. See DISCLAIMER.md.

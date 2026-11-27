@@ -193,7 +193,7 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
 
     private void setSectionExpanded(View content, ImageView icon, boolean expanded) {
         content.setVisibility(expanded ? View.VISIBLE : View.GONE);
-        icon.setImageResource(expanded ? R.drawable.ic_expand_less : R.drawable.ic_expand_more);
+        icon.setImageResource(expanded ? R.drawable.ic_ui_expand_less : R.drawable.ic_ui_expand_more);
         icon.setContentDescription(getString(expanded ? R.string.theme_collapse_section : R.string.theme_expand_section));
     }
 

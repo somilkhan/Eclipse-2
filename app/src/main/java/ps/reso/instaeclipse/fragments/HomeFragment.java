@@ -122,20 +122,20 @@ public class HomeFragment extends Fragment {
 
     // Same icons / accent colours FeaturesFragment uses for these rows.
     private static final List<Shortcut> CATALOG = Arrays.asList(
-            new Shortcut("isGhostSeen", R.string.ig_dialog_ghost_hide_dm_seen, R.drawable.ic_eye_off, 0xFF5E5CE6),
-            new Shortcut("isGhostTyping", R.string.ig_dialog_ghost_hide_typing, R.drawable.ic_chat, 0xFF5E5CE6),
-            new Shortcut("isGhostStory", R.string.ig_dialog_ghost_hide_story_views, R.drawable.ic_story_ring, 0xFF5E5CE6),
-            new Shortcut("isGhostViewOnce", R.string.ig_dialog_ghost_hide_view_once, R.drawable.ic_eye_off, 0xFF5E5CE6),
-            new Shortcut("isGhostScreenshot", R.string.ig_dialog_ghost_bypass_screenshot, R.drawable.ic_camera, 0xFF5E5CE6),
-            new Shortcut("enablePostDownload", R.string.ig_dialog_downloader_posts, R.drawable.ic_download, 0xFFFF9F0A),
-            new Shortcut("enableReelDownload", R.string.ig_dialog_downloader_reels, R.drawable.ic_download, 0xFFFF9F0A),
-            new Shortcut("enableStoryDownload", R.string.ig_dialog_downloader_stories, R.drawable.ic_download, 0xFFFF9F0A),
-            new Shortcut("isAdBlockEnabled", R.string.ig_dialog_ad_block_ads, R.drawable.ic_shield, 0xFFFF453A),
-            new Shortcut("customThemeEnabled", R.string.theme_enable, R.drawable.ic_palette, 0xFFFF375F),
-            new Shortcut("disableReels", R.string.ig_dialog_distraction_disable_reels, R.drawable.ic_movie, 0xFF30D158),
-            new Shortcut("disableStories", R.string.ig_dialog_distraction_disable_stories, R.drawable.ic_story_ring, 0xFF30D158),
-            new Shortcut("disableExplore", R.string.ig_dialog_distraction_disable_explore, R.drawable.ic_search, 0xFF30D158),
-            new Shortcut("maxUploadQuality", R.string.ig_dialog_max_upload_quality, R.drawable.ic_upload, 0xFFFF9F0A)
+            new Shortcut("isGhostSeen", R.string.ig_dialog_ghost_hide_dm_seen, R.drawable.ic_ui_eye_off, 0xFF5E5CE6),
+            new Shortcut("isGhostTyping", R.string.ig_dialog_ghost_hide_typing, R.drawable.ic_ui_chat, 0xFF5E5CE6),
+            new Shortcut("isGhostStory", R.string.ig_dialog_ghost_hide_story_views, R.drawable.ic_ui_story_ring, 0xFF5E5CE6),
+            new Shortcut("isGhostViewOnce", R.string.ig_dialog_ghost_hide_view_once, R.drawable.ic_ui_eye_off, 0xFF5E5CE6),
+            new Shortcut("isGhostScreenshot", R.string.ig_dialog_ghost_bypass_screenshot, R.drawable.ic_ui_camera, 0xFF5E5CE6),
+            new Shortcut("enablePostDownload", R.string.ig_dialog_downloader_posts, R.drawable.ic_ui_download, 0xFFFF9F0A),
+            new Shortcut("enableReelDownload", R.string.ig_dialog_downloader_reels, R.drawable.ic_ui_download, 0xFFFF9F0A),
+            new Shortcut("enableStoryDownload", R.string.ig_dialog_downloader_stories, R.drawable.ic_ui_download, 0xFFFF9F0A),
+            new Shortcut("isAdBlockEnabled", R.string.ig_dialog_ad_block_ads, R.drawable.ic_ui_shield, 0xFFFF453A),
+            new Shortcut("customThemeEnabled", R.string.theme_enable, R.drawable.ic_ui_palette, 0xFFFF375F),
+            new Shortcut("disableReels", R.string.ig_dialog_distraction_disable_reels, R.drawable.ic_ui_movie, 0xFF30D158),
+            new Shortcut("disableStories", R.string.ig_dialog_distraction_disable_stories, R.drawable.ic_ui_story_ring, 0xFF30D158),
+            new Shortcut("disableExplore", R.string.ig_dialog_distraction_disable_explore, R.drawable.ic_ui_search, 0xFF30D158),
+            new Shortcut("maxUploadQuality", R.string.ig_dialog_max_upload_quality, R.drawable.ic_ui_upload, 0xFFFF9F0A)
     );
 
     private SharedPreferences localCache;
@@ -292,7 +292,7 @@ public class HomeFragment extends Fragment {
             activePackage = null;
             instagramStatusText.setText(getString(R.string.not_installed_instagram));
             versionText.setText(getString(R.string.home_status_no_version));
-            instagramLogo.setImageResource(R.drawable.ic_cancel);
+            instagramLogo.setImageResource(R.drawable.ic_ui_cancel);
             applyTonalSquare(logoContainer, instagramLogo, colorRes(R.color.ie_error));
             instagramVariantText.setVisibility(View.GONE);
             instagramMultiButton.setVisibility(View.GONE);

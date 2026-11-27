@@ -44,6 +44,10 @@
         <item name="colorError">@color/ie_error</item>
         <item name="colorOnError">@color/ie_on_error</item>
 
+        <!-- Inter everywhere (dialogs, menus, inputs, toasts included). -->
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+
         <!-- Type scale (SF-like rhythm, all sp so it follows the user's font scale) -->
         <item name="textAppearanceHeadlineLarge">@style/TextAppearance.IE.LargeTitle</item>
         <item name="textAppearanceHeadlineMedium">@style/TextAppearance.IE.Title1</item>
