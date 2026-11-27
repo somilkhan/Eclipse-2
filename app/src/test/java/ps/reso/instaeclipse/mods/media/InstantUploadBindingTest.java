@@ -89,6 +89,26 @@ public class InstantUploadBindingTest {
         assertFalse(binding.accepts(new Object[2]));
     }
 
+    @Test public void resolves457InstancePhotoHandoffAndKeepsStaticVideoOut() {
+        InstantUploadHook.SwapBinding binding = resolve(InstanceVm.class);
+        assertNotNull(binding);
+        assertEquals("photo", binding.method.getName());
+        assertEquals(-1, binding.secondaryBitmapIndex);
+        Object[] args = {new ContextValue(), new BitmapValue(), new Metadata(), new Metadata(), 1L, "a", "b",
+                new Continuation(), 2f, 3L, true};
+        Object[] before = args.clone();
+        BitmapValue selected = new BitmapValue();
+        assertTrue(binding.replace(args, selected, null));
+        assertSame(selected, args[1]);
+        for (int i = 0; i < args.length; i++) if (i != 1) assertSame(before[i], args[i]);
+        args[1] = null;
+        assertFalse(binding.accepts(args));
+    }
+
+    @Test public void ambiguousInstanceHandoffsFailClosed() {
+        assertNull(resolve(AmbiguousInstanceVm.class));
+    }
+
     @Test public void ambiguityAndUnrelatedBitmapMethodsFailClosed() {
         assertNull(resolve(AmbiguousVm.class));
         assertNull(resolve(UnrelatedVm.class));
@@ -152,6 +172,20 @@ public class InstantUploadBindingTest {
                 Continuation continuation) { return null; }
         static Object second(ContextValue c, BitmapValue b, Metadata capture, AmbiguousModernVm vm,
                 Continuation continuation, boolean flag) { return null; }
+    }
+
+    static class InstanceVm {
+        static Object video(ContextValue c, BitmapValue b, Metadata capture, Metadata other, InstanceVm vm,
+                Metadata data, Metadata more, File file, Float rate, String text, Continuation k,
+                float f, int w, int h, long time) { return null; }
+        static void archive(ContextValue c, BitmapValue b, InstanceVm vm, String text) { }
+        Object photo(ContextValue c, BitmapValue b, Metadata capture, Metadata data, Long time, String text,
+                String source, Continuation continuation, float f, long t, boolean flag) { return null; }
+    }
+
+    static class AmbiguousInstanceVm {
+        Object first(ContextValue c, BitmapValue b, Metadata capture, Continuation k) { return null; }
+        Object second(ContextValue c, BitmapValue b, Metadata capture, Continuation k, boolean flag) { return null; }
     }
 
     static class UnrelatedVm {

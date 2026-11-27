@@ -163,6 +163,26 @@ public class InstantUploadHook {
                 if (found != null) return null;
                 found = new SwapBinding(method, bitmapType, legacy ? 2 : -1, legacy ? 3 : ownerIndex);
             }
+            if (found != null) return found;
+            // 457+: the photo handoff became an instance method of the view model
+            // (A1C(Context, Bitmap, …)Object on 457.0.0.55.73, called from onCaptured); the
+            // video handoff stays static and takes a File. Only a unique single-Bitmap,
+            // File-free, owner-free instance suspend method qualifies.
+            for (Method method : vm.getDeclaredMethods()) {
+                if (Modifier.isStatic(method.getModifiers()) || method.getReturnType() != Object.class
+                        || method.isSynthetic() || method.isBridge()) continue;
+                Class<?>[] p = method.getParameterTypes();
+                if (p.length < 4 || p[0] != contextType || p[1] != bitmapType || !modelType(p[2], bitmapType)) continue;
+                int bitmaps = 0;
+                boolean ok = true;
+                for (Class<?> type : p) {
+                    if (type == bitmapType) bitmaps++;
+                    if (type == vm || type == java.io.File.class) ok = false;
+                }
+                if (!ok || bitmaps != 1) continue;
+                if (found != null) return null;
+                found = new SwapBinding(method, bitmapType, -1, -1);
+            }
             return found;
         }
 
@@ -173,7 +193,7 @@ public class InstantUploadHook {
 
         boolean accepts(Object[] args) {
             return args != null && args.length == method.getParameterCount()
-                    && bitmapType.isInstance(args[1]) && vmType.isInstance(args[vmIndex])
+                    && bitmapType.isInstance(args[1]) && (vmIndex < 0 || vmType.isInstance(args[vmIndex]))
                     && (secondaryBitmapIndex < 0 || args[secondaryBitmapIndex] == null
                     || bitmapType.isInstance(args[secondaryBitmapIndex]));
         }
