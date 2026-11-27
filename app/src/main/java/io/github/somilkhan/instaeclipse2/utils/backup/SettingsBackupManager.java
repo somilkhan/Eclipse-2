@@ -101,6 +101,13 @@ public class SettingsBackupManager {
         s.put("forceReelQuality",        FeatureFlags.forceReelQuality);
         s.put("disableRepost",           FeatureFlags.disableRepost);
         s.put("hideShareCreateGroup",    FeatureFlags.hideShareCreateGroup);
+        s.put("hideFeedShareButton", FeatureFlags.hideFeedShareButton);
+        s.put("hideFeedSaveButton", FeatureFlags.hideFeedSaveButton);
+        s.put("hideFeedRepostButton", FeatureFlags.hideFeedRepostButton);
+        s.put("hideFeedLikeCount", FeatureFlags.hideFeedLikeCount);
+        s.put("disableHighlights", FeatureFlags.disableHighlights);
+        s.put("hideHiddenRequests", FeatureFlags.hideHiddenRequests);
+        s.put("removeEmptyBottomSpace", FeatureFlags.removeEmptyBottomSpace);
         s.put("exactTimestamps",         FeatureFlags.exactTimestamps);
         s.put("likeUndo",                FeatureFlags.likeUndo);
         s.put("profileFollowsYouLabel",  FeatureFlags.profileFollowsYouLabel);
@@ -238,6 +245,13 @@ public class SettingsBackupManager {
         if (s.has("forceReelQuality"))        FeatureFlags.forceReelQuality       = s.getInt("forceReelQuality");
         if (s.has("disableRepost"))          FeatureFlags.disableRepost          = s.getBoolean("disableRepost");
         if (s.has("hideShareCreateGroup"))   FeatureFlags.hideShareCreateGroup   = s.getBoolean("hideShareCreateGroup");
+        if (s.has("hideFeedShareButton")) FeatureFlags.hideFeedShareButton = s.getBoolean("hideFeedShareButton");
+        if (s.has("hideFeedSaveButton")) FeatureFlags.hideFeedSaveButton = s.getBoolean("hideFeedSaveButton");
+        if (s.has("hideFeedRepostButton")) FeatureFlags.hideFeedRepostButton = s.getBoolean("hideFeedRepostButton");
+        if (s.has("hideFeedLikeCount")) FeatureFlags.hideFeedLikeCount = s.getBoolean("hideFeedLikeCount");
+        if (s.has("disableHighlights")) FeatureFlags.disableHighlights = s.getBoolean("disableHighlights");
+        if (s.has("hideHiddenRequests")) FeatureFlags.hideHiddenRequests = s.getBoolean("hideHiddenRequests");
+        if (s.has("removeEmptyBottomSpace")) FeatureFlags.removeEmptyBottomSpace = s.getBoolean("removeEmptyBottomSpace");
         if (s.has("exactTimestamps"))        FeatureFlags.exactTimestamps        = s.getBoolean("exactTimestamps");
         if (s.has("likeUndo"))               FeatureFlags.likeUndo               = s.getBoolean("likeUndo");
         if (s.has("profileFollowsYouLabel")) FeatureFlags.profileFollowsYouLabel = s.getBoolean("profileFollowsYouLabel");

@@ -1,5 +1,39 @@
 # Changelog
 
+## Unreleased
+
+### Ported from Piko
+Features from [Piko](https://github.com/crimera/piko) (GPL-3.0) that Eclipse 2 did not already
+have, rewritten as Xposed hooks. The hook points were checked against the bytecode of
+Instagram 458.0.0.0.57 (arm64). They have not been tested on a device yet. All switches are off
+by default, and each hook installs nothing and logs a reason when its target is missing.
+- Feed → Hide share button / save button / repost button / like count on posts. These clear the
+  matching flags in the feed post state (`MediaUfiUiState`, X.04d9 on 458) after its constructor
+  runs. The obfuscated fields are matched to their `toString` labels on the first post by
+  flipping each boolean once and restoring it. A label that does not map to exactly one field is
+  left alone. Feed only: on 458 the reels checks are inlined into larger methods. "Hide repost
+  button" only hides the button; "Disable repost" still blocks the repost action.
+- Feed → Hide highlights on profiles: hides `highlights_tray` after
+  `ProfileHeaderBinderGroup.bindView`, and gives back Instagram's own visibility before the next
+  bind.
+- Messages → Hide "Hidden requests": collapses the `pending_threads_spam_folder_row` row when it
+  is inflated.
+- Navigation → Remove empty space under the tab bar: the nav bar size method (strings
+  `config_showNavigationBar` + `_hasNavigationBar_notFound`, one caller, the insets listener)
+  returns 0, Instagram's own "no nav bar" value. Takes effect after Instagram restarts.
+- Not ported, already in Eclipse 2: copy comment, custom font, share domain, nav bar
+  customisation, reels scroll lock, ads, comments, discover people, double-tap like, explore,
+  screenshot detection, stories, story flipping, swipe to camera, typing, autoplay, downloads,
+  follows-you label, hidden chats, feed, create group on share sheet, notes tray, stories tray,
+  suggested content, high-res images, inbox lock, following-only feed, permanent view-once,
+  mark as read, links externally, tracking links, Instants, unsent messages, comment media,
+  theme, dev options, ghost mode, story mentions, build-expired popup, notification fix,
+  exact timestamps.
+- Not ported, they need bytecode edits in the middle of a method, which an Xposed hook can't do
+  safely: reels/story follow buttons, loop story, disappearing-message swipe, call buttons, focus
+  lock, story filter, like animation, story ring size, resume reels, external downloader, mark as
+  read after reply, reels share/save/like.
+
 ## 0.8.4 (versionCode 22), for Instagram 457.0.0.55.73
 
 First release of Eclipse 2, the maintained continuation at `somilkhan/Eclipse-2` (original author: ReSo7200).

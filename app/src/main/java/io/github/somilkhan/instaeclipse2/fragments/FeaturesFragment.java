@@ -1168,7 +1168,8 @@ public class FeaturesFragment extends Fragment {
                 createSwitch(R.drawable.ic_ui_download, "#5E5CE6", getString(R.string.ig_dialog_ghost_chat_export), "chatExport"),
                 createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_distraction_hide_notes_tray), "hideNotesTray"),
                 createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_hide_dm_blend), "hideDmBlend"),
-                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_share_create_group), "hideShareCreateGroup")
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_dialog_misc_hide_share_create_group), "hideShareCreateGroup"),
+                createSwitch(R.drawable.ic_ui_block, "#5E5CE6", getString(R.string.ig_feat_hide_hidden_requests), "hideHiddenRequests")
         ));
 
         return defs;
@@ -1249,7 +1250,12 @@ public class FeaturesFragment extends Fragment {
                 createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_hide_plus), "hidePlusUpsells"),
                 createSwitch(R.drawable.ic_ui_sparkle, "#64D2FF", getString(R.string.ig_dialog_clean_feed_following_only), "followingOnlyFeed"),
                 createExtrasSwitch("#64D2FF", "hideStoriesTray"),
-                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_dialog_misc_disable_discover_people), "disableDiscoverPeople")
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_dialog_misc_disable_discover_people), "disableDiscoverPeople"),
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_share), "hideFeedShareButton"),
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_save), "hideFeedSaveButton"),
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_repost), "hideFeedRepostButton"),
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_hide_feed_like_count), "hideFeedLikeCount"),
+                createSwitch(R.drawable.ic_ui_block, "#64D2FF", getString(R.string.ig_feat_disable_highlights), "disableHighlights")
         ));
 
         defs.add(getString(R.string.feat_options));
@@ -1337,7 +1343,10 @@ public class FeaturesFragment extends Fragment {
         ));
 
         defs.add(getString(R.string.menu_nav_gestures));
-        defs.add(Arrays.asList(createExtrasSwitch("#30D158", "disableSwipeToCamera")));
+        defs.add(Arrays.asList(
+                createExtrasSwitch("#30D158", "disableSwipeToCamera"),
+                createSwitch(R.drawable.ic_ui_tune, "#30D158", getString(R.string.ig_feat_remove_bottom_space), "removeEmptyBottomSpace")
+        ));
 
         return defs;
     }
