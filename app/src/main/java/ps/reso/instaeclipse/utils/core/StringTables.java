@@ -121,6 +121,7 @@ public final class StringTables {
             ModuleLog.line("(StringTables) direct query failed: " + t);
             found = Collections.emptyList();
         }
+        found = withoutTables(found);
         if (!found.isEmpty()) return found;
 
         MethodMatcher viaTable = MethodMatcher.create();
@@ -150,6 +151,32 @@ public final class StringTables {
             ModuleLog.line("(StringTables) table query failed: " + t);
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Drops 457-style string-table methods from a plain string query's result. A table
+     * ({@code static String A00(int)} with one {@code const-string} per switch case) contains every
+     * literal it serves, so {@code usingStrings(x)} matches the table itself; callers that then
+     * inspect the "user" (its class, its invokes) silently work on the wrong method.
+     */
+    public static List<MethodData> withoutTables(List<MethodData> found) {
+        if (found == null || found.isEmpty()) return found;
+        List<MethodData> out = null;
+        for (int i = 0; i < found.size(); i++) {
+            MethodData m = found.get(i);
+            boolean table = false;
+            try { table = isTableShape(m.getModifiers(), m.getParamTypeNames(), m.getReturnTypeName()); }
+            catch (Throwable ignored) {}
+            if (table && out == null) out = new ArrayList<>(found.subList(0, i));
+            else if (!table && out != null) out.add(m);
+        }
+        return out == null ? found : out;
+    }
+
+    /** Shape of a shared string table: static, single int parameter, returns String. */
+    static boolean isTableShape(int modifiers, List<String> paramTypeNames, String returnTypeName) {
+        return Modifier.isStatic(modifiers) && paramTypeNames != null && paramTypeNames.size() == 1
+                && "int".equals(paramTypeNames.get(0)) && "java.lang.String".equals(returnTypeName);
     }
 
     /** Only the methods that load {@code value} through a string table. */
