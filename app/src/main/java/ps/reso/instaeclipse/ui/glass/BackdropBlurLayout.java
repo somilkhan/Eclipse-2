@@ -90,7 +90,7 @@ public class BackdropBlurLayout extends FrameLayout {
 
         chromeColor = ContextCompat.getColor(context, R.color.ie_glass_chrome);
         fallbackColor = ContextCompat.getColor(context, R.color.ie_glass_chrome_fallback);
-        specularColor = ContextCompat.getColor(context, R.color.ie_glass_specular);
+        specularColor = ContextCompat.getColor(context, R.color.ie_glass_rim);
         outlinePaint.setStyle(Paint.Style.STROKE);
         outlinePaint.setStrokeWidth(Math.max(1f, 0.75f * d));
         outlinePaint.setColor(ContextCompat.getColor(context, R.color.ie_glass_outline));

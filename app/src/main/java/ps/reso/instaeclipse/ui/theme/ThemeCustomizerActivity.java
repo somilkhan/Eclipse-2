@@ -107,9 +107,8 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         enableSwitch.setChecked(enabled);
         enableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> persist());
 
-        List<ThemePreset> modePresets = new java.util.ArrayList<>();
-        for (ThemePreset p : ThemePresets.all())
-            if (ThemePresets.isLightPreset(p.id) == lightMode) modePresets.add(p);
+        // A few curated presets (plus the current selection if it is not one of them).
+        List<ThemePreset> modePresets = CuratedPresets.forMode(lightMode, selectedPresetId);
         presetAdapter = new PresetAdapter(modePresets);
         presetList.setLayoutManager(new GridLayoutManager(this, 2));
         presetList.setAdapter(presetAdapter);
@@ -161,6 +160,8 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
     }
 
     private static int firstLightPresetId() {
+        List<ThemePreset> curated = CuratedPresets.forMode(true, 0);
+        if (!curated.isEmpty()) return curated.get(0).id;
         for (ThemePreset p : ThemePresets.all()) if (ThemePresets.isLightPreset(p.id)) return p.id;
         return 1;
     }

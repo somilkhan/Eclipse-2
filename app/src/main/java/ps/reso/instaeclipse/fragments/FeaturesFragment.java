@@ -620,7 +620,7 @@ public class FeaturesFragment extends Fragment {
                 return;
             }
             iconView.setVisibility(View.VISIBLE);
-            // Settings-style solid accent squircle with a white glyph.
+            // Settings-style tinted squircle with an accent glyph.
             android.graphics.drawable.Drawable icon = ContextCompat.getDrawable(iconView.getContext(), iconRes);
             if (icon != null) {
                 icon = icon.mutate();
@@ -629,17 +629,11 @@ public class FeaturesFragment extends Fragment {
                         android.graphics.PorterDuff.Mode.SRC_IN));
                 iconView.setImageDrawable(icon);
             }
-            android.graphics.drawable.GradientDrawable chipBg = new android.graphics.drawable.GradientDrawable(
-                    android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{lighten(accentColor), accentColor});
+            // One-accent system: every row tile is the same soft accent tint (no per-category rainbow).
+            android.graphics.drawable.GradientDrawable chipBg = new android.graphics.drawable.GradientDrawable();
+            chipBg.setColor(ContextCompat.getColor(iconView.getContext(), R.color.ie_icon_tile));
             chipBg.setCornerRadius(iconView.getResources().getDisplayMetrics().density * 8);
             iconView.setBackground(chipBg);
-        }
-
-        private int lighten(int c) {
-            int r = (c >> 16) & 0xFF, g = (c >> 8) & 0xFF, b = c & 0xFF;
-            r += (255 - r) * 0.18f; g += (255 - g) * 0.18f; b += (255 - b) * 0.18f;
-            return 0xFF000000 | (r << 16) | (g << 8) | b;
         }
     }
 
@@ -1223,7 +1217,7 @@ public class FeaturesFragment extends Fragment {
 
         // Extreme Mode: only enabled once the user has selected at least one feature
         FeatureItem extreme = createSwitch(R.drawable.ic_block, "#FF453A", getString(R.string.ig_dialog_distraction_extreme_mode), "isExtremeMode");
-        extreme.textColor = 0xFFFF453A;
+        extreme.textColor = ContextCompat.getColor(requireContext(), R.color.ie_error);
         extreme.isExtreme = true;
         extreme.requiresAnyOf = distractionKeys;
 
@@ -1797,7 +1791,8 @@ public class FeaturesFragment extends Fragment {
     /** Dark-mode theme: one of the dark presets, or the custom palette when that is in use. */
     private void pickDarkModeTheme() {
         int current = localCache.getInt("themePresetId", 1);
-        int[] presets = ps.reso.instaeclipse.mods.ui.theme.ThemePresets.darkModeChoices();
+        int[] presets = ps.reso.instaeclipse.ui.theme.CuratedPresets.filter(
+                ps.reso.instaeclipse.mods.ui.theme.ThemePresets.darkModeChoices(), current);
         final int[] values;
         if (current == 0) {
             values = new int[presets.length + 1];
@@ -1824,8 +1819,9 @@ public class FeaturesFragment extends Fragment {
 
     /** Light-mode behaviour of the custom theme (#251). */
     private void pickLightModeTheme() {
-        final int[] values = ps.reso.instaeclipse.mods.ui.theme.ThemePresets.lightModeChoices();
         int current = localCache.getInt("themeLightPresetId", -1);
+        final int[] values = ps.reso.instaeclipse.ui.theme.CuratedPresets.filter(
+                ps.reso.instaeclipse.mods.ui.theme.ThemePresets.lightModeChoices(), current);
         String[] labels = new String[values.length];
         int sel = 0;
         for (int i = 0; i < values.length; i++) {
@@ -2196,7 +2192,7 @@ public class FeaturesFragment extends Fragment {
         android.widget.FrameLayout halo = new android.widget.FrameLayout(ctx);
         android.graphics.drawable.GradientDrawable glow = new android.graphics.drawable.GradientDrawable(
                 android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
-                new int[]{(primary & 0x00FFFFFF) | 0x55000000, (0xFFBF5AF2 & 0x00FFFFFF) | 0x33000000});
+                new int[]{(primary & 0x00FFFFFF) | 0x40000000, (primary & 0x00FFFFFF) | 0x14000000});
         glow.setShape(android.graphics.drawable.GradientDrawable.OVAL);
         halo.setBackground(glow);
         int haloSize = (int) (108 * d);

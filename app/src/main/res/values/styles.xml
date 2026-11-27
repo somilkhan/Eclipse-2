@@ -262,4 +262,10 @@
     <style name="MaterialAlertDialog.IE.Title" parent="MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textAppearance">@style/TextAppearance.IE.Title3</item>
     </style>
+    <!-- iOS-like toggle: accent track when on, neutral grey track when off, white thumb, no outline. -->
+    <style name="Widget.IE.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="thumbTint">@color/ie_switch_thumb_tint</item>
+        <item name="trackTint">@color/ie_switch_track_tint</item>
+        <item name="trackDecorationTint">@android:color/transparent</item>
+    </style>
 </resources>

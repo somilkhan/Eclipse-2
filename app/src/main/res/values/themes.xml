@@ -64,6 +64,7 @@
         <item name="materialButtonOutlinedStyle">@style/Widget.IE.Button.Outlined</item>
         <item name="borderlessButtonStyle">@style/Widget.IE.Button.Text</item>
         <item name="chipStyle">@style/Widget.IE.Chip</item>
+        <item name="materialSwitchStyle">@style/Widget.IE.Switch</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.IE.Dialog</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.IE.ExtendedFab</item>
         <item name="linearProgressIndicatorStyle">@style/Widget.IE.LinearProgress</item>
