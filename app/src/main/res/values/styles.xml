@@ -47,11 +47,10 @@
         <item name="strokeWidth">0dp</item>
     </style>
 
-    <!-- 0.7: section-header text inside the companion app screens (uppercase, letter-spaced). -->
-    <style name="IeSectionLabel" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:letterSpacing">0.06</item>
+    <!-- Section header above a grouped list: footnote-sized, muted, uppercase (Settings rhythm). -->
+    <style name="IeSectionLabel" parent="TextAppearance.IE.Footnote">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:letterSpacing">0.04</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
@@ -59,12 +58,196 @@
     <style name="IeHairline">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">?attr/colorOutlineVariant</item>
+        <item name="android:background">@color/ie_separator</item>
     </style>
     <style name="SubmenuSwitch">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">20dp</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    </style>
+
+    <!-- ================= 0.8.4 type scale (SF-like; sp so font scaling applies) ================= -->
+    <style name="TextAppearance.IE.LargeTitle" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">34sp</item>
+        <item name="lineHeight">41sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.012</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.IE.Title1" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">28sp</item>
+        <item name="lineHeight">34sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+    <style name="TextAppearance.IE.Title2" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textSize">22sp</item>
+        <item name="lineHeight">28sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.006</item>
+    </style>
+    <style name="TextAppearance.IE.Title3" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="lineHeight">25sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.004</item>
+    </style>
+    <style name="TextAppearance.IE.Headline" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">17sp</item>
+        <item name="lineHeight">22sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.002</item>
+    </style>
+    <style name="TextAppearance.IE.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">17sp</item>
+        <item name="lineHeight">22sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">-0.002</item>
+    </style>
+    <style name="TextAppearance.IE.Subhead" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">15sp</item>
+        <item name="lineHeight">20sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.IE.Subhead.Emphasized">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    <style name="TextAppearance.IE.Footnote" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">13sp</item>
+        <item name="lineHeight">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.IE.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">15sp</item>
+        <item name="lineHeight">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.IE.Caption" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+        <item name="lineHeight">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.IE.Caption.Emphasized">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    <style name="TextAppearance.IE.Caption2" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">11sp</item>
+        <item name="lineHeight">13sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+    <!-- Bold dashboard section header ("Quick actions") -->
+    <style name="TextAppearance.IE.SectionTitle" parent="TextAppearance.IE.Title3">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- ================= shapes ================= -->
+    <style name="ShapeAppearance.IE.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">10dp</item>
+    </style>
+    <style name="ShapeAppearance.IE.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.IE.Large" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerSize">22dp</item>
+    </style>
+    <style name="ShapeAppearance.IE.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ShapeAppearance.IE.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+    <style name="ShapeAppearance.IE.Full" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- ================= components ================= -->
+    <!-- Glass card: translucent fill over the mesh; GlassCardView adds hairline + specular rim. -->
+    <style name="Widget.IE.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/ie_glass_fill</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="rippleColor">@color/ie_ripple</item>
+    </style>
+    <style name="Widget.IE.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Label</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+    </style>
+    <style name="Widget.IE.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Label</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+        <item name="backgroundTint">@color/ie_tonal_button_bg</item>
+        <item name="android:textColor">@color/ie_tonal_button_fg</item>
+        <item name="iconTint">@color/ie_tonal_button_fg</item>
+    </style>
+    <style name="Widget.IE.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Label</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+        <item name="strokeColor">@color/ie_separator</item>
+    </style>
+    <style name="Widget.IE.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Label</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+    </style>
+    <style name="Widget.IE.Button.DialogText" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Headline</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+    </style>
+    <!-- 48dp round glass icon button (toolbar actions, edit) -->
+    <style name="Widget.IE.Button.GlassIcon" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:insetTop">4dp</item>
+        <item name="android:insetBottom">4dp</item>
+        <item name="backgroundTint">@color/ie_glass_fill_raised</item>
+        <item name="iconTint">?attr/colorPrimary</item>
+        <item name="iconSize">20dp</item>
+        <item name="strokeColor">@color/ie_glass_outline</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+    </style>
+    <style name="Widget.IE.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/ie_chip_bg</item>
+        <item name="android:textColor">@color/ie_chip_fg</item>
+        <item name="checkedIconTint">@color/ie_chip_fg</item>
+        <item name="chipStrokeColor">@color/ie_glass_outline</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipMinHeight">36dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Subhead.Emphasized</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="ensureMinTouchTargetSize">true</item>
+    </style>
+    <style name="Widget.IE.ExtendedFab" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.IE.Full</item>
+        <item name="android:textAppearance">@style/TextAppearance.IE.Headline</item>
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
+    <style name="Widget.IE.LinearProgress" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="trackCornerRadius">2dp</item>
+        <item name="trackColor">@android:color/transparent</item>
+    </style>
+    <style name="MaterialAlertDialog.IE.Title" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textAppearance">@style/TextAppearance.IE.Title3</item>
     </style>
 </resources>

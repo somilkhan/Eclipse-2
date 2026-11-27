@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GlassCardView">
+        <!-- Start inset of the bottom separator when the card is a non-last row of a group. -->
+        <attr name="ieSeparatorInset" format="dimension" />
+        <!-- Soft inner top glow (hero cards). -->
+        <attr name="ieSheen" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="BackdropBlurLayout">
+        <!-- Corner radius; negative = capsule (height / 2). -->
+        <attr name="ieCornerRadius" format="dimension" />
+        <attr name="ieBlurRadius" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="GlassNavPill">
+        <attr name="ieMenu" format="reference" />
+    </declare-styleable>
+</resources>

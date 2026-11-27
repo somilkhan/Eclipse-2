@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<ps.reso.instaeclipse.ui.glass.GlassCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
     android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardElevation="0dp"
-    app:strokeWidth="0dp"
-    app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="56dp"
+        android:minHeight="52dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
@@ -24,9 +19,9 @@
 
         <ImageView
             android:id="@+id/iv_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="14dp"
             android:padding="6dp"
             android:scaleType="centerInside"
             android:visibility="gone"
@@ -42,8 +37,7 @@
                 android:id="@+id/tv_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="15sp"
+                android:textAppearance="@style/TextAppearance.IE.Body"
                 android:textColor="?attr/colorOnSurface" />
 
             <TextView
@@ -51,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textAppearance="@style/TextAppearance.IE.Footnote"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:visibility="gone" />
         </LinearLayout>
@@ -66,13 +60,14 @@
 
         <ImageView
             android:id="@+id/iv_chevron"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_marginStart="8dp"
+            android:alpha="0.6"
             android:src="@drawable/ic_chevron_right"
             android:visibility="gone"
             android:contentDescription="@null"
             app:tint="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</ps.reso.instaeclipse.ui.glass.GlassCardView>

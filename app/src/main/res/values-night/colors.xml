@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ==== 0.8.4 "liquid glass" palette — DARK (brand indigo/pink, mirrors the in-IG sheet) ==== -->
+    <color name="ie_primary">#A3A1FF</color>
+    <color name="ie_on_primary">#1B1930</color>
+    <color name="ie_primary_container">#34316A</color>
+    <color name="ie_on_primary_container">#E2E0FF</color>
+    <color name="ie_secondary">#C7C5F5</color>
+    <color name="ie_on_secondary">#1E1D30</color>
+    <color name="ie_secondary_container">#2E2D48</color>
+    <color name="ie_on_secondary_container">#E4E2FF</color>
+    <color name="ie_tertiary">#FF8199</color>
+    <color name="ie_on_tertiary">#3A0E1B</color>
+    <color name="ie_tertiary_container">#5C1E2C</color>
+    <color name="ie_on_tertiary_container">#FFD9E0</color>
+
+    <color name="ie_background">#0C0C10</color>
+    <color name="ie_surface">#141418</color>
+    <color name="ie_on_surface">#F2F2F7</color>
+    <color name="ie_surface_variant">#2C2C34</color>
+    <color name="ie_on_surface_variant">#AEAEB8</color>
+    <color name="ie_surface_lowest">#0E0E12</color>
+    <color name="ie_surface_low">#1A1A20</color>
+    <color name="ie_surface_container">#1E1E25</color>
+    <color name="ie_surface_high">#26262E</color>
+    <color name="ie_surface_highest">#303038</color>
+    <color name="ie_outline">#6E6E78</color>
+    <color name="ie_outline_variant">#34343C</color>
+    <color name="ie_error">#FF6B60</color>
+    <color name="ie_on_error">#3A0906</color>
+
+    <color name="ie_glass_fill">#1FFFFFFF</color>
+    <color name="ie_glass_fill_raised">#24FFFFFF</color>
+    <color name="ie_glass_outline">#1FFFFFFF</color>
+    <color name="ie_glass_specular">#59FFFFFF</color>
+    <color name="ie_glass_sheen">#0FFFFFFF</color>
+    <color name="ie_glass_chrome">#8C1C1C22</color>
+    <color name="ie_glass_chrome_fallback">#EB1C1C22</color>
+    <color name="ie_glass_indicator">#2EA3A1FF</color>
+    <color name="ie_glass_shadow">#73000000</color>
+    <color name="ie_separator">#33FFFFFF</color>
+    <color name="ie_scrim">#99000000</color>
+
+    <color name="ie_mesh_base">#0C0C10</color>
+    <color name="ie_mesh_a">#664B48C9</color>
+    <color name="ie_mesh_b">#408A1F44</color>
+    <color name="ie_mesh_c">#40145A6B</color>
+    <color name="ie_mesh_clear">#000C0C10</color>
+
+    <color name="ie_ok">#30D158</color>
+    <color name="ie_warn">#FFCA28</color>
+    <color name="ie_log_ok">#81C784</color>
+    <color name="ie_log_warn">#FFCA28</color>
+    <color name="ie_on_accent_tile">#FFFFFF</color>
+    <color name="ie_dialog_bg">#F21C1C22</color>
+    <color name="ie_dialog_bg_blur">#E01C1C22</color>
+</resources>

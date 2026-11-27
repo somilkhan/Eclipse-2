@@ -1,85 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Edge-to-edge shell: content scrolls under a blurred compact top bar and a floating glass
+     navigation pill. Insets are applied in MainActivity. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        app:elevation="0dp"
-        android:background="@android:color/transparent">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/top_app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorSurface">
-
-            <ImageView
-                android:id="@+id/toolbar_title_image"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_gravity="start|center_vertical"
-                android:src="@drawable/ic_logo"
-                android:contentDescription="App Logo"
-                android:paddingEnd="7dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                app:tint="?attr/colorPrimary" />
-
-            <TextView
-                android:id="@+id/toolbar_title_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start|center_vertical"
-                android:text="@string/app_name"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textStyle="bold"
-                android:letterSpacing="0.01"
-                android:textColor="?attr/colorOnSurface" />
-
-            <TextView
-                android:id="@+id/toolbar_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="12dp"
-                android:background="@drawable/bg_version_chip"
-                android:text="@string/version"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                tools:ignore="RtlSymmetry" />
-        </com.google.android.material.appbar.MaterialToolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Fragment container: direct FrameLayout so fragments with RecyclerViews scroll correctly.
-         paddingBottom reserves space so the bottom nav never covers content in Home/Help. -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:paddingBottom="82dp"
-        android:clipToPadding="false" />
+        android:layout_height="match_parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <!-- Compact bar: invisible over the large title, frosts in once it scrolls underneath. -->
+    <ps.reso.instaeclipse.ui.glass.BackdropBlurLayout
+        android:id="@+id/top_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:alpha="0"
+        android:importantForAccessibility="no"
+        app:ieBlurRadius="24dp"
+        app:ieCornerRadius="0dp">
+
+        <TextView
+            android:id="@+id/toolbar_title_name"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginHorizontal="72dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:maxLines="1"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.IE.Headline" />
+
+        <View
+            android:id="@+id/top_app_bar_hairline"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_gravity="bottom"
+            android:background="@color/ie_separator" />
+    </ps.reso.instaeclipse.ui.glass.BackdropBlurLayout>
+
+    <!-- Soft contact shadow under the pill (a blurred-looking gradient; elevation shadows
+         render as hard grey rings on translucent shapes). -->
+    <View
+        android:id="@+id/bottom_navigation_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="28dp"
+        android:background="@drawable/bg_nav_shadow"
+        android:importantForAccessibility="no" />
+
+    <ps.reso.instaeclipse.ui.glass.GlassNavPill
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/bottom_navigation_menu"
-        app:labelVisibilityMode="labeled"
-        android:background="?attr/colorSurfaceContainer" />
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="12dp"
+        android:maxWidth="480dp"
+        app:ieBlurRadius="30dp"
+        app:ieMenu="@menu/bottom_navigation_menu" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>
