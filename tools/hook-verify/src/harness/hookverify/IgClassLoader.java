@@ -92,6 +92,8 @@ public final class IgClassLoader extends ClassLoader {
         }
     }
 
+    private static String internal0(ClassDef def) { return toInternal(def.getType()); }
+
     private byte[] synthesise(ClassDef def) {
         int dexFlags = def.getAccessFlags();
         boolean isInterface = (dexFlags & ACC_INTERFACE) != 0;
@@ -112,7 +114,7 @@ public final class IgClassLoader extends ClassLoader {
         }
 
         ClassWriter cw = new ClassWriter(0);
-        cw.visit(V11, access, toInternal(def.getType()), null, superName, ifaces.toArray(new String[0]));
+        cw.visit(V11, access, internal0(def), null, superName, ifaces.toArray(new String[0]));
 
         List<Field> fields = new ArrayList<>();
         for (Field f : def.getStaticFields()) fields.add(f);
@@ -122,6 +124,18 @@ public final class IgClassLoader extends ClassLoader {
                     | ACC_VOLATILE | ACC_TRANSIENT | ACC_SYNTHETIC | ACC_ENUM);
             if (isInterface) fa = ACC_PUBLIC | ACC_STATIC | ACC_FINAL;
             cw.visitField(fa, f.getName(), f.getType(), null, null).visitEnd();
+        }
+
+        String internal = toInternal(def.getType());
+        boolean realEnum = "java/lang/Enum".equals(superName) && EnumSupport.register(def);
+        if (realEnum) {
+            MethodVisitor ci = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+            ci.visitCode();
+            ci.visitLdcInsn(org.objectweb.asm.Type.getObjectType(internal));
+            ci.visitMethodInsn(INVOKESTATIC, "hookverify/EnumSupport", "init", "(Ljava/lang/Class;)V", false);
+            ci.visitInsn(RETURN);
+            ci.visitMaxs(1, 0);
+            ci.visitEnd();
         }
 
         for (Method m : def.getMethods()) {
@@ -137,11 +151,32 @@ public final class IgClassLoader extends ClassLoader {
             desc.append(')').append(m.getReturnType());
             int ma = m.getAccessFlags() & (ACC_PUBLIC | ACC_PRIVATE | ACC_PROTECTED | ACC_STATIC | ACC_FINAL
                     | ACC_SYNCHRONIZED | ACC_BRIDGE | ACC_VARARGS | ACC_NATIVE | ACC_ABSTRACT | ACC_SYNTHETIC);
+            // Mirror libcore Executable.fixMethodFlags: dex marks non-native synchronized methods
+            // ACC_DECLARED_SYNCHRONIZED (0x20000) and ART reflection reports exactly those as
+            // Modifier.SYNCHRONIZED. Without this every isSynchronized() filter fails offline.
+            ma &= ~ACC_SYNCHRONIZED;
+            if ((m.getAccessFlags() & 0x20000) != 0) ma |= ACC_SYNCHRONIZED;
             if (name.equals("<init>")) ma &= ~(ACC_STATIC | ACC_FINAL | ACC_SYNCHRONIZED | ACC_BRIDGE | ACC_NATIVE | ACC_ABSTRACT);
             if (isInterface && (ma & ACC_ABSTRACT) != 0) ma = (ma & ~(ACC_PRIVATE | ACC_PROTECTED | ACC_FINAL)) | ACC_PUBLIC;
             if (!isInterface && (access & ACC_ABSTRACT) == 0) ma &= ~ACC_ABSTRACT; // keep the class instantiable-shaped
             MethodVisitor mv = cw.visitMethod(ma, name, desc.toString(), null, null);
-            if ((ma & (ACC_ABSTRACT | ACC_NATIVE)) == 0) {
+            boolean isStatic = (ma & ACC_STATIC) != 0;
+            if (realEnum && isStatic && name.equals("values") && desc.toString().equals("()[L" + internal + ";")) {
+                mv.visitCode();
+                mv.visitLdcInsn(org.objectweb.asm.Type.getObjectType(internal));
+                mv.visitMethodInsn(INVOKESTATIC, "hookverify/EnumSupport", "values", "(Ljava/lang/Class;)Ljava/lang/Object;", false);
+                mv.visitTypeInsn(CHECKCAST, "[L" + internal + ";");
+                mv.visitInsn(ARETURN);
+                mv.visitMaxs(1, 0);
+            } else if (realEnum && isStatic && name.equals("valueOf") && desc.toString().equals("(Ljava/lang/String;)L" + internal + ";")) {
+                mv.visitCode();
+                mv.visitLdcInsn(org.objectweb.asm.Type.getObjectType(internal));
+                mv.visitVarInsn(ALOAD, 0);
+                mv.visitMethodInsn(INVOKESTATIC, "hookverify/EnumSupport", "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object;", false);
+                mv.visitTypeInsn(CHECKCAST, internal);
+                mv.visitInsn(ARETURN);
+                mv.visitMaxs(2, 1);
+            } else if ((ma & (ACC_ABSTRACT | ACC_NATIVE)) == 0) {
                 mv.visitCode();
                 mv.visitTypeInsn(NEW, "java/lang/UnsupportedOperationException");
                 mv.visitInsn(DUP);
