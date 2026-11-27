@@ -9,6 +9,7 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
+import ps.reso.instaeclipse.utils.core.StringTables;
 import ps.reso.instaeclipse.utils.feature.FeatureFlags;
 import ps.reso.instaeclipse.utils.feature.FeatureStatusTracker;
 import ps.reso.instaeclipse.utils.log.ModuleLog;
@@ -40,6 +41,12 @@ public class MaxUploadQualityHook {
                             .usingEqStrings(List.of(PREF_KEY))
                             .returnType("boolean")
                             .paramCount(1)));
+            if (results.isEmpty()) {
+                // 457+: the key lives in a shared string table (X.0000.A00(I)String); the getter
+                // loads it by index (X.0BWS.A00(X.02nf)Z on 457.0.0.55.73).
+                results = StringTables.findMethodUsingStrings(bridge,
+                        m -> m.returnType("boolean").paramCount(1), PREF_KEY);
+            }
 
             int n = 0;
             for (MethodData md : results) {
