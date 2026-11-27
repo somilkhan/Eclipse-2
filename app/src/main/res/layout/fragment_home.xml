@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Home: large title, module status hero, quick actions, pinned shortcuts (grouped list),
-     how-to and contributor carousels. Everything sits on glass cards over the mesh background;
+<!-- Home (iOS 26 Settings rhythm): large title, a restrained status card with capsule actions,
+     then grouped inset sections with small uppercase grey headers and footnotes, and contributor
+     carousels that start on the content margin. Opaque cards over the grouped background;
      MainActivity pads the scroller for the status bar and the floating nav pill (tag ie_scroll). -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,6 +15,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
@@ -21,63 +24,55 @@
         android:paddingBottom="8dp">
 
         <!-- ============ LARGE TITLE ============ -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/home_large_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:gravity="center_vertical"
-            android:minHeight="52dp"
-            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:accessibilityHeading="true"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:paddingStart="4dp"
-            android:paddingEnd="4dp">
+            android:paddingEnd="4dp"
+            android:tag="ie_large_title"
+            android:text="@string/app_name"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.IE.LargeTitle" />
 
-            <TextView
-                android:id="@+id/home_large_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:accessibilityHeading="true"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:tag="ie_large_title"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.IE.LargeTitle" />
+        <TextView
+            android:id="@+id/home_app_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/version"
+            android:textAppearance="@style/TextAppearance.IE.Subhead"
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
-            <TextView
-                android:id="@+id/home_app_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/bg_glass_capsule"
-                android:paddingStart="10dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="4dp"
-                android:text="@string/version"
-                android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-        </LinearLayout>
-
-        <!-- ============ STATUS HERO ============ -->
+        <!-- ============ STATUS HERO ============
+             Grouped inset card: identity header, then hairline-separated status rows. -->
         <ps.reso.instaeclipse.ui.glass.GlassCardView
             android:id="@+id/instagram_status_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/ie_glass_fill_raised"
-            app:cardCornerRadius="28dp"
-            app:ieSheen="true">
+            app:cardBackgroundColor="@color/ie_glass_fill"
+            app:cardCornerRadius="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="14dp">
 
                     <FrameLayout
                         android:id="@+id/home_logo_container"
@@ -86,8 +81,8 @@
 
                         <ImageView
                             android:id="@+id/instagram_logo"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:layout_gravity="center"
                             android:contentDescription="@string/instagram_logo"
                             android:src="@drawable/ic_instagram_logo" />
@@ -96,8 +91,8 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="4dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -106,9 +101,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/checking_instagram"
+                            android:textAlignment="viewStart"
                             android:textAppearance="@style/TextAppearance.IE.Title3"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textStyle="bold" />
+                            android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:id="@+id/home_version_text"
@@ -127,43 +122,70 @@
                         android:contentDescription="@string/instagram_info"
                         android:padding="12dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/ic_info"
-                        app:tint="?attr/colorOnSurfaceVariant" />
+                        android:src="@drawable/ic_ui_info"
+                        app:tint="?attr/colorPrimary" />
                 </LinearLayout>
 
-                <!-- Status pills: install/module state + variant -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/instagram_multi_button"
+                    style="@style/Widget.IE.Button.Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginTop="-12dp"
+                    android:layout_marginBottom="4dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/multiple_versions_detected"
+                    android:textAppearance="@style/TextAppearance.IE.Footnote"
+                    android:visibility="gone" />
+
+                <View
+                    style="@style/IeHairline"
+                    android:layout_height="0.5dp"
+                    android:layout_marginStart="16dp" />
+
+                <!-- Row: module / install state + variant (trailing value) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:minHeight="52dp"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
 
                     <LinearLayout
                         android:id="@+id/home_status_pill"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:minHeight="28dp"
-                        android:orientation="horizontal"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="12dp">
+                        android:orientation="horizontal">
 
-                        <ImageView
-                            android:id="@+id/home_status_dot"
-                            android:layout_width="8dp"
-                            android:layout_height="8dp"
-                            android:layout_marginEnd="6dp"
-                            android:contentDescription="@null"
-                            android:src="@drawable/bg_home_status_dot" />
+                        <FrameLayout
+                            android:layout_width="30dp"
+                            android:layout_height="30dp">
+
+                            <ImageView
+                                android:id="@+id/home_status_dot"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="@null"
+                                android:src="@drawable/bg_home_status_dot" />
+                        </FrameLayout>
 
                         <TextView
                             android:id="@+id/home_status_pill_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:ellipsize="end"
                             android:maxLines="1"
                             android:text="@string/checking_instagram"
-                            android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized" />
+                            android:textAlignment="viewStart"
+                            android:textAppearance="@style/TextAppearance.IE.Body" />
                     </LinearLayout>
 
                     <TextView
@@ -172,39 +194,28 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:ellipsize="end"
-                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:minHeight="28dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:textAppearance="@style/TextAppearance.IE.Caption.Emphasized"
+                        android:textAppearance="@style/TextAppearance.IE.Body"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:visibility="gone" />
                 </LinearLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/instagram_multi_button"
-                    style="@style/Widget.IE.Button.Tonal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:text="@string/multiple_versions_detected"
-                    android:textAppearance="@style/TextAppearance.IE.Footnote"
-                    android:visibility="gone" />
-
                 <View
                     style="@style/IeHairline"
                     android:layout_height="0.5dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="14dp" />
+                    android:layout_marginStart="58dp" />
 
+                <!-- Row: enabled feature count, opens the Features tab -->
                 <LinearLayout
+                    android:id="@+id/home_features_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:minHeight="52dp"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="12dp">
 
                     <FrameLayout
                         android:id="@+id/home_features_icon_container"
@@ -217,7 +228,7 @@
                             android:layout_height="18dp"
                             android:layout_gravity="center"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_tune" />
+                            android:src="@drawable/ic_ui_tune" />
                     </FrameLayout>
 
                     <TextView
@@ -226,114 +237,92 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:textAppearance="@style/TextAppearance.IE.Subhead.Emphasized"
+                        android:textAppearance="@style/TextAppearance.IE.Body"
                         android:textColor="?attr/colorOnSurface" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_ui_chevron_right"
+                        app:tint="?attr/colorOutline" />
+                </LinearLayout>
+
+                <View
+                    style="@style/IeHairline"
+                    android:layout_height="0.5dp"
+                    android:layout_marginStart="16dp" />
+
+                <!-- Actions: restrained tinted capsules (iOS "bezeled gray"), not solid tiles. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="14dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/launch_instagram_button"
+                        style="@style/Widget.IE.Button.Capsule"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/launch_instagram"
+                        android:text="@string/home_action_launch"
+                        app:icon="@drawable/ic_ui_external" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/restart_instagram_button"
+                        style="@style/Widget.IE.Button.Capsule"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/home_action_restart"
+                        app:icon="@drawable/ic_ui_restart" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/download_instagram_button"
+                        style="@style/Widget.IE.Button.Capsule"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/download_apk"
+                        android:text="@string/home_action_download"
+                        app:icon="@drawable/ic_ui_download" />
                 </LinearLayout>
             </LinearLayout>
         </ps.reso.instaeclipse.ui.glass.GlassCardView>
-
-        <!-- ============ QUICK ACTIONS ============ -->
-        <TextView
-            style="@style/IeHomeSection"
-            android:text="@string/home_section_quick_actions" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/launch_instagram_button"
-                style="@style/Widget.IE.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:contentDescription="@string/launch_instagram"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:minHeight="80dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:text="@string/home_action_launch"
-                android:textAppearance="@style/TextAppearance.IE.Subhead.Emphasized"
-                app:cornerRadius="22dp"
-                app:icon="@drawable/ic_instagram_logo"
-                app:iconGravity="top"
-                app:iconPadding="8dp"
-                app:iconSize="24dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/restart_instagram_button"
-                style="@style/Widget.IE.Button.Tonal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:minHeight="80dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:text="@string/home_action_restart"
-                android:textAppearance="@style/TextAppearance.IE.Subhead.Emphasized"
-                app:cornerRadius="22dp"
-                app:icon="@drawable/ic_restart"
-                app:iconGravity="top"
-                app:iconPadding="8dp"
-                app:iconSize="24dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/download_instagram_button"
-                style="@style/Widget.IE.Button.Tonal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="0dp"
-                android:layout_weight="1"
-                android:contentDescription="@string/download_apk"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:minHeight="80dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:text="@string/home_action_download"
-                android:textAppearance="@style/TextAppearance.IE.Subhead.Emphasized"
-                app:cornerRadius="22dp"
-                app:icon="@drawable/ic_download"
-                app:iconGravity="top"
-                app:iconPadding="8dp"
-                app:iconSize="24dp" />
-        </LinearLayout>
 
         <!-- ============ QUICK SHORTCUTS ============ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="4dp"
-            android:gravity="center_vertical"
+            android:layout_marginTop="22dp"
+            android:gravity="bottom"
             android:orientation="horizontal"
-            android:paddingStart="4dp">
+            android:paddingStart="16dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginBottom="7dp"
                 android:accessibilityHeading="true"
                 android:text="@string/home_section_shortcuts"
-                android:textAppearance="@style/TextAppearance.IE.SectionTitle" />
+                android:textAppearance="@style/IeSectionLabel" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/home_shortcuts_edit"
-                style="@style/Widget.IE.Button.GlassIcon"
+                style="@style/Widget.IE.Button.PlainIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/home_shortcuts_edit"
                 android:tooltipText="@string/home_shortcuts_edit"
-                app:icon="@drawable/ic_home_edit"
+                app:icon="@drawable/ic_ui_edit"
                 tools:ignore="SpeakableTextPresentCheck" />
         </LinearLayout>
 
@@ -369,7 +358,7 @@
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:visibility="gone"
                     app:drawableTint="?attr/colorOnSurfaceVariant"
-                    app:drawableTopCompat="@drawable/ic_home_edit" />
+                    app:drawableTopCompat="@drawable/ic_ui_edit" />
             </LinearLayout>
         </ps.reso.instaeclipse.ui.glass.GlassCardView>
 
@@ -377,7 +366,7 @@
             android:id="@+id/home_shortcuts_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="7dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/home_shortcuts_hint"
@@ -413,7 +402,7 @@
                         android:layout_height="18dp"
                         android:layout_gravity="center"
                         android:contentDescription="@null"
-                        android:src="@drawable/ic_search" />
+                        android:src="@drawable/ic_ui_search" />
                 </FrameLayout>
 
                 <TextView
@@ -433,58 +422,54 @@
             style="@style/IeHomeSection"
             android:text="@string/contributors" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <ps.reso.instaeclipse.utils.ui.LoopScrollView
+            android:id="@+id/contributors_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:layout_marginStart="-16dp"
+            android:layout_marginEnd="-16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="6dp"
+            android:scrollbars="none">
 
-            <ps.reso.instaeclipse.utils.ui.LoopScrollView
-                android:id="@+id/contributors_scroll"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/contributors_container"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingStart="14dp"
-                android:paddingTop="14dp"
-                android:paddingBottom="14dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/contributors_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="4dp" />
-            </ps.reso.instaeclipse.utils.ui.LoopScrollView>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingEnd="4dp" />
+        </ps.reso.instaeclipse.utils.ui.LoopScrollView>
 
         <!-- ============ SPECIAL THANKS ============ -->
         <TextView
             style="@style/IeHomeSection"
             android:text="@string/special_thanks" />
 
-        <ps.reso.instaeclipse.ui.glass.GlassCardView
+        <ps.reso.instaeclipse.utils.ui.LoopScrollView
+            android:id="@+id/special_thanks_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:layout_marginStart="-16dp"
+            android:layout_marginEnd="-16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="6dp"
+            android:scrollbars="none">
 
-            <ps.reso.instaeclipse.utils.ui.LoopScrollView
-                android:id="@+id/special_thanks_scroll"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/special_thanks_container"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingStart="14dp"
-                android:paddingTop="14dp"
-                android:paddingBottom="14dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/special_thanks_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="4dp" />
-            </ps.reso.instaeclipse.utils.ui.LoopScrollView>
-        </ps.reso.instaeclipse.ui.glass.GlassCardView>
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingEnd="4dp" />
+        </ps.reso.instaeclipse.utils.ui.LoopScrollView>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

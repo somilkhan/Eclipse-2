@@ -73,7 +73,7 @@
                         android:background="@drawable/bg_icon_tile_palette"
                         android:contentDescription="@null"
                         android:padding="6dp"
-                        android:src="@drawable/ic_palette"
+                        android:src="@drawable/ic_ui_palette"
                         app:tint="@color/ie_on_accent_tile" />
 
                     <TextView
@@ -84,7 +84,7 @@
                         android:textAppearance="@style/TextAppearance.IE.Body"
                         android:textColor="?attr/colorOnSurface" />
 
-                    <com.google.android.material.materialswitch.MaterialSwitch
+                    <ps.reso.instaeclipse.ui.glass.IosSwitch
                         android:id="@+id/theme_enable_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
                     android:background="@drawable/bg_glass_circle"
                     android:contentDescription="@string/theme_collapse_section"
                     android:padding="6dp"
-                    android:src="@drawable/ic_expand_less"
+                    android:src="@drawable/ic_ui_expand_less"
                     app:tint="?attr/colorPrimary" />
             </LinearLayout>
 
@@ -173,7 +173,7 @@
                     android:background="@drawable/bg_glass_circle"
                     android:contentDescription="@string/theme_collapse_section"
                     android:padding="6dp"
-                    android:src="@drawable/ic_expand_less"
+                    android:src="@drawable/ic_ui_expand_less"
                     app:tint="?attr/colorPrimary" />
             </LinearLayout>
 
@@ -203,7 +203,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/theme_reset_custom"
-                    app:icon="@drawable/ic_restart"
+                    app:icon="@drawable/ic_ui_restart"
                     app:iconGravity="textStart" />
             </LinearLayout>
         </LinearLayout>
@@ -247,8 +247,17 @@
         android:layout_height="56dp"
         android:layout_gravity="top"
         android:background="@android:color/transparent"
-        app:contentInsetStart="0dp"
-        app:navigationContentDescription="@string/back"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="?attr/colorPrimary" />
+        app:contentInsetStart="0dp">
+
+        <ImageButton
+            android:id="@+id/theme_back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/bg_glass_circle"
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_ui_arrow_back"
+            app:tint="?attr/colorPrimary" />
+    </com.google.android.material.appbar.MaterialToolbar>
 </FrameLayout>

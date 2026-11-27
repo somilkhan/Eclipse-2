@@ -61,9 +61,12 @@ android {
         // Robolectric screenshot tests (ScreenshotTest) need merged resources + assets.
         unitTests.includeAndroidResources = true
         unitTests.all {
-            // Pass -Pie.screenshots=true to write PNGs to docs/screenshots/0.8.4/.
-            if (project.hasProperty('ie.screenshots')) {
-                systemProperty 'instaeclipse.screenshotDir', rootProject.file('docs/screenshots/0.8.4').absolutePath
+            // Pass -Pie.screenshots=true to write PNGs to docs/screenshots/0.8.4/, or
+            // -Pie.screenshotSet=review2 to write them to docs/screenshots/0.8.4/review2/.
+            if (project.hasProperty('ie.screenshots') || project.hasProperty('ie.screenshotSet')) {
+                def set = project.findProperty('ie.screenshotSet')
+                systemProperty 'instaeclipse.screenshotDir',
+                        rootProject.file('docs/screenshots/0.8.4' + (set ? '/' + set : '')).absolutePath
             }
             systemProperty 'robolectric.pixelCopyRenderMode', 'hardware'
             // Robolectric's RenderEffect doesn't really blur: screenshots use the CPU blur path
@@ -93,6 +96,8 @@ dependencies {
     implementation "androidx.documentfile:documentfile:1.1.0"
     implementation "androidx.dynamicanimation:dynamicanimation:1.0.0"
     implementation libs.osmdroid
+    // Liquid Glass (MIT, View system): lens refraction tab bar, scroll-edge blur, glass buttons (API 33+).
+    implementation 'com.github.QWEA0:liquidglass:v2.0.11'
 
     // External library for shared preferences
     implementation libs.fileprefs

@@ -33,7 +33,7 @@ import ps.reso.instaeclipse.utils.version.VersionCheckUtility;
  *   <li>{@code ie_scroll} – the main scroller: top padding = status bar, bottom = above the pill;
  *       drives the compact-title fade and pill hide-on-scroll.</li>
  *   <li>{@code ie_large_title} – the large title inside it (its text becomes the compact title).</li>
- *   <li>{@code ie_scroll_list} – a scroller below a fixed header: bottom padding + pill hiding.</li>
+ *   <li>{@code ie_scroll_list} – a scroller below a fixed header: bottom padding + tab bar minimising.</li>
  *   <li>{@code ie_inset_top} / {@code ie_inset_bottom} – pad only that edge.</li>
  *   <li>{@code ie_inset_bottom_margin} – bottom margin so a fixed panel ends above the pill.</li>
  *   <li>{@code ie_float_above_nav} – bottom margin so a FAB floats above the pill.</li>
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GlassNavPill nav;
     private View topBar;
+    private ps.reso.instaeclipse.ui.glass.ScrollEdgeEffect edge;
     private TextView topTitle;
     private Insets bars = Insets.NONE;
     private View currentRoot;
@@ -66,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
         topBar = findViewById(R.id.top_app_bar);
         topTitle = findViewById(R.id.toolbar_title_name);
         nav.setBlurSource(fragmentContainer);
-        ((ps.reso.instaeclipse.ui.glass.BackdropBlurLayout) topBar).setBlurSource(fragmentContainer);
-        ((ps.reso.instaeclipse.ui.glass.BackdropBlurLayout) topBar).setRimVisible(false);
+        edge = ps.reso.instaeclipse.ui.glass.ScrollEdgeEffect.install(
+                findViewById(R.id.content_stage), fragmentContainer);
+        edge.setProgress(0f);
 
         View root = findViewById(R.id.main);
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
@@ -144,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         lp.bottomMargin = bars.bottom + gap;
         nav.setLayoutParams(lp);
         topBar.setPadding(bars.left, bars.top, bars.right, 0);
+        edge.setHeight(bars.top + Math.round(Motion.dp(this, 44 + 26)));
     }
 
     /** Space content must keep free at the bottom so its last row clears the floating pill. */
@@ -155,14 +158,16 @@ public class MainActivity extends AppCompatActivity {
     private void onContentView(View view) {
         currentRoot = view;
         // New screen: show the pill, reset the compact title.
-        nav.setHidden(false);
+        nav.setMinimized(false);
         topBar.setAlpha(0f);
+        edge.setProgress(0f);
         View title = view.findViewWithTag("ie_large_title");
         topTitle.setText(title instanceof TextView ? ((TextView) title).getText() : getString(R.string.app_name));
         applyContentInsets(view);
         View scroller = view.findViewWithTag("ie_scroll");
-        wireScroll(scroller != null ? scroller : view.findViewWithTag("ie_scroll_list"),
-                scroller != null ? title : null);
+        View s = scroller != null ? scroller : view.findViewWithTag("ie_scroll_list");
+        edge.bindScroller(s);
+        wireScroll(s, scroller != null ? title : null);
     }
 
     private static final String[] INSET_TAGS = {"ie_scroll", "ie_inset_top", "ie_inset_bottom",
@@ -229,10 +234,14 @@ public class MainActivity extends AppCompatActivity {
                 float range = Math.max(1f, largeTitle.getHeight() * 0.65f);
                 float p = Math.max(0f, Math.min(1f, (y - start) / range));
                 if (topBar.getAlpha() != p) topBar.setAlpha(p);
+                edge.setProgress(Math.min(1f, Math.max(0f, y / Motion.dp(this, 12))));
             }
             int dy = y - last[0];
             if (Math.abs(dy) > slop) {
-                nav.setHidden(dy > 0 && y > Motion.dp(this, 160));
+                // iOS 26 tabBarMinimizeBehavior(.onScrollDown): shrink while reading, restore on
+                // scroll up or near the top.
+                if (dy > 0 && y > Motion.dp(this, 160)) nav.setMinimized(true);
+                else if (dy < 0 || y < Motion.dp(this, 80)) nav.setMinimized(false);
                 last[0] = y;
             }
         };
@@ -240,14 +249,12 @@ public class MainActivity extends AppCompatActivity {
             ((NestedScrollView) scroller).setOnScrollChangeListener(
                     (NestedScrollView.OnScrollChangeListener) (v, x, y, ox, oy) -> {
                         sink.onScroll(y);
-                        if (y + v.getHeight() >= ((NestedScrollView) v).getChildAt(0).getHeight()) nav.setHidden(false);
                     });
         } else if (scroller instanceof RecyclerView) {
             ((RecyclerView) scroller).addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                     sink.onScroll(rv.computeVerticalScrollOffset());
-                    if (!rv.canScrollVertically(1)) nav.setHidden(false);
                 }
             });
         }

@@ -120,7 +120,7 @@
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/logs_refresh"
                 android:tooltipText="@string/logs_refresh"
-                app:icon="@drawable/ic_logs_refresh" />
+                app:icon="@drawable/ic_ui_refresh" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/logs_copy"
@@ -130,7 +130,7 @@
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/logs_copy"
                 android:tooltipText="@string/logs_copy"
-                app:icon="@drawable/ic_content_copy" />
+                app:icon="@drawable/ic_ui_content_copy" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/logs_save"
@@ -140,7 +140,7 @@
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/logs_save"
                 android:tooltipText="@string/logs_save"
-                app:icon="@drawable/ic_download" />
+                app:icon="@drawable/ic_ui_download" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/logs_clear"
@@ -150,7 +150,7 @@
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/logs_clear"
                 android:tooltipText="@string/logs_clear"
-                app:icon="@drawable/ic_delete" />
+                app:icon="@drawable/ic_ui_delete" />
 
     </LinearLayout>
 
@@ -201,7 +201,7 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:contentDescription="@null"
-                        android:src="@drawable/ic_terminal"
+                        android:src="@drawable/ic_ui_terminal"
                         app:tint="?attr/colorPrimary" />
                 </FrameLayout>
 
@@ -235,7 +235,7 @@
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:text="@string/logs_refresh"
-                    app:icon="@drawable/ic_logs_refresh" />
+                    app:icon="@drawable/ic_ui_refresh" />
             </LinearLayout>
 
             <com.google.android.material.progressindicator.LinearProgressIndicator

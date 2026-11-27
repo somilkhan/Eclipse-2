@@ -51,6 +51,7 @@ public class SecondaryScreensScreenshotTest {
 
     @Before
     public void setUp() {
+        ps.reso.instaeclipse.fragments.HomeFragment.autoScrollEnabled = false;
         org.robolectric.shadows.ShadowChoreographer.setPaused(true);
         org.robolectric.shadows.ShadowChoreographer.setFrameDelay(java.time.Duration.ofMillis(16));
     }
@@ -58,6 +59,7 @@ public class SecondaryScreensScreenshotTest {
     // ---- theme customizer ----
     @Test public void themeLight() { theme("theme_customizer_light", false, 0); }
     @Test @Config(qualifiers = "+night") public void themeDark() { theme("theme_customizer_dark", false, 0); }
+    @Test public void themeLightScrolled() { theme("theme_customizer_scrolled_light", false, 700); }
     @Test @Config(qualifiers = "+night") public void themeDarkScrolled() { theme("theme_customizer_scrolled_dark", false, 700); }
     @Test public void colorPickerLight() { theme("color_picker_light", true, 0); }
     @Test @Config(qualifiers = "+night") public void colorPickerDark() { theme("color_picker_dark", true, 0); }

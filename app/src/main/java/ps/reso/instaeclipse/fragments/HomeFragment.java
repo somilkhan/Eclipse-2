@@ -54,13 +54,16 @@ public class HomeFragment extends Fragment {
 
     // px/s scroll speed — feels like a gentle conveyor belt
     private static final float SCROLL_SPEED_DP_PER_SEC = 48f;
+    /** Carousels rest on the content margin for a moment before drifting. */
+    private static final long AUTO_SCROLL_DELAY_MS = 3000L;
+    /** Screenshot tests turn the drift off so cards are captured at their resting position. */
+    @androidx.annotation.VisibleForTesting
+    public static boolean autoScrollEnabled = true;
 
     private static final String PREFS_NAME = "instaeclipse_cache";
     private static final String PREF_PINNED = "homePinnedShortcuts";
     private static final String DEFAULT_PINNED = "isGhostSeen,isGhostTyping,isGhostStory,isAdBlockEnabled";
     private static final int MAX_PINNED = 8;
-
-    private static final int COLOR_INSTAGRAM = 0xFFFF375F;
 
     /**
      * Boolean pref keys that represent user-facing features (mirrors the switches in
@@ -124,20 +127,20 @@ public class HomeFragment extends Fragment {
 
     // Same icons / accent colours FeaturesFragment uses for these rows.
     private static final List<Shortcut> CATALOG = Arrays.asList(
-            new Shortcut("isGhostSeen", R.string.ig_dialog_ghost_hide_dm_seen, R.drawable.ic_eye_off, 0xFF5E5CE6),
-            new Shortcut("isGhostTyping", R.string.ig_dialog_ghost_hide_typing, R.drawable.ic_chat, 0xFF5E5CE6),
-            new Shortcut("isGhostStory", R.string.ig_dialog_ghost_hide_story_views, R.drawable.ic_story_ring, 0xFF5E5CE6),
-            new Shortcut("isGhostViewOnce", R.string.ig_dialog_ghost_hide_view_once, R.drawable.ic_eye_off, 0xFF5E5CE6),
-            new Shortcut("isGhostScreenshot", R.string.ig_dialog_ghost_bypass_screenshot, R.drawable.ic_camera, 0xFF5E5CE6),
-            new Shortcut("enablePostDownload", R.string.ig_dialog_downloader_posts, R.drawable.ic_download, 0xFFFF9F0A),
-            new Shortcut("enableReelDownload", R.string.ig_dialog_downloader_reels, R.drawable.ic_download, 0xFFFF9F0A),
-            new Shortcut("enableStoryDownload", R.string.ig_dialog_downloader_stories, R.drawable.ic_download, 0xFFFF9F0A),
-            new Shortcut("isAdBlockEnabled", R.string.ig_dialog_ad_block_ads, R.drawable.ic_shield, 0xFFFF453A),
-            new Shortcut("customThemeEnabled", R.string.theme_enable, R.drawable.ic_palette, 0xFFFF375F),
-            new Shortcut("disableReels", R.string.ig_dialog_distraction_disable_reels, R.drawable.ic_movie, 0xFF30D158),
-            new Shortcut("disableStories", R.string.ig_dialog_distraction_disable_stories, R.drawable.ic_story_ring, 0xFF30D158),
-            new Shortcut("disableExplore", R.string.ig_dialog_distraction_disable_explore, R.drawable.ic_search, 0xFF30D158),
-            new Shortcut("maxUploadQuality", R.string.ig_dialog_max_upload_quality, R.drawable.ic_upload, 0xFFFF9F0A)
+            new Shortcut("isGhostSeen", R.string.ig_dialog_ghost_hide_dm_seen, R.drawable.ic_ui_eye_off, 0xFF5E5CE6),
+            new Shortcut("isGhostTyping", R.string.ig_dialog_ghost_hide_typing, R.drawable.ic_ui_chat, 0xFF5E5CE6),
+            new Shortcut("isGhostStory", R.string.ig_dialog_ghost_hide_story_views, R.drawable.ic_ui_story_ring, 0xFF5E5CE6),
+            new Shortcut("isGhostViewOnce", R.string.ig_dialog_ghost_hide_view_once, R.drawable.ic_ui_eye_off, 0xFF5E5CE6),
+            new Shortcut("isGhostScreenshot", R.string.ig_dialog_ghost_bypass_screenshot, R.drawable.ic_ui_camera, 0xFF5E5CE6),
+            new Shortcut("enablePostDownload", R.string.ig_dialog_downloader_posts, R.drawable.ic_ui_download, 0xFFFF9F0A),
+            new Shortcut("enableReelDownload", R.string.ig_dialog_downloader_reels, R.drawable.ic_ui_download, 0xFFFF9F0A),
+            new Shortcut("enableStoryDownload", R.string.ig_dialog_downloader_stories, R.drawable.ic_ui_download, 0xFFFF9F0A),
+            new Shortcut("isAdBlockEnabled", R.string.ig_dialog_ad_block_ads, R.drawable.ic_ui_shield, 0xFFFF453A),
+            new Shortcut("customThemeEnabled", R.string.theme_enable, R.drawable.ic_ui_palette, 0xFFFF375F),
+            new Shortcut("disableReels", R.string.ig_dialog_distraction_disable_reels, R.drawable.ic_ui_movie, 0xFF30D158),
+            new Shortcut("disableStories", R.string.ig_dialog_distraction_disable_stories, R.drawable.ic_ui_story_ring, 0xFF30D158),
+            new Shortcut("disableExplore", R.string.ig_dialog_distraction_disable_explore, R.drawable.ic_ui_search, 0xFF30D158),
+            new Shortcut("maxUploadQuality", R.string.ig_dialog_max_upload_quality, R.drawable.ic_ui_upload, 0xFFFF9F0A)
     );
 
     private SharedPreferences localCache;
@@ -215,19 +218,20 @@ public class HomeFragment extends Fragment {
         shortcutsContainer = view.findViewById(R.id.home_shortcuts_container);
         shortcutsEmpty = view.findViewById(R.id.home_shortcuts_empty);
         shortcutsHint = view.findViewById(R.id.home_shortcuts_hint);
-        ((TextView) view.findViewById(R.id.home_app_version)).setText("v" + ps.reso.instaeclipse.BuildConfig.VERSION_NAME);
+        ((TextView) view.findViewById(R.id.home_app_version)).setText(getString(R.string.home_status_version, ps.reso.instaeclipse.BuildConfig.VERSION_NAME));
 
-        int primary = MaterialColors.getColor(view, com.google.android.material.R.attr.colorPrimary);
+        int primary = primary();
         applyTonalSquare(view.findViewById(R.id.home_features_icon_container),
                 view.findViewById(R.id.home_features_icon), primary);
         applyTonalSquare(view.findViewById(R.id.home_howto_icon_container),
                 view.findViewById(R.id.search_icon), primary);
 
-        GradientDrawable variantBg = new GradientDrawable();
-        variantBg.setCornerRadius(dp(14));
-        variantBg.setColor(colorRes(R.color.ie_glass_fill_raised));
-        variantBg.setStroke(Math.max(1, dp(1)), colorRes(R.color.ie_glass_outline));
-        instagramVariantText.setBackground(variantBg);
+        View featuresRow = view.findViewById(R.id.home_features_row);
+        if (featuresRow != null) featuresRow.setOnClickListener(v -> {
+            if (getActivity() instanceof ps.reso.instaeclipse.MainActivity) {
+                ((ps.reso.instaeclipse.MainActivity) getActivity()).selectTab(R.id.nav_features);
+            }
+        });
 
         checkInstagramStatus();
 
@@ -293,7 +297,7 @@ public class HomeFragment extends Fragment {
             activePackage = null;
             instagramStatusText.setText(getString(R.string.not_installed_instagram));
             versionText.setText(getString(R.string.home_status_no_version));
-            instagramLogo.setImageResource(R.drawable.ic_cancel);
+            instagramLogo.setImageResource(R.drawable.ic_ui_cancel);
             applyTonalSquare(logoContainer, instagramLogo, colorRes(R.color.ie_error));
             instagramVariantText.setVisibility(View.GONE);
             instagramMultiButton.setVisibility(View.GONE);
@@ -309,9 +313,11 @@ public class HomeFragment extends Fragment {
                 ? CommonUtils.IG_PACKAGE_NAME
                 : installedPackages.get(0);
 
-        instagramStatusText.setText(getString(R.string.installed_instagram_version));
+        // Hero identity is just the app name; the install/module state lives in the status row below.
+        instagramStatusText.setText(getString(R.string.logging_instagram));
+        instagramStatusText.setContentDescription(getString(R.string.installed_instagram_version));
         instagramLogo.setImageResource(R.drawable.ic_instagram_logo);
-        applyTonalSquare(logoContainer, instagramLogo, COLOR_INSTAGRAM);
+        applyTonalSquare(logoContainer, instagramLogo, primary());
         instagramVariantText.setVisibility(View.VISIBLE);
         instagramInfoIcon.setVisibility(View.VISIBLE);
 
@@ -382,12 +388,9 @@ public class HomeFragment extends Fragment {
             color = colorRes(R.color.ie_ok);
             label = getString(R.string.home_status_installed);
         }
-        GradientDrawable bg = new GradientDrawable();
-        bg.setCornerRadius(dp(14));
-        bg.setColor((color & 0x00FFFFFF) | 0x24000000);
-        statusPill.setBackground(bg);
+        // Grouped-row style: semantic colour only on the status dot, label stays primary text.
         statusDot.setImageTintList(ColorStateList.valueOf(color));
-        statusPillText.setTextColor(color);
+        statusPillText.setTextColor(MaterialColors.getColor(statusPillText, com.google.android.material.R.attr.colorOnSurface));
         statusPillText.setText(label);
     }
 
@@ -536,7 +539,7 @@ public class HomeFragment extends Fragment {
         icon.setContentDescription(null);
         FrameLayout.LayoutParams iconLp = new FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER);
         iconBox.addView(icon, iconLp);
-        applyTonalSquare(iconBox, icon, s.accent);
+        applyTonalSquare(iconBox, icon, primary());
         row.addView(iconBox, new LinearLayout.LayoutParams(dp(30), dp(30)));
 
         LinearLayout texts = new LinearLayout(ctx);
@@ -559,7 +562,7 @@ public class HomeFragment extends Fragment {
         textLp.setMarginEnd(dp(12));
         row.addView(texts, textLp);
 
-        MaterialSwitch sw = new MaterialSwitch(ctx);
+        MaterialSwitch sw = new ps.reso.instaeclipse.ui.glass.IosSwitch(ctx);
         sw.setChecked(localCache.getBoolean(s.key, false));
         sw.setContentDescription(getString(s.labelRes));
         row.addView(sw, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -663,23 +666,21 @@ public class HomeFragment extends Fragment {
     // STYLE HELPERS
     // =========================================================
 
-    /** Settings-style icon tile: solid accent squircle (soft top-light gradient), white glyph. */
+    /** Settings-style icon tile: soft tint of one accent (or a semantic colour) with a glyph in that colour. */
     private void applyTonalSquare(View container, ImageView icon, int accent) {
         if (container == null) return;
-        GradientDrawable bg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{lighten(accent, 0.18f), accent});
+        GradientDrawable bg = new GradientDrawable();
+        boolean night = (getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        bg.setColor((accent & 0x00FFFFFF) | (night ? 0x29000000 : 0x1A000000));
         int w = container.getLayoutParams() != null ? container.getLayoutParams().width : dp(30);
         bg.setCornerRadius(w > 0 ? w * 0.27f : dp(10));
         container.setBackground(bg);
-        if (icon != null) icon.setImageTintList(ColorStateList.valueOf(colorRes(R.color.ie_on_accent_tile)));
+        if (icon != null) icon.setImageTintList(ColorStateList.valueOf(accent));
     }
 
-    private static int lighten(int c, float f) {
-        int r = (c >> 16) & 0xFF, g = (c >> 8) & 0xFF, b = c & 0xFF;
-        r += Math.round((255 - r) * f);
-        g += Math.round((255 - g) * f);
-        b += Math.round((255 - b) * f);
-        return 0xFF000000 | (r << 16) | (g << 8) | b;
+    private int primary() {
+        return MaterialColors.getColor(requireContext(), androidx.appcompat.R.attr.colorPrimary, 0xFF5856D6);
     }
 
     private int colorRes(int res) {
@@ -800,10 +801,18 @@ public class HomeFragment extends Fragment {
         }
 
         void start() {
-            if (running || halfWidth <= 0) return;
+            if (running || halfWidth <= 0 || !autoScrollEnabled) return;
+            // Reduce motion / TalkBack: the strip stays still and scrolls only by hand.
+            if (ps.reso.instaeclipse.ui.glass.Motion.reduceMotion() || touchExploring()) return;
             running = true;
             lastFrame = 0;
-            sv.postOnAnimation(this);
+            sv.postOnAnimationDelayed(this, sv.getScrollX() == 0 ? AUTO_SCROLL_DELAY_MS : 0L);
+        }
+
+        private boolean touchExploring() {
+            android.view.accessibility.AccessibilityManager am = (android.view.accessibility.AccessibilityManager)
+                    sv.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            return am != null && am.isTouchExplorationEnabled();
         }
 
         void stop() {
@@ -854,13 +863,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // A small palette of pleasant, saturated hues for the monogram avatars — each contributor gets
-    // a stable colour derived from their name so the row reads as a set of distinct people.
-    private static final int[] AVATAR_COLORS = {
-            0xFF5E5CE6, 0xFFFF375F, 0xFFFF9F0A, 0xFF30D158, 0xFF64D2FF,
-            0xFFBF5AF2, 0xFFFF9500, 0xFF32D74B, 0xFF0A84FF, 0xFFFFD60A
-    };
-
     private void setupContributorCard(View view, Contributor contributor) {
         TextView nameTextView = view.findViewById(R.id.contributor_name);
         nameTextView.setText(contributor.name());
@@ -874,7 +876,9 @@ public class HomeFragment extends Fragment {
                 char ch = name.charAt(i);
                 if (Character.isLetterOrDigit(ch)) { initial = String.valueOf(Character.toUpperCase(ch)); break; }
             }
-            int color = AVATAR_COLORS[Math.abs(name.hashCode()) % AVATAR_COLORS.length];
+            // Neutral monogram (one-accent palette): tertiary fill + secondary-label initial.
+            int color = colorRes(R.color.ie_fill_tertiary);
+            avatar.setTextColor(colorRes(R.color.ie_on_surface_variant));
             android.graphics.drawable.GradientDrawable circle = new android.graphics.drawable.GradientDrawable();
             circle.setShape(android.graphics.drawable.GradientDrawable.OVAL);
             circle.setColor(color);

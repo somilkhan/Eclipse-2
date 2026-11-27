@@ -98,9 +98,18 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 - [ ] PR opened into `main`
 
 ## UI notes
-- Glass components live in `app/src/main/java/ps/reso/instaeclipse/ui/glass/`: `BackdropBlurLayout` (RenderEffect blur on API 31+, CPU box-blur on 28–30, tinted fallback), `GlassNavPill` (floating nav, spring indicator, haptics, hides on scroll, never for TalkBack), `GlassCardView` (grouped inset rows, hairline + specular rim), `Motion` (reduce-motion / haptics).
-- Edge-to-edge insets are applied by `MainActivity` via view tags on fragment roots: `ie_scroll`, `ie_scroll_list`, `ie_inset_top`, `ie_inset_bottom`, `ie_inset_bottom_margin`, `ie_float_above_nav`.
-- Screenshots: `ie-gradle testDebugUnitTest --tests '*ScreenshotTest*' -Pie.screenshots=true` writes `docs/screenshots/*.png` (light + dark of Home, Home scrolled, Features, Logs, Help). Uses the CPU blur path; `-Pie.hwBlur=true` for RenderEffect. In-Instagram UI (`mods/**`) untouched.
+- iOS 26 "Liquid Glass" redesign (wip/ui). Glass is used only for chrome (tab bar, top scroll edge, back/search controls, dialogs); content cards are opaque grouped-inset rows on #F2F2F7 / black. Single accent: indigo #5856D6 (dark #8B89FF).
+- Glass components in `app/src/main/java/ps/reso/instaeclipse/ui/glass/`:
+  - `LiquidSupport` decides whether the `com.github.QWEA0:liquidglass` library may run (API 33+, native `nativegauss` loads, not battery saver / high contrast, not `-Dinstaeclipse.softBlur`/`noLiquid`). Any library failure calls `markBroken` and everything falls back to `BackdropBlurLayout`.
+  - `SafeLiquidGlassView` wraps the library `LiquidGlassView` and catches `Throwable` while drawing (the library only catches `Exception`, but a missing `.so` throws `UnsatisfiedLinkError`).
+  - `GlassNavPill` is our own tab bar (TalkBack tabs, RTL, haptics). It uses the library glass body plus a clear droplet lens when available, otherwise the in-house glass. It shrinks to a compact capsule when you scroll down and expands when you scroll up or tap it; it doesn't shrink with TalkBack and skips the animation with reduce motion. We don't use the library's `LiquidGlassTabBar` because it swallows every touch, has no accessibility and has an RTL index bug.
+  - `ScrollEdgeEffect` is the top scroll-edge blur: the library `ScrollEdgeBlurView` plus a tint on API 31+, and an edge-fade `BackdropBlurLayout` below that. Used by `MainActivity` (all tabs) and `FeaturesFragment` (behind the title and search field).
+  - `BackdropBlurLayout`: RenderNode blur (API 31+) or CPU blur (28–30), plus the approximated rim refraction (chromatic split), specular rim and edge-fade mode. It turns opaque in high contrast.
+  - `IosSwitch`: 51x31dp, green #34C759 / #30D158, spring thumb, and the knob stretches into translucent glass while it's pressed. It extends `MaterialSwitch`, so listeners and `isChecked` are unchanged.
+- Type: Inter (OFL) as font resources (`res/font/inter*`). The type scale lives in `styles.xml` (`TextAppearance.IE.*`). Icons are Phosphor regular/fill vectors `ic_ui_*` (MIT). The licences are in `third-party/` and `NOTICE`. The in-IG `ic_*` drawables stay as they were (`IconMap` maps old ids to new ones in the companion app).
+- Edge-to-edge insets are applied by `MainActivity` via view tags on fragment roots: `ie_scroll`, `ie_scroll_list`, `ie_large_title`, `ie_inset_top`, `ie_inset_bottom`, `ie_inset_bottom_margin`, `ie_float_above_nav` (guarded by `InsetOverlapTest`).
+- Screenshots: `./gradlew testDebugUnitTest --tests '*ScreenshotTest*' -Pie.screenshotSet=review2` writes `docs/screenshots/0.8.4/review2/`. Robolectric can't run the native/AGSL library, so the screenshots show the in-house CPU fallback. Real lens refraction, the library scroll-edge blur, the drop shadow, the blur behind dialogs and the animations only show on a device. `HomeFragment.autoScrollEnabled` is switched off in the tests so the carousels are captured at rest.
+- In-Instagram UI (`mods/**`) untouched.
 
 ## Things that cannot be fixed client-side on 457
 

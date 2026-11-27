@@ -78,7 +78,7 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         setContentView(R.layout.activity_theme_customizer);
 
         MaterialToolbar toolbar = findViewById(R.id.theme_toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.theme_back).setOnClickListener(v -> finish());
         lightMode = (getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
                 != android.content.res.Configuration.UI_MODE_NIGHT_YES;
@@ -107,9 +107,8 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         enableSwitch.setChecked(enabled);
         enableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> persist());
 
-        List<ThemePreset> modePresets = new java.util.ArrayList<>();
-        for (ThemePreset p : ThemePresets.all())
-            if (ThemePresets.isLightPreset(p.id) == lightMode) modePresets.add(p);
+        // A few curated presets (plus the current selection if it is not one of them).
+        List<ThemePreset> modePresets = CuratedPresets.forMode(lightMode, selectedPresetId);
         presetAdapter = new PresetAdapter(modePresets);
         presetList.setLayoutManager(new GridLayoutManager(this, 2));
         presetList.setAdapter(presetAdapter);
@@ -161,6 +160,8 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
     }
 
     private static int firstLightPresetId() {
+        List<ThemePreset> curated = CuratedPresets.forMode(true, 0);
+        if (!curated.isEmpty()) return curated.get(0).id;
         for (ThemePreset p : ThemePresets.all()) if (ThemePresets.isLightPreset(p.id)) return p.id;
         return 1;
     }
@@ -192,7 +193,7 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
 
     private void setSectionExpanded(View content, ImageView icon, boolean expanded) {
         content.setVisibility(expanded ? View.VISIBLE : View.GONE);
-        icon.setImageResource(expanded ? R.drawable.ic_expand_less : R.drawable.ic_expand_more);
+        icon.setImageResource(expanded ? R.drawable.ic_ui_expand_less : R.drawable.ic_ui_expand_more);
         icon.setContentDescription(getString(expanded ? R.string.theme_collapse_section : R.string.theme_expand_section));
     }
 
@@ -371,7 +372,8 @@ public class ThemeCustomizerActivity extends AppCompatActivity implements Advanc
         public void onBindViewHolder(Holder holder, int position) {
             ThemePreset preset = presets.get(position);
             holder.name.setText(ThemePresets.getDisplayName(holder.itemView.getContext(), preset.id));
-            bindPreview(holder.preview, preset.palette.previewColors());
+            // Only the two colours that define a preset: background and accent (no error swatch).
+            bindPreview(holder.preview, new int[]{preset.palette.background, preset.palette.accent});
             boolean selected = !customMode && preset.id == selectedPresetId;
             // Unselected cards rely on the glass hairline; the selection gets an accent ring.
             holder.card.setStrokeColor(MaterialColors.getColor(holder.card, com.google.android.material.R.attr.colorPrimary));

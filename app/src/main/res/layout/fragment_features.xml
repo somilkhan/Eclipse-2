@@ -31,7 +31,7 @@
                 android:layout_marginEnd="4dp"
                 android:background="@drawable/bg_glass_circle"
                 android:contentDescription="@string/back"
-                android:src="@drawable/ic_arrow_back"
+                android:src="@drawable/ic_ui_arrow_back"
                 android:visibility="gone"
                 app:tint="?attr/colorPrimary" />
 
@@ -57,18 +57,18 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
-            app:boxBackgroundColor="@color/ie_glass_fill"
+            app:boxBackgroundColor="@color/ie_fill_capsule"
             app:boxCornerRadiusBottomEnd="22dp"
             app:boxCornerRadiusBottomStart="22dp"
             app:boxCornerRadiusTopEnd="22dp"
             app:boxCornerRadiusTopStart="22dp"
-            app:boxStrokeColor="@color/ie_glass_outline"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="1.5dp"
+            app:boxStrokeColor="@android:color/transparent"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
             app:endIconMode="clear_text"
             app:endIconTint="?attr/colorOnSurfaceVariant"
             app:hintEnabled="false"
-            app:startIconDrawable="@drawable/ic_search"
+            app:startIconDrawable="@drawable/ic_ui_search"
             app:startIconTint="?attr/colorOnSurfaceVariant">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -90,7 +90,7 @@
         android:id="@+id/recycler_features"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/top_bar"
+        android:layout_alignParentTop="true"
         android:clipToPadding="false"
         android:paddingHorizontal="16dp"
         android:paddingTop="4dp"
@@ -110,6 +110,6 @@
         android:tag="ie_float_above_nav"
         android:text="@string/apply_changes"
         android:visibility="gone"
-        app:icon="@drawable/ic_save" />
+        app:icon="@drawable/ic_ui_save" />
 
 </RelativeLayout>

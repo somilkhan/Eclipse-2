@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tab icon: outline when idle, filled when selected (iOS tab bar convention). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_ui_features_fill" android:state_checked="true" />
+    <item android:drawable="@drawable/ic_ui_features_fill" android:state_selected="true" />
+    <item android:drawable="@drawable/ic_ui_features" />
+</selector>
