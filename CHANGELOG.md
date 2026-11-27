@@ -12,6 +12,11 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
   every settings load and save, and a stale stored value from older builds is corrected.
 
 ### Instagram 458 (458.0.0.0.67) hook fixes
+- Story download crash on 458: the Story photo lookup walked up to 7 levels of the selected
+  Media's object graph on the main thread and called every no-arg String/int/long method it met.
+  On 458 those are JNI-backed Pando getters, and Instagram crashed at the Download tap (posts and
+  reels never used this walk). Story and highlight lookups now read fields only; the method probe
+  stays for voice-message thumbnails, where it is still needed.
 - Instagram 458 deleted the typed per-field getters on its models (Media went from 1368 to 502
   methods) and renamed `com.instagram.user.model.User` to an obfuscated class. Each model still has
   one generic `Object x(int)` accessor keyed by the JSON field name's `String.hashCode()`. New

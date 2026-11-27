@@ -834,8 +834,10 @@ public class StoryDownloadHook {
         String image = FeedVideoDownloadHook.imageUrlFromMedia(context, media);
         if (image != null && FeedVideoDownloadHook.isVideoUrl(image)) image = null;
         if (image != null) return image;
+        // Fields only: this runs on the main thread at the Download tap. Probing every no-arg
+        // method of the reachable 458 Pando models (JNI-backed) crashed Instagram on Stories.
         List<CandidateInfo> candidates = new ArrayList<>();
-        collectImageCandidates(media, candidates, Collections.newSetFromMap(new IdentityHashMap<>()), 0);
+        collectImageCandidates(media, candidates, Collections.newSetFromMap(new IdentityHashMap<>()), 0, false);
         if (!candidates.isEmpty()) {
             candidates.sort((a, b) -> Integer.compare(b.area, a.area));
             return candidates.get(0).url;
@@ -936,7 +938,7 @@ public class StoryDownloadHook {
             if (imageUrl == null) {
                 List<CandidateInfo> candidates = new ArrayList<>();
                 collectImageCandidates(target, candidates,
-                        Collections.newSetFromMap(new IdentityHashMap<>()), 0);
+                        Collections.newSetFromMap(new IdentityHashMap<>()), 0, false);
                 ModuleLog.line("(IE|Story) imageCandidates=" + candidates.size());
                 if (!candidates.isEmpty()) {
                     candidates.sort((a, b) -> Integer.compare(b.area, a.area));
@@ -1122,14 +1124,14 @@ public class StoryDownloadHook {
     /** {url, area} of the largest image candidate reachable from {@code media}, or null. */
     static Object[] largestImage(Object media) {
         List<CandidateInfo> candidates = new ArrayList<>();
-        collectImageCandidates(media, candidates, Collections.newSetFromMap(new IdentityHashMap<>()), 0);
+        collectImageCandidates(media, candidates, Collections.newSetFromMap(new IdentityHashMap<>()), 0, true);
         CandidateInfo best = null;
         for (CandidateInfo c : candidates) if (best == null || c.area > best.area) best = c;
         return best == null ? null : new Object[]{best.url, best.area};
     }
 
     private static void collectImageCandidates(Object obj, List<CandidateInfo> out,
-                                               Set<Object> visited, int depth) {
+                                               Set<Object> visited, int depth, boolean probeMethods) {
         if (obj == null || depth > 7 || out.size() >= 40) return;
         if (!visited.add(obj)) return;
 
@@ -1162,7 +1164,7 @@ public class StoryDownloadHook {
         }
 
         // Method probe for Pando/LiveTree JNI-backed nodes — data not exposed as Java fields
-        if (cn.startsWith("X.") || cn.startsWith("com.instagram.") || cn.startsWith("com.facebook.")) {
+        if (probeMethods && (cn.startsWith("X.") || cn.startsWith("com.instagram.") || cn.startsWith("com.facebook."))) {
             cls = obj.getClass();
             while (cls != null && cls != Object.class) {
                 for (Method m : cls.getDeclaredMethods()) {
@@ -1204,12 +1206,12 @@ public class StoryDownloadHook {
                     if (val == null) continue;
                     if (val instanceof List<?> list) {
                         for (Object item : list)
-                            collectImageCandidates(item, out, visited, depth + 1);
+                            collectImageCandidates(item, out, visited, depth + 1, probeMethods);
                     } else if (!(val instanceof String)) {
                         String vcn = val.getClass().getName();
                         if (vcn.startsWith("X.") || vcn.startsWith("com.instagram.")
                                 || vcn.startsWith("com.facebook.")) {
-                            collectImageCandidates(val, out, visited, depth + 1);
+                            collectImageCandidates(val, out, visited, depth + 1, probeMethods);
                         }
                     }
                 } catch (Throwable ignored) {}
