@@ -27,7 +27,11 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 - First launch after an install or update: the background DexKit pass used every core while
   Instagram was still starting, and Android killed it with "failed to complete startup" (ANR). It
   now starts after Instagram's startup has finished, 1.5 s later, at minimum priority, using half
-  the cores. A cached launch that still takes longer than 1.5 s is logged.
+  the cores.
+- Cached launches: hook installation ran inside `Application.attach` on the main thread and took
+  about 22 s on 458, because some lookups cannot be cached (media adapter, lookups with no result).
+  It now runs on a background thread. Instagram waits at most 1.5 s for it, so the main-activity
+  and startup-tab hooks still go in first, and the rest finish while the feed loads.
 - Hide suggested posts: the FeedItem parser lookup matched Instagram's shared string table
   (`X.0000`) on 458 and hooked nothing. It now goes through `StringTables` and only accepts a class
   that has the parser bridge.

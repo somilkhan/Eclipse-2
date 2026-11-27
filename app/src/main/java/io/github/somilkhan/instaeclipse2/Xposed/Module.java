@@ -70,6 +70,8 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     /** Delay before the first-launch DexKit pass, after Instagram's startup has been posted. */
     private static final long COLD_INSTALL_DELAY_MS = 1500;
+    /** How long Application.attach waits for a cached install before letting Instagram continue. */
+    private static final long WARM_INLINE_BUDGET_MS = 1500;
 
     // List of supported Instagram package names (maintained in CommonUtils)
     private static final List<String> SUPPORTED_PACKAGES = CommonUtils.SUPPORTED_PACKAGES;
@@ -796,54 +798,56 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         ModuleLog.line("(InstaEclipse | ExecGuard): ❌ Failed to hook");
                     }
 
-                    // Every lookup is cached now: later launches install inline.
+                    // Every lookup is cached now: later launches take the warm path.
                     DexKitCache.saveString(CACHE_COMPLETE_KEY, "1");
                     };
 
-                    if (DexKitCache.isCacheValid() && "1".equals(DexKitCache.loadString(CACHE_COMPLETE_KEY))) {
-                        // Warm cache: installing is quick (reflection only), so hooks are in place
-                        // before Instagram's own startup code runs.
-                        long start = android.os.SystemClock.elapsedRealtime();
-                        installFeatureHooks.run();
-                        long took = android.os.SystemClock.elapsedRealtime() - start;
-                        // Runs on the main thread inside Application.attach; a slow warm install
-                        // means some lookup skips the cache and risks a startup ANR.
-                        if (took > 1500) ModuleLog.line("(InstaEclipse): ⚠️ cached hook installation took " + took + " ms");
-                    } else {
-                        // First launch for this Instagram version (or an interrupted one): DexKit has
-                        // to scan the APK, which takes many seconds. Inside Application.attach that
-                        // risks Android killing the app for not finishing startup, before the cache
-                        // is even written. Resolve in the background instead; features turn on a few
-                        // seconds after launch, and from the next launch on everything is cached.
+                    boolean warm = DexKitCache.isCacheValid() && "1".equals(DexKitCache.loadString(CACHE_COMPLETE_KEY));
+                    if (!warm) {
                         // Say why, so a log that repeats this line every launch can be told apart:
                         // "cache reset" = new Instagram or module build; "previous run unfinished" =
                         // Instagram was closed or crashed before the background pass got to the end.
                         ModuleLog.line("(InstaEclipse): first launch for this Instagram version ("
                                 + (DexKitCache.isCacheValid() ? "previous run unfinished" : "cache reset")
                                 + ") — installing hooks in background");
-                        Thread t = new Thread(() -> {
-                            long start = android.os.SystemClock.elapsedRealtime();
-                            try {
-                                installFeatureHooks.run();
-                            } catch (Throwable e) {
-                                // One hook escaping its own try must not stop the cache from being
-                                // marked complete, or every launch repeats the slow DexKit pass.
-                                ModuleLog.line("(InstaEclipse): ❌ background install: " + e);
-                                DexKitCache.saveString(CACHE_COMPLETE_KEY, "1");
-                            }
-                            ModuleLog.line("(InstaEclipse): background hook installation took "
-                                    + (android.os.SystemClock.elapsedRealtime() - start) + " ms");
-                        }, "InstaEclipse-Init");
-                        t.setPriority(Thread.MIN_PRIORITY);
-                        // DexKit runs each query on every core by default. During Instagram's own
-                        // startup that starved the main thread and Android reported "failed to
-                        // complete startup" (ANR) on the first launch after an update. Keep half
-                        // the cores free, and start only once the main looper is idle again:
-                        // posted messages run after bindApplication has returned.
+                    }
+                    Thread t = new Thread(() -> {
+                        long start = android.os.SystemClock.elapsedRealtime();
                         try {
-                            int cores = Runtime.getRuntime().availableProcessors();
-                            dexKitBridge.setThreadNum(Math.max(1, cores / 2));
-                        } catch (Throwable ignored) { }
+                            installFeatureHooks.run();
+                        } catch (Throwable e) {
+                            // One hook escaping its own try must not stop the cache from being
+                            // marked complete, or every launch repeats the slow DexKit pass.
+                            ModuleLog.line("(InstaEclipse): ❌ background install: " + e);
+                            DexKitCache.saveString(CACHE_COMPLETE_KEY, "1");
+                        }
+                        long took = android.os.SystemClock.elapsedRealtime() - start;
+                        if (!warm || took > WARM_INLINE_BUDGET_MS)
+                            ModuleLog.line("(InstaEclipse): " + (warm ? "cached" : "background")
+                                    + " hook installation took " + took + " ms");
+                    }, "InstaEclipse-Init");
+                    // DexKit runs each query on every core by default, which starved Instagram's
+                    // own startup ("failed to complete startup" ANR). Keep half the cores free.
+                    try {
+                        int cores = Runtime.getRuntime().availableProcessors();
+                        dexKitBridge.setThreadNum(Math.max(1, cores / 2));
+                    } catch (Throwable ignored) { }
+                    if (warm) {
+                        // Cached launch: most hooks are reflection only, but some lookups are not
+                        // cacheable (media adapter, negative results) and took 20 s+ on 458 when
+                        // run inline in Application.attach. Run them off the main thread and wait
+                        // a short, bounded time so the early hooks (main activity, startup tab)
+                        // still land before Instagram's first screen; the rest follows shortly.
+                        t.setPriority(Thread.NORM_PRIORITY - 1);
+                        t.start();
+                        try { t.join(WARM_INLINE_BUDGET_MS); } catch (InterruptedException ignored) {
+                            Thread.currentThread().interrupt();
+                        }
+                    } else {
+                        // First launch: the full DexKit scan takes many seconds. Start only once
+                        // the main looper is idle again (posted messages run after bindApplication
+                        // returned) so Android sees startup complete first.
+                        t.setPriority(Thread.MIN_PRIORITY);
                         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(t::start, COLD_INSTALL_DELAY_MS);
                     }
                 }
