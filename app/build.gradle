@@ -14,6 +14,10 @@ android {
         versionCode 19
         versionName '0.8.1'
 
+        // Single source of truth for the GitHub "owner/name" of this project.
+        // Everything in code derives its links from RepoLinks, which reads this field.
+        buildConfigField "String", "GITHUB_REPO", "\"somilkhan/InstaEclipse\""
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
