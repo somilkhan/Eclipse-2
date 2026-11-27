@@ -17,32 +17,61 @@
     <color name="bottom_nav_icon_active">#9B99FF</color>
     <color name="purple_200">#9C27B0</color>
 
-    <!-- ==== 0.7 brand palette (fixed dark, mirrors the in-IG dialog sheet) ==== -->
-    <color name="ie_primary">#9B99FF</color>            <!-- indigo accent -->
-    <color name="ie_on_primary">#1B1930</color>
-    <color name="ie_primary_container">#302E5E</color>
-    <color name="ie_on_primary_container">#E2E0FF</color>
-    <color name="ie_secondary">#C7C5F5</color>
-    <color name="ie_on_secondary">#1E1D30</color>
-    <color name="ie_secondary_container">#2C2B45</color>
-    <color name="ie_on_secondary_container">#E4E2FF</color>
-    <color name="ie_tertiary">#FF8199</color>            <!-- pink accent -->
-    <color name="ie_on_tertiary">#3A0E1B</color>
-    <color name="ie_tertiary_container">#5C1E2C</color>
-    <color name="ie_on_tertiary_container">#FFD9E0</color>
+    <!-- ==== 0.8.4 "liquid glass" palette — LIGHT (values-night/colors.xml holds DARK) ==== -->
+    <color name="ie_primary">#5B57D9</color>
+    <color name="ie_on_primary">#FFFFFF</color>
+    <color name="ie_primary_container">#E4E2FF</color>
+    <color name="ie_on_primary_container">#19164F</color>
+    <color name="ie_secondary">#5D5C73</color>
+    <color name="ie_on_secondary">#FFFFFF</color>
+    <color name="ie_secondary_container">#E7E5F6</color>
+    <color name="ie_on_secondary_container">#1C1B2C</color>
+    <color name="ie_tertiary">#C42B5A</color>
+    <color name="ie_on_tertiary">#FFFFFF</color>
+    <color name="ie_tertiary_container">#FFD9E1</color>
+    <color name="ie_on_tertiary_container">#3F0019</color>
 
-    <color name="ie_background">#17171B</color>
-    <color name="ie_surface">#17171B</color>
-    <color name="ie_on_surface">#F2F2F5</color>
-    <color name="ie_surface_variant">#2C2C34</color>
-    <color name="ie_on_surface_variant">#B8B8C0</color>
-    <color name="ie_surface_lowest">#121216</color>
-    <color name="ie_surface_low">#1C1C22</color>
-    <color name="ie_surface_container">#202027</color>
-    <color name="ie_surface_high">#26262E</color>
-    <color name="ie_surface_highest">#303038</color>
-    <color name="ie_outline">#45454F</color>
-    <color name="ie_outline_variant">#2C2C34</color>
-    <color name="ie_error">#FF6B60</color>
-    <color name="ie_on_error">#3A0906</color>
+    <color name="ie_background">#F2F2F7</color>
+    <color name="ie_surface">#F7F7FB</color>
+    <color name="ie_on_surface">#1C1C1E</color>
+    <color name="ie_surface_variant">#E5E5EC</color>
+    <color name="ie_on_surface_variant">#5C5C66</color>
+    <color name="ie_surface_lowest">#FFFFFF</color>
+    <color name="ie_surface_low">#FAFAFD</color>
+    <color name="ie_surface_container">#F4F4F8</color>
+    <color name="ie_surface_high">#EEEEF3</color>
+    <color name="ie_surface_highest">#E6E6EC</color>
+    <color name="ie_outline">#8E8E96</color>
+    <color name="ie_outline_variant">#D9D9E0</color>
+    <color name="ie_error">#D70015</color>
+    <color name="ie_on_error">#FFFFFF</color>
+
+    <!-- Glass tokens -->
+    <color name="ie_glass_fill">#B8FFFFFF</color>          <!-- content cards / grouped lists -->
+    <color name="ie_glass_fill_raised">#D9FFFFFF</color>   <!-- tiles inside cards, chips -->
+    <color name="ie_glass_outline">#14000000</color>       <!-- outer hairline -->
+    <color name="ie_glass_specular">#FFFFFFFF</color>      <!-- top rim highlight -->
+    <color name="ie_glass_sheen">#33FFFFFF</color>         <!-- soft inner top glow -->
+    <color name="ie_glass_chrome">#A6F7F7FA</color>        <!-- nav pill / top bar over live blur -->
+    <color name="ie_glass_chrome_fallback">#EDF7F7FA</color> <!-- API 28-30: no blur, more opaque -->
+    <color name="ie_glass_indicator">#1F5B57D9</color>     <!-- nav pill selection lens -->
+    <color name="ie_glass_shadow">#291B1B3A</color>
+    <color name="ie_separator">#333C3C43</color>
+    <color name="ie_scrim">#520E0E14</color>
+
+    <!-- Background mesh blobs (alpha applied in bg_mesh.xml) -->
+    <color name="ie_mesh_base">#F2F2F7</color>
+    <color name="ie_mesh_a">#80A9A6FF</color>
+    <color name="ie_mesh_b">#66FFB3C8</color>
+    <color name="ie_mesh_c">#5C9FE3F0</color>
+    <color name="ie_mesh_clear">#00F2F2F7</color>
+
+    <!-- Status / semantic (AA on glass) -->
+    <color name="ie_ok">#1A7F37</color>
+    <color name="ie_warn">#8A5A00</color>
+    <color name="ie_log_ok">#1A7F37</color>
+    <color name="ie_log_warn">#8A5A00</color>
+    <color name="ie_on_accent_tile">#FFFFFF</color>
+    <color name="ie_dialog_bg">#F2F7F7FA</color>
+    <color name="ie_dialog_bg_blur">#E0F7F7FA</color>
 </resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Window background: soft layered "mesh" of three large radial glows over the base colour, so
+     translucent glass surfaces have colour and depth to refract. Static (window-level), so content
+     scrolls over it like a fixed backdrop. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/ie_mesh_base" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:centerX="0.08"
+                android:centerY="0.06"
+                android:endColor="@color/ie_mesh_clear"
+                android:gradientRadius="120%"
+                android:startColor="@color/ie_mesh_a"
+                android:type="radial" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:centerX="1.0"
+                android:centerY="0.42"
+                android:endColor="@color/ie_mesh_clear"
+                android:gradientRadius="95%"
+                android:startColor="@color/ie_mesh_b"
+                android:type="radial" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:centerX="0.15"
+                android:centerY="0.95"
+                android:endColor="@color/ie_mesh_clear"
+                android:gradientRadius="110%"
+                android:startColor="@color/ie_mesh_c"
+                android:type="radial" />
+        </shape>
+    </item>
+</layer-list>

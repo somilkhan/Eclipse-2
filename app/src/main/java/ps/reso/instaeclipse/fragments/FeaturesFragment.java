@@ -398,7 +398,7 @@ public class FeaturesFragment extends Fragment {
         ImageView ivIcon;
         ImageView ivChevron;
         MaterialSwitch swToggle;
-        MaterialCardView cardView;
+        ps.reso.instaeclipse.ui.glass.GlassCardView cardView;
         ItemViewHolder(View v) {
             super(v);
             tvTitle = v.findViewById(R.id.tv_title);
@@ -406,7 +406,7 @@ public class FeaturesFragment extends Fragment {
             ivChevron = v.findViewById(R.id.iv_chevron);
             ivIcon = v.findViewById(R.id.iv_icon);
             swToggle = v.findViewById(R.id.sw_toggle);
-            cardView = (MaterialCardView) v;
+            cardView = (ps.reso.instaeclipse.ui.glass.GlassCardView) v;
         }
     }
 
@@ -460,28 +460,18 @@ public class FeaturesFragment extends Fragment {
                 itemHolder.tvTitle.setText(item.title);
                 bindIcon(itemHolder.ivIcon, item.iconRes, item.accentColor);
 
-                // Master switches get a tinted card + bold text to stand out from regular items
+                // Glass grouped rows: master switches stand out with accent bold text.
                 boolean isMaster = item.type == FeatureItem.TYPE_MASTER_SWITCH;
+                itemHolder.cardView.setCardBackgroundColor(ContextCompat.getColor(
+                        itemHolder.itemView.getContext(), R.color.ie_glass_fill));
                 if (isMaster) {
-                    int bg = MaterialColors.getColor(itemHolder.itemView, com.google.android.material.R.attr.colorSecondaryContainer);
-                    int fg = MaterialColors.getColor(itemHolder.itemView, com.google.android.material.R.attr.colorOnSecondaryContainer);
-                    itemHolder.cardView.setCardBackgroundColor(bg);
-                    itemHolder.tvTitle.setTextColor(fg);
+                    itemHolder.tvTitle.setTextColor(MaterialColors.getColor(itemHolder.itemView, androidx.appcompat.R.attr.colorPrimary));
                     itemHolder.tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
                 } else {
-                    int bg = MaterialColors.getColor(itemHolder.itemView, item.isCategory
-                            ? com.google.android.material.R.attr.colorSurfaceContainer
-                            : com.google.android.material.R.attr.colorSurfaceContainerLow);
                     int defaultTextColor = MaterialColors.getColor(itemHolder.itemView, com.google.android.material.R.attr.colorOnSurface);
-                    itemHolder.cardView.setCardBackgroundColor(bg);
                     itemHolder.tvTitle.setTextColor(item.textColor != 0 ? item.textColor : defaultTextColor);
                     itemHolder.tvTitle.setTypeface(null, android.graphics.Typeface.NORMAL);
                 }
-
-                float largeRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24f, getResources().getDisplayMetrics());
-                float smallRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4f, getResources().getDisplayMetrics());
-
-                ShapeAppearanceModel.Builder shapeBuilder = itemHolder.cardView.getShapeAppearanceModel().toBuilder();
 
                 // Subtitle (category counts) + trailing chevron for rows that open a sub-menu
                 if (item.subtitle != null) {
@@ -495,27 +485,11 @@ public class FeaturesFragment extends Fragment {
                 }
                 itemHolder.ivChevron.setVisibility(item.isNav ? View.VISIBLE : View.GONE);
 
-                // Main-menu rows are standalone rounded cards with a small gap; sub-menu rows stay segmented
-                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) itemHolder.itemView.getLayoutParams();
-                int wantBottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        item.isCategory ? 6f : 2f, getResources().getDisplayMetrics());
-                if (lp.bottomMargin != wantBottom) {
-                    lp.bottomMargin = wantBottom;
-                    itemHolder.itemView.setLayoutParams(lp);
-                }
-
-                if (item.isCategory || item.segmentSize == 1) {
-                    shapeBuilder.setAllCornerSizes(largeRadius);
-                } else if (item.segmentPosition == 0) {
-                    shapeBuilder.setTopLeftCornerSize(largeRadius).setTopRightCornerSize(largeRadius)
-                            .setBottomLeftCornerSize(smallRadius).setBottomRightCornerSize(smallRadius);
-                } else if (item.segmentPosition == item.segmentSize - 1) {
-                    shapeBuilder.setTopLeftCornerSize(smallRadius).setTopRightCornerSize(smallRadius)
-                            .setBottomLeftCornerSize(largeRadius).setBottomRightCornerSize(largeRadius);
-                } else {
-                    shapeBuilder.setAllCornerSizes(smallRadius);
-                }
-                itemHolder.cardView.setShapeAppearanceModel(shapeBuilder.build());
+                // Inset grouped list: rows of one group share a rounded container with inset
+                // separators (aligned with the title when the row has an icon).
+                float dp = getResources().getDisplayMetrics().density;
+                itemHolder.cardView.setSeparatorInset((item.iconRes != 0 ? 60 : 16) * dp);
+                itemHolder.cardView.setSegment(item.segmentPosition, Math.max(1, item.segmentSize));
 
                 // Compute enabled state from conditions
                 boolean switchEnabled = true;
@@ -646,16 +620,26 @@ public class FeaturesFragment extends Fragment {
                 return;
             }
             iconView.setVisibility(View.VISIBLE);
+            // Settings-style solid accent squircle with a white glyph.
             android.graphics.drawable.Drawable icon = ContextCompat.getDrawable(iconView.getContext(), iconRes);
             if (icon != null) {
                 icon = icon.mutate();
-                icon.setColorFilter(new android.graphics.PorterDuffColorFilter(accentColor, android.graphics.PorterDuff.Mode.SRC_IN));
+                icon.setColorFilter(new android.graphics.PorterDuffColorFilter(
+                        ContextCompat.getColor(iconView.getContext(), R.color.ie_on_accent_tile),
+                        android.graphics.PorterDuff.Mode.SRC_IN));
                 iconView.setImageDrawable(icon);
             }
-            android.graphics.drawable.GradientDrawable chipBg = new android.graphics.drawable.GradientDrawable();
-            chipBg.setColor((accentColor & 0x00FFFFFF) | 0x33000000);
-            chipBg.setCornerRadius(iconView.getResources().getDisplayMetrics().density * 10);
+            android.graphics.drawable.GradientDrawable chipBg = new android.graphics.drawable.GradientDrawable(
+                    android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{lighten(accentColor), accentColor});
+            chipBg.setCornerRadius(iconView.getResources().getDisplayMetrics().density * 8);
             iconView.setBackground(chipBg);
+        }
+
+        private int lighten(int c) {
+            int r = (c >> 16) & 0xFF, g = (c >> 8) & 0xFF, b = c & 0xFF;
+            r += (255 - r) * 0.18f; g += (255 - g) * 0.18f; b += (255 - b) * 0.18f;
+            return 0xFF000000 | (r << 16) | (g << 8) | b;
         }
     }
 

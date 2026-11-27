@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API 31+: frosted dialogs — the window blurs what is behind it (cross-window blur). The
+         system turns this off by itself in battery saver / when the device disables blur, and the
+         ~95% opaque tint below keeps text AA either way. -->
+    <style name="ThemeOverlay.IE.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.IE.Dialog</item>
+        <item name="backgroundTint">@color/ie_dialog_bg_blur</item>
+        <item name="android:backgroundDimAmount">0.22</item>
+        <item name="android:windowBlurBehindEnabled">true</item>
+        <item name="android:windowBlurBehindRadius">28dp</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.IE.Title</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.IE.Button.DialogText</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.IE.Button.DialogText</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.IE.Button.DialogText</item>
+    </style>
+</resources>
