@@ -11,6 +11,9 @@ Nobody builds or uploads a release APK by hand.
 
 The debug workflow ([`main.yml`](.github/workflows/main.yml)) keeps running unit tests and building
 a debug APK on pushes to `main` and `maintainer/**`, and on every pull request.
+Debug APKs are signed with the same release key (from the secrets below), so a debug build installs
+over a release build and back without uninstalling. Pull requests from forks get no secrets and
+fall back to Gradle's debug key; those APKs need an uninstall before installing.
 
 ## One-time setup: signing key and secrets
 

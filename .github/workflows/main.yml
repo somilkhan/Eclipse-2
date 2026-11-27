@@ -55,11 +55,41 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
 
-      # Step 6: Build the debug APK
+      # Step 6: Sign debug builds with the release key, so they update over release installs.
+      # Secrets are not passed to pull requests from forks; those keep Gradle's debug key.
+      - name: Decode release keystore
+        id: keystore
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::RELEASE_KEYSTORE_BASE64 not set; the debug APK uses Gradle's debug key."
+            exit 0
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          [ -s "$RUNNER_TEMP/release.jks" ] || { echo "::error::RELEASE_KEYSTORE_BASE64 did not decode to a keystore"; exit 1; }
+          echo "path=$RUNNER_TEMP/release.jks" >> "$GITHUB_OUTPUT"
+
+      # Step 7: Build the debug APK
       - name: Build Debug APK
+        env:
+          IE_KEYSTORE_PATH: ${{ steps.keystore.outputs.path }}
+          IE_KEYSTORE_PASSWORD: ${{ steps.keystore.outputs.path && secrets.RELEASE_KEYSTORE_PASSWORD || '' }}
+          IE_KEY_ALIAS: ${{ steps.keystore.outputs.path && secrets.RELEASE_KEY_ALIAS || '' }}
+          IE_KEY_PASSWORD: ${{ steps.keystore.outputs.path && secrets.RELEASE_KEY_PASSWORD || '' }}
         run: ./gradlew assembleDebug
 
-      # Step 7: Upload the debug APK as an artifact
+      - name: Show debug APK signer
+        run: |
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$apksigner" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | grep -E "DN|SHA-256"
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
+
+      # Step 8: Upload the debug APK as an artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:

@@ -45,6 +45,12 @@ android {
     }
 
     buildTypes {
+        // Debug builds use the release key too when it is available (CI), so a debug APK can be
+        // installed over a release one and back without a signature conflict. Without the key
+        // (local builds, pull requests from forks) Gradle's own debug key is used as before.
+        debug {
+            if (releaseSigningReady) signingConfig signingConfigs.release
+        }
         release {
             if (releaseSigningReady) signingConfig signingConfigs.release
             minifyEnabled false
