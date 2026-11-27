@@ -32,7 +32,7 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 - [ ] Hooks B
 - [ ] Features
 - [ ] UI
-- [ ] Bugs
+- [x] Bugs (see docs/BUGFIXES-0.8.4.md)
 - [ ] Merged, build + tests green, CHANGELOG written
 - [ ] PR opened into `main`
 
