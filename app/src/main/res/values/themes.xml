@@ -44,9 +44,15 @@
         <item name="colorError">@color/ie_error</item>
         <item name="colorOnError">@color/ie_on_error</item>
 
-        <!-- Inter everywhere (dialogs, menus, inputs, toasts included). -->
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <!-- Inter everywhere: default TextView appearance (a theme-level fontFamily would
+             override every textAppearance's weight, so it is set via appearances only). -->
+        <item name="android:textAppearance">@style/TextAppearance.IE.Default</item>
+        <item name="android:textAppearanceSmall">@style/TextAppearance.IE.Default.Small</item>
+        <item name="android:textAppearanceMedium">@style/TextAppearance.IE.Default.Medium</item>
+        <item name="android:textAppearanceLarge">@style/TextAppearance.IE.Default.Large</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.IE.Display.Large</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.IE.Display.Medium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.IE.Display.Small</item>
 
         <!-- Type scale (SF-like rhythm, all sp so it follows the user's font scale) -->
         <item name="textAppearanceHeadlineLarge">@style/TextAppearance.IE.LargeTitle</item>

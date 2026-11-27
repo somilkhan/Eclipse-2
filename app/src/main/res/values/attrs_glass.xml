@@ -10,6 +10,10 @@
         <!-- Corner radius; negative = capsule (height / 2). -->
         <attr name="ieCornerRadius" format="dimension" />
         <attr name="ieBlurRadius" format="dimension" />
+        <!-- Lens rim: content near the edge is refracted inward (fallback of the real lens). -->
+        <attr name="ieRefraction" format="boolean" />
+        <!-- Scroll edge effect: blur + tint fade out towards the bottom edge, no rim. -->
+        <attr name="ieEdgeFade" format="boolean" />
     </declare-styleable>
     <declare-styleable name="GlassNavPill">
         <attr name="ieMenu" format="reference" />

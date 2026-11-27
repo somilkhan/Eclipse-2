@@ -46,6 +46,8 @@ public class ScreenshotTest {
     @Test @Config(qualifiers = "+night") public void homeScrolledDark() { render("home_scrolled_dark", null, true, 900); }
     @Test public void featuresLight() { render("features_light", new FeaturesFragment(), false); }
     @Test @Config(qualifiers = "+night") public void featuresDark() { render("features_dark", new FeaturesFragment(), true); }
+    @Test public void featuresScrolledLight() { render("features_scrolled_light", new FeaturesFragment(), false, 700); }
+    @Test @Config(qualifiers = "+night") public void featuresScrolledDark() { render("features_scrolled_dark", new FeaturesFragment(), true, 700); }
     @Test public void logsLight() { render("logs_light", new LoggingFragment(), false); }
     @Test @Config(qualifiers = "+night") public void logsDark() { render("logs_dark", new LoggingFragment(), true); }
     @Test public void helpLight() { render("help_light", new HelpFragment(), false); }
@@ -55,6 +57,7 @@ public class ScreenshotTest {
     public void setUp() {
         // Infinite animations (auto-scrolling carousels, indeterminate progress) would otherwise
         // keep the paused looper busy forever: give frames a real 16 ms cadence.
+        ps.reso.instaeclipse.fragments.HomeFragment.autoScrollEnabled = false;
         org.robolectric.shadows.ShadowChoreographer.setPaused(true);
         org.robolectric.shadows.ShadowChoreographer.setFrameDelay(java.time.Duration.ofMillis(16));
     }
@@ -77,7 +80,9 @@ public class ScreenshotTest {
         ScreenshotSupport.applyPhoneInsets(activity);
         idle();
         if (scrollDp > 0) {
-            View scroller = activity.findViewById(R.id.fragment_container).findViewWithTag("ie_scroll");
+            View container = activity.findViewById(R.id.fragment_container);
+            View scroller = container.findViewWithTag("ie_scroll");
+            if (scroller == null) scroller = container.findViewWithTag("ie_scroll_list");
             int px = Math.round(scrollDp * activity.getResources().getDisplayMetrics().density);
             if (scroller != null) scroller.scrollBy(0, px);
             idle();
