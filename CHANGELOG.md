@@ -1,6 +1,47 @@
 # Changelog
+## 0.9.0 (versionCode 23), for Instagram 458.0.0.0.67
 
-## Unreleased
+Clone app support, automatic crash reports, the story download fix for Instagram 458 and 19
+new switches ported from Piko. Every new Piko switch is off by default.
+
+> Not yet tested on a device. All of this passed CI (unit tests and build) and the hook points were
+> checked against Instagram 458.0.0.0.57 bytecode. If something breaks, attach the report from the
+> `Crash reports` folder (on by default) to an issue.
+
+### Fixes
+- Story download crash on 458: the Story photo lookup walked up to 7 levels of the selected
+  Media's object graph on the main thread and called every no-arg String/int/long method it met.
+  On 458 those are JNI-backed Pando getters, and Instagram crashed at the Download tap (posts and
+  reels never used this walk). Story and highlight lookups now read fields only; the method probe
+  stays for voice-message thumbnails, where it is still needed.
+
+### Supported apps
+- Added InstaAlpha (`com.instaalpha.android`) next to Instafel (`com.instafel.android`). The
+  unclone builds of both use `com.instagram.android` and were already covered.
+- LSPosed scope (`xposedscope`) now lists every supported package instead of only
+  `com.instagram.android`, so clones are pre-selected when the module is enabled.
+- DM conversation menu hook no longer checks for `com.instagram.android` only.
+- Trusted clones: App settings → "Clone apps" lists installed clones. Trusting one pins its
+  current signing key (SHA-256) in the companion's private prefs (not synced, not backed up).
+  A trusted clone gets live settings sync both ways, downloads into the companion folder and
+  config import; before, all of these were official-Instagram-only ("Companion request denied").
+  A different signer under the same package name is denied until trusted again.
+
+### Crash reports
+- New "Crash reports" section (App settings, default on). When a hooked Instagram crashes, the
+  module writes a report (type, time, app/module/device/Android versions, stack trace, last 400
+  Eclipse 2 log lines) and the companion saves it as `Crash reports/crash_<pkg>_<time>_<kind>.txt`
+  in the chosen folder, else the download folder, else `Download/Eclipse 2/Crash reports`.
+- Java crashes are caught live (`Thread.dispatchUncaughtException`). Native crashes and ANRs are
+  read on the next start from `ApplicationExitInfo` (Android 11+); on Android 12+ the native
+  tombstone is decoded (signal, abort message, crashing-thread backtrace) and the raw
+  `.tombstone.pb` is saved next to it. Undelivered reports stay pending and are retried.
+
+### Settings
+- Ghost Mode master switch: `isGhostModeEnabled` was never tied to the "Enable/disable all"
+  switch, so it was always saved and synced as `false`, even with every Ghost Mode feature on. It
+  now mirrors that switch (on only while all eight Ghost Mode features are on), is recomputed on
+  every settings load and save, and a stale stored value from older builds is corrected.
 
 ### Ported from Piko
 Features from [Piko](https://github.com/crimera/piko) (GPL-3.0) that Eclipse 2 did not already
@@ -62,45 +103,17 @@ default, and each one logs and skips when its target is missing.
   in-app dialog and the companion app. When the time is up, the switches unlock and keep their
   state. Moving the device clock forward ends the lock early.
 
+### Known limits
+- Reels share/save/like hiding and Piko's story-count tray filter are not ported (see #8).
+- Native crash and ANR reports need Android 11+ and are saved on the next Instagram start.
+- New settings text is English only for now.
+
 ## 0.8.4 (versionCode 22), for Instagram 457.0.0.55.73
 
 First release of Eclipse 2, the maintained continuation at `somilkhan/Eclipse-2` (original author: ReSo7200).
 Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 
-### Supported apps
-- Added InstaAlpha (`com.instaalpha.android`) next to Instafel (`com.instafel.android`). The
-  unclone builds of both use `com.instagram.android` and were already covered.
-- LSPosed scope (`xposedscope`) now lists every supported package instead of only
-  `com.instagram.android`, so clones are pre-selected when the module is enabled.
-- DM conversation menu hook no longer checks for `com.instagram.android` only.
-- Trusted clones: App settings → "Clone apps" lists installed clones. Trusting one pins its
-  current signing key (SHA-256) in the companion's private prefs (not synced, not backed up).
-  A trusted clone gets live settings sync both ways, downloads into the companion folder and
-  config import; before, all of these were official-Instagram-only ("Companion request denied").
-  A different signer under the same package name is denied until trusted again.
-
-### Crash reports
-- New "Crash reports" section (App settings, default on). When a hooked Instagram crashes, the
-  module writes a report (type, time, app/module/device/Android versions, stack trace, last 400
-  Eclipse 2 log lines) and the companion saves it as `Crash reports/crash_<pkg>_<time>_<kind>.txt`
-  in the chosen folder, else the download folder, else `Download/Eclipse 2/Crash reports`.
-- Java crashes are caught live (`Thread.dispatchUncaughtException`). Native crashes and ANRs are
-  read on the next start from `ApplicationExitInfo` (Android 11+); on Android 12+ the native
-  tombstone is decoded (signal, abort message, crashing-thread backtrace) and the raw
-  `.tombstone.pb` is saved next to it. Undelivered reports stay pending and are retried.
-
-### Settings
-- Ghost Mode master switch: `isGhostModeEnabled` was never tied to the "Enable/disable all"
-  switch, so it was always saved and synced as `false`, even with every Ghost Mode feature on. It
-  now mirrors that switch (on only while all eight Ghost Mode features are on), is recomputed on
-  every settings load and save, and a stale stored value from older builds is corrected.
-
 ### Instagram 458 (458.0.0.0.67) hook fixes
-- Story download crash on 458: the Story photo lookup walked up to 7 levels of the selected
-  Media's object graph on the main thread and called every no-arg String/int/long method it met.
-  On 458 those are JNI-backed Pando getters, and Instagram crashed at the Download tap (posts and
-  reels never used this walk). Story and highlight lookups now read fields only; the method probe
-  stays for voice-message thumbnails, where it is still needed.
 - Instagram 458 deleted the typed per-field getters on its models (Media went from 1368 to 502
   methods) and renamed `com.instagram.user.model.User` to an obfuscated class. Each model still has
   one generic `Object x(int)` accessor keyed by the JSON field name's `String.hashCode()`. New
