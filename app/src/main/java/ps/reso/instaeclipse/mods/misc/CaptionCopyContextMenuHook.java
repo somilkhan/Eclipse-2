@@ -149,7 +149,7 @@ public class CaptionCopyContextMenuHook {
             Object[] values = (Object[]) mediaOptionEnumClass.getMethod("values").invoke(null);
             for (String candidate : CARRIER_CANDIDATES) {
                 for (Object v : values) {
-                    if (v.toString().equals(candidate)) {
+                    if (enumName(v).equals(candidate)) {
                         copyCaptionOptionValue = v;
                         break;
                     }
@@ -160,7 +160,7 @@ public class CaptionCopyContextMenuHook {
                 ModuleLog.line("(IE|Caption) ❌ No usable carrier MediaOption$Option found");
             for (String candidate : TRANSLATE_CARRIER_CANDIDATES) {
                 for (Object v : values) {
-                    if (v != copyCaptionOptionValue && v.toString().equals(candidate)) {
+                    if (v != copyCaptionOptionValue && enumName(v).equals(candidate)) {
                         translateCaptionOptionValue = v;
                         break;
                     }
@@ -169,7 +169,7 @@ public class CaptionCopyContextMenuHook {
             }
             if (translateCaptionOptionValue != null)
                 EXTRA_REEL_LABELS.put(translateCaptionOptionValue.toString(), R.string.ig_caption_translate_menu_item);
-            for (Object v : values) if (v.toString().equals("COPY_LINK")) copyLinkOptionForLabels = v;
+            for (Object v : values) if (enumName(v).equals("COPY_LINK")) copyLinkOptionForLabels = v;
         } catch (Throwable t) {
             ModuleLog.line("(IE|Caption) ❌ loadMediaOptionEnum: " + t);
         }
@@ -397,13 +397,13 @@ public class CaptionCopyContextMenuHook {
             Object firstVal = null;
             for (Object v : btnVals) {
                 if (firstVal == null) firstVal = v;
-                if (enumNormalValue == null && v.toString().equalsIgnoreCase("normal")) {
+                if (enumNormalValue == null && enumName(v).equalsIgnoreCase("normal")) {
                     enumNormalValue = v;
                 }
             }
             if (enumNormalValue == null) {
                 for (Object v : btnVals) {
-                    if (v.toString().equalsIgnoreCase("action")) { enumNormalValue = v; break; }
+                    if (enumName(v).equalsIgnoreCase("action")) { enumNormalValue = v; break; }
                 }
             }
             if (enumNormalValue == null) enumNormalValue = firstVal;
@@ -1111,5 +1111,10 @@ public class CaptionCopyContextMenuHook {
         } catch (Throwable t) {
             ModuleLog.line("(IE|Caption) ❌ Copy: " + t);
         }
+    }
+
+    /** Enum constant name; IG enums often override toString() with a server value. */
+    private static String enumName(Object v) {
+        return v instanceof Enum<?> ? ((Enum<?>) v).name() : String.valueOf(v);
     }
 }

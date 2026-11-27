@@ -108,7 +108,7 @@ public class PostDownloadContextMenuHook {
                     "com.instagram.feed.media.mediaoption.MediaOption$Option");
             Object[] values = (Object[]) mediaOptionEnumClass.getMethod("values").invoke(null);
             for (Object v : values) {
-                String name = v.toString();
+                String name = enumName(v);
                 if (downloadOptionValue == null && name.equals("DOWNLOAD")) {
                     downloadOptionValue = v;
                 } else if (copyLinkOptionValue == null && name.equals("COPY_LINK")) {
@@ -172,12 +172,12 @@ public class PostDownloadContextMenuHook {
                         Object first = null;
                         for (Object v : vals) {
                             if (first == null) first = v;
-                            if (enumNormalValue == null && v.toString().equalsIgnoreCase("normal"))
+                            if (enumNormalValue == null && enumName(v).equalsIgnoreCase("normal"))
                                 enumNormalValue = v;
                         }
                         if (enumNormalValue == null)
                             for (Object v : vals)
-                                if (v.toString().equalsIgnoreCase("action")) { enumNormalValue = v; break; }
+                                if (enumName(v).equalsIgnoreCase("action")) { enumNormalValue = v; break; }
                         if (enumNormalValue == null) enumNormalValue = first;
                     } catch (Throwable ignored) {}
                 }
@@ -253,13 +253,13 @@ public class PostDownloadContextMenuHook {
             Object firstVal = null;
             for (Object v : btnVals) {
                 if (firstVal == null) firstVal = v;
-                if (enumNormalValue == null && v.toString().equalsIgnoreCase("normal")) {
+                if (enumNormalValue == null && enumName(v).equalsIgnoreCase("normal")) {
                     enumNormalValue = v;
                 }
             }
             if (enumNormalValue == null) {
                 for (Object v : btnVals) {
-                    if (v.toString().equalsIgnoreCase("action")) { enumNormalValue = v; break; }
+                    if (enumName(v).equalsIgnoreCase("action")) { enumNormalValue = v; break; }
                 }
             }
             if (enumNormalValue == null) enumNormalValue = firstVal;
@@ -771,5 +771,10 @@ public class PostDownloadContextMenuHook {
             }
         }
         return null;
+    }
+
+    /** Enum constant name; IG enums often override toString() with a server value. */
+    private static String enumName(Object v) {
+        return v instanceof Enum<?> ? ((Enum<?>) v).name() : String.valueOf(v);
     }
 }
