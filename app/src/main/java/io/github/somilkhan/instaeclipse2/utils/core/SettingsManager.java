@@ -62,7 +62,8 @@ public class SettingsManager {
 
         editor.putBoolean("isDevEnabled", FeatureFlags.isDevEnabled);
 
-        // Ghost Mode
+        // Ghost Mode (isGhostModeEnabled mirrors the "Enable/disable all" switch)
+        FeatureFlags.isGhostModeEnabled = FeatureFlags.ghostMasterState();
         editor.putBoolean("isGhostModeEnabled", FeatureFlags.isGhostModeEnabled);
         editor.putBoolean("isGhostSeen", FeatureFlags.isGhostSeen);
         editor.putBoolean("isGhostTyping", FeatureFlags.isGhostTyping);
@@ -232,6 +233,19 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * isGhostModeEnabled is the Ghost Mode master switch: derive it from its child features and
+     * fix a stale stored copy (older builds always saved false), so the prefs Instagram hands the
+     * companion and the sync log agree with the switch. Not stamped: it is never a user choice.
+     */
+    private static void syncGhostMasterState() {
+        boolean master = FeatureFlags.ghostMasterState();
+        FeatureFlags.isGhostModeEnabled = master;
+        if (!prefs.contains("isGhostModeEnabled") || prefs.getBoolean("isGhostModeEnabled", false) != master) {
+            prefs.edit().putBoolean("isGhostModeEnabled", master).apply();
+        }
+    }
+
     /** Marks keys whose value this save changed, so an older companion value never overrides them. */
     private static void stampChangedKeys(java.util.Map<String, ?> before) {
         long now = System.currentTimeMillis();
@@ -258,7 +272,6 @@ public class SettingsManager {
         FeatureFlags.isDevEnabled = prefs.getBoolean("isDevEnabled", false);
 
         // Ghost Mode
-        FeatureFlags.isGhostModeEnabled = prefs.getBoolean("isGhostModeEnabled", false);
         FeatureFlags.isGhostSeen = prefs.getBoolean("isGhostSeen", false);
         FeatureFlags.isGhostTyping = prefs.getBoolean("isGhostTyping", false);
         FeatureFlags.isGhostScreenshot = prefs.getBoolean("isGhostScreenshot", false);
@@ -268,6 +281,7 @@ public class SettingsManager {
         FeatureFlags.allowScreenshots = prefs.getBoolean("allowScreenshots", false);
         FeatureFlags.keepEphemeralMessages = prefs.getBoolean("keepEphemeralMessages", false);
         FeatureFlags.permanentViewMode = prefs.getBoolean("permanentViewMode", false);
+        syncGhostMasterState();
         FeatureFlags.keepUnsentMessages = prefs.getBoolean("keepUnsentMessages", false);
         FeatureFlags.autoClearCache = prefs.getBoolean("autoClearCache", false);
         FeatureFlags.autoClearCacheSizeMb = prefs.getInt("autoClearCacheSizeMb", 100);

@@ -1093,10 +1093,8 @@ public class FeaturesFragment extends Fragment {
 
         defs.add(getString(R.string.feat_features));
         defs.add(Arrays.asList(
-                createMasterSwitch(getString(R.string.ig_dialog_enable_disable_all), Arrays.asList(
-                        "isGhostSeen", "isGhostTyping", "isGhostStory", "isGhostLive",
-                        "isGhostScreenshot", "allowScreenshots", "isGhostViewOnce", "permanentViewMode"
-                )),
+                createMasterSwitch(getString(R.string.ig_dialog_enable_disable_all),
+                        io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags.GHOST_MASTER_KEYS),
                 createSwitch(R.drawable.ic_ui_eye_off, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_dm_seen), "isGhostSeen"),
                 createSwitch(R.drawable.ic_ui_chat, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_typing), "isGhostTyping"),
                 createSwitch(R.drawable.ic_ui_story_ring, "#5E5CE6", getString(R.string.ig_dialog_ghost_hide_story_views), "isGhostStory"),
@@ -2393,7 +2391,16 @@ public class FeaturesFragment extends Fragment {
     private void commitStagedChanges() {
         if (stagedChanges.isEmpty()) return;
 
+        // Keep the cached Ghost Mode master state in line with its child features. Instagram
+        // derives it on its own, so it is only cached here, not broadcast.
+        boolean ghostTouched = false;
+        for (String key : io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags.GHOST_MASTER_KEYS) {
+            if (stagedChanges.containsKey(key)) { ghostTouched = true; break; }
+        }
+        boolean ghostMaster = io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags.ghostMasterState(this::getCurrentState);
+
         SharedPreferences.Editor editor = localCache.edit();
+        if (ghostTouched) editor.putBoolean("isGhostModeEnabled", ghostMaster);
         for (Map.Entry<String, Boolean> entry : stagedChanges.entrySet()) {
             String key = entry.getKey();
             boolean value = entry.getValue();

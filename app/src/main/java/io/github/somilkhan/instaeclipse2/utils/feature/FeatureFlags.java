@@ -15,6 +15,12 @@ public class FeatureFlags {
     public static volatile boolean isDevEnabled = false;
 
     // Ghost Mode
+    /**
+     * State of the Ghost Mode "Enable/disable all" switch: true only while every key in
+     * {@link #GHOST_MASTER_KEYS} is on. Derived, never set on its own: SettingsManager
+     * recomputes it on every load/save so the stored and synced value always matches the
+     * switch the user sees.
+     */
     public static volatile boolean isGhostModeEnabled = false;
     public static volatile boolean isGhostSeen = false;
     public static volatile boolean isGhostTyping = false;
@@ -125,6 +131,25 @@ public class FeatureFlags {
     public static volatile boolean followersHistory = false; // who unfollowed / followed you, checked on your Followers tab
     /** Safe pacing (default ON): random 0.7–1.6 s between bulk items, 3–6 s every 8 (SafePacer). */
     public static volatile boolean safePacing = true;
+
+    /** Features under the Ghost Mode "Enable/disable all" switch (companion and in-app menus). */
+    public static final java.util.List<String> GHOST_MASTER_KEYS = java.util.Collections.unmodifiableList(java.util.Arrays.asList(
+            "isGhostSeen", "isGhostTyping", "isGhostStory", "isGhostLive",
+            "isGhostScreenshot", "allowScreenshots", "isGhostViewOnce", "permanentViewMode"));
+
+    /** Current Ghost Mode master switch state from the live flags (see {@link #isGhostModeEnabled}). */
+    public static boolean ghostMasterState() {
+        return isGhostSeen && isGhostTyping && isGhostStory && isGhostLive
+                && isGhostScreenshot && allowScreenshots && isGhostViewOnce && permanentViewMode;
+    }
+
+    /** Ghost Mode master switch state for an arbitrary key lookup (companion staged/cached prefs). */
+    public static boolean ghostMasterState(java.util.function.Predicate<String> isOn) {
+        for (String key : GHOST_MASTER_KEYS) {
+            if (!isOn.test(key)) return false;
+        }
+        return true;
+    }
 
     /** Boolean prefs whose default is ON (companion UI must show the same default the module uses). */
     public static boolean defaultOn(String key) {
