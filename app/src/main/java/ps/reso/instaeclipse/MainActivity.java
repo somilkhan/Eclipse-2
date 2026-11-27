@@ -165,8 +165,20 @@ public class MainActivity extends AppCompatActivity {
                 scroller != null ? title : null);
     }
 
+    private static final String[] INSET_TAGS = {"ie_scroll", "ie_inset_top", "ie_inset_bottom",
+            "ie_scroll_list", "ie_inset_bottom_margin", "ie_float_above_nav"};
+
     private void applyContentInsets(View root) {
         int bottom = bottomClearance();
+        boolean tagged = false;
+        for (String t : INSET_TAGS) if (root.findViewWithTag(t) != null) { tagged = true; break; }
+        if (!tagged) {
+            // Safety net: a screen without inset tags must still never draw under the status
+            // bar / camera cutout or behind the floating pill.
+            padTagged(root, root, bars.top, bottom);
+            root.setPadding(bars.left, root.getPaddingTop(), bars.right, root.getPaddingBottom());
+            return;
+        }
         padTagged(root, "ie_scroll", bars.top, bottom);
         padTagged(root, "ie_inset_top", bars.top, -1);
         padTagged(root, "ie_inset_bottom", -1, bottom);
@@ -192,6 +204,10 @@ public class MainActivity extends AppCompatActivity {
     private static void padTagged(View root, String tag, int top, int bottom) {
         View v = root.findViewWithTag(tag);
         if (v == null) return;
+        padTagged(root, v, top, bottom);
+    }
+
+    private static void padTagged(View root, View v, int top, int bottom) {
         int[] base = (int[]) v.getTag(R.id.ie_base_padding);
         if (base == null) {
             base = new int[]{v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), v.getPaddingBottom()};
