@@ -24,6 +24,11 @@
 
 ---
 
+> **This is the maintained continuation of InstaEclipse.** InstaEclipse was created by
+> [ReSo7200](https://github.com/ReSo7200) ([original repository](https://github.com/ReSo7200/InstaEclipse)).
+> Development continues here at [somilkhan/InstaEclipse](https://github.com/somilkhan/InstaEclipse)
+> with the full history preserved. See [MAINTAINERS.md](MAINTAINERS.md) and [NOTICE](NOTICE).
+
 <p align="center">
   <a href="https://trendshift.io/repositories/14145?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14145" target="_blank" rel="noopener noreferrer">
     <img src="https://trendshift.io/api/badge/trendshift/repositories/14145/daily?language=Java" alt="ReSo7200%2FInstaEclipse | Trendshift" width="250" height="55"/>
@@ -379,12 +384,25 @@ Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will 
 
 <div align="center">
 
-### Maintainer
+### Original author
 
 <a href="https://github.com/ReSo7200">
   <img src="https://github.com/ReSo7200.png" width="80" alt="ReSo7200" style="border-radius:50%"/><br/>
   <b>ReSo7200</b>
 </a>
+
+<sub>Created InstaEclipse and led it through 0.8.x.</sub>
+
+<br/><br/>
+
+### Maintainer
+
+<a href="https://github.com/somilkhan">
+  <img src="https://github.com/somilkhan.png" width="80" alt="somilkhan" style="border-radius:50%"/><br/>
+  <b>somilkhan</b>
+</a>
+
+<sub>Maintains this continuation.</sub>
 
 <br/><br/>
 
@@ -418,7 +436,8 @@ Pull requests, bug reports, ideas and translations are all welcome.
 
 - Found a bug? [Open a bug report](https://github.com/somilkhan/InstaEclipse/issues/new/choose)
 - Have an idea? [Request a feature](https://github.com/somilkhan/InstaEclipse/issues/new/choose)
-- Want to build something? Fork the repo and open a pull request
+- Want to build something? Fork the repo and open a pull request. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+- Maintainers: see [MAINTAINERS.md](MAINTAINERS.md) and [RELEASING.md](RELEASING.md).
 
 ---
 
