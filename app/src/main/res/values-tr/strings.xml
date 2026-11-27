@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">Ana Sayfa</string>
     <string name="features">Özellikler</string>
     <string name="help">Yardım</string>
@@ -160,9 +160,9 @@
     <string name="logging_clear">Temizle</string>
     <string name="logging_copy">Kopyala</string>
     <string name="logging_copied">Panoya kopyalandı</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
-    <string name="logging_instagram_timeout">Instagram zamanında yanıt vermedi. Yalnızca InstaEclipse günlükleri gösteriliyor.</string>
+    <string name="logging_instagram_timeout">Instagram zamanında yanıt vermedi. Yalnızca Eclipse 2 günlükleri gösteriliyor.</string>
     <string name="logging_no_target">Önce desteklenen bir Instagram uygulaması yükleyin.</string>
     <string name="logging_empty_reply">(arabellek boş - modül etkinken Instagram\'ı açın)</string>
     <string name="logging_placeholder">Henüz günlük yüklenmedi.</string>
@@ -249,9 +249,9 @@
     <string name="ig_dialog_dev_remove_build_expired">Süresi Dolmuş Derleme Uyarısını Kaldır</string>
     <string name="ig_dialog_clear_cache">Hook Önbelleğini Temizle</string>
     <string name="ig_dialog_section_clear_cache">Hook Önbelleğini Temizle</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ Bu, InstaEclipse\'i bir sonraki başlatmada Instagram\'ı yeniden taramaya zorlayacak. Uygulama yeniden başlatılacak.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Bu, Eclipse 2\'i bir sonraki başlatmada Instagram\'ı yeniden taramaya zorlayacak. Uygulama yeniden başlatılacak.</string>
     <string name="ig_dialog_clear_cache_now">Önbelleği Temizle &amp; Yeniden Başlat</string>
-    <string name="ig_dialog_unable_open_ui">InstaEclipse arayüzü açılamıyor.</string>
+    <string name="ig_dialog_unable_open_ui">Eclipse 2 arayüzü açılamıyor.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram açık değil veya hazır değil.</string>
     <string name="ig_dialog_mc_overrides_not_found">mc_overrides.json bulunamadı.</string>
     <string name="ig_dialog_failed_read_config">Yapılandırma okunamadı: %1$s</string>
@@ -308,8 +308,8 @@
     <string name="ig_hide_chats_empty">Gizli sohbet yok. Bir sohbeti gizlemek için açın ve göz kapalı simgesine dokunun.</string>
     <string name="ig_hide_chats_unhide">Gizlemeyi Kaldır</string>
     <string name="ig_hide_chats_hint">Bir sohbeti gizlemek için açın ve sohbet başlığındaki göz kapalı simgesine dokunun.</string>
-    <string name="ig_lock_passcode_hint">Parolanızı Instagram içinden ayarlayın (InstaEclipse menüsünü açın → Kilit).</string>
-    <string name="ig_theme_font_hint">Yazı tipi ve emoji dosyalarınızı Instagram içinden seçin (InstaEclipse menüsü → Özel Tema).</string>
+    <string name="ig_lock_passcode_hint">Parolanızı Instagram içinden ayarlayın (Eclipse 2 menüsünü açın → Kilit).</string>
+    <string name="ig_theme_font_hint">Yazı tipi ve emoji dosyalarınızı Instagram içinden seçin (Eclipse 2 menüsü → Özel Tema).</string>
     <string name="ig_hide_chat_hidden">Sohbet gizlendi — gelen kutunuzdan kaybolacak</string>
     <string name="ig_hide_chat_unhidden">Sohbet gizlemesi kaldırıldı</string>
     <string name="ig_hide_chat_no_thread">Bu sohbet tanımlanamadı</string>
@@ -467,12 +467,12 @@
     <string name="ig_toast_downloading">İndiriliyor…</string>
     <string name="ig_toast_downloading_video">Video indiriliyor…</string>
     <string name="ig_toast_downloading_photo">Fotoğraf indiriliyor…</string>
-    <string name="ig_toast_video_saved">Video InstaEclipse klasörüne kaydedildi</string>
-    <string name="ig_toast_photo_saved">Fotoğraf InstaEclipse klasörüne kaydedildi</string>
-    <string name="ig_toast_saved">InstaEclipse klasörüne kaydedildi</string>
+    <string name="ig_toast_video_saved">Video Eclipse 2 klasörüne kaydedildi</string>
+    <string name="ig_toast_photo_saved">Fotoğraf Eclipse 2 klasörüne kaydedildi</string>
+    <string name="ig_toast_saved">Eclipse 2 klasörüne kaydedildi</string>
     <string name="ig_toast_download_failed">İndirme başarısız: %1$s</string>
     <string name="ig_toast_downloading_reel">Reel indiriliyor…</string>
-    <string name="ig_toast_reel_saved">Reel InstaEclipse klasörüne kaydedildi</string>
+    <string name="ig_toast_reel_saved">Reel Eclipse 2 klasörüne kaydedildi</string>
     <string name="ig_toast_reel_failed">Reel indirme başarısız: %1$s</string>
     <string name="ig_toast_reel_url_not_found">Reel URL\'si bulunamadı</string>
     <string name="ig_toast_post_url_not_found">Gönderi URL\'si bulunamadı</string>
@@ -480,7 +480,7 @@
     <string name="ig_toast_no_media">Medya bulunamadı</string>
     <string name="ig_toast_downloading_story_video">Hikaye videosu indiriliyor…</string>
     <string name="ig_toast_downloading_story_photo">Hikaye fotoğrafı indiriliyor…</string>
-    <string name="ig_toast_story_saved">Hikaye InstaEclipse klasörüne kaydedildi</string>
+    <string name="ig_toast_story_saved">Hikaye Eclipse 2 klasörüne kaydedildi</string>
     <string name="ig_toast_story_url_not_found">Hikaye URL\'si bulunamadı</string>
     <string name="ig_toast_downloading_profile_pic">Profil fotoğrafı indiriliyor…</string>
     <string name="ig_toast_profile_pic_saved">Profil fotoğrafı kaydedildi!</string>
@@ -488,12 +488,12 @@
     <string name="ig_toast_merging_video_audio">Video ve ses birleştiriliyor…</string>
     <string name="ig_toast_downloading_n_items">%1$d öğe indiriliyor…</string>
     <string name="ig_toast_downloading_all_n_items">Tüm %1$d öğe indiriliyor…</string>
-    <string name="ig_toast_all_items_saved">Tüm %1$d öğe InstaEclipse klasörüne kaydedildi</string>
+    <string name="ig_toast_all_items_saved">Tüm %1$d öğe Eclipse 2 klasörüne kaydedildi</string>
     <string name="ig_toast_items_partial_saved">%2$d öğeden %1$d\'si kaydedildi (%3$d başarısız)</string>
     <string name="ig_toast_no_reel_url_scroll">Reel URL\'si bulunamadı — önce reeli kaydırın</string>
     <string name="ig_toast_no_download_folder">İndirme klasörü ayarlanmadı</string>
     <string name="ig_toast_file_saved">Kaydedildi: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse yüklendi 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 yüklendi 🎯</string>
 
     <!-- Downloader carousel UI -->
     <string name="ig_dl_title">İndir</string>
@@ -535,8 +535,8 @@
     <string name="ig_bulk_unsend_go">Geri al</string>
     <string name="ig_bulk_unsend_done">%1$d mesaj geri alındı</string>
     <string name="ig_bulk_unsend_unavailable">Toplu geri alma bu Instagram sürümünde kullanılamıyor</string>
-    <string name="ig_downloader_folder_hint">Klasörü InstaEclipse uygulamasından ayarlayın</string>
-    <string name="lock_code_set_in_ig">Instagram içinde ayarlanır: InstaEclipse menüsü &gt; Kilit. Instagram\'ı açmak için dokunun.</string>
+    <string name="ig_downloader_folder_hint">Klasörü Eclipse 2 uygulamasından ayarlayın</string>
+    <string name="lock_code_set_in_ig">Instagram içinde ayarlanır: Eclipse 2 menüsü &gt; Kilit. Instagram\'ı açmak için dokunun.</string>
     <string name="theme_set_light">Açık mod temaları</string>
     <string name="theme_set_dark">Koyu mod temaları</string>
     <string name="theme_light_same">Karanlık modla aynı tema</string>
@@ -627,20 +627,20 @@
     <string name="ig_locked_coll_unlock">Bu koleksiyonun kilidini aç</string>
     <string name="ig_locked_coll_locked">Koleksiyon kilitlendi: şifreniz istenecek</string>
     <string name="ig_locked_coll_unlocked">Koleksiyon kilidi açıldı</string>
-    <string name="ig_locked_coll_need_passcode">Önce bir şifre belirleyin: Instagram\'daki InstaEclipse ayarları, Kilit</string>
+    <string name="ig_locked_coll_need_passcode">Önce bir şifre belirleyin: Instagram\'daki Eclipse 2 ayarları, Kilit</string>
     <string name="ig_saved_on_profile">Profilinizde Kaydedilenler düğmesi (Instagram\'ı yeniden başlatın)</string>
     <string name="ig_saved_on_profile_button">Kaydedilenler</string>
     <string name="ig_nav_tab_search">Ara</string>
     <string name="ig_nav_tab_order">Sekme sırası</string>
     <string name="ig_nav_tab_order_hint">Alt çubuğu yeniden sıralamak için okları kullanın. Gizli sekmeler yerini korur. Instagram\'a döndüğünüzde geçerli olur.</string>
     <string name="ig_nav_tab_order_reset">Sıfırla</string>
-    <string name="share_dl_label">InstaEclipse ile indir</string>
+    <string name="share_dl_label">Eclipse 2 ile indir</string>
     <string name="share_dl_no_link">Instagram gönderi veya reel bağlantısı bulunamadı</string>
     <string name="share_dl_no_instagram">Instagram yüklü değil</string>
-    <string name="ig_share_dl_loading">InstaEclipse: indirmek için gönderi yükleniyor…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: %1$d dosya kaydediliyor…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: o gönderi yüklenemedi</string>
-    <string name="ig_thread_menu">InstaEclipse sohbet işlemleri</string>
+    <string name="ig_share_dl_loading">Eclipse 2: indirmek için gönderi yükleniyor…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: %1$d dosya kaydediliyor…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: o gönderi yüklenemedi</string>
+    <string name="ig_thread_menu">Eclipse 2 sohbet işlemleri</string>
     <string name="ig_unsent_messages">Gönderilmemiş mesajlar</string>
     <string name="ig_hide_chat_toggle">Sohbeti gizle / göster</string>
     <string name="ig_chat_export_working">Yüklenen mesajlar dışa aktarılıyor…</string>

@@ -390,7 +390,7 @@ public class DialogUtils {
         LinearLayout versions = new LinearLayout(context);
         versions.setOrientation(LinearLayout.HORIZONTAL);
         versions.setGravity(Gravity.CENTER);
-        versions.addView(statusChip(context, "InstaEclipse " + moduleVersion(context), C_TEXT2, null));
+        versions.addView(statusChip(context, "Eclipse 2 " + moduleVersion(context), C_TEXT2, null));
         versions.addView(statusChip(context, I18n.t(context, R.string.menu_chip_instagram, hostVersion(context)), C_TEXT2, null));
         box.addView(versions);
 
@@ -929,7 +929,7 @@ public class DialogUtils {
         showSectionDialog(context, who != null && !who.isEmpty() ? who : I18n.t(context, R.string.ig_dialog_unsent_title), layout, () -> {});
     }
 
-    /** Write the thread's unsent messages as JSON into Download/InstaEclipse/<chat>/ ; returns a
+    /** Write the thread's unsent messages as JSON into Download/Eclipse2/<chat>/ ; returns a
      *  display path, or null on failure. Uses MediaStore on API 29+, direct file otherwise. */
     private static String exportUnsentJson(Context context, String chatName,
                                            java.util.List<io.github.somilkhan.instaeclipse2.utils.ghost.UnsentLog.Entry> entries) {
@@ -954,7 +954,7 @@ public class DialogUtils {
             }
             root.put("messages", arr);
             byte[] data = root.toString(2).getBytes(java.nio.charset.StandardCharsets.UTF_8);
-            String relDir = "Download/InstaEclipse/" + safe;
+            String relDir = "Download/Eclipse2/" + safe;
 
             if (android.os.Build.VERSION.SDK_INT >= 29) {
                 android.content.ContentValues cv = new android.content.ContentValues();
@@ -973,7 +973,7 @@ public class DialogUtils {
             // Fallback: direct file into public Downloads.
             java.io.File dir = new java.io.File(
                     android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS),
-                    "InstaEclipse/" + safe);
+                    "Eclipse2/" + safe);
             if (dir.exists() || dir.mkdirs()) {
                 java.io.File out = new java.io.File(dir, fileName);
                 try (java.io.FileOutputStream fos = new java.io.FileOutputStream(out)) { fos.write(data); }
@@ -2284,10 +2284,10 @@ public class DialogUtils {
         // Where and how files are saved.
         String folderRaw = FeatureFlags.downloaderCustomPath.isEmpty()
                 ? android.os.Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/Download/InstaEclipse"
+                        + "/Download/Eclipse2"
                 : FeatureFlags.downloaderCustomPath;
         // Strip everything up to and including the primary storage root ("…/0/")
-        // so "/storage/emulated/0/Download/InstaEclipse" → "Download/InstaEclipse"
+        // so "/storage/emulated/0/Download/Eclipse2" → "Download/Eclipse2"
         String folderDisplay = folderRaw.replaceFirst("^.*/0/", "");
         layout.addView(sectionHeader(context, I18n.t(context, R.string.ig_dialog_section_downloader_settings)));
         // The folder is picked with the system folder picker, which only the companion app can run.

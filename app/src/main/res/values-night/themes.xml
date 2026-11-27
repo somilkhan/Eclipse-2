@@ -1,3 +1,3 @@
 <resources>
-    <!-- Dark mode is handled by values-night/colors.xml + bools.xml; Theme.InstaEclipse is DayNight. -->
+    <!-- Dark mode is handled by values-night/colors.xml + bools.xml; Theme.Eclipse 2 is DayNight. -->
 </resources>

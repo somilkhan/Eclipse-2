@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="version" translatable="false">v0.8.4</string>
     <string name="home">Beranda</string>
     <string name="features">Fitur</string>
@@ -131,7 +131,7 @@
     <!-- ================================================================ -->
 
     <!-- Common -->
-    <string name="ig_dialog_title" translatable="false">InstaEclipse 🌘</string>
+    <string name="ig_dialog_title" translatable="false">Eclipse 2 🌘</string>
     <string name="ig_dialog_close">Tutup</string>
     <string name="ig_dialog_enable_disable_all">Aktifkan/Nonaktifkan Semua</string>
     <string name="ig_dialog_error">Kesalahan</string>
@@ -173,7 +173,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">Ini akan menimpa Konfigurasi Dev saat ini dengan konfigurasi default bawaan. Lanjutkan?</string>
     <string name="ig_toast_default_config_restored">✅ Konfigurasi default berhasil dipulihkan.</string>
     <string name="ig_dialog_dev_remove_build_expired">Hapus Popup Build Kedaluwarsa</string>
-    <string name="ig_dialog_unable_open_ui">Tidak dapat membuka antarmuka InstaEclipse.</string>
+    <string name="ig_dialog_unable_open_ui">Tidak dapat membuka antarmuka Eclipse 2.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram tidak terbuka atau belum siap.</string>
     <string name="ig_dialog_mc_overrides_not_found">mc_overrides.json tidak ditemukan.</string>
     <string name="ig_dialog_failed_read_config">Gagal membaca konfigurasi: %1$s</string>
@@ -230,8 +230,8 @@
     <string name="ig_bulk_unsend_go">Batalkan kirim</string>
     <string name="ig_bulk_unsend_done">%1$d pesan dibatalkan</string>
     <string name="ig_bulk_unsend_unavailable">Batalkan massal tidak tersedia di versi Instagram ini</string>
-    <string name="ig_downloader_folder_hint">Atur folder dari aplikasi InstaEclipse</string>
-    <string name="lock_code_set_in_ig">Atur di dalam Instagram: menu InstaEclipse &gt; Kunci. Ketuk untuk membuka Instagram.</string>
+    <string name="ig_downloader_folder_hint">Atur folder dari aplikasi Eclipse 2</string>
+    <string name="lock_code_set_in_ig">Atur di dalam Instagram: menu Eclipse 2 &gt; Kunci. Ketuk untuk membuka Instagram.</string>
     <string name="theme_set_light">Tema mode terang</string>
     <string name="theme_set_dark">Tema mode gelap</string>
     <string name="theme_light_same">Tema sama seperti mode gelap</string>
@@ -324,7 +324,7 @@
     <string name="ig_dialog_restart_message">⚠️ Hapus cache aplikasi dan mulai ulang?</string>
     <string name="ig_dialog_clear_cache">Bersihkan Cache Hooks</string>
     <string name="ig_dialog_section_clear_cache">Bersihkan Cache Hooks</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ Ini akan memaksa InstaEclipse untuk memindai ulang Instagram saat peluncuran berikutnya. Aplikasi akan dimulai ulang.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Ini akan memaksa Eclipse 2 untuk memindai ulang Instagram saat peluncuran berikutnya. Aplikasi akan dimulai ulang.</string>
     <string name="ig_dialog_clear_cache_now">Bersihkan Cache &amp; Mulai Ulang</string>
     <string name="ig_dialog_restart_now">Mulai Ulang Sekarang</string>
     <string name="ig_dialog_restart_not_found">Tidak dapat menemukan aplikasi untuk dimulai ulang.</string>
@@ -356,12 +356,12 @@
     <string name="ig_toast_downloading">Mengunduh…</string>
     <string name="ig_toast_downloading_video">Mengunduh video…</string>
     <string name="ig_toast_downloading_photo">Mengunduh foto…</string>
-    <string name="ig_toast_video_saved">Video disimpan ke folder InstaEclipse</string>
-    <string name="ig_toast_photo_saved">Foto disimpan ke folder InstaEclipse</string>
-    <string name="ig_toast_saved">Disimpan ke folder InstaEclipse</string>
+    <string name="ig_toast_video_saved">Video disimpan ke folder Eclipse 2</string>
+    <string name="ig_toast_photo_saved">Foto disimpan ke folder Eclipse 2</string>
+    <string name="ig_toast_saved">Disimpan ke folder Eclipse 2</string>
     <string name="ig_toast_download_failed">Unduhan gagal: %1$s</string>
     <string name="ig_toast_downloading_reel">Mengunduh reel…</string>
-    <string name="ig_toast_reel_saved">Reel disimpan ke folder InstaEclipse</string>
+    <string name="ig_toast_reel_saved">Reel disimpan ke folder Eclipse 2</string>
     <string name="ig_toast_reel_failed">Unduhan reel gagal: %1$s</string>
     <string name="ig_toast_reel_url_not_found">URL reel tidak ditemukan</string>
     <string name="ig_toast_post_url_not_found">URL postingan tidak ditemukan</string>
@@ -369,7 +369,7 @@
     <string name="ig_toast_no_media">Tidak ada media ditemukan</string>
     <string name="ig_toast_downloading_story_video">Mengunduh video story…</string>
     <string name="ig_toast_downloading_story_photo">Mengunduh foto story…</string>
-    <string name="ig_toast_story_saved">Story disimpan ke folder InstaEclipse</string>
+    <string name="ig_toast_story_saved">Story disimpan ke folder Eclipse 2</string>
     <string name="ig_toast_story_url_not_found">URL story tidak ditemukan</string>
     <string name="ig_toast_downloading_profile_pic">Mengunduh foto profil…</string>
     <string name="ig_toast_profile_pic_saved">Foto profil disimpan!</string>
@@ -377,7 +377,7 @@
     <string name="ig_toast_merging_video_audio">Menggabungkan video + audio…</string>
     <string name="ig_toast_downloading_n_items">Mengunduh %1$d item…</string>
     <string name="ig_toast_downloading_all_n_items">Mengunduh semua %1$d item…</string>
-    <string name="ig_toast_all_items_saved">Semua %1$d item disimpan ke folder InstaEclipse</string>
+    <string name="ig_toast_all_items_saved">Semua %1$d item disimpan ke folder Eclipse 2</string>
     <string name="ig_toast_items_partial_saved">%1$d dari %2$d item disimpan (%3$d gagal)</string>
     <string name="ig_toast_no_reel_url_scroll">URL reel tidak ditemukan — gulir reel terlebih dahulu</string>
 
@@ -404,7 +404,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">Folder unduhan belum diatur</string>
     <string name="ig_toast_file_saved">Tersimpan: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse dimuat 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 dimuat 🎯</string>
 
 
     <!-- Update check dialog -->
@@ -455,9 +455,9 @@
     <string name="logging_clear">Bersihkan</string>
     <string name="logging_copy">Salin</string>
     <string name="logging_copied">Disalin ke clipboard</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
-    <string name="logging_instagram_timeout">Instagram tidak merespons tepat waktu. Hanya menampilkan log InstaEclipse.</string>
+    <string name="logging_instagram_timeout">Instagram tidak merespons tepat waktu. Hanya menampilkan log Eclipse 2.</string>
     <string name="logging_no_target">Pasang aplikasi Instagram yang didukung terlebih dahulu.</string>
     <string name="logging_empty_reply">(buffer kosong - buka Instagram dengan modul diaktifkan)</string>
     <string name="logging_placeholder">Belum ada log yang dimuat.</string>
@@ -531,8 +531,8 @@
     <string name="ig_hide_chats_empty">Belum ada obrolan tersembunyi. Buka obrolan dan ketuk tombol mata-dicoret untuk menyembunyikannya.</string>
     <string name="ig_hide_chats_unhide">Tampilkan</string>
     <string name="ig_hide_chats_hint">Untuk menyembunyikan obrolan, buka obrolan tersebut dan ketuk tombol mata-dicoret di header percakapan.</string>
-    <string name="ig_lock_passcode_hint">Atur kode sandi Anda dari dalam Instagram (buka menu InstaEclipse → Kunci).</string>
-    <string name="ig_theme_font_hint">Pilih file font &amp; emoji Anda dari dalam Instagram (menu InstaEclipse → Tema Kustom).</string>
+    <string name="ig_lock_passcode_hint">Atur kode sandi Anda dari dalam Instagram (buka menu Eclipse 2 → Kunci).</string>
+    <string name="ig_theme_font_hint">Pilih file font &amp; emoji Anda dari dalam Instagram (menu Eclipse 2 → Tema Kustom).</string>
     <string name="ig_hide_chat_hidden">Obrolan disembunyikan — akan hilang dari kotak masuk Anda</string>
     <string name="ig_hide_chat_unhidden">Obrolan ditampilkan kembali</string>
     <string name="ig_hide_chat_no_thread">Tidak dapat mengidentifikasi obrolan ini</string>
@@ -619,20 +619,20 @@
     <string name="ig_locked_coll_unlock">Buka kunci koleksi ini</string>
     <string name="ig_locked_coll_locked">Koleksi dikunci: akan meminta kode sandi Anda</string>
     <string name="ig_locked_coll_unlocked">Koleksi dibuka kuncinya</string>
-    <string name="ig_locked_coll_need_passcode">Atur kode sandi dulu: pengaturan InstaEclipse di Instagram, Kunci</string>
+    <string name="ig_locked_coll_need_passcode">Atur kode sandi dulu: pengaturan Eclipse 2 di Instagram, Kunci</string>
     <string name="ig_saved_on_profile">Tombol Tersimpan di profil Anda (mulai ulang Instagram)</string>
     <string name="ig_saved_on_profile_button">Tersimpan</string>
     <string name="ig_nav_tab_search">Cari</string>
     <string name="ig_nav_tab_order">Urutan tab</string>
     <string name="ig_nav_tab_order_hint">Gunakan panah untuk mengurutkan ulang bilah bawah. Tab tersembunyi tetap di tempatnya. Berlaku saat Anda kembali ke Instagram.</string>
     <string name="ig_nav_tab_order_reset">Reset</string>
-    <string name="share_dl_label">Unduh dengan InstaEclipse</string>
+    <string name="share_dl_label">Unduh dengan Eclipse 2</string>
     <string name="share_dl_no_link">Tautan postingan atau reel Instagram tidak ditemukan</string>
     <string name="share_dl_no_instagram">Instagram tidak terpasang</string>
-    <string name="ig_share_dl_loading">InstaEclipse: memuat postingan untuk diunduh…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: menyimpan %1$d file…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: tidak dapat memuat postingan itu</string>
-    <string name="ig_thread_menu">Tindakan obrolan InstaEclipse</string>
+    <string name="ig_share_dl_loading">Eclipse 2: memuat postingan untuk diunduh…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: menyimpan %1$d file…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: tidak dapat memuat postingan itu</string>
+    <string name="ig_thread_menu">Tindakan obrolan Eclipse 2</string>
     <string name="ig_unsent_messages">Pesan tidak terkirim</string>
     <string name="ig_hide_chat_toggle">Sembunyikan / tampilkan obrolan</string>
     <string name="ig_chat_export_working">Mengekspor pesan yang dimuat…</string>

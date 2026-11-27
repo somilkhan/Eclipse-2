@@ -2205,7 +2205,7 @@ public class FeedVideoDownloadHook {
         }
 
         // 4. Legacy API < 29: direct file write
-        File dir = new File(Environment.getExternalStorageDirectory(), "InstaEclipse");
+        File dir = new File(Environment.getExternalStorageDirectory(), "Eclipse2");
         if (nestFolder && username != null && !username.isEmpty()) {
             dir = new File(dir, username);
         }
@@ -2297,11 +2297,11 @@ public class FeedVideoDownloadHook {
      * - If the custom path falls under a known MediaStore root (Download, Pictures, …),
      *   it is used directly (e.g. Pictures/IG).
      * - Otherwise the path is nested under Download/ (e.g. /sdcard/Test55 → Download/Test55).
-     * - Falls back to Download/InstaEclipse when no custom path is set.
+     * - Falls back to Download/Eclipse2 when no custom path is set.
      */
     private static String buildMediaStoreRelPath(String username, boolean nestFolder) {
         String customPath = FeatureFlags.downloaderCustomPath;
-        String base = "Download/InstaEclipse"; // default
+        String base = "Download/Eclipse2"; // default
 
         if (!customPath.isEmpty() && !customPath.startsWith("content://")) {
             String extBase = Environment.getExternalStorageDirectory().getAbsolutePath();

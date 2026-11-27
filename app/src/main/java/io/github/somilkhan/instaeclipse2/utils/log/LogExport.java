@@ -61,7 +61,7 @@ public final class LogExport {
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
         f.setTimeZone(zone);
         StringBuilder sb = new StringBuilder(512);
-        sb.append("InstaEclipse log export\n");
+        sb.append("Eclipse 2 log export\n");
         sb.append("Exported: ").append(f.format(when)).append('\n');
         sb.append("App version: ").append(appVersion(info)).append('\n');
         sb.append("Instagram version: ").append(instagramVersion(info.instagram)).append('\n');

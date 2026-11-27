@@ -2,7 +2,7 @@
 
 ## 0.8.4 (versionCode 22), for Instagram 457.0.0.55.73
 
-First release of InstaEclipse 2, the maintained continuation at `somilkhan/InstaEclipse-2` (original author: ReSo7200).
+First release of Eclipse 2, the maintained continuation at `somilkhan/Eclipse-2` (original author: ReSo7200).
 Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 
 ### Instagram 457 hook fixes
@@ -19,7 +19,7 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 ### Features
 - Logs: "Save to storage" (full log with a diagnostic header), live incremental view, no cut-off.
 - Safe pacing for bulk actions (random delays, on by default).
-- Repo links point at `somilkhan/InstaEclipse-2` through one `BuildConfig.GITHUB_REPO` constant.
+- Repo links point at `somilkhan/Eclipse-2` through one `BuildConfig.GITHUB_REPO` constant.
 - Maintainer docs: README credit, NOTICE, MAINTAINERS.md, CONTRIBUTING.md, RELEASING.md.
 - Release automation: signed APK + GitHub Release on `vX.Y.Z` tags.
 
@@ -31,7 +31,7 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
 - New companion app look: glass tab bar and top bar, solid grouped cards, iOS-style switches, Inter font, thin line icons, eight theme presets and a rebuilt Home screen.
 
 ### Rename and branding
-- The project is now InstaEclipse 2. The package name changed from `ps.reso.instaeclipse` to `io.github.somilkhan.instaeclipse2`, so it installs beside the original and settings do not migrate.
+- The project is now Eclipse 2. The package name changed from `ps.reso.instaeclipse` to `io.github.somilkhan.instaeclipse2`, so it installs beside the original and settings do not migrate.
 - New app icon and logo. The old ones copied Instagram's look and were removed, along with the Instagram glyph inside the app.
 - Disclaimer now states that no Instagram code or files are included.
 

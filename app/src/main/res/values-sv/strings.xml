@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">Hem</string>
     <string name="features">Funktioner</string>
     <string name="help">Hjälp</string>
@@ -146,7 +146,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">Detta skriver över den nuvarande utvecklarkonfigurationen med den inbyggda standardkonfigurationen. Fortsätt?</string>
     <string name="ig_toast_default_config_restored">✅ Standardkonfiguration återställd.</string>
     <string name="ig_dialog_dev_remove_build_expired">Ta bort popup för utgången version</string>
-    <string name="ig_dialog_unable_open_ui">Kan inte öppna InstaEclipse-gränssnittet.</string>
+    <string name="ig_dialog_unable_open_ui">Kan inte öppna Eclipse 2-gränssnittet.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram är inte öppet eller redo.</string>
     <string name="ig_dialog_mc_overrides_not_found">mc_overrides.json hittades inte.</string>
     <string name="ig_dialog_failed_read_config">Det gick inte att läsa konfigurationen: %1$s</string>
@@ -197,8 +197,8 @@
     <string name="ig_bulk_unsend_go">Ångra</string>
     <string name="ig_bulk_unsend_done">%1$d meddelande(n) ångrade</string>
     <string name="ig_bulk_unsend_unavailable">Ångra flera är inte tillgängligt i den här Instagram-versionen</string>
-    <string name="ig_downloader_folder_hint">Välj mappen i InstaEclipse-appen</string>
-    <string name="lock_code_set_in_ig">Ställs in i Instagram: InstaEclipse-menyn &gt; Lås. Tryck för att öppna Instagram.</string>
+    <string name="ig_downloader_folder_hint">Välj mappen i Eclipse 2-appen</string>
+    <string name="lock_code_set_in_ig">Ställs in i Instagram: Eclipse 2-menyn &gt; Lås. Tryck för att öppna Instagram.</string>
     <string name="theme_set_light">Teman för ljust läge</string>
     <string name="theme_set_dark">Teman för mörkt läge</string>
     <string name="theme_light_same">Samma tema som i mörkt läge</string>
@@ -278,7 +278,7 @@
     <string name="ig_dialog_restart_message">⚠️ Rensa appcachen och starta om?</string>
     <string name="ig_dialog_clear_cache">Rensa Hooks-cache</string>
     <string name="ig_dialog_section_clear_cache">Rensa Hooks-cache</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ Detta tvingar InstaEclipse att skanna om Instagram vid nästa start. Appen startas om.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Detta tvingar Eclipse 2 att skanna om Instagram vid nästa start. Appen startas om.</string>
     <string name="ig_dialog_clear_cache_now">Rensa cache &amp; starta om</string>
     <string name="ig_dialog_restart_now">Starta om nu</string>
     <string name="ig_dialog_restart_not_found">Kunde inte hitta appen för omstart.</string>
@@ -310,12 +310,12 @@
     <string name="ig_toast_downloading">Laddar ned…</string>
     <string name="ig_toast_downloading_video">Laddar ned video…</string>
     <string name="ig_toast_downloading_photo">Laddar ned foto…</string>
-    <string name="ig_toast_video_saved">Video sparad i InstaEclipse-mappen</string>
-    <string name="ig_toast_photo_saved">Foto sparat i InstaEclipse-mappen</string>
-    <string name="ig_toast_saved">Sparat i InstaEclipse-mappen</string>
+    <string name="ig_toast_video_saved">Video sparad i Eclipse 2-mappen</string>
+    <string name="ig_toast_photo_saved">Foto sparat i Eclipse 2-mappen</string>
+    <string name="ig_toast_saved">Sparat i Eclipse 2-mappen</string>
     <string name="ig_toast_download_failed">Nedladdning misslyckades: %1$s</string>
     <string name="ig_toast_downloading_reel">Laddar ned reel…</string>
-    <string name="ig_toast_reel_saved">Reel sparad i InstaEclipse-mappen</string>
+    <string name="ig_toast_reel_saved">Reel sparad i Eclipse 2-mappen</string>
     <string name="ig_toast_reel_failed">Reel-nedladdning misslyckades: %1$s</string>
     <string name="ig_toast_reel_url_not_found">Reel-URL hittades inte</string>
     <string name="ig_toast_post_url_not_found">Inläggets URL hittades inte</string>
@@ -323,7 +323,7 @@
     <string name="ig_toast_no_media">Inga media hittades</string>
     <string name="ig_toast_downloading_story_video">Laddar ned story-video…</string>
     <string name="ig_toast_downloading_story_photo">Laddar ned story-foto…</string>
-    <string name="ig_toast_story_saved">Story sparad i InstaEclipse-mappen</string>
+    <string name="ig_toast_story_saved">Story sparad i Eclipse 2-mappen</string>
     <string name="ig_toast_story_url_not_found">Story-URL hittades inte</string>
     <string name="ig_toast_downloading_profile_pic">Laddar ned profilbild…</string>
     <string name="ig_toast_profile_pic_saved">Profilbild sparad!</string>
@@ -331,7 +331,7 @@
     <string name="ig_toast_merging_video_audio">Sammanfogar video och ljud…</string>
     <string name="ig_toast_downloading_n_items">Laddar ned %1$d objekt…</string>
     <string name="ig_toast_downloading_all_n_items">Laddar ned alla %1$d objekt…</string>
-    <string name="ig_toast_all_items_saved">Alla %1$d objekt sparade i InstaEclipse-mappen</string>
+    <string name="ig_toast_all_items_saved">Alla %1$d objekt sparade i Eclipse 2-mappen</string>
     <string name="ig_toast_items_partial_saved">%1$d av %2$d objekt sparade (%3$d misslyckades)</string>
     <string name="ig_toast_no_reel_url_scroll">Reel-URL hittades inte — scrolla igenom reelen först</string>
     <string name="ig_dl_title">Ladda ned</string>
@@ -373,7 +373,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">Ingen nedladdningsmapp angiven</string>
     <string name="ig_toast_file_saved">Sparad: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse laddad 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 laddad 🎯</string>
 
     <!-- Update check dialog -->
     <string name="ig_update_title">Uppdatering tillgänglig</string>
@@ -423,9 +423,9 @@
     <string name="logging_clear">Rensa</string>
     <string name="logging_copy">Kopiera</string>
     <string name="logging_copied">Kopierat till urklipp</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
-    <string name="logging_instagram_timeout">Instagram svarade inte i tid. Visar endast InstaEclipse-loggar.</string>
+    <string name="logging_instagram_timeout">Instagram svarade inte i tid. Visar endast Eclipse 2-loggar.</string>
     <string name="logging_no_target">Installera först en Instagram-app som stöds.</string>
     <string name="logging_empty_reply">(tom buffert - öppna Instagram med modulen aktiverad)</string>
     <string name="logging_placeholder">Inga loggar har laddats ännu.</string>
@@ -499,8 +499,8 @@
     <string name="ig_hide_chats_empty">Inga dolda chattar. Öppna en chatt och tryck på knappen med överkryssat öga för att dölja den.</string>
     <string name="ig_hide_chats_unhide">Visa igen</string>
     <string name="ig_hide_chats_hint">För att dölja en chatt, öppna den och tryck på knappen med överkryssat öga i chattens rubrik.</string>
-    <string name="ig_lock_passcode_hint">Ange din lösenkod inifrån Instagram (öppna InstaEclipse-menyn → Lås).</string>
-    <string name="ig_theme_font_hint">Välj dina teckensnitts- &amp; emoji-filer inifrån Instagram (InstaEclipse-menyn → Anpassat Tema).</string>
+    <string name="ig_lock_passcode_hint">Ange din lösenkod inifrån Instagram (öppna Eclipse 2-menyn → Lås).</string>
+    <string name="ig_theme_font_hint">Välj dina teckensnitts- &amp; emoji-filer inifrån Instagram (Eclipse 2-menyn → Anpassat Tema).</string>
     <string name="ig_hide_chat_hidden">Chatten dold — den försvinner från din inkorg</string>
     <string name="ig_hide_chat_unhidden">Chatten visas igen</string>
     <string name="ig_hide_chat_no_thread">Det gick inte att identifiera denna chatt</string>
@@ -588,20 +588,20 @@
     <string name="ig_locked_coll_unlock">Lås upp den här samlingen</string>
     <string name="ig_locked_coll_locked">Samlingen låst: den frågar efter din kod</string>
     <string name="ig_locked_coll_unlocked">Samlingen upplåst</string>
-    <string name="ig_locked_coll_need_passcode">Ange en kod först: InstaEclipse-inställningar i Instagram, Lås</string>
+    <string name="ig_locked_coll_need_passcode">Ange en kod först: Eclipse 2-inställningar i Instagram, Lås</string>
     <string name="ig_saved_on_profile">Sparat-knapp på din profil (starta om Instagram)</string>
     <string name="ig_saved_on_profile_button">Sparat</string>
     <string name="ig_nav_tab_search">Sök</string>
     <string name="ig_nav_tab_order">Flikordning</string>
     <string name="ig_nav_tab_order_hint">Använd pilarna för att ändra ordningen i nedre fältet. Dolda flikar behåller sin plats. Träder i kraft när du återvänder till Instagram.</string>
     <string name="ig_nav_tab_order_reset">Återställ</string>
-    <string name="share_dl_label">Ladda ned med InstaEclipse</string>
+    <string name="share_dl_label">Ladda ned med Eclipse 2</string>
     <string name="share_dl_no_link">Ingen länk till Instagram-inlägg eller reel hittades</string>
     <string name="share_dl_no_instagram">Instagram är inte installerat</string>
-    <string name="ig_share_dl_loading">InstaEclipse: laddar inlägget för nedladdning…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: sparar %1$d fil(er)…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: kunde inte ladda inlägget</string>
-    <string name="ig_thread_menu">InstaEclipse-chattåtgärder</string>
+    <string name="ig_share_dl_loading">Eclipse 2: laddar inlägget för nedladdning…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: sparar %1$d fil(er)…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: kunde inte ladda inlägget</string>
+    <string name="ig_thread_menu">Eclipse 2-chattåtgärder</string>
     <string name="ig_unsent_messages">Ångrade meddelanden</string>
     <string name="ig_hide_chat_toggle">Dölj / visa chatt</string>
     <string name="ig_chat_export_working">Exporterar laddade meddelanden…</string>

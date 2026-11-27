@@ -14,9 +14,9 @@ body:
       label: Pre-submission checklist
       description: You must check every box before submitting.
       options:
-        - label: I have searched [existing issues](https://github.com/somilkhan/InstaEclipse-2/issues) and this feature has **not already been requested**.
+        - label: I have searched [existing issues](https://github.com/somilkhan/Eclipse-2/issues) and this feature has **not already been requested**.
           required: true
-        - label: This is a feature request for **InstaEclipse**, not a general Instagram feature.
+        - label: This is a feature request for **Eclipse 2**, not a general Instagram feature.
           required: true
         - label: I understand that submitting duplicate requests or ignoring this checklist may result in being blocked from the repo.
           required: true
@@ -26,7 +26,7 @@ body:
     attributes:
       label: Feature summary
       description: Describe the feature you'd like in one or two sentences.
-      placeholder: I'd like InstaEclipse to be able to ...
+      placeholder: I'd like Eclipse 2 to be able to ...
     validations:
       required: true
 

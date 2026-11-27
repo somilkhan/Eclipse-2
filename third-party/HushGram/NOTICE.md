@@ -4,7 +4,7 @@ Initial integration base: ReSo7200/InstaEclipse, commit `74bd7e1bc97386b06b59544
 Current upstream integration base: branch 0.8.1, commit `a3d48ab2034080a85fb7d6af23346eb58067794c`.
 Donor: SysAdminDoc/HushGram, commit `f460a6125d8b7c4da9764e33e16dbb6e297a6bfe`.
 
-HushGram's root LICENSE is GNU GPL version 3, reproduced in this directory. InstaEclipse's original Apache-2.0 LICENSE remains in the repository root. This combined fork includes GPL-3.0 code: distribution must comply with GPLv3 for the combined work, including providing its complete corresponding source and build material, preserving license/copyright notices, and satisfying any applicable installation-information requirement. Apache-2.0 notices for original InstaEclipse code must also remain. Do not distribute the combined APK as Apache-only.
+HushGram's root LICENSE is GNU GPL version 3, reproduced in this directory. The repository root LICENSE is now GNU GPL version 3, which covers the combined work. InstaEclipse's original Apache-2.0 text is kept in LICENSES/Apache-2.0.txt. This combined fork includes GPL-3.0 code, so distribution must comply with GPLv3 for the combined work, including providing its complete corresponding source and build material, preserving license and copyright notices, and satisfying any applicable installation-information requirement. Apache-2.0 notices for original InstaEclipse code must also remain.
 
 Copied and adapted from `extensions/instagram/src/main/java/app/hushgram/extension/instagram/download/`:
 

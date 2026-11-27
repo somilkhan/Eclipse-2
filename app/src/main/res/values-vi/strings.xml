@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">Trang chủ</string>
     <string name="features">Tính năng</string>
     <string name="help">Trợ giúp</string>
@@ -141,7 +141,7 @@
     <string name="logging_clear">Xóa</string>
     <string name="logging_copy">Sao chép</string>
     <string name="logging_copied">Đã sao chép vào bộ nhớ tạm</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
     <string name="logging_instagram_timeout">Instagram không phản hồi kịp thời. Chỉ hiển thị nhật ký ứng dụng.</string>
     <string name="logging_no_target">Vui lòng cài đặt ứng dụng Instagram được hỗ trợ trước.</string>
@@ -228,9 +228,9 @@
     <string name="ig_dialog_dev_remove_build_expired">Chặn thông báo hết hạn bản Build</string>
     <string name="ig_dialog_clear_cache">Xóa bộ nhớ đệm Hooks</string>
     <string name="ig_dialog_section_clear_cache">Xóa bộ nhớ đệm Hooks</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ Thao tác này sẽ buộc InstaEclipse quét lại Instagram ở lần mở tiếp theo. Ứng dụng sẽ tự khởi động lại.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Thao tác này sẽ buộc Eclipse 2 quét lại Instagram ở lần mở tiếp theo. Ứng dụng sẽ tự khởi động lại.</string>
     <string name="ig_dialog_clear_cache_now">Xóa bộ nhớ đệm &amp; Khởi động lại</string>
-    <string name="ig_dialog_unable_open_ui">Không thể mở giao diện InstaEclipse.</string>
+    <string name="ig_dialog_unable_open_ui">Không thể mở giao diện Eclipse 2.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram chưa được mở hoặc chưa sẵn sàng.</string>
     <string name="ig_dialog_mc_overrides_not_found">Không tìm thấy tệp mc_overrides.json.</string>
     <string name="ig_dialog_failed_read_config">Không thể đọc tệp cấu hình: %1$s</string>
@@ -373,12 +373,12 @@
     <string name="ig_toast_downloading">Đang tải xuống…</string>
     <string name="ig_toast_downloading_video">Đang tải video…</string>
     <string name="ig_toast_downloading_photo">Đang tải hình ảnh…</string>
-    <string name="ig_toast_video_saved">Đã lưu video vào thư mục InstaEclipse</string>
-    <string name="ig_toast_photo_saved">Đã lưu hình ảnh vào thư mục InstaEclipse</string>
-    <string name="ig_toast_saved">Đã lưu vào thư mục InstaEclipse</string>
+    <string name="ig_toast_video_saved">Đã lưu video vào thư mục Eclipse 2</string>
+    <string name="ig_toast_photo_saved">Đã lưu hình ảnh vào thư mục Eclipse 2</string>
+    <string name="ig_toast_saved">Đã lưu vào thư mục Eclipse 2</string>
     <string name="ig_toast_download_failed">Tải xuống thất bại: %1$s</string>
     <string name="ig_toast_downloading_reel">Đang tải Reel…</string>
-    <string name="ig_toast_reel_saved">Đã lưu Reel vào thư mục InstaEclipse</string>
+    <string name="ig_toast_reel_saved">Đã lưu Reel vào thư mục Eclipse 2</string>
     <string name="ig_toast_reel_failed">Tải Reel thất bại: %1$s</string>
     <string name="ig_toast_reel_url_not_found">Không tìm thấy liên kết Reel</string>
     <string name="ig_toast_post_url_not_found">Không tìm thấy liên kết bài viết</string>
@@ -386,7 +386,7 @@
     <string name="ig_toast_no_media">Không tìm thấy phương tiện nào</string>
     <string name="ig_toast_downloading_story_video">Đang tải video Story…</string>
     <string name="ig_toast_downloading_story_photo">Đang tải ảnh Story…</string>
-    <string name="ig_toast_story_saved">Đã lưu Story vào thư mục InstaEclipse</string>
+    <string name="ig_toast_story_saved">Đã lưu Story vào thư mục Eclipse 2</string>
     <string name="ig_toast_story_url_not_found">Không tìm thấy liên kết Story</string>
     <string name="ig_toast_downloading_profile_pic">Đang tải ảnh đại diện…</string>
     <string name="ig_toast_profile_pic_saved">Đã lưu ảnh đại diện thành công!</string>
@@ -394,12 +394,12 @@
     <string name="ig_toast_merging_video_audio">Đang hợp nhất video và âm thanh…</string>
     <string name="ig_toast_downloading_n_items">Đang tải xuống %1$d mục…</string>
     <string name="ig_toast_downloading_all_n_items">Đang tải xuống tất cả %1$d mục…</string>
-    <string name="ig_toast_all_items_saved">Đã lưu tất cả %1$d mục vào thư mục InstaEclipse</string>
+    <string name="ig_toast_all_items_saved">Đã lưu tất cả %1$d mục vào thư mục Eclipse 2</string>
     <string name="ig_toast_items_partial_saved">Đã lưu %1$d / %2$d mục (%3$d mục thất bại)</string>
     <string name="ig_toast_no_reel_url_scroll">Không tìm thấy liên kết Reel — hãy vuốt xem Reel trước</string>
     <string name="ig_toast_no_download_folder">Chưa chọn thư mục tải xuống</string>
     <string name="ig_toast_file_saved">Đã lưu: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse đã sẵn sàng 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 đã sẵn sàng 🎯</string>
 
     <!-- Downloader carousel UI -->
     <string name="ig_dl_title">Tải xuống</string>

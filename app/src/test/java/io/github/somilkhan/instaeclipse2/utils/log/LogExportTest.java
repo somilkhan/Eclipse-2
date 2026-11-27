@@ -39,7 +39,7 @@ public class LogExportTest {
     @Test
     public void headerHasAllDiagnosticFields() {
         String h = LogExport.header(info(), WHEN, IST);
-        assertTrue(h, h.startsWith("InstaEclipse log export\n"));
+        assertTrue(h, h.startsWith("Eclipse 2 log export\n"));
         assertTrue(h, h.contains("Exported: 2026-11-27 10:00:00 +0530\n"));
         assertTrue(h, h.contains("App version: 0.8.4 (22) release\n"));
         assertTrue(h, h.contains("Instagram version: 457.0.0.55.73 (386314341) [com.instagram.android]\n"));

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">首頁</string>
     <string name="features">功能</string>
     <string name="help">幫助</string>
@@ -146,7 +146,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">這將以內建的預設設定覆蓋目前的開發者設定。是否繼續？</string>
     <string name="ig_toast_default_config_restored">✅ 預設設定已恢復。</string>
     <string name="ig_dialog_dev_remove_build_expired">移除版本過期彈窗</string>
-    <string name="ig_dialog_unable_open_ui">無法開啟 InstaEclipse 介面。</string>
+    <string name="ig_dialog_unable_open_ui">無法開啟 Eclipse 2 介面。</string>
     <string name="ig_dialog_instagram_not_ready">Instagram 未開啟或未就緒。</string>
     <string name="ig_dialog_mc_overrides_not_found">找不到 mc_overrides.json。</string>
     <string name="ig_dialog_failed_read_config">讀取設定失敗：%1$s</string>
@@ -197,8 +197,8 @@
     <string name="ig_bulk_unsend_go">收回</string>
     <string name="ig_bulk_unsend_done">已收回 %1$d 則訊息</string>
     <string name="ig_bulk_unsend_unavailable">此 Instagram 版本不支援批次收回</string>
-    <string name="ig_downloader_folder_hint">請在 InstaEclipse 應用程式中設定資料夾</string>
-    <string name="lock_code_set_in_ig">請在 Instagram 內設定：InstaEclipse 選單 &gt; 鎖定。輕觸以開啟 Instagram。</string>
+    <string name="ig_downloader_folder_hint">請在 Eclipse 2 應用程式中設定資料夾</string>
+    <string name="lock_code_set_in_ig">請在 Instagram 內設定：Eclipse 2 選單 &gt; 鎖定。輕觸以開啟 Instagram。</string>
     <string name="theme_set_light">淺色模式主題</string>
     <string name="theme_set_dark">深色模式主題</string>
     <string name="theme_light_same">與深色模式相同的主題</string>
@@ -278,7 +278,7 @@
     <string name="ig_dialog_restart_message">⚠️ 清除應用程式快取並重新啟動？</string>
     <string name="ig_dialog_clear_cache">清除 Hooks 快取</string>
     <string name="ig_dialog_section_clear_cache">清除 Hooks 快取</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ 這將強制 InstaEclipse 在下次啟動時重新掃描 Instagram。應用程式將重新啟動。</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ 這將強制 Eclipse 2 在下次啟動時重新掃描 Instagram。應用程式將重新啟動。</string>
     <string name="ig_dialog_clear_cache_now">清除快取並重啟</string>
     <string name="ig_dialog_restart_now">立即重新啟動</string>
     <string name="ig_dialog_restart_not_found">找不到要重新啟動的應用程式。</string>
@@ -310,12 +310,12 @@
     <string name="ig_toast_downloading">下載中…</string>
     <string name="ig_toast_downloading_video">正在下載影片…</string>
     <string name="ig_toast_downloading_photo">正在下載相片…</string>
-    <string name="ig_toast_video_saved">影片已儲存至 InstaEclipse 資料夾</string>
-    <string name="ig_toast_photo_saved">相片已儲存至 InstaEclipse 資料夾</string>
-    <string name="ig_toast_saved">已儲存至 InstaEclipse 資料夾</string>
+    <string name="ig_toast_video_saved">影片已儲存至 Eclipse 2 資料夾</string>
+    <string name="ig_toast_photo_saved">相片已儲存至 Eclipse 2 資料夾</string>
+    <string name="ig_toast_saved">已儲存至 Eclipse 2 資料夾</string>
     <string name="ig_toast_download_failed">下載失敗：%1$s</string>
     <string name="ig_toast_downloading_reel">正在下載 Reels…</string>
-    <string name="ig_toast_reel_saved">Reels 已儲存至 InstaEclipse 資料夾</string>
+    <string name="ig_toast_reel_saved">Reels 已儲存至 Eclipse 2 資料夾</string>
     <string name="ig_toast_reel_failed">Reels 下載失敗：%1$s</string>
     <string name="ig_toast_reel_url_not_found">找不到 Reels 連結</string>
     <string name="ig_toast_post_url_not_found">找不到貼文連結</string>
@@ -323,7 +323,7 @@
     <string name="ig_toast_no_media">找不到媒體</string>
     <string name="ig_toast_downloading_story_video">正在下載限時動態影片…</string>
     <string name="ig_toast_downloading_story_photo">正在下載限時動態相片…</string>
-    <string name="ig_toast_story_saved">限時動態已儲存至 InstaEclipse 資料夾</string>
+    <string name="ig_toast_story_saved">限時動態已儲存至 Eclipse 2 資料夾</string>
     <string name="ig_toast_story_url_not_found">找不到限時動態連結</string>
     <string name="ig_toast_downloading_profile_pic">正在下載大頭照…</string>
     <string name="ig_toast_profile_pic_saved">大頭照已儲存！</string>
@@ -331,7 +331,7 @@
     <string name="ig_toast_merging_video_audio">正在合併影片與音訊…</string>
     <string name="ig_toast_downloading_n_items">正在下載 %1$d 個項目…</string>
     <string name="ig_toast_downloading_all_n_items">正在下載全部 %1$d 個項目…</string>
-    <string name="ig_toast_all_items_saved">全部 %1$d 個項目已儲存至 InstaEclipse 資料夾</string>
+    <string name="ig_toast_all_items_saved">全部 %1$d 個項目已儲存至 Eclipse 2 資料夾</string>
     <string name="ig_toast_items_partial_saved">%2$d 個項目中已儲存 %1$d 個（%3$d 個失敗）</string>
     <string name="ig_toast_no_reel_url_scroll">找不到 Reels 連結 — 請先滑過 Reels</string>
     <string name="ig_dl_title">下載</string>
@@ -373,7 +373,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">未設定下載資料夾</string>
     <string name="ig_toast_file_saved">已儲存：%1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse 已載入 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 已載入 🎯</string>
 
 
     <!-- Update check dialog -->
@@ -424,9 +424,9 @@
     <string name="logging_clear">清除</string>
     <string name="logging_copy">複製</string>
     <string name="logging_copied">已複製到剪貼簿</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
-    <string name="logging_instagram_timeout">Instagram 未及時回應。僅顯示 InstaEclipse 日誌。</string>
+    <string name="logging_instagram_timeout">Instagram 未及時回應。僅顯示 Eclipse 2 日誌。</string>
     <string name="logging_no_target">請先安裝受支援的 Instagram 應用程式。</string>
     <string name="logging_empty_reply">（緩衝區為空 —— 請在啟用模組的情況下開啟 Instagram）</string>
     <string name="logging_placeholder">尚未載入日誌。</string>
@@ -500,8 +500,8 @@
     <string name="ig_hide_chats_empty">尚無已隱藏對話。開啟一個對話並點擊隱藏眼睛按鈕即可將其隱藏。</string>
     <string name="ig_hide_chats_unhide">取消隱藏</string>
     <string name="ig_hide_chats_hint">若要隱藏對話，請開啟它並點擊對話標題列中的隱藏眼睛按鈕。</string>
-    <string name="ig_lock_passcode_hint">請在 Instagram 內設定您的密碼（開啟 InstaEclipse 選單 → 鎖定）。</string>
-    <string name="ig_theme_font_hint">請在 Instagram 內選擇您的字體和表情檔案（InstaEclipse 選單 → 自訂主題）。</string>
+    <string name="ig_lock_passcode_hint">請在 Instagram 內設定您的密碼（開啟 Eclipse 2 選單 → 鎖定）。</string>
+    <string name="ig_theme_font_hint">請在 Instagram 內選擇您的字體和表情檔案（Eclipse 2 選單 → 自訂主題）。</string>
     <string name="ig_hide_chat_hidden">對話已隱藏 —— 它將從您的收件匣中消失</string>
     <string name="ig_hide_chat_unhidden">對話已取消隱藏</string>
     <string name="ig_hide_chat_no_thread">無法辨識此對話</string>
@@ -588,20 +588,20 @@
     <string name="ig_locked_coll_unlock">解鎖此收藏夾</string>
     <string name="ig_locked_coll_locked">收藏夾已鎖定：將會要求輸入密碼</string>
     <string name="ig_locked_coll_unlocked">收藏夾已解鎖</string>
-    <string name="ig_locked_coll_need_passcode">請先設定密碼：在 Instagram 中開啟 InstaEclipse 設定 → 鎖定</string>
+    <string name="ig_locked_coll_need_passcode">請先設定密碼：在 Instagram 中開啟 Eclipse 2 設定 → 鎖定</string>
     <string name="ig_saved_on_profile">在個人檔案顯示「收藏」按鈕（需重新啟動 Instagram）</string>
     <string name="ig_saved_on_profile_button">收藏</string>
     <string name="ig_nav_tab_search">搜尋</string>
     <string name="ig_nav_tab_order">標籤順序</string>
     <string name="ig_nav_tab_order_hint">使用箭頭重新排列底部列。隱藏的標籤會保留原位。返回 Instagram 後生效。</string>
     <string name="ig_nav_tab_order_reset">重設</string>
-    <string name="share_dl_label">使用 InstaEclipse 下載</string>
+    <string name="share_dl_label">使用 Eclipse 2 下載</string>
     <string name="share_dl_no_link">找不到 Instagram 貼文或 Reels 連結</string>
     <string name="share_dl_no_instagram">尚未安裝 Instagram</string>
-    <string name="ig_share_dl_loading">InstaEclipse：正在載入要下載的貼文…</string>
-    <string name="ig_share_dl_saving">InstaEclipse：正在儲存 %1$d 個檔案…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse：無法載入該貼文</string>
-    <string name="ig_thread_menu">InstaEclipse 聊天操作</string>
+    <string name="ig_share_dl_loading">Eclipse 2：正在載入要下載的貼文…</string>
+    <string name="ig_share_dl_saving">Eclipse 2：正在儲存 %1$d 個檔案…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2：無法載入該貼文</string>
+    <string name="ig_thread_menu">Eclipse 2 聊天操作</string>
     <string name="ig_unsent_messages">已收回訊息</string>
     <string name="ig_hide_chat_toggle">隱藏 / 取消隱藏聊天</string>
     <string name="ig_chat_export_working">正在匯出已載入的訊息…</string>

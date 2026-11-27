@@ -57,7 +57,7 @@ final class DownloadPublisher {
             } catch (IOException failure) { DownloadFiles.check(cancellation); /* existing MediaStore path fallback */ }
         }
         if (Build.VERSION.SDK_INT < 29) {
-            saveRaw(ctx, source, new File(Environment.getExternalStorageDirectory(), "InstaEclipse"),
+            saveRaw(ctx, source, new File(Environment.getExternalStorageDirectory(), "Eclipse2"),
                     filename, mime, owner, usernameFolder, cancellation);
             return;
         }
@@ -117,7 +117,7 @@ final class DownloadPublisher {
     }
 
     static String mediaStorePath(String customPath, String externalRoot, String owner, boolean usernameFolder) {
-        String base = "Download/InstaEclipse";
+        String base = "Download/Eclipse2";
         if (!customPath.isEmpty() && !customPath.startsWith("content://")
                 && customPath.startsWith(externalRoot + "/")) {
             String relative = customPath.substring(externalRoot.length() + 1);

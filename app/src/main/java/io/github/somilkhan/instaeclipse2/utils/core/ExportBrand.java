@@ -11,7 +11,7 @@ import java.util.Locale;
  */
 public final class ExportBrand {
 
-    public static final String NAME = "InstaEclipse";
+    public static final String NAME = "Eclipse 2";
 
     private ExportBrand() {}
 

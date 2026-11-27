@@ -7,7 +7,7 @@
     <string name="home_status_not_installed">לא מותקן</string>
     <string name="home_status_module_active">המודול פעיל</string>
     <string name="home_status_version">גרסה %1$s</string>
-    <string name="home_status_no_version">התקן את Instagram כדי להשתמש ב-InstaEclipse</string>
+    <string name="home_status_no_version">התקן את Instagram כדי להשתמש ב-Eclipse 2</string>
     <plurals name="home_features_enabled">
         <item quantity="one">%d תכונה מופעלת</item>
         <item quantity="two">%d תכונות מופעלות</item>

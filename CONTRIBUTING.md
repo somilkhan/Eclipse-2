@@ -1,14 +1,14 @@
-# Contributing to InstaEclipse
+# Contributing to Eclipse 2
 
-Thanks for helping. InstaEclipse is maintained at
-[somilkhan/InstaEclipse-2](https://github.com/somilkhan/InstaEclipse-2) as the continuation of the
+Thanks for helping. Eclipse 2 is maintained at
+[somilkhan/Eclipse-2](https://github.com/somilkhan/Eclipse-2) as the continuation of the
 project created by [ReSo7200](https://github.com/ReSo7200).
 
 ## Reporting bugs
 
-1. Search [existing issues](https://github.com/somilkhan/InstaEclipse-2/issues) first.
+1. Search [existing issues](https://github.com/somilkhan/Eclipse-2/issues) first.
 2. Use the bug report template and include:
-   - InstaEclipse version and Instagram version (Instagram build matters: hooks are found per build).
+   - Eclipse 2 version and Instagram version (Instagram build matters: hooks are found per build).
    - Root (LSPosed) or no-root (LSPatch), Android version and device.
    - The log: companion app -> Logs -> **Save to storage**, then attach the `.txt` file. It already
      contains a header with app, Instagram and Android versions. Remove anything private first.
@@ -45,5 +45,7 @@ automating actions at scale will not be accepted. Bulk tools must keep safe paci
 
 ## License
 
-By contributing you agree your contribution is licensed under the project's licenses (see
-[LICENSE](LICENSE) and [NOTICE](NOTICE)).
+Eclipse 2 is licensed under the GNU General Public License v3.0 (see [LICENSE](LICENSE) and
+[NOTICE](NOTICE)). By opening a pull request you agree that your contribution is released under
+GPL-3.0-only. Do not copy in code that has an incompatible license. If you adapt code from another
+project, say where it came from in the pull request and keep its copyright header.

@@ -5,7 +5,7 @@ resume from GitHub alone: read this file, then the `wip/*` branches listed below
 
 ## Goal of 0.8.4
 
-Maintained continuation of InstaEclipse (original author: ReSo7200) at `somilkhan/InstaEclipse-2`.
+Maintained continuation of InstaEclipse (original author: ReSo7200) at `somilkhan/Eclipse-2`.
 Base: `contribute/remaining-fork-improvements` (real 0.8.1, versionCode 19).
 Target Instagram: **457.0.0.55.73** (arm64 build 386314341).
 
@@ -13,7 +13,7 @@ Target Instagram: **457.0.0.55.73** (arm64 build 386314341).
 |---|---|---|
 | Hooks A | `wip/hooks_a` | Offline DexKit verification harness against IG 457; Meta AI removal; Reels & posts (double-tap like, repost, Reels auto-scroll / scroll lock, reel scrubber, reel download menu, undo-like); feed |
 | Hooks B | `wip/hooks_b` | All other hooks: follow-list export, notes tray, Save Instants, profile Saved button, media classes that moved package, max upload quality, high-res images, DMs/ghost, stories, downloads |
-| Features | `wip/features` | Repo links -> somilkhan/InstaEclipse-2 (single constant), maintainer docs (README credit, NOTICE, MAINTAINERS.md, CONTRIBUTING.md), log export "Save to storage", release workflow + RELEASING.md, version 0.8.4 (22), safe pacing for bulk actions |
+| Features | `wip/features` | Repo links -> somilkhan/Eclipse-2 (single constant), maintainer docs (README credit, NOTICE, MAINTAINERS.md, CONTRIBUTING.md), log export "Save to storage", release workflow + RELEASING.md, version 0.8.4 (22), safe pacing for bulk actions |
 | UI | `wip/ui` | Companion app redesign: liquid-glass look, floating nav pill, Apple-quality polish |
 | Bugs | `wip/bugs` | Bug audit + fixes across companion app and module, with tests |
 
@@ -108,7 +108,7 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
   - `IosSwitch`: 51x31dp, green #34C759 / #30D158, spring thumb, and the knob stretches into translucent glass while it's pressed. It extends `MaterialSwitch`, so listeners and `isChecked` are unchanged.
 - Type: Inter (OFL) as font resources (`res/font/inter*`). The type scale lives in `styles.xml` (`TextAppearance.IE.*`). Icons are Phosphor regular/fill vectors `ic_ui_*` (MIT). The licences are in `third-party/` and `NOTICE`. The in-IG `ic_*` drawables stay as they were (`IconMap` maps old ids to new ones in the companion app).
 - Edge-to-edge insets are applied by `MainActivity` via view tags on fragment roots: `ie_scroll`, `ie_scroll_list`, `ie_large_title`, `ie_inset_top`, `ie_inset_bottom`, `ie_inset_bottom_margin`, `ie_float_above_nav` (guarded by `InsetOverlapTest`).
-- Screenshots: `./gradlew testDebugUnitTest --tests '*ScreenshotTest*' -Pie.screenshotSet=review2` writes `docs/screenshots/0.8.4/review2/`. Robolectric can't run the native/AGSL library, so the screenshots show the in-house CPU fallback. Real lens refraction, the library scroll-edge blur, the drop shadow, the blur behind dialogs and the animations only show on a device. `HomeFragment.autoScrollEnabled` is switched off in the tests so the carousels are captured at rest.
+- Screenshots: `./gradlew testDebugUnitTest --tests '*ScreenshotTest*' -Pie.screenshotSet=final` writes `docs/screenshots/0.8.4/final/`. Robolectric can't run the native/AGSL library, so the screenshots show the in-house CPU fallback. Real lens refraction, the library scroll-edge blur, the drop shadow, the blur behind dialogs and the animations only show on a device. `HomeFragment.autoScrollEnabled` is switched off in the tests so the carousels are captured at rest.
 - In-Instagram UI (`mods/**`) untouched.
 
 ## Things that cannot be fixed client-side on 457

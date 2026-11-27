@@ -1,6 +1,6 @@
 <resources>
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">الرئيسية</string>
     <string name="features">الميزات</string>
     <string name="help">المساعدة</string>
@@ -145,7 +145,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">سيؤدي هذا إلى استبدال إعدادات المطور الحالية بالإعدادات الافتراضية المضمنة. هل تريد المتابعة؟</string>
     <string name="ig_toast_default_config_restored">✅ تمت استعادة الإعدادات الافتراضية.</string>
     <string name="ig_dialog_dev_remove_build_expired">إزالة نافذة انتهاء صلاحية الإصدار</string>
-    <string name="ig_dialog_unable_open_ui">تعذر فتح واجهة InstaEclipse.</string>
+    <string name="ig_dialog_unable_open_ui">تعذر فتح واجهة Eclipse 2.</string>
     <string name="ig_dialog_instagram_not_ready">إنستغرام غير مفتوح أو غير جاهز.</string>
     <string name="ig_dialog_mc_overrides_not_found">ملف mc_overrides.json غير موجود.</string>
     <string name="ig_dialog_failed_read_config">فشل قراءة الإعدادات: %1$s</string>
@@ -196,8 +196,8 @@
     <string name="ig_bulk_unsend_go">إلغاء الإرسال</string>
     <string name="ig_bulk_unsend_done">تم إلغاء إرسال %1$d رسالة</string>
     <string name="ig_bulk_unsend_unavailable">إلغاء الإرسال الجماعي غير متاح في هذا الإصدار من إنستغرام</string>
-    <string name="ig_downloader_folder_hint">يتم تعيين المجلد من تطبيق InstaEclipse</string>
-    <string name="lock_code_set_in_ig">يتم تعيينه داخل Instagram: قائمة InstaEclipse &gt; القفل. اضغط لفتح Instagram.</string>
+    <string name="ig_downloader_folder_hint">يتم تعيين المجلد من تطبيق Eclipse 2</string>
+    <string name="lock_code_set_in_ig">يتم تعيينه داخل Instagram: قائمة Eclipse 2 &gt; القفل. اضغط لفتح Instagram.</string>
     <string name="theme_set_light">سمات الوضع الفاتح</string>
     <string name="theme_set_dark">سمات الوضع الداكن</string>
     <string name="theme_light_same">نفس سمة الوضع الداكن</string>
@@ -309,12 +309,12 @@
     <string name="ig_toast_downloading">جارٍ التنزيل…</string>
     <string name="ig_toast_downloading_video">جارٍ تنزيل الفيديو…</string>
     <string name="ig_toast_downloading_photo">جارٍ تنزيل الصورة…</string>
-    <string name="ig_toast_video_saved">تم حفظ الفيديو في مجلد InstaEclipse</string>
-    <string name="ig_toast_photo_saved">تم حفظ الصورة في مجلد InstaEclipse</string>
-    <string name="ig_toast_saved">تم الحفظ في مجلد InstaEclipse</string>
+    <string name="ig_toast_video_saved">تم حفظ الفيديو في مجلد Eclipse 2</string>
+    <string name="ig_toast_photo_saved">تم حفظ الصورة في مجلد Eclipse 2</string>
+    <string name="ig_toast_saved">تم الحفظ في مجلد Eclipse 2</string>
     <string name="ig_toast_download_failed">فشل التنزيل: %1$s</string>
     <string name="ig_toast_downloading_reel">جارٍ تنزيل الريل…</string>
-    <string name="ig_toast_reel_saved">تم حفظ الريل في مجلد InstaEclipse</string>
+    <string name="ig_toast_reel_saved">تم حفظ الريل في مجلد Eclipse 2</string>
     <string name="ig_toast_reel_failed">فشل تنزيل الريل: %1$s</string>
     <string name="ig_toast_reel_url_not_found">لم يتم العثور على رابط الريل</string>
     <string name="ig_toast_post_url_not_found">لم يتم العثور على رابط المنشور</string>
@@ -322,7 +322,7 @@
     <string name="ig_toast_no_media">لم يتم العثور على وسائط</string>
     <string name="ig_toast_downloading_story_video">جارٍ تنزيل فيديو القصة…</string>
     <string name="ig_toast_downloading_story_photo">جارٍ تنزيل صورة القصة…</string>
-    <string name="ig_toast_story_saved">تم حفظ القصة في مجلد InstaEclipse</string>
+    <string name="ig_toast_story_saved">تم حفظ القصة في مجلد Eclipse 2</string>
     <string name="ig_toast_story_url_not_found">لم يتم العثور على رابط القصة</string>
     <string name="ig_toast_downloading_profile_pic">جارٍ تنزيل صورة الملف الشخصي…</string>
     <string name="ig_toast_profile_pic_saved">تم حفظ صورة الملف الشخصي!</string>
@@ -330,7 +330,7 @@
     <string name="ig_toast_merging_video_audio">جارٍ دمج الفيديو والصوت…</string>
     <string name="ig_toast_downloading_n_items">جارٍ تنزيل %1$d عنصر…</string>
     <string name="ig_toast_downloading_all_n_items">جارٍ تنزيل جميع %1$d عناصر…</string>
-    <string name="ig_toast_all_items_saved">تم حفظ جميع %1$d عناصر في مجلد InstaEclipse</string>
+    <string name="ig_toast_all_items_saved">تم حفظ جميع %1$d عناصر في مجلد Eclipse 2</string>
     <string name="ig_toast_items_partial_saved">تم حفظ %1$d من %2$d (%3$d فشل)</string>
     <string name="ig_toast_no_reel_url_scroll">لم يتم العثور على رابط الريل — قم بالتمرير أولًا</string>
     <string name="ig_dl_title">تنزيل</string>
@@ -372,7 +372,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">لم يتم تعيين مجلد للتنزيل</string>
     <string name="ig_toast_file_saved">تم الحفظ: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse جاهز 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 جاهز 🎯</string>
 
     <!-- Update check dialog -->
     <string name="ig_update_title">تحديث متاح</string>
@@ -422,7 +422,7 @@
     <string name="logging_clear">مسح</string>
     <string name="logging_copy">نسخ</string>
     <string name="logging_copied">تم النسخ إلى الحافظة</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
     <string name="logging_instagram_timeout">لم يستجب Instagram في الوقت المناسب. يتم عرض سجلات التطبيق المرافق فقط.</string>
     <string name="logging_no_target">ثبّت أولاً تطبيق Instagram مدعوماً.</string>
@@ -498,8 +498,8 @@
     <string name="ig_hide_chats_empty">لا توجد محادثات مخفية. افتح محادثة واضغط على زر إخفاء العين لإخفائها.</string>
     <string name="ig_hide_chats_unhide">إظهار</string>
     <string name="ig_hide_chats_hint">لإخفاء محادثة، افتحها واضغط على زر إخفاء العين في رأس المحادثة.</string>
-    <string name="ig_lock_passcode_hint">عيّن رمز القفل من داخل Instagram (افتح قائمة InstaEclipse → القفل).</string>
-    <string name="ig_theme_font_hint">اختر ملفات الخط والإيموجي من داخل Instagram (قائمة InstaEclipse → السمة المخصصة).</string>
+    <string name="ig_lock_passcode_hint">عيّن رمز القفل من داخل Instagram (افتح قائمة Eclipse 2 → القفل).</string>
+    <string name="ig_theme_font_hint">اختر ملفات الخط والإيموجي من داخل Instagram (قائمة Eclipse 2 → السمة المخصصة).</string>
     <string name="ig_hide_chat_hidden">تم إخفاء المحادثة — ستختفي من صندوق الوارد</string>
     <string name="ig_hide_chat_unhidden">تم إظهار المحادثة</string>
     <string name="ig_hide_chat_no_thread">تعذّر التعرّف على هذه المحادثة</string>
@@ -638,7 +638,7 @@
     <string name="ig_locked_coll_hint">رمز المرور</string>
     <string name="ig_locked_coll_lock">قفل هذه المجموعة</string>
     <string name="ig_locked_coll_locked">تم قفل المجموعة: ستطلب رمز المرور</string>
-    <string name="ig_locked_coll_need_passcode">عيّن رمز مرور أولاً: إعدادات InstaEclipse في إنستغرام، القفل</string>
+    <string name="ig_locked_coll_need_passcode">عيّن رمز مرور أولاً: إعدادات Eclipse 2 في إنستغرام، القفل</string>
     <string name="ig_locked_coll_open">فتح</string>
     <string name="ig_locked_coll_setting">مجموعات محفوظات قابلة للقفل (زر 🔒 داخل المجموعة؛ يستخدم رمز المرور المعيّن في إنستغرام)</string>
     <string name="ig_locked_coll_setting_short">مجموعات محفوظات قابلة للقفل (🔒 داخل المجموعة)</string>
@@ -652,12 +652,12 @@
     <string name="ig_nav_tab_search">البحث</string>
     <string name="ig_saved_on_profile">زر المحفوظات في ملفك الشخصي (أعد تشغيل إنستغرام)</string>
     <string name="ig_saved_on_profile_button">المحفوظات</string>
-    <string name="ig_share_dl_loading">InstaEclipse: جارٍ تحميل المنشور للتنزيل…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: تعذّر تحميل هذا المنشور</string>
-    <string name="ig_share_dl_saving">InstaEclipse: جارٍ حفظ %1$d ملف…</string>
-    <string name="ig_thread_menu">إجراءات محادثة InstaEclipse</string>
+    <string name="ig_share_dl_loading">Eclipse 2: جارٍ تحميل المنشور للتنزيل…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: تعذّر تحميل هذا المنشور</string>
+    <string name="ig_share_dl_saving">Eclipse 2: جارٍ حفظ %1$d ملف…</string>
+    <string name="ig_thread_menu">إجراءات محادثة Eclipse 2</string>
     <string name="ig_unsent_messages">الرسائل الملغاة</string>
-    <string name="share_dl_label">التنزيل باستخدام InstaEclipse</string>
+    <string name="share_dl_label">التنزيل باستخدام Eclipse 2</string>
     <string name="share_dl_no_instagram">إنستغرام غير مثبّت</string>
     <string name="share_dl_no_link">لم يتم العثور على رابط منشور أو ريل من إنستغرام</string>
 

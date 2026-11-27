@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="version" translatable="false">v0.8.4</string>
     <string name="home">Menu</string>
     <string name="features">Fonctionnalités</string>
@@ -131,7 +131,7 @@
     <!-- ================================================================ -->
 
     <!-- Common -->
-    <string name="ig_dialog_title" translatable="false">InstaEclipse 🌘</string>
+    <string name="ig_dialog_title" translatable="false">Eclipse 2 🌘</string>
     <string name="ig_dialog_close">Fermer</string>
     <string name="ig_dialog_enable_disable_all">Activer/Désactiver Tous</string>
     <string name="ig_dialog_error">Erreur</string>
@@ -173,7 +173,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">Cela écrasera la configuration développeur actuelle avec celle par défaut incluse. Continuer ?</string>
     <string name="ig_toast_default_config_restored">✅ Configuration par défaut restaurée.</string>
     <string name="ig_dialog_dev_remove_build_expired">Supprimer le Popup Build Expiré</string>
-    <string name="ig_dialog_unable_open_ui">Impossible d\'ouvrir l\'interface InstaEclipse.</string>
+    <string name="ig_dialog_unable_open_ui">Impossible d\'ouvrir l\'interface Eclipse 2.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram n\'est pas ouvert ou prêt.</string>
     <string name="ig_dialog_mc_overrides_not_found">mc_overrides.json introuvable.</string>
     <string name="ig_dialog_failed_read_config">Échec de lecture de la config : %1$s</string>
@@ -230,8 +230,8 @@
     <string name="ig_bulk_unsend_go">Annuler l\'envoi</string>
     <string name="ig_bulk_unsend_done">%1$d message(s) retiré(s)</string>
     <string name="ig_bulk_unsend_unavailable">L\'annulation groupée n\'est pas disponible sur cette version d\'Instagram</string>
-    <string name="ig_downloader_folder_hint">Choisissez le dossier depuis l\'application InstaEclipse</string>
-    <string name="lock_code_set_in_ig">Se définit dans Instagram : menu InstaEclipse &gt; Verrouillage. Appuyez pour ouvrir Instagram.</string>
+    <string name="ig_downloader_folder_hint">Choisissez le dossier depuis l\'application Eclipse 2</string>
+    <string name="lock_code_set_in_ig">Se définit dans Instagram : menu Eclipse 2 &gt; Verrouillage. Appuyez pour ouvrir Instagram.</string>
     <string name="theme_set_light">Thèmes du mode clair</string>
     <string name="theme_set_dark">Thèmes du mode sombre</string>
     <string name="theme_light_same">Même thème qu\'en mode sombre</string>
@@ -324,7 +324,7 @@
     <string name="ig_dialog_restart_message">⚠️ Vider le cache et redémarrer ?</string>
     <string name="ig_dialog_clear_cache">Vider le Cache des Hooks</string>
     <string name="ig_dialog_section_clear_cache">Vider le Cache des Hooks</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ Cela forcera InstaEclipse à re-scanner Instagram au prochain démarrage. L\'application redémarrera.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Cela forcera Eclipse 2 à re-scanner Instagram au prochain démarrage. L\'application redémarrera.</string>
     <string name="ig_dialog_clear_cache_now">Vider le Cache &amp; Redémarrer</string>
     <string name="ig_dialog_restart_now">Redémarrer Maintenant</string>
     <string name="ig_dialog_restart_not_found">Impossible de trouver l\'app pour redémarrer.</string>
@@ -356,12 +356,12 @@
     <string name="ig_toast_downloading">Téléchargement…</string>
     <string name="ig_toast_downloading_video">Téléchargement de la vidéo…</string>
     <string name="ig_toast_downloading_photo">Téléchargement de la photo…</string>
-    <string name="ig_toast_video_saved">Vidéo sauvegardée dans le dossier InstaEclipse</string>
-    <string name="ig_toast_photo_saved">Photo sauvegardée dans le dossier InstaEclipse</string>
-    <string name="ig_toast_saved">Sauvegardé dans le dossier InstaEclipse</string>
+    <string name="ig_toast_video_saved">Vidéo sauvegardée dans le dossier Eclipse 2</string>
+    <string name="ig_toast_photo_saved">Photo sauvegardée dans le dossier Eclipse 2</string>
+    <string name="ig_toast_saved">Sauvegardé dans le dossier Eclipse 2</string>
     <string name="ig_toast_download_failed">Échec du téléchargement : %1$s</string>
     <string name="ig_toast_downloading_reel">Téléchargement du reel…</string>
-    <string name="ig_toast_reel_saved">Reel sauvegardé dans le dossier InstaEclipse</string>
+    <string name="ig_toast_reel_saved">Reel sauvegardé dans le dossier Eclipse 2</string>
     <string name="ig_toast_reel_failed">Échec du téléchargement du reel : %1$s</string>
     <string name="ig_toast_reel_url_not_found">URL du reel introuvable</string>
     <string name="ig_toast_post_url_not_found">URL de la publication introuvable</string>
@@ -369,7 +369,7 @@
     <string name="ig_toast_no_media">Aucun média trouvé</string>
     <string name="ig_toast_downloading_story_video">Téléchargement de la vidéo de la story…</string>
     <string name="ig_toast_downloading_story_photo">Téléchargement de la photo de la story…</string>
-    <string name="ig_toast_story_saved">Story sauvegardée dans le dossier InstaEclipse</string>
+    <string name="ig_toast_story_saved">Story sauvegardée dans le dossier Eclipse 2</string>
     <string name="ig_toast_story_url_not_found">URL de la story introuvable</string>
     <string name="ig_toast_downloading_profile_pic">Téléchargement de la photo de profil…</string>
     <string name="ig_toast_profile_pic_saved">Photo de profil sauvegardée !</string>
@@ -377,7 +377,7 @@
     <string name="ig_toast_merging_video_audio">Fusion vidéo + audio…</string>
     <string name="ig_toast_downloading_n_items">Téléchargement de %1$d éléments…</string>
     <string name="ig_toast_downloading_all_n_items">Téléchargement de tous les %1$d éléments…</string>
-    <string name="ig_toast_all_items_saved">Tous les %1$d éléments sauvegardés dans le dossier InstaEclipse</string>
+    <string name="ig_toast_all_items_saved">Tous les %1$d éléments sauvegardés dans le dossier Eclipse 2</string>
     <string name="ig_toast_items_partial_saved">%1$d sur %2$d éléments sauvegardés (%3$d échoués)</string>
     <string name="ig_toast_no_reel_url_scroll">URL du reel introuvable — faites défiler le reel d\'abord</string>
 
@@ -404,7 +404,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">Aucun dossier de téléchargement défini</string>
     <string name="ig_toast_file_saved">Enregistré : %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse chargé 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 chargé 🎯</string>
 
 
     <!-- Update check dialog -->
@@ -457,7 +457,7 @@
     <string name="logging_clear">Effacer</string>
     <string name="logging_copy">Copier</string>
     <string name="logging_copied">Copié dans le presse-papiers</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
     <string name="logging_instagram_timeout">Instagram n\'a pas répondu à temps. Affichage des journaux de l\'application uniquement.</string>
     <string name="logging_no_target">Installez d\'abord une application Instagram prise en charge.</string>
@@ -533,8 +533,8 @@
     <string name="ig_hide_chats_empty">Aucune conversation masquée. Ouvrez une conversation et touchez le bouton œil barré pour la masquer.</string>
     <string name="ig_hide_chats_unhide">Afficher</string>
     <string name="ig_hide_chats_hint">Pour masquer une conversation, ouvrez-la et touchez le bouton œil barré dans l\'en-tête.</string>
-    <string name="ig_lock_passcode_hint">Définissez votre code depuis Instagram (ouvrez le menu InstaEclipse → Verrou).</string>
-    <string name="ig_theme_font_hint">Choisissez vos fichiers de police &amp; emoji depuis Instagram (menu InstaEclipse → Thème Personnalisé).</string>
+    <string name="ig_lock_passcode_hint">Définissez votre code depuis Instagram (ouvrez le menu Eclipse 2 → Verrou).</string>
+    <string name="ig_theme_font_hint">Choisissez vos fichiers de police &amp; emoji depuis Instagram (menu Eclipse 2 → Thème Personnalisé).</string>
     <string name="ig_hide_chat_hidden">Conversation masquée — elle disparaîtra de votre boîte de réception</string>
     <string name="ig_hide_chat_unhidden">Conversation affichée</string>
     <string name="ig_hide_chat_no_thread">Impossible d\'identifier cette conversation</string>
@@ -622,20 +622,20 @@
     <string name="ig_locked_coll_unlock">Déverrouiller cette collection</string>
     <string name="ig_locked_coll_locked">Collection verrouillée : elle demandera votre code</string>
     <string name="ig_locked_coll_unlocked">Collection déverrouillée</string>
-    <string name="ig_locked_coll_need_passcode">Définissez d\'abord un code : réglages InstaEclipse dans Instagram, Verrou</string>
+    <string name="ig_locked_coll_need_passcode">Définissez d\'abord un code : réglages Eclipse 2 dans Instagram, Verrou</string>
     <string name="ig_saved_on_profile">Bouton Enregistré sur votre profil (redémarrez Instagram)</string>
     <string name="ig_saved_on_profile_button">Enregistré</string>
     <string name="ig_nav_tab_search">Recherche</string>
     <string name="ig_nav_tab_order">Ordre des onglets</string>
     <string name="ig_nav_tab_order_hint">Utilisez les flèches pour réorganiser la barre du bas. Les onglets masqués gardent leur place. Effectif à votre retour sur Instagram.</string>
     <string name="ig_nav_tab_order_reset">Réinitialiser</string>
-    <string name="share_dl_label">Télécharger avec InstaEclipse</string>
+    <string name="share_dl_label">Télécharger avec Eclipse 2</string>
     <string name="share_dl_no_link">Aucun lien de publication ou de reel Instagram trouvé</string>
     <string name="share_dl_no_instagram">Instagram n\'est pas installé</string>
-    <string name="ig_share_dl_loading">InstaEclipse : chargement de la publication à télécharger…</string>
-    <string name="ig_share_dl_saving">InstaEclipse : enregistrement de %1$d fichier(s)…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse : impossible de charger cette publication</string>
-    <string name="ig_thread_menu">Actions de conversation InstaEclipse</string>
+    <string name="ig_share_dl_loading">Eclipse 2 : chargement de la publication à télécharger…</string>
+    <string name="ig_share_dl_saving">Eclipse 2 : enregistrement de %1$d fichier(s)…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2 : impossible de charger cette publication</string>
+    <string name="ig_thread_menu">Actions de conversation Eclipse 2</string>
     <string name="ig_unsent_messages">Messages annulés</string>
     <string name="ig_hide_chat_toggle">Masquer / afficher la conversation</string>
     <string name="ig_chat_export_working">Export des messages chargés…</string>

@@ -1,4 +1,4 @@
-# Releasing InstaEclipse
+# Releasing Eclipse 2
 
 Releases are built and published by GitHub Actions
 ([`.github/workflows/release.yml`](.github/workflows/release.yml)) when a version tag is pushed.
@@ -27,7 +27,7 @@ keytool -genkeypair -v \
   -alias instaeclipse \
   -keyalg RSA -keysize 4096 \
   -validity 10000 \
-  -dname "CN=InstaEclipse, O=somilkhan"
+  -dname "CN=Eclipse 2, O=somilkhan"
 ```
 
 `keytool` ships with any JDK. It asks for a keystore password; with PKCS12 the key password is the
@@ -65,10 +65,10 @@ Paste the contents of `keystore.b64` as `RELEASE_KEYSTORE_BASE64`, then delete `
 Or with the GitHub CLI:
 
 ```sh
-gh secret set RELEASE_KEYSTORE_BASE64 --repo somilkhan/InstaEclipse-2 < keystore.b64
-gh secret set RELEASE_KEYSTORE_PASSWORD --repo somilkhan/InstaEclipse-2
-gh secret set RELEASE_KEY_ALIAS --repo somilkhan/InstaEclipse-2 --body instaeclipse
-gh secret set RELEASE_KEY_PASSWORD --repo somilkhan/InstaEclipse-2
+gh secret set RELEASE_KEYSTORE_BASE64 --repo somilkhan/Eclipse-2 < keystore.b64
+gh secret set RELEASE_KEYSTORE_PASSWORD --repo somilkhan/Eclipse-2
+gh secret set RELEASE_KEY_ALIAS --repo somilkhan/Eclipse-2 --body instaeclipse
+gh secret set RELEASE_KEY_PASSWORD --repo somilkhan/Eclipse-2
 ```
 
 Also make sure **Settings -> Actions -> General -> Workflow permissions** allows the workflow token
@@ -80,9 +80,9 @@ Releases from this repository are signed with the maintainer's new key, not the 
 original ReSo7200 builds. Android refuses to update an app signed with a different key, so anyone
 coming from an original build (0.8.3 and earlier from ReSo7200/InstaEclipse) has to:
 
-1. Back up settings: companion app -> Tools -> Backup settings (or in Instagram: InstaEclipse menu ->
+1. Back up settings: companion app -> Tools -> Backup settings (or in Instagram: Eclipse 2 menu ->
    Backup & restore).
-2. Uninstall the old InstaEclipse.
+2. Uninstall the old InstaEclipse (the original app).
 3. Install the new APK, enable it again in LSPosed for Instagram (or re-patch with LSPatch), then
    force-stop and reopen Instagram.
 4. Restore the backup.
@@ -114,13 +114,13 @@ new key (0.8.4). Later releases update in place.
    ```sh
    git commit -am "Release 0.8.4"
    git push origin main
-   git tag -a v0.8.4 -m "InstaEclipse 0.8.4"
+   git tag -a v0.8.4 -m "Eclipse 2 0.8.4"
    git push origin v0.8.4
    ```
 
 6. Watch **Actions -> Release**. It checks the secrets, the tag/versionName match and the
    changelog, runs unit tests, builds `assembleRelease` signed with the secrets, verifies the
-   signature with `apksigner`, and publishes `InstaEclipse-v0.8.4.apk` (+ `.sha256`) as a GitHub
+   signature with `apksigner`, and publishes `Eclipse2-v0.8.4.apk` (+ `.sha256`) as a GitHub
    Release.
 7. For a stable release only: update [`version.json`](version.json) on `main` (`latest_version`)
    so the in-app update checker offers it. Leave it alone for pre-releases.
@@ -132,7 +132,7 @@ new key (0.8.4). Later releases update in place.
 
   ```sh
   git tag -d v0.8.4 && git push origin :refs/tags/v0.8.4
-  git tag -a v0.8.4 -m "InstaEclipse 0.8.4" && git push origin v0.8.4
+  git tag -a v0.8.4 -m "Eclipse 2 0.8.4" && git push origin v0.8.4
   ```
 
 - The release exists but is wrong: delete it on GitHub (Releases -> Delete) and re-push the tag as

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="home">Главная</string>
     <string name="features">Функции</string>
     <string name="help">Помощь</string>
@@ -147,7 +147,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">Это заменит текущую конфигурацию разработчика встроенной по умолчанию. Продолжить?</string>
     <string name="ig_toast_default_config_restored">✅ Конфигурация по умолчанию восстановлена.</string>
     <string name="ig_dialog_dev_remove_build_expired">Убрать всплывающее окно истечения сборки</string>
-    <string name="ig_dialog_unable_open_ui">Не удалось открыть интерфейс InstaEclipse.</string>
+    <string name="ig_dialog_unable_open_ui">Не удалось открыть интерфейс Eclipse 2.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram не открыт или не готов.</string>
     <string name="ig_dialog_mc_overrides_not_found">Файл mc_overrides.json не найден.</string>
     <string name="ig_dialog_failed_read_config">Не удалось прочитать конфигурацию: %1$s</string>
@@ -198,8 +198,8 @@
     <string name="ig_bulk_unsend_go">Отменить отправку</string>
     <string name="ig_bulk_unsend_done">Отменено сообщений: %1$d</string>
     <string name="ig_bulk_unsend_unavailable">Массовая отмена недоступна в этой версии Instagram</string>
-    <string name="ig_downloader_folder_hint">Папку можно выбрать в приложении InstaEclipse</string>
-    <string name="lock_code_set_in_ig">Задаётся внутри Instagram: меню InstaEclipse &gt; Блокировка. Нажмите, чтобы открыть Instagram.</string>
+    <string name="ig_downloader_folder_hint">Папку можно выбрать в приложении Eclipse 2</string>
+    <string name="lock_code_set_in_ig">Задаётся внутри Instagram: меню Eclipse 2 &gt; Блокировка. Нажмите, чтобы открыть Instagram.</string>
     <string name="theme_set_light">Темы для светлого режима</string>
     <string name="theme_set_dark">Темы для тёмного режима</string>
     <string name="theme_light_same">Та же тема, что и в тёмном режиме</string>
@@ -279,7 +279,7 @@
     <string name="ig_dialog_restart_message">⚠️ Очистить кэш приложения и перезапустить?</string>
     <string name="ig_dialog_clear_cache">Очистить кэш хуков</string>
     <string name="ig_dialog_section_clear_cache">Очистить кэш хуков</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ InstaEclipse повторно просканирует Instagram при следующем запуске. Приложение перезапустится.</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ Eclipse 2 повторно просканирует Instagram при следующем запуске. Приложение перезапустится.</string>
     <string name="ig_dialog_clear_cache_now">Очистить кэш и перезапустить</string>
     <string name="ig_dialog_restart_now">Перезапустить сейчас</string>
     <string name="ig_dialog_restart_not_found">Не удалось найти приложение для перезапуска.</string>
@@ -311,12 +311,12 @@
     <string name="ig_toast_downloading">Загрузка…</string>
     <string name="ig_toast_downloading_video">Загрузка видео…</string>
     <string name="ig_toast_downloading_photo">Загрузка фото…</string>
-    <string name="ig_toast_video_saved">Видео сохранено в папку InstaEclipse</string>
-    <string name="ig_toast_photo_saved">Фото сохранено в папку InstaEclipse</string>
-    <string name="ig_toast_saved">Сохранено в папку InstaEclipse</string>
+    <string name="ig_toast_video_saved">Видео сохранено в папку Eclipse 2</string>
+    <string name="ig_toast_photo_saved">Фото сохранено в папку Eclipse 2</string>
+    <string name="ig_toast_saved">Сохранено в папку Eclipse 2</string>
     <string name="ig_toast_download_failed">Ошибка загрузки: %1$s</string>
     <string name="ig_toast_downloading_reel">Загрузка рила…</string>
-    <string name="ig_toast_reel_saved">Рил сохранён в папку InstaEclipse</string>
+    <string name="ig_toast_reel_saved">Рил сохранён в папку Eclipse 2</string>
     <string name="ig_toast_reel_failed">Ошибка загрузки рила: %1$s</string>
     <string name="ig_toast_reel_url_not_found">URL рила не найден</string>
     <string name="ig_toast_post_url_not_found">URL публикации не найден</string>
@@ -324,7 +324,7 @@
     <string name="ig_toast_no_media">Медиафайлы не найдены</string>
     <string name="ig_toast_downloading_story_video">Загрузка видео истории…</string>
     <string name="ig_toast_downloading_story_photo">Загрузка фото истории…</string>
-    <string name="ig_toast_story_saved">История сохранена в папку InstaEclipse</string>
+    <string name="ig_toast_story_saved">История сохранена в папку Eclipse 2</string>
     <string name="ig_toast_story_url_not_found">URL истории не найден</string>
     <string name="ig_toast_downloading_profile_pic">Загрузка фото профиля…</string>
     <string name="ig_toast_profile_pic_saved">Фото профиля сохранено!</string>
@@ -332,7 +332,7 @@
     <string name="ig_toast_merging_video_audio">Объединение видео и аудио…</string>
     <string name="ig_toast_downloading_n_items">Загрузка %1$d элементов…</string>
     <string name="ig_toast_downloading_all_n_items">Загрузка всех %1$d элементов…</string>
-    <string name="ig_toast_all_items_saved">Все %1$d элементов сохранены в папку InstaEclipse</string>
+    <string name="ig_toast_all_items_saved">Все %1$d элементов сохранены в папку Eclipse 2</string>
     <string name="ig_toast_items_partial_saved">%1$d из %2$d элементов сохранено (%3$d не удалось)</string>
     <string name="ig_toast_no_reel_url_scroll">URL рила не найден — сначала прокрутите рил</string>
     <string name="ig_dl_title">Скачать</string>
@@ -374,7 +374,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">Папка загрузки не задана</string>
     <string name="ig_toast_file_saved">Сохранено: %1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse загружен 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 загружен 🎯</string>
 
     <!-- Update check dialog -->
     <string name="ig_update_title">Доступно обновление</string>
@@ -424,9 +424,9 @@
     <string name="logging_clear">Очистить</string>
     <string name="logging_copy">Копировать</string>
     <string name="logging_copied">Скопировано в буфер обмена</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
-    <string name="logging_instagram_timeout">Instagram не ответил вовремя. Показаны только логи InstaEclipse.</string>
+    <string name="logging_instagram_timeout">Instagram не ответил вовремя. Показаны только логи Eclipse 2.</string>
     <string name="logging_no_target">Сначала установите поддерживаемое приложение Instagram.</string>
     <string name="logging_empty_reply">(буфер пуст — откройте Instagram с включённым модулем)</string>
     <string name="logging_placeholder">Логи ещё не загружены.</string>
@@ -500,8 +500,8 @@
     <string name="ig_hide_chats_empty">Скрытых чатов нет. Откройте чат и нажмите значок перечёркнутого глаза, чтобы скрыть его.</string>
     <string name="ig_hide_chats_unhide">Показать</string>
     <string name="ig_hide_chats_hint">Чтобы скрыть чат, откройте его и нажмите значок перечёркнутого глаза в заголовке беседы.</string>
-    <string name="ig_lock_passcode_hint">Задайте код-пароль прямо в Instagram (откройте меню InstaEclipse → Блокировка).</string>
-    <string name="ig_theme_font_hint">Выберите файлы шрифта &amp; эмодзи прямо в Instagram (меню InstaEclipse → Своя Тема).</string>
+    <string name="ig_lock_passcode_hint">Задайте код-пароль прямо в Instagram (откройте меню Eclipse 2 → Блокировка).</string>
+    <string name="ig_theme_font_hint">Выберите файлы шрифта &amp; эмодзи прямо в Instagram (меню Eclipse 2 → Своя Тема).</string>
     <string name="ig_hide_chat_hidden">Чат скрыт — он исчезнет из вашего списка</string>
     <string name="ig_hide_chat_unhidden">Чат снова показан</string>
     <string name="ig_hide_chat_no_thread">Не удалось определить этот чат</string>
@@ -588,20 +588,20 @@
     <string name="ig_locked_coll_unlock">Разблокировать эту коллекцию</string>
     <string name="ig_locked_coll_locked">Коллекция заблокирована: она запросит ваш код-пароль</string>
     <string name="ig_locked_coll_unlocked">Коллекция разблокирована</string>
-    <string name="ig_locked_coll_need_passcode">Сначала задайте код-пароль: настройки InstaEclipse в Instagram, Блокировка</string>
+    <string name="ig_locked_coll_need_passcode">Сначала задайте код-пароль: настройки Eclipse 2 в Instagram, Блокировка</string>
     <string name="ig_saved_on_profile">Кнопка «Сохранённое» в вашем профиле (перезапустите Instagram)</string>
     <string name="ig_saved_on_profile_button">Сохранённое</string>
     <string name="ig_nav_tab_search">Поиск</string>
     <string name="ig_nav_tab_order">Порядок вкладок</string>
     <string name="ig_nav_tab_order_hint">Используйте стрелки, чтобы изменить порядок нижней панели. Скрытые вкладки сохраняют своё место. Изменения вступят в силу после возврата в Instagram.</string>
     <string name="ig_nav_tab_order_reset">Сбросить</string>
-    <string name="share_dl_label">Скачать через InstaEclipse</string>
+    <string name="share_dl_label">Скачать через Eclipse 2</string>
     <string name="share_dl_no_link">Ссылка на публикацию или Reel в Instagram не найдена</string>
     <string name="share_dl_no_instagram">Instagram не установлен</string>
-    <string name="ig_share_dl_loading">InstaEclipse: загрузка публикации для скачивания…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: сохранение %1$d файл(ов)…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: не удалось загрузить эту публикацию</string>
-    <string name="ig_thread_menu">Действия с чатом InstaEclipse</string>
+    <string name="ig_share_dl_loading">Eclipse 2: загрузка публикации для скачивания…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: сохранение %1$d файл(ов)…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: не удалось загрузить эту публикацию</string>
+    <string name="ig_thread_menu">Действия с чатом Eclipse 2</string>
     <string name="ig_unsent_messages">Неотправленные сообщения</string>
     <string name="ig_hide_chat_toggle">Скрыть / показать чат</string>
     <string name="ig_chat_export_working">Экспорт загруженных сообщений…</string>

@@ -111,7 +111,7 @@ jobs:
           fi
           apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
           "$apksigner" verify --verbose --print-certs "$apk"
-          out="InstaEclipse-${TAG}.apk"
+          out="Eclipse2-${TAG}.apk"
           cp "$apk" "$out"
           sha256sum "$out" | tee "$out.sha256"
           echo "file=$out" >> "$GITHUB_OUTPUT"
@@ -123,7 +123,7 @@ jobs:
           flags=()
           if [ "${{ steps.tag.outputs.prerelease }}" = "true" ]; then flags+=(--prerelease); else flags+=(--latest); fi
           gh release create "$TAG" "${{ steps.apk.outputs.file }}" "${{ steps.apk.outputs.file }}.sha256" \
-            --title "InstaEclipse $TAG" \
+            --title "Eclipse 2 $TAG" \
             --notes-file "$RUNNER_TEMP/notes.md" \
             --verify-tag "${flags[@]}"
 

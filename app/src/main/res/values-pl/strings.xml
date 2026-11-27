@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="version" translatable="false">v0.8.4</string>
     <string name="home">Główna</string>
     <string name="features">Funkcje</string>
@@ -139,7 +139,7 @@
     <!-- ================================================================ -->
 
     <!-- Common -->
-    <string name="ig_dialog_title" translatable="false">InstaEclipse 🌘</string>
+    <string name="ig_dialog_title" translatable="false">Eclipse 2 🌘</string>
     <string name="ig_dialog_close">Zamknij</string>
     <string name="ig_dialog_enable_disable_all">Przełącz wszystkie</string>
     <string name="ig_dialog_error">Wystąpił błąd</string>
@@ -164,7 +164,7 @@
     <string name="logging_clear">Wyczyść</string>
     <string name="logging_copy">Kopiuj</string>
     <string name="logging_copied">Skopiowano do schowka</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
     <string name="logging_instagram_timeout">Instagram nie odpowiedział na czas. Wyświetlanie tylko logów aplikacji.</string>
     <string name="logging_no_target">Najpierw zainstaluj obsługiwaną aplikację Instagram.</string>
@@ -255,7 +255,7 @@
     <string name="ig_dialog_section_clear_cache">Wyczyść pamięć podręczną hooków</string>
     <string name="ig_dialog_clear_cache_message">⚠️ Wymusi ponowne przeskanowanie Instagrama przy następnym uruchomieniu. Aplikacja uruchomi się ponownie.</string>
     <string name="ig_dialog_clear_cache_now">Wyczyść pamięć podręczną i zrestartuj</string>
-    <string name="ig_dialog_unable_open_ui">Nie udało się otworzyć interfejsu InstaEclipse.</string>
+    <string name="ig_dialog_unable_open_ui">Nie udało się otworzyć interfejsu Eclipse 2.</string>
     <string name="ig_dialog_instagram_not_ready">Instagram nie jest otwarty lub gotowy.</string>
     <string name="ig_dialog_mc_overrides_not_found">Nie odnaleziono mc_overrides.json</string>
     <string name="ig_dialog_failed_read_config">Nie udało się załadować konfiguracji: %1$s</string>
@@ -311,8 +311,8 @@
     <string name="ig_bulk_unsend_go">Cofnij wysłanie</string>
     <string name="ig_bulk_unsend_done">Cofnięto %1$d wiadomości</string>
     <string name="ig_bulk_unsend_unavailable">Cofanie wielu wiadomości nie jest dostępne w tej wersji Instagrama</string>
-    <string name="ig_downloader_folder_hint">Folder ustawisz w aplikacji InstaEclipse</string>
-    <string name="lock_code_set_in_ig">Ustawiasz go w Instagramie: menu InstaEclipse &gt; Blokada. Dotknij, aby otworzyć Instagram.</string>
+    <string name="ig_downloader_folder_hint">Folder ustawisz w aplikacji Eclipse 2</string>
+    <string name="lock_code_set_in_ig">Ustawiasz go w Instagramie: menu Eclipse 2 &gt; Blokada. Dotknij, aby otworzyć Instagram.</string>
     <string name="theme_set_light">Motywy trybu jasnego</string>
     <string name="theme_set_dark">Motywy trybu ciemnego</string>
     <string name="theme_light_same">Ten sam motyw co w trybie ciemnym</string>
@@ -466,12 +466,12 @@
     <string name="ig_toast_downloading">Pobieranie...</string>
     <string name="ig_toast_downloading_video">Pobieranie filmu...</string>
     <string name="ig_toast_downloading_photo">Pobieranie zdjęcia...</string>
-    <string name="ig_toast_video_saved">Zapisano film do folderu InstaEclipse</string>
-    <string name="ig_toast_photo_saved">Zapisano zdjęcie do folderu InstaEclipse</string>
-    <string name="ig_toast_saved">Zapisano do folderu InstaEclipse</string>
+    <string name="ig_toast_video_saved">Zapisano film do folderu Eclipse 2</string>
+    <string name="ig_toast_photo_saved">Zapisano zdjęcie do folderu Eclipse 2</string>
+    <string name="ig_toast_saved">Zapisano do folderu Eclipse 2</string>
     <string name="ig_toast_download_failed">Pobieranie nie udało się: %1$s</string>
     <string name="ig_toast_downloading_reel">Pobieranie rolki...</string>
-    <string name="ig_toast_reel_saved">Zapisano rolkę do folderu InstaEclipse</string>
+    <string name="ig_toast_reel_saved">Zapisano rolkę do folderu Eclipse 2</string>
     <string name="ig_toast_reel_failed">Nie udało się pobrać rolki: %1$s</string>
     <string name="ig_toast_reel_url_not_found">Nie odnaleziono adresu URL rolki</string>
     <string name="ig_toast_post_url_not_found">Nie odnaleziono adresu URL postu</string>
@@ -479,7 +479,7 @@
     <string name="ig_toast_no_media">Nie znaleziono żadnych multimediów</string>
     <string name="ig_toast_downloading_story_video">Pobieranie filmu z relacji...</string>
     <string name="ig_toast_downloading_story_photo">Pobieranie zdjęcia z relacji...</string>
-    <string name="ig_toast_story_saved">Zapisano relację do folderu InstaEclipse</string>
+    <string name="ig_toast_story_saved">Zapisano relację do folderu Eclipse 2</string>
     <string name="ig_toast_story_url_not_found">Nie odnaleziono adresu URL relacji</string>
     <string name="ig_toast_downloading_profile_pic">Pobieranie zdjęcia profilowego...</string>
     <string name="ig_toast_profile_pic_saved">Zapisano profilowe!</string>
@@ -487,12 +487,12 @@
     <string name="ig_toast_merging_video_audio">Łączenie wideo i audio…</string>
     <string name="ig_toast_downloading_n_items">Pobieranie %1$d rzeczy…</string>
     <string name="ig_toast_downloading_all_n_items">Pobieranie wszystkich %1$d rzeczy…</string>
-    <string name="ig_toast_all_items_saved">Wszystkie %1$d rzeczy zostało zapisane do folderu InstaEclipse</string>
+    <string name="ig_toast_all_items_saved">Wszystkie %1$d rzeczy zostało zapisane do folderu Eclipse 2</string>
     <string name="ig_toast_items_partial_saved">Zapisano %1$d z %2$d rzeczy (%3$d nie udało się)</string>
     <string name="ig_toast_no_reel_url_scroll">Nie znaleziono adresu URL rolki — najpierw przewiń rolkę</string>
     <string name="ig_toast_no_download_folder">Nie ustawiono folderu pobierania</string>
     <string name="ig_toast_file_saved">Zapisano: %1$s</string>
-    <string name="ig_toast_features_loaded">Załadowano InstaEclipse 🎯</string>
+    <string name="ig_toast_features_loaded">Załadowano Eclipse 2 🎯</string>
 
     <!-- Downloader carousel UI -->
     <string name="ig_dl_title">Pobierz</string>
@@ -576,8 +576,8 @@
     <string name="ig_hide_chats_empty">Brak ukrytych czatów. Otwórz czat i dotknij przycisku przekreślonego oka, aby go ukryć.</string>
     <string name="ig_hide_chats_unhide">Odkryj</string>
     <string name="ig_hide_chats_hint">Aby ukryć czat, otwórz go i dotknij przycisku przekreślonego oka w nagłówku rozmowy.</string>
-    <string name="ig_lock_passcode_hint">Ustaw kod w aplikacji Instagram (otwórz menu InstaEclipse → Blokada).</string>
-    <string name="ig_theme_font_hint">Wybierz pliki czcionek i emoji w aplikacji Instagram (menu InstaEclipse → Własny motyw).</string>
+    <string name="ig_lock_passcode_hint">Ustaw kod w aplikacji Instagram (otwórz menu Eclipse 2 → Blokada).</string>
+    <string name="ig_theme_font_hint">Wybierz pliki czcionek i emoji w aplikacji Instagram (menu Eclipse 2 → Własny motyw).</string>
     <string name="ig_hide_chat_hidden">Czat ukryty — zniknie ze skrzynki odbiorczej</string>
     <string name="ig_hide_chat_unhidden">Czat odkryty</string>
     <string name="ig_hide_chat_no_thread">Nie udało się rozpoznać tego czatu</string>
@@ -636,20 +636,20 @@
     <string name="ig_locked_coll_unlock">Odblokuj tę kolekcję</string>
     <string name="ig_locked_coll_locked">Kolekcja zablokowana: poprosi o Twój kod</string>
     <string name="ig_locked_coll_unlocked">Kolekcja odblokowana</string>
-    <string name="ig_locked_coll_need_passcode">Najpierw ustaw kod: ustawienia InstaEclipse w Instagramie, Blokada</string>
+    <string name="ig_locked_coll_need_passcode">Najpierw ustaw kod: ustawienia Eclipse 2 w Instagramie, Blokada</string>
     <string name="ig_saved_on_profile">Przycisk Zapisane na Twoim profilu (uruchom ponownie Instagram)</string>
     <string name="ig_saved_on_profile_button">Zapisane</string>
     <string name="ig_nav_tab_search">Szukaj</string>
     <string name="ig_nav_tab_order">Kolejność kart</string>
     <string name="ig_nav_tab_order_hint">Użyj strzałek, aby zmienić kolejność dolnego paska. Ukryte karty zachowują swoje miejsce. Zmiany zadziałają po powrocie do Instagrama.</string>
     <string name="ig_nav_tab_order_reset">Resetuj</string>
-    <string name="share_dl_label">Pobierz przez InstaEclipse</string>
+    <string name="share_dl_label">Pobierz przez Eclipse 2</string>
     <string name="share_dl_no_link">Nie znaleziono linku do posta ani rolki Instagrama</string>
     <string name="share_dl_no_instagram">Instagram nie jest zainstalowany</string>
-    <string name="ig_share_dl_loading">InstaEclipse: wczytywanie posta do pobrania…</string>
-    <string name="ig_share_dl_saving">InstaEclipse: zapisywanie %1$d pliku(ów)…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse: nie udało się wczytać tego posta</string>
-    <string name="ig_thread_menu">Działania czatu InstaEclipse</string>
+    <string name="ig_share_dl_loading">Eclipse 2: wczytywanie posta do pobrania…</string>
+    <string name="ig_share_dl_saving">Eclipse 2: zapisywanie %1$d pliku(ów)…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2: nie udało się wczytać tego posta</string>
+    <string name="ig_thread_menu">Działania czatu Eclipse 2</string>
     <string name="ig_unsent_messages">Niewysłane wiadomości</string>
     <string name="ig_hide_chat_toggle">Ukryj / odkryj czat</string>
     <string name="ig_chat_export_working">Eksportowanie wczytanych wiadomości…</string>

@@ -11,7 +11,7 @@ import io.github.somilkhan.instaeclipse2.BuildConfig;
  */
 public final class RepoLinks {
 
-    /** "owner/name", e.g. somilkhan/InstaEclipse-2. */
+    /** "owner/name", e.g. somilkhan/Eclipse-2. */
     public static final String REPO = BuildConfig.GITHUB_REPO;
 
     public static final String REPO_URL = "https://github.com/" + REPO;

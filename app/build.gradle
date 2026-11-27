@@ -16,7 +16,7 @@ android {
 
         // Single source of truth for the GitHub "owner/name" of this project.
         // Everything in code derives its links from RepoLinks, which reads this field.
-        buildConfigField "String", "GITHUB_REPO", "\"somilkhan/InstaEclipse-2\""
+        buildConfigField "String", "GITHUB_REPO", "\"somilkhan/Eclipse-2\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,7 +62,7 @@ android {
         unitTests.includeAndroidResources = true
         unitTests.all {
             // Pass -Pie.screenshots=true to write PNGs to docs/screenshots/0.8.4/, or
-            // -Pie.screenshotSet=review2 to write them to docs/screenshots/0.8.4/review2/.
+            // -Pie.screenshotSet=final to write them to docs/screenshots/0.8.4/final/.
             if (project.hasProperty('ie.screenshots') || project.hasProperty('ie.screenshotSet')) {
                 def set = project.findProperty('ie.screenshotSet')
                 systemProperty 'instaeclipse.screenshotDir',

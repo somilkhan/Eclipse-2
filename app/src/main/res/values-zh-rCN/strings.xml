@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!--  app wide  -->
-    <string name="app_name">InstaEclipse</string>
+    <string name="app_name">Eclipse 2</string>
     <string name="version" translatable="false">v0.8.4</string>
     <string name="home">首页</string>
     <string name="features">功能</string>
@@ -132,7 +132,7 @@
     <!-- ================================================================ -->
 
     <!-- Common -->
-    <string name="ig_dialog_title" translatable="false">InstaEclipse 🌘</string>
+    <string name="ig_dialog_title" translatable="false">Eclipse 2 🌘</string>
     <string name="ig_dialog_close">关闭</string>
     <string name="ig_dialog_enable_disable_all">启用/禁用所有</string>
     <string name="ig_dialog_error">错误</string>
@@ -174,7 +174,7 @@
     <string name="ig_dialog_dev_restore_default_config_confirm">这将用内置默认配置覆盖当前的开发者配置。是否继续？</string>
     <string name="ig_toast_default_config_restored">✅ 默认配置已恢复。</string>
     <string name="ig_dialog_dev_remove_build_expired">移除版本过期弹窗</string>
-    <string name="ig_dialog_unable_open_ui">无法打开 InstaEclipse 界面。</string>
+    <string name="ig_dialog_unable_open_ui">无法打开 Eclipse 2 界面。</string>
     <string name="ig_dialog_instagram_not_ready">Instagram 未打开或未就绪。</string>
     <string name="ig_dialog_mc_overrides_not_found">未找到 mc_overrides.json。</string>
     <string name="ig_dialog_failed_read_config">读取配置失败：%1$s</string>
@@ -231,8 +231,8 @@
     <string name="ig_bulk_unsend_go">撤回</string>
     <string name="ig_bulk_unsend_done">已撤回 %1$d 条消息</string>
     <string name="ig_bulk_unsend_unavailable">此 Instagram 版本不支持批量撤回</string>
-    <string name="ig_downloader_folder_hint">请在 InstaEclipse 应用中设置文件夹</string>
-    <string name="lock_code_set_in_ig">请在 Instagram 内设置：InstaEclipse 菜单 &gt; 锁定。点按打开 Instagram。</string>
+    <string name="ig_downloader_folder_hint">请在 Eclipse 2 应用中设置文件夹</string>
+    <string name="lock_code_set_in_ig">请在 Instagram 内设置：Eclipse 2 菜单 &gt; 锁定。点按打开 Instagram。</string>
     <string name="theme_set_light">浅色模式主题</string>
     <string name="theme_set_dark">深色模式主题</string>
     <string name="theme_light_same">与深色模式相同的主题</string>
@@ -325,7 +325,7 @@
     <string name="ig_dialog_restart_message">⚠️ 清除应用缓存并重启？</string>
     <string name="ig_dialog_clear_cache">清除 Hooks 缓存</string>
     <string name="ig_dialog_section_clear_cache">清除 Hooks 缓存</string>
-    <string name="ig_dialog_clear_cache_message">⚠️ 这将强制 InstaEclipse 在下次启动时重新扫描 Instagram。应用将重新启动。</string>
+    <string name="ig_dialog_clear_cache_message">⚠️ 这将强制 Eclipse 2 在下次启动时重新扫描 Instagram。应用将重新启动。</string>
     <string name="ig_dialog_clear_cache_now">清除缓存并重启</string>
     <string name="ig_dialog_restart_now">立即重启</string>
     <string name="ig_dialog_restart_not_found">找不到要重启的应用。</string>
@@ -357,12 +357,12 @@
     <string name="ig_toast_downloading">正在下载…</string>
     <string name="ig_toast_downloading_video">正在下载视频…</string>
     <string name="ig_toast_downloading_photo">正在下载图片…</string>
-    <string name="ig_toast_video_saved">视频已保存到 InstaEclipse 文件夹</string>
-    <string name="ig_toast_photo_saved">图片已保存到 InstaEclipse 文件夹</string>
-    <string name="ig_toast_saved">已保存到 InstaEclipse 文件夹</string>
+    <string name="ig_toast_video_saved">视频已保存到 Eclipse 2 文件夹</string>
+    <string name="ig_toast_photo_saved">图片已保存到 Eclipse 2 文件夹</string>
+    <string name="ig_toast_saved">已保存到 Eclipse 2 文件夹</string>
     <string name="ig_toast_download_failed">下载失败：%1$s</string>
     <string name="ig_toast_downloading_reel">正在下载连续短片…</string>
-    <string name="ig_toast_reel_saved">连续短片已保存到 InstaEclipse 文件夹</string>
+    <string name="ig_toast_reel_saved">连续短片已保存到 Eclipse 2 文件夹</string>
     <string name="ig_toast_reel_failed">连续短片下载失败：%1$s</string>
     <string name="ig_toast_reel_url_not_found">未找到连续短片 URL</string>
     <string name="ig_toast_post_url_not_found">未找到帖子 URL</string>
@@ -370,7 +370,7 @@
     <string name="ig_toast_no_media">未找到媒体</string>
     <string name="ig_toast_downloading_story_video">正在下载限时动态视频…</string>
     <string name="ig_toast_downloading_story_photo">正在下载限时动态图片…</string>
-    <string name="ig_toast_story_saved">限时动态已保存到 InstaEclipse 文件夹</string>
+    <string name="ig_toast_story_saved">限时动态已保存到 Eclipse 2 文件夹</string>
     <string name="ig_toast_story_url_not_found">未找到限时动态 URL</string>
     <string name="ig_toast_downloading_profile_pic">正在下载个人资料图片…</string>
     <string name="ig_toast_profile_pic_saved">个人资料图片已保存！</string>
@@ -378,7 +378,7 @@
     <string name="ig_toast_merging_video_audio">正在合并视频 + 音频…</string>
     <string name="ig_toast_downloading_n_items">正在下载 %1$d 个项目…</string>
     <string name="ig_toast_downloading_all_n_items">正在下载全部 %1$d 个项目…</string>
-    <string name="ig_toast_all_items_saved">全部 %1$d 个项目已保存到 InstaEclipse 文件夹</string>
+    <string name="ig_toast_all_items_saved">全部 %1$d 个项目已保存到 Eclipse 2 文件夹</string>
     <string name="ig_toast_items_partial_saved">%1$d / %2$d 个项目已保存（%3$d 个失败）</string>
     <string name="ig_toast_no_reel_url_scroll">未找到连续短片 URL — 请先滚动查看连续短片</string>
 
@@ -405,7 +405,7 @@
     <!-- Toast: Downloader (service) -->
     <string name="ig_toast_no_download_folder">未设置下载文件夹</string>
     <string name="ig_toast_file_saved">已保存：%1$s</string>
-    <string name="ig_toast_features_loaded">InstaEclipse 已加载 🎯</string>
+    <string name="ig_toast_features_loaded">Eclipse 2 已加载 🎯</string>
 
 
     <!-- Update check dialog -->
@@ -456,9 +456,9 @@
     <string name="logging_clear">清除</string>
     <string name="logging_copy">复制</string>
     <string name="logging_copied">已复制到剪贴板</string>
-    <string name="logging_companion">InstaEclipse</string>
+    <string name="logging_companion">Eclipse 2</string>
     <string name="logging_instagram">Instagram</string>
-    <string name="logging_instagram_timeout">Instagram 未及时响应。仅显示 InstaEclipse 日志。</string>
+    <string name="logging_instagram_timeout">Instagram 未及时响应。仅显示 Eclipse 2 日志。</string>
     <string name="logging_no_target">请先安装受支持的 Instagram 应用。</string>
     <string name="logging_empty_reply">（缓冲区为空 — 请在启用模块的情况下打开 Instagram）</string>
     <string name="logging_placeholder">尚未加载日志。</string>
@@ -532,8 +532,8 @@
     <string name="ig_hide_chats_empty">暂无已隐藏对话。打开一个对话并点击隐藏眼睛按钮即可将其隐藏。</string>
     <string name="ig_hide_chats_unhide">取消隐藏</string>
     <string name="ig_hide_chats_hint">要隐藏对话，请打开它并点击对话标题栏中的隐藏眼睛按钮。</string>
-    <string name="ig_lock_passcode_hint">请在 Instagram 内设置您的密码（打开 InstaEclipse 菜单 → 锁定）。</string>
-    <string name="ig_theme_font_hint">请在 Instagram 内选择您的字体和表情文件（InstaEclipse 菜单 → 自定义主题）。</string>
+    <string name="ig_lock_passcode_hint">请在 Instagram 内设置您的密码（打开 Eclipse 2 菜单 → 锁定）。</string>
+    <string name="ig_theme_font_hint">请在 Instagram 内选择您的字体和表情文件（Eclipse 2 菜单 → 自定义主题）。</string>
     <string name="ig_hide_chat_hidden">对话已隐藏 —— 它将从您的收件箱中消失</string>
     <string name="ig_hide_chat_unhidden">对话已取消隐藏</string>
     <string name="ig_hide_chat_no_thread">无法识别此对话</string>
@@ -620,20 +620,20 @@
     <string name="ig_locked_coll_unlock">解锁此收藏夹</string>
     <string name="ig_locked_coll_locked">收藏夹已锁定：将会要求输入密码</string>
     <string name="ig_locked_coll_unlocked">收藏夹已解锁</string>
-    <string name="ig_locked_coll_need_passcode">请先设置密码：在 Instagram 中打开 InstaEclipse 设置 → 锁定</string>
+    <string name="ig_locked_coll_need_passcode">请先设置密码：在 Instagram 中打开 Eclipse 2 设置 → 锁定</string>
     <string name="ig_saved_on_profile">在主页上显示“收藏”按钮（需重启 Instagram）</string>
     <string name="ig_saved_on_profile_button">收藏</string>
     <string name="ig_nav_tab_search">搜索</string>
     <string name="ig_nav_tab_order">标签顺序</string>
     <string name="ig_nav_tab_order_hint">使用箭头重新排列底部栏。隐藏的标签会保留原位。返回 Instagram 后生效。</string>
     <string name="ig_nav_tab_order_reset">重置</string>
-    <string name="share_dl_label">使用 InstaEclipse 下载</string>
+    <string name="share_dl_label">使用 Eclipse 2 下载</string>
     <string name="share_dl_no_link">未找到 Instagram 帖子或连续短片链接</string>
     <string name="share_dl_no_instagram">未安装 Instagram</string>
-    <string name="ig_share_dl_loading">InstaEclipse：正在加载要下载的帖子…</string>
-    <string name="ig_share_dl_saving">InstaEclipse：正在保存 %1$d 个文件…</string>
-    <string name="ig_share_dl_not_found">InstaEclipse：无法加载该帖子</string>
-    <string name="ig_thread_menu">InstaEclipse 聊天操作</string>
+    <string name="ig_share_dl_loading">Eclipse 2：正在加载要下载的帖子…</string>
+    <string name="ig_share_dl_saving">Eclipse 2：正在保存 %1$d 个文件…</string>
+    <string name="ig_share_dl_not_found">Eclipse 2：无法加载该帖子</string>
+    <string name="ig_thread_menu">Eclipse 2 聊天操作</string>
     <string name="ig_unsent_messages">已撤回消息</string>
     <string name="ig_hide_chat_toggle">隐藏 / 取消隐藏聊天</string>
     <string name="ig_chat_export_working">正在导出已加载的消息…</string>
