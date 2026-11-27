@@ -49,11 +49,14 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
   - Unchanged and OK on 457: DisableRepost, DisableDoubleTapLike, DoubleTapExtras, ExpandCaptions,
     FeedPhotoZoom, FollowingOnlyFeed, HideCommunityNotes, HideSuggestedFeedItems.
   - Not verified on a device (no phone): row injection/click, scrubber gate semantics.
-- [ ] Hooks B
+- [~] Hooks B — partial: api.schemas video classes, profile Saved, Save Instants, follow-list export,
+  notes tray, high-res images done. Not done: max upload quality, DMs/ghost, stories, downloads;
+  checker report not re-run after Hooks B.
 - [x] Features (wip/features: repo links, maintainer docs, log export, release workflow, 0.8.4/22, safe pacing)
-- [ ] UI
+- [~] UI — partial: glass design system, nav pill shell, Features screen. Not done: Home, Help,
+  Logging, theme customizer, location picker screens (screenshot tests exist for review).
 - [x] Bugs (see docs/BUGFIXES-0.8.4.md)
-- [ ] Merged, build + tests green, CHANGELOG written
+- [x] Merged into `maintainer/0.8.4`, `assembleDebug` + `testDebugUnitTest` (418 tests, 0 failures) + `lintDebug` (0 errors) green, CHANGELOG written
 - [ ] PR opened into `main`
 
 ## Things that cannot be fixed client-side on 457
