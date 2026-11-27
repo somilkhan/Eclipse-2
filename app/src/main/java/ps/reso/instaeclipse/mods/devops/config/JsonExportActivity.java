@@ -25,6 +25,10 @@ public class JsonExportActivity extends Activity {
             finish();
             return;
         }
+        // Recreated (rotation, or process death while the system file picker was open): the
+        // picker launched by the first instance is still pending and will deliver its result
+        // here. Launching a second one stacked pickers and could save the file twice.
+        if (savedInstanceState != null) return;
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
@@ -43,8 +47,11 @@ public class JsonExportActivity extends Activity {
                     finish();
                     return;
                 }
-                try (OutputStream out = getContentResolver().openOutputStream(uri)) {
-                    assert out != null;
+                // "wt": truncate when overwriting an existing, longer file (plain "w" may leave
+                // its tail behind on some providers, producing invalid JSON).
+                try (OutputStream out = openTruncating(uri)) {
+                    // assert is compiled out on Android; fail with a real message instead of an NPE.
+                    if (out == null) throw new java.io.IOException("cannot open output stream");
                     out.write(jsonContent.getBytes(StandardCharsets.UTF_8));
                     out.flush();
                     ps.reso.instaeclipse.utils.toast.IeToast.makeText(this, getString(R.string.export_config_success), Toast.LENGTH_LONG).show();
@@ -53,6 +60,15 @@ public class JsonExportActivity extends Activity {
                 }
             }
             finish();
+        }
+    }
+
+    /** "wt" where the provider supports it, otherwise the provider's default write mode. */
+    private OutputStream openTruncating(Uri uri) throws java.io.IOException {
+        try {
+            return getContentResolver().openOutputStream(uri, "wt");
+        } catch (IllegalArgumentException | UnsupportedOperationException | java.io.FileNotFoundException e) {
+            return getContentResolver().openOutputStream(uri);
         }
     }
 }
