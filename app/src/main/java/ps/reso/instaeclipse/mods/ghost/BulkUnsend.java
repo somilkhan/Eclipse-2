@@ -517,9 +517,14 @@ public final class BulkUnsend {
     /** Unsends {@code msgs} one after another on a background thread. */
     private static void unsendAll(Activity act, Ctx c, List<Object> msgs) {
         Handler main = new Handler(Looper.getMainLooper());
+        // Safe pacing: random gap between unsends, longer pause every 8; Stop cancels.
+        ps.reso.instaeclipse.utils.pacing.PacedRun run = ps.reso.instaeclipse.utils.pacing.PacedRun.start(
+                act, I18n.t(act, R.string.ig_dialog_bulk_unsend), msgs.size());
         new Thread(() -> {
             int ok = 0;
-            for (Object m : msgs) {
+            for (int i = 0; i < msgs.size(); i++) {
+                if (!run.awaitTurn(i)) break;
+                Object m = msgs.get(i);
                 try {
                     Object key = threadKeyOf(m);
                     if (key == null) key = c.threadKey;
@@ -530,14 +535,17 @@ public final class BulkUnsend {
                     Object r = future instanceof java.util.concurrent.Future<?> f ? f.get(10, java.util.concurrent.TimeUnit.SECONDS) : future;
                     ModuleLog.line(TAG + "unsend → " + r + " (key from " + (threadKeyOf(m) != null ? "message" : "thread") + ")");
                     ok++;
-                    Thread.sleep(250);
+                    if (!run.pacer.isEnabled()) Thread.sleep(250); // previous fixed gap when pacing is off
                 } catch (Throwable t) {
                     ModuleLog.line(TAG + "⚠️ unsend: " + t + " / " + t.getCause());
                 }
+                run.done(i + 1);
             }
+            run.finish();
             final int done = ok;
-            ModuleLog.line(TAG + "✅ unsent " + done + "/" + msgs.size());
-            main.post(() -> toast(act, I18n.t(act, R.string.ig_bulk_unsend_done, done)));
+            String stopped = run.stoppedText(done);
+            ModuleLog.line(TAG + "✅ unsent " + done + "/" + msgs.size() + (stopped != null ? " (stopped)" : ""));
+            main.post(() -> toast(act, stopped != null ? stopped : I18n.t(act, R.string.ig_bulk_unsend_done, done)));
         }, "IE-BulkUnsend").start();
     }
 

@@ -32,7 +32,7 @@ public final class ExportBrand {
     public static final String TELEGRAM = "https://t.me/InstaEclipse";
 
     /** The Instagram build this release is tested on; "Get APK" opens its APKMirror page. */
-    public static final String TESTED_INSTAGRAM = "451.0.0.20.80";
+    public static final String TESTED_INSTAGRAM = "457.0.0.55.73";
     public static final String TESTED_INSTAGRAM_APK = "https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-"
             + TESTED_INSTAGRAM.replace('.', '-') + "-release/";
 

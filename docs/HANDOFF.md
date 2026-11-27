@@ -30,7 +30,7 @@ Integration branch: `maintainer/0.8.4` (merged by the orchestrator). Final step:
 
 - [ ] Hooks A
 - [ ] Hooks B
-- [ ] Features
+- [x] Features (wip/features: repo links, maintainer docs, log export, release workflow, 0.8.4/22, safe pacing)
 - [ ] UI
 - [x] Bugs (see docs/BUGFIXES-0.8.4.md)
 - [ ] Merged, build + tests green, CHANGELOG written
