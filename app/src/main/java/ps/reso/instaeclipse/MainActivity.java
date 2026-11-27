@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Logging.init(this, "instaeclipse_companion.log");
         ps.reso.instaeclipse.mods.media.FrameSessionCache.cleanupOrphans(getCacheDir());
-        VersionCheckUtility.checkForUpdates(this);
+        // Only on a fresh launch: recreation (rotation, dark-mode/locale change, process-death
+        // restore) must not re-run the network check and stack another dialog.
+        if (savedInstanceState == null) VersionCheckUtility.checkForUpdates(this);
 
         setContentView(R.layout.activity_main);
 
@@ -69,8 +71,12 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // Select Home by default in the navbar
-        bottomNavigation.setSelectedItemId(R.id.nav_home);
+        // Select Home only on a fresh launch. After recreation the BottomNavigationView restores
+        // its own selection, matching the fragment the FragmentManager restored; forcing Home here
+        // left e.g. the Logs tab on screen with the Home item highlighted.
+        if (savedInstanceState == null) bottomNavigation.setSelectedItemId(R.id.nav_home);
+        // Re-tapping the current tab must not rebuild it (lost scroll/search/sub-menu state).
+        bottomNavigation.setOnItemReselectedListener(item -> { });
 
         // Handle bottom navigation item clicks
         bottomNavigation.setOnItemSelectedListener(item -> {
