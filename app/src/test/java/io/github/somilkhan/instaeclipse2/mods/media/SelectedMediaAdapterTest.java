@@ -219,4 +219,60 @@ public class SelectedMediaAdapterTest {
     private static Holder tree(int depth) {
         return depth == 0 ? new Holder(null, null) : new Holder(tree(depth - 1), tree(depth - 1));
     }
+
+    // 458 shapes: Media reached through the handler's own static accessor or an initialized Lazy.
+    interface FakeLazy { Object getValue(); boolean isInitialized(); }
+    static final class LazyBox implements FakeLazy {
+        final Object value; final boolean ready;
+        int reads;
+        LazyBox(Object value, boolean ready) { this.value = value; this.ready = ready; }
+        @Override public Object getValue() { reads++; return value; }
+        @Override public boolean isInitialized() { return ready; }
+    }
+    static final class ClipsHandler {
+        Media clipsItem;
+        MenuCreator other;
+        static Media A00(ClipsHandler h) {
+            if (h.clipsItem == null) throw new IllegalStateException("clipsItem");
+            return h.clipsItem;
+        }
+        static Media unrelated(Object o) { return new Media(); }
+    }
+    static final class LazyHandler {
+        MenuCreator creator;
+        FakeLazy media;
+        FakeLazy other;
+    }
+
+    @Test public void menuMediaUsesHandlerStaticAccessor() {
+        ClipsHandler h = new ClipsHandler();
+        h.other = new MenuCreator(new Media());
+        assertNull(SelectedMediaAdapter.ownAccessorMedia(h, Media.class));
+        Media selected = new Media();
+        h.clipsItem = selected;
+        assertSame(selected, SelectedMediaAdapter.ownAccessorMedia(h, Media.class));
+        // No MenuCreator-typed owner on 458 clips handlers; the accessor still wins.
+        assertSame(selected, SelectedMediaAdapter.menuMedia(h, PostHandler.class, Media.class));
+    }
+
+    @Test public void menuMediaReadsOnlyInitializedLazy() {
+        Media selected = new Media();
+        LazyHandler h = new LazyHandler();
+        h.creator = new MenuCreator(null);
+        LazyBox pending = new LazyBox(selected, false);
+        h.media = pending;
+        assertNull(SelectedMediaAdapter.menuMedia(h, MenuCreator.class, Media.class));
+        assertEquals(0, pending.reads);
+        h.media = new LazyBox(selected, true);
+        h.other = new LazyBox("not media", true);
+        assertSame(selected, SelectedMediaAdapter.menuMedia(h, MenuCreator.class, Media.class));
+        h.other = new LazyBox(new Media(), true);
+        assertNull(SelectedMediaAdapter.initializedLazyMedia(h, Media.class));
+    }
+
+    @Test public void menuMediaKeepsDirectCreatorFieldFirst() {
+        Media selected = new Media();
+        PostHandler handler = new PostHandler(new MenuCreator(selected), null);
+        assertSame(selected, SelectedMediaAdapter.menuMedia(handler, MenuCreator.class, Media.class));
+    }
 }

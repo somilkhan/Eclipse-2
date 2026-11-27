@@ -131,7 +131,87 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
 
     static Object findPostMenuMedia(Object handler, Class<?> creatorType) {
         SelectedMediaAdapter adapter = installed;
-        return adapter == null ? null : ownedMenuMedia(handler, creatorType, adapter.mediaClass);
+        return adapter == null ? null : menuMedia(handler, creatorType, adapter.mediaClass);
+    }
+
+    /**
+     * 457 keeps the selected Media in a Media-typed field of the menu creator. 458 moved it:
+     * the click handler reads it through its own static accessor ({@code static Media A00(Handler)},
+     * guarded by "clipsItem") or through a kotlin Lazy field. Each step stays on objects the
+     * tapped menu owns, so it cannot reach other posts the way a deep walk can.
+     */
+    static Object menuMedia(Object handler, Class<?> creatorType, Class<?> mediaType) {
+        Object media = ownedMenuMedia(handler, creatorType, mediaType);
+        if (media != null) return media;
+        Object creator = creatorType == null ? null : uniqueDirectTypedField(handler, creatorType);
+        for (Object owner : new Object[]{handler, creator}) {
+            if (owner == null) continue;
+            media = ownAccessorMedia(owner, mediaType);
+            if (media == null) media = uniqueDirectTypedField(owner, mediaType);
+            if (media == null) media = initializedLazyMedia(owner, mediaType);
+            if (media != null) return media;
+        }
+        return null;
+    }
+
+    /** Unique non-null result of the holder class's own {@code static Media x(HolderClass)} accessors. */
+    static Object ownAccessorMedia(Object holder, Class<?> mediaType) {
+        if (holder == null || mediaType == null) return null;
+        Object selected = null;
+        for (Class<?> c = holder.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            Method[] methods;
+            try { methods = c.getDeclaredMethods(); } catch (Throwable t) { continue; }
+            for (Method m : methods) {
+                if (!Modifier.isStatic(m.getModifiers()) || m.getReturnType() != mediaType) continue;
+                Class<?>[] p = m.getParameterTypes();
+                if (p.length != 1 || p[0] != c) continue;
+                Object value;
+                try {
+                    m.setAccessible(true);
+                    value = m.invoke(null, holder);
+                } catch (Throwable ignored) { continue; } // lateinit guard: not this menu's path
+                if (value == null) continue;
+                if (selected != null && selected != value) return null;
+                selected = value;
+            }
+        }
+        return selected;
+    }
+
+    /** Unique Media held by an already-initialized kotlin Lazy field. Never forces a Lazy. */
+    static Object initializedLazyMedia(Object holder, Class<?> mediaType) {
+        if (holder == null || mediaType == null) return null;
+        Object selected = null;
+        try {
+            for (Class<?> c = holder.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    if (Modifier.isStatic(field.getModifiers()) || !field.getType().isInterface()) continue;
+                    field.setAccessible(true);
+                    Object lazy = field.get(holder);
+                    Object value = lazy == null ? null : initializedLazyValue(field.getType(), lazy);
+                    if (!mediaType.isInstance(value)) continue;
+                    if (selected != null && selected != value) return null;
+                    selected = value;
+                }
+            }
+        } catch (Throwable ignored) { return null; }
+        return selected;
+    }
+
+    /** kotlin.Lazy shape after R8: getValue()Object plus exactly one abstract ()Z (isInitialized). */
+    static Object initializedLazyValue(Class<?> iface, Object lazy) {
+        Method getValue = null, initialized = null;
+        int booleans = 0;
+        for (Method m : iface.getMethods()) {
+            if (m.getParameterCount() != 0 || Modifier.isStatic(m.getModifiers())) continue;
+            if (m.getName().equals("getValue") && m.getReturnType() == Object.class) getValue = m;
+            else if (m.getReturnType() == boolean.class && Modifier.isAbstract(m.getModifiers())) { initialized = m; booleans++; }
+        }
+        if (getValue == null || booleans != 1) return null;
+        try {
+            if (!Boolean.TRUE.equals(initialized.invoke(lazy))) return null;
+            return getValue.invoke(lazy);
+        } catch (Throwable ignored) { return null; }
     }
 
     /** Short reason for a failed {@link #findPostMenuMedia}, for the log only. */
@@ -140,7 +220,9 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
         if (adapter == null) return "adapter not resolved";
         if (creatorType == null) return "menu creator class not resolved";
         Object creator = uniqueDirectTypedField(handler, creatorType);
-        if (creator == null) return "no unique creator field";
+        String accessor = (ownAccessorMedia(handler, adapter.mediaClass) != null ? " handlerAccessor=yes" : "")
+                + (initializedLazyMedia(handler, adapter.mediaClass) != null ? " handlerLazy=yes" : "");
+        if (creator == null) return "no unique creator field" + accessor;
         int n = 0;
         try {
             for (Class<?> c = creator.getClass(); c != null && c != Object.class; c = c.getSuperclass())
@@ -150,7 +232,7 @@ final class SelectedMediaAdapter implements SelectedMediaSnapshot.Access {
                         if (f.get(creator) != null) n++;
                     }
         } catch (Throwable ignored) {}
-        return n == 0 ? "creator has no Media" : n + " Media fields on creator";
+        return (n == 0 ? "creator has no Media" : n + " Media fields on creator") + accessor;
     }
 
     static Object ownedMenuMedia(Object handler, Class<?> creatorType, Class<?> mediaType) {

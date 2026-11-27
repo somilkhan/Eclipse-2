@@ -603,7 +603,8 @@ public class PostDownloadContextMenuHook {
                             + SelectedMediaAdapter.describeMiss(thisObj, menuCreatorClass) + ")");
                 }
             } else {
-                media = findMediaViaMenuCreator(thisObj);
+                media = SelectedMediaAdapter.findPostMenuMedia(thisObj, menuCreatorClass);
+                if (media == null) media = findMediaViaMenuCreator(thisObj);
                 if (media == null) media = findMedia(thisObj);
             }
             if (media == null) {

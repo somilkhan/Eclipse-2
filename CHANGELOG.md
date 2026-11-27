@@ -14,6 +14,11 @@ Built on 0.8.1 (`contribute/remaining-fork-improvements`).
   story links, story info, caption copy, feed/reel download (carousel, audio, DASH, username,
   video_versions), HD profile picture, force reel quality, following-only feed, story auto-advance,
   hero playback speed. All User checks now go through `IgModels`.
+- Post/reel menu download, copy link and media info: on 458 the menu creator no longer holds a
+  Media field, so taps showed "Media not found". The click handler is now read the way Instagram
+  reads it: its own `static Media x(Handler)` accessor (the reel handler's "clipsItem" path), a
+  direct Media field, or an already-initialized `Lazy<Media>`. A Lazy is never forced, and two
+  different Media values still fail closed.
 - Hide suggested posts: the FeedItem parser lookup matched Instagram's shared string table
   (`X.0000`) on 458 and hooked nothing. It now goes through `StringTables` and only accepts a class
   that has the parser bridge.
