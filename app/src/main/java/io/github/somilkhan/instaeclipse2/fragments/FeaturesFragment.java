@@ -218,13 +218,14 @@ public class FeaturesFragment extends Fragment {
         // not pushed to Instagram.
         crashDirPickerLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), uri -> {
             if (uri == null) return;
-            try {
-                requireContext().getContentResolver().takePersistableUriPermission(uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            } catch (SecurityException e) {
+            android.content.ContentResolver cr = requireContext().getContentResolver();
+            if (!io.github.somilkhan.instaeclipse2.utils.download.SafGrants.take(cr, uri)) {
                 io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ie_crash_folder_failed), Toast.LENGTH_SHORT).show();
                 return;
             }
+            io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(cr,
+                    localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""),
+                    uri.toString(), localCache.getString("downloaderCustomUri", ""));
             String path = uri.getPath();
             path = path != null
                     ? path.replace("/tree/primary:", "/storage/emulated/0/").replace("/document/primary:", "/storage/emulated/0/")
@@ -239,8 +240,16 @@ public class FeaturesFragment extends Fragment {
 
         dirPickerLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), uri -> {
             if (uri != null) {
-                final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                requireContext().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                android.content.ContentResolver cr = requireContext().getContentResolver();
+                if (!io.github.somilkhan.instaeclipse2.utils.download.SafGrants.take(cr, uri)) {
+                    // Some providers return a tree without a persistable grant; it would be lost
+                    // on the next reboot, so don't save it (this used to crash the companion).
+                    io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ie_crash_folder_failed), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(cr,
+                        localCache.getString("downloaderCustomUri", ""), uri.toString(),
+                        localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""));
 
                 String uriString = uri.toString();
                 String path = uri.getPath();
