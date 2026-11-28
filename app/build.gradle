@@ -11,8 +11,8 @@ android {
         applicationId "io.github.somilkhan.instaeclipse2"
         minSdkVersion 28
         targetSdk 36
-        versionCode 23
-        versionName '0.9.0'
+        versionCode 24
+        versionName '0.9.1'
 
         // Single source of truth for the GitHub "owner/name" of this project.
         // Everything in code derives its links from RepoLinks, which reads this field.

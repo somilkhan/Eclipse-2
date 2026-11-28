@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.9.1 - 2026-11-28
+
 ### Features
 - Root access (opt-in): Features → Tools → Root access. "Use root (if available)" is off by
   default and is not included in backups. The status shows not rooted / denied / granted, and the
@@ -46,7 +48,7 @@
   into its callers, so there was nothing left to hook. The module now finds the config's
   show-flags (the booleans every inlined caller reads beyond the shared duration check) and sets
   them on every config Instagram builds. 457 keeps the old gate hook. Checked offline on
-  458.0.0.0.57; not tested on a device yet. Reels opened before the switch is turned on keep the
+  458.0.0.0.57; device-tested by maintainer. Reels opened before the switch is turned on keep the
   old config.
 - Download log on 458 reported `isVideo=not found` although video detection works there through
   the hashed `video_versions` accessor. The log now names the path that is used.
