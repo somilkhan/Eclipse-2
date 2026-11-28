@@ -38,7 +38,10 @@ public final class IgCompat {
     public static final String[] DEVICE_TESTED = {};
 
     /** Builds every hook lookup was checked on with tools/hook-verify. The first one is the main target. */
-    public static final String[] CHECKED_OFFLINE = {ExportBrand.TARGET_INSTAGRAM, ExportBrand.STABLE_INSTAGRAM};
+    public static final String[] CHECKED_OFFLINE = {
+            ExportBrand.TARGET_INSTAGRAM, ExportBrand.STABLE_INSTAGRAM,
+            "458.0.0.0.57", // alpha the Piko ports were written against; report in docs/hook-verify/
+    };
 
     // Instagram alpha builds look like 458.0.0.0.67: three zero segments after the major.
     private static final Pattern ALPHA = Pattern.compile("^\\d+\\.0\\.0\\.0\\.\\d+$");

@@ -19,6 +19,7 @@ public class IgCompatTest {
         assertEquals(Status.CHECKED_OFFLINE, IgCompat.classify(" " + STABLE + " "));
         assertEquals(Status.CHECKED_OFFLINE, IgCompat.classify("458.0.0.0.67"));
         assertEquals(Status.CHECKED_OFFLINE, IgCompat.classify("457.0.0.55.73"));
+        assertEquals(Status.CHECKED_OFFLINE, IgCompat.classify("458.0.0.0.57"));
         assertTrue(IgCompat.isVerified(Status.CHECKED_OFFLINE));
         assertTrue(IgCompat.isVerified(Status.TESTED));
         assertFalse(IgCompat.isVerified(Status.UNTESTED_BUILD));
@@ -71,7 +72,7 @@ public class IgCompatTest {
 
     @Test public void evidenceSummaryIsHonest() {
         String s = IgCompat.evidenceSummary();
-        assertEquals("458.0.0.0.67, 457.0.0.55.73 (offline hook check; no device test)", s);
+        assertEquals("458.0.0.0.67, 457.0.0.55.73, 458.0.0.0.57 (offline hook check; no device test)", s);
         assertFalse(s, s.contains("device-tested"));
     }
 

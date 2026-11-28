@@ -3,6 +3,17 @@
 ## Unreleased
 
 ### Fixes
+- Reels → Force reel seek bar did nothing on Instagram 458 ("reel scrubber gate not found").
+  On 458 the `(config, duration, isLong)` wrapper that picked the "show scrubber" flag was inlined
+  into its callers, so there was nothing left to hook. The module now finds the config's
+  show-flags (the booleans every inlined caller reads beyond the shared duration check) and sets
+  them on every config Instagram builds. 457 keeps the old gate hook. Checked offline on
+  458.0.0.0.57; not tested on a device yet. Reels opened before the switch is turned on keep the
+  old config.
+- Download log on 458 reported `isVideo=not found` although video detection works there through
+  the hashed `video_versions` accessor. The log now names the path that is used.
+- Story follow button (FollowButtons) and the story tray filter failed to install on 457.0.0.55.73
+  (one component's name lookup, one enum `toString()` that throws). Both now resolve offline.
 - Feed → Custom like animation did nothing. Only `LikeActionView` was hooked, but Instagram picks
   the like animation from `XDTUserActivationMetadataImpl(animation, Boolean enabled, ...)` and
   plays the plain heart when it is missing or disabled. Its constructor now gets the picked

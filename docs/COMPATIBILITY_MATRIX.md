@@ -1,7 +1,7 @@
 # Instagram compatibility matrix
 
 Status of Eclipse 2 **0.9.0 (versionCode 23)** against specific Instagram builds. Every row is backed by a
-committed report or says that it isn't. Last updated 2026-11-28.
+committed report or says that it isn't. Last updated 2026-11-28 (branch `maintainer/eng-audit`).
 
 ## Terms
 
@@ -22,25 +22,24 @@ committed report or says that it isn't. Last updated 2026-11-28.
 
 | Instagram version | Build (versionCode) | Channel | Arch | Harness result | Device-tested | Known failures | Status in app |
 |---|---|---|---|---|---|---|---|
-| **458.0.0.0.67** (main target) | 386405730 | alpha | not recorded | 79 steps: OK=70, PARTIAL=2, FAIL=1, NO-HOOK=6 ([report](hook-verify/report-458.0.0.0.67-386405730.md)). HideSuggestedFeedItems counts as NO-HOOK in the summary but was OK on a filtered re-run after the parser fix (section note in the report), so the effective result is OK=71, NO-HOOK=5. | No | **PlaybackSpeed: reel scrubber gate not found** (the "Force reel seek bar" switch does nothing). VoiceMessageDownload PARTIAL and LocationSpoof FAIL come from the harness. Runtime-only NO-HOOK: NotificationRegistration, JumpToFirstMessage, ReadReceiptChat, ExternalBrowser, FeedVideoDownload#install. | Checked offline |
-| **457.0.0.55.73** | 386314291 ([report](hook-verify/report-457.0.0.55.73-386314291.md)), 386314341 ([report](hook-verify/report-457-hooks_b.md)) | stable | not recorded | 79 steps: OK=72, PARTIAL=1, FAIL=1, NO-HOOK=5 | No (the tester logs in `HANDOFF.md` came from older module builds) | VoiceMessageDownload PARTIAL and LocationSpoof FAIL come from the harness. Runtime-only NO-HOOK as above. | Checked offline |
+| **458.0.0.0.67** (main target) | 386405730 | alpha | not recorded | 79 steps (report predates the Piko ports and the fixes below): OK=70, PARTIAL=2, FAIL=1, NO-HOOK=6 ([report](hook-verify/report-458.0.0.0.67-386405730.md)). HideSuggestedFeedItems counts as NO-HOOK in the summary but was OK on a filtered re-run after the parser fix (section note in the report), so the effective result is OK=71, NO-HOOK=5. **Not re-run**: the APK is not on APKMirror any more and could not be fetched again. | No | In that report, PlaybackSpeed could not find the reel scrubber gate. On 458.0.0.0.57 the same miss was traced to the gate wrapper being inlined, and the new config-flag path now resolves there. It is likely, but **not verified**, that 458.0.0.0.67 has the same layout. VoiceMessageDownload PARTIAL and LocationSpoof FAIL come from the harness. Runtime-only NO-HOOK: NotificationRegistration, JumpToFirstMessage, ReadReceiptChat, ExternalBrowser, FeedVideoDownload#install. | Checked offline |
+| **457.0.0.55.73** | 386314291 ([report](hook-verify/report-457.0.0.55.73-386314291.md), SHA-256 `956023e1af092a9bbcc4ea9a9521d5d2803653a3844e19e0cc76aa6de60152d6`, arm64), 386314341 ([older 79-step report](hook-verify/report-457-hooks_b.md)) | stable | arm64 (386314291) | 93 steps, Piko ports included: OK=86, PARTIAL=1, FAIL=1, NO-HOOK=5 (2026-11-28) | No (the tester logs in `HANDOFF.md` came from older module builds) | VoiceMessageDownload PARTIAL and LocationSpoof FAIL come from the harness. Runtime-only NO-HOOK as above. | Checked offline |
 | 458.0.0.0.72 | unknown | alpha | unknown | **Not run.** This is the newest public alpha (Uptodown, 2026-11-26, SHA-256 `6c79243ae4695200f92bf8f97cad609705087de905893dd02692de6f3a42b249`), but no APK could be fetched from the sandbox: APKPure, APKCombo and APKMirror return 403, and Uptodown returns 410 to non-browser clients. | No | Unknown | Unchecked build (same major) |
-| 458.0.0.0.57 | unknown | alpha | arm64 | No committed report. The 0.9.0 Piko ports were written against this bytecode (`CHANGELOG.md`). | No | Unknown | Unchecked build |
+| **458.0.0.0.57** | 386404709 ([report](hook-verify/report-458.0.0.0.57-386404709.md), SHA-256 `2573880a49a21649aafe4f3bd9f9ca8298766cd369f91e99e110e863ff2be763`) | alpha | arm64 | 93 steps: OK=86, PARTIAL=1, FAIL=1, NO-HOOK=5 (2026-11-28). Before the fixes on this branch: OK=84, PARTIAL=3. | No | Same harness-only and runtime-only set as 457.0.0.55.73. Force reel seek bar resolves through the new config-flag path (`X.083g{A0B,A0C,A0F,A0G}` via `X.0JBF.A00`), which still needs a device check. | Checked offline |
 | 457.0.0.6.73 | unknown | beta | unknown | Not run. The APK was never obtained (`HANDOFF.md`). | No | Unknown | Unchecked build |
 | 456.x and older | n/a | n/a | n/a | Not run on 0.9.0 | No | Unknown | Older than checked |
 
-### Coverage gap: the 0.9.0 Piko ports
+### Piko ports: coverage gap closed
 
-The reports above were generated **before** the Piko ports landed, and they have 79 steps each. The 14 hooks added in
-0.9.0 have **no offline evidence on any build**:
+The harness parser now recognises `pikoInstall("Key", () -> ...)`, so the 457.0.0.55.73 and 458.0.0.0.57 reports cover
+all 93 steps, including the 14 hooks added in 0.9.0. The 458.0.0.0.67 report is still the old 79-step run.
 
-- FeedUfiButtons, ProfileHighlights, HideHiddenRequests and BottomSpace. These are single `if (!skip(...))` lines that the harness
-  can parse, but the reports predate them.
-- FollowButtons (stories and reels), LoopStory, DisappearingSwipe, ChatCallButtons, StoryTrayFilter, LikeAnimation,
-  StoryRingSize, ResumeReels and MarkReadAfterReply. These are registered through `pikoInstall("Key", () -> ...)`, which the
-  harness parser (`Runner.SKIP`) does not recognise yet, so they are skipped silently.
+### Reel scrubber: corrected root cause
 
-Until the reports are regenerated, treat every Piko switch as unchecked on every Instagram version.
+An earlier note (commit 24d962c) guessed that the 458 scrubber marker had moved into the shared string table. The 458.0.0.0.57
+bytecode shows that this guess was wrong. The marker is still inline (in the merged lambda `X.0JhS.invoke`). What changed is that the
+`A00(Config, long, boolean)Z` wrapper was inlined into its callers. The fix forces the config's show-flags in its only
+factory instead. The string-table lookup stays as a harmless extra path.
 
 ## How the app decides
 
