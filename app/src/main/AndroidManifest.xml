@@ -105,9 +105,6 @@
             android:name="xposedminversion"
             android:value="82" />
         <meta-data
-            android:name="xposedsharedprefs"
-            android:value="true" />
-        <meta-data
             android:name="xposedscope"
             android:resource="@array/target_app" />
     </application>
