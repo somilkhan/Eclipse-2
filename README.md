@@ -6,7 +6,7 @@
     <a href="https://github.com/somilkhan/Eclipse-2/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/somilkhan/Eclipse-2?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="https://github.com/somilkhan/Eclipse-2/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/somilkhan/Eclipse-2/total?style=for-the-badge&logo=github&color=1a1a2e&labelColor=0d0d0d"/></a>
     <a href="LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPL--3.0-5856D6?style=for-the-badge&labelColor=0d0d0d"/></a>
-    <a href="https://t.me/InstaEclipse"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-Channel-26A5E4?style=for-the-badge&logo=telegram&labelColor=0d0d0d"/></a>
+    <a href="https://t.me/Eclipse2discussion"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-Community-26A5E4?style=for-the-badge&logo=telegram&labelColor=0d0d0d"/></a>
   </p>
 
   <p>
@@ -340,7 +340,7 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 
 "Checked offline" means every hook lookup was run against that exact APK with the [hook checker](tools/hook-verify/README.md); it does not mean someone used the feature on a phone. The full list of builds, results and known failures is in [docs/COMPATIBILITY_MATRIX.md](docs/COMPATIBILITY_MATRIX.md). The Home screen shows where your installed Instagram stands.
 
-A big Instagram update can still knock a feature out until it is patched. The menu inside Instagram shows how many features are active (for example "62/62 active"); tap it to see which ones could not attach. If something breaks right after an update, check the [Telegram channel](https://t.me/InstaEclipse) first.
+A big Instagram update can still knock a feature out until it is patched. The menu inside Instagram shows how many features are active (for example "62/62 active"); tap it to see which ones could not attach. If something breaks right after an update, check the [Telegram group](https://t.me/Eclipse2discussion) first.
 
 ---
 
@@ -373,7 +373,7 @@ Download the latest Eclipse 2 APK from [**Releases**](https://github.com/somilkh
 5. **Enable the module.** In LSPatch, open Manage, pick Instagram, open Modules and enable Eclipse 2.
 6. **Open the menu.** Long press the Explore (search) tab.
 
-There is also a [step by step guide](https://t.me/instaEclipse_discussion/158/5149) in the community.
+There is also a [step by step guide](https://t.me/Eclipse2discussion/158/5149) in the community.
 
 ---
 
@@ -387,8 +387,8 @@ There is also a [step by step guide](https://t.me/instaEclipse_discussion/158/51
 
 Updates and tips:
 
-- 📢 Announcements: [Telegram channel](https://t.me/InstaEclipse)
-- 💬 Questions and help: [Telegram group](https://t.me/instaEclipse_discussion)
+- 📢 Announcements: [Telegram group](https://t.me/Eclipse2discussion)
+- 💬 Questions and help: [Telegram group](https://t.me/Eclipse2discussion)
 
 ---
 
@@ -401,7 +401,7 @@ Disable and enable the module again in LSPosed or LSPatch, then force stop and r
 Turn off Hide My Applist (HMA) for Instagram. Eclipse 2 reads its text from its own app, and HMA hides it.
 
 **Some features will not work even when they are on.**
-Instagram's own config can block them. Open Developer Options and choose Restore Default Config. The same config is also on [Telegram](https://t.me/InstaEclipse/52).
+Instagram's own config can block them. Open Developer Options and choose Restore Default Config. The same config is also on [Telegram](https://t.me/Eclipse2discussion/52).
 
 **Developer Options labels show up as numbers.**
 That happens on Instagram's Stable build. A Beta or Alpha build from APKMirror shows the names; [458.0.0.0.67](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/) is the alpha this release was checked on.
@@ -413,7 +413,7 @@ Force stop Instagram and clear its cache, then open it again.
 Install a checked build from APKMirror instead: [457.0.0.55.73](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) (stable) or [458.0.0.0.67](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/) (alpha).
 
 **Still stuck?**
-Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will help.
+Ask in the [Telegram group](https://t.me/Eclipse2discussion). Someone will help.
 
 ---
 
