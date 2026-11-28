@@ -11,7 +11,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Process;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
@@ -59,7 +58,8 @@ public class CrashReportProvider extends ContentProvider {
 
     private static final Pattern NAME = Pattern.compile("crash_[A-Za-z0-9._-]{1,120}");
     private static final int MAX_PER_HOUR = 30;
-    private static final ArrayDeque<Long> recent = new ArrayDeque<>();
+    /** Per caller, so one misbehaving package can't use up the budget of the others. */
+    private static final java.util.Map<String, ArrayDeque<Long>> recent = new java.util.HashMap<>();
 
     @Override
     public boolean onCreate() {
@@ -72,7 +72,8 @@ public class CrashReportProvider extends ContentProvider {
         Bundle out = new Bundle();
         Context ctx = getContext();
         if (ctx == null || !METHOD_REPORT.equals(method) || extras == null) return out;
-        if (callerPackage(ctx) == null) throw new SecurityException("caller is not a supported Instagram package");
+        String caller = callerPackage(ctx);
+        if (caller == null) throw new SecurityException("caller is not a trusted Instagram package");
 
         SharedPreferences prefs = CommonUtils.companionCache(ctx);
         if (!prefs.getBoolean(PREF_ENABLED, true)) {
@@ -87,7 +88,7 @@ public class CrashReportProvider extends ContentProvider {
         if (text.length() > MAX_TEXT_CHARS) text = text.substring(0, MAX_TEXT_CHARS) + "\n… (truncated)\n";
         byte[] body = text.getBytes(StandardCharsets.UTF_8);
         if (raw != null && raw.length > MAX_RAW_BYTES) raw = null;
-        if (!allow()) return out;
+        if (!allow(caller)) return out;
 
         long token = Binder.clearCallingIdentity();
         try {
@@ -103,22 +104,22 @@ public class CrashReportProvider extends ContentProvider {
         return out;
     }
 
-    private static synchronized boolean allow() {
+    private static synchronized boolean allow(String caller) {
         long now = System.currentTimeMillis();
+        ArrayDeque<Long> recent = CrashReportProvider.recent.computeIfAbsent(caller, k -> new ArrayDeque<>());
         while (!recent.isEmpty() && now - recent.peekFirst() > 3_600_000L) recent.pollFirst();
         if (recent.size() >= MAX_PER_HOUR) return false;
         recent.addLast(now);
         return true;
     }
 
+    /**
+     * The trusted Instagram/clone package behind the Binder caller: package name plus the pinned
+     * or official signing key, the same check as settings sync and downloads.
+     */
     @Nullable
     private static String callerPackage(Context ctx) {
-        int uid = Binder.getCallingUid();
-        if (uid == Process.myUid()) return CommonUtils.IG_PACKAGE_NAME; // local testing only
-        String[] pkgs = ctx.getPackageManager().getPackagesForUid(uid);
-        if (pkgs == null) return null;
-        for (String p : pkgs) if (CommonUtils.SUPPORTED_PACKAGES.contains(p)) return p;
-        return null;
+        return io.github.somilkhan.instaeclipse2.utils.core.IpcSecurity.supportedCallerPackage(ctx, Binder.getCallingUid());
     }
 
     @Nullable

@@ -54,12 +54,20 @@ public final class CompanionBridge {
     public static boolean isTrustedHost(Context context, String packageName) {
         if (context == null || packageName == null) return false;
         if (!BrokerPayload.HOST.equals(packageName)) return CloneTrust.isTrusted(context, packageName);
+        // Re-signed com.instagram.android (LSPatch, unclone builds) can't carry Meta's signer;
+        // the user can pin its key in the companion exactly like a clone's.
+        return isOfficialHostSigner(context) || CloneTrust.isTrusted(context, packageName);
+    }
+
+    /** True when the installed com.instagram.android carries Meta's signing certificate. */
+    public static boolean isOfficialHostSigner(Context context) {
+        if (context == null) return false;
         try {
             byte[] expected = new byte[32];
             if (HOST_SIGNER_SHA256.length() != 64) return false;
             for (int i = 0; i < expected.length; i++)
                 expected[i] = (byte) Integer.parseInt(HOST_SIGNER_SHA256.substring(i * 2, i * 2 + 2), 16);
-            return context.getPackageManager().hasSigningCertificate(packageName, expected, PackageManager.CERT_INPUT_SHA256);
+            return context.getPackageManager().hasSigningCertificate(BrokerPayload.HOST, expected, PackageManager.CERT_INPUT_SHA256);
         } catch (RuntimeException ignored) { return false; }
     }
 
