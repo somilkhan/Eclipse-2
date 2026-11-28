@@ -153,9 +153,21 @@ public class FeaturesFragment extends Fragment {
             // picked file into memory; only known, correctly typed settings are applied.
             try (InputStream is = requireContext().getContentResolver().openInputStream(uri)) {
                 String json = io.github.somilkhan.instaeclipse2.utils.ipc.BrokerPayload.readConfig(is);
-                Map<String, Object> restored = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.parse(json);
-                if (restored.isEmpty()) throw new IllegalArgumentException(getString(R.string.json_not_valid));
+                Map<String, Object> parsed = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.parse(json);
+                Map<String, Object> local = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.parseCompanionLocal(json);
+                if (parsed.isEmpty() && local.isEmpty()) throw new IllegalArgumentException(getString(R.string.json_not_valid));
+                // Extreme Mode locks the distraction switches until reinstall (or the Focus Lock
+                // ends): an older backup must not switch them back on.
+                boolean locked = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.isLocked(
+                        localCache.getBoolean("isExtremeMode", false),
+                        localCache.getString("focusLockUntil", ""), System.currentTimeMillis());
+                Map<String, Object> restored = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.filterLocked(parsed, locked);
                 SharedPreferences.Editor editor = localCache.edit();
+                // Companion-only prefs (crash reports, pinned shortcuts): stored here, never broadcast.
+                for (Map.Entry<String, Object> entry : local.entrySet()) {
+                    if (entry.getValue() instanceof Boolean) editor.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+                    else editor.putString(entry.getKey(), (String) entry.getValue());
+                }
                 for (Map.Entry<String, Object> entry : restored.entrySet()) {
                     String key = entry.getKey();
                     Object val = entry.getValue();
@@ -2451,11 +2463,11 @@ public class FeaturesFragment extends Fragment {
     private void backupSettings() {
         try {
             JSONObject settings = new JSONObject();
-            Map<String, ?> all = localCache.getAll();
-            for (Map.Entry<String, ?> entry : all.entrySet()) {
-                if (entry.getValue() instanceof Boolean) {
-                    settings.put(entry.getKey(), entry.getValue());
-                }
+            // Every known setting of any stored type (Boolean, Integer, String), not only switches;
+            // sync stamps and device-specific / secret keys are left out (SettingsRestore).
+            for (Map.Entry<String, Object> entry : io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore
+                    .backupEntries(localCache.getAll()).entrySet()) {
+                settings.put(entry.getKey(), entry.getValue());
             }
             JSONObject root = new JSONObject();
             root.put("version", 1);
