@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
@@ -29,12 +30,16 @@ import org.robolectric.util.ReflectionHelpers;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.github.somilkhan.instaeclipse2.MainActivity;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.fragments.HomeFragment;
 import io.github.somilkhan.instaeclipse2.ui.glass.GlassNavPill;
 import io.github.somilkhan.instaeclipse2.ui.glass.TabReveal;
+import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
+import io.github.somilkhan.instaeclipse2.utils.toast.CustomToast;
 
 @RunWith(RobolectricTestRunner.class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -158,6 +163,49 @@ public class HyperSpringNavigationTest {
         assertEquals(Color.BLACK, a.getResources().getColor(R.color.ie_mesh_base, a.getTheme()));
         assertEquals(0xFFFF5F45, a.getResources().getColor(R.color.ie_primary, a.getTheme()));
         assertEquals(0xFF0E0E10, a.getResources().getColor(R.color.ie_glass_fill, a.getTheme()));
+    }
+
+    @Test public void featureDetailsOpensEclipseBottomSheetWithClearMeaningsAndFeatureRows() {
+        MainActivity a = activity();
+        Map<String, FeatureStatusTracker.HealthState> status = new LinkedHashMap<>();
+        status.put("Runtime feature", FeatureStatusTracker.HealthState.RUNTIME_OBSERVED);
+        status.put("Attached feature", FeatureStatusTracker.HealthState.INSTALLED);
+        status.put("Unchecked feature", FeatureStatusTracker.HealthState.NOT_EXERCISED);
+        status.put("Broken feature", FeatureStatusTracker.HealthState.FAILED);
+        CustomToast.showFeatureSummary(a, "Eclipse loaded", status);
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(100));
+        View content = a.findViewById(android.R.id.content);
+        View details = findText(content, "Details");
+        assertNotNull("compact banner should have a Details action", details);
+        details.performClick();
+
+        android.app.Dialog dialog = org.robolectric.shadows.ShadowDialog.getLatestDialog();
+        assertNotNull(dialog);
+        assertTrue(dialog.isShowing());
+        View sheet = dialog.getWindow().getDecorView().findViewWithTag(
+                "io.github.somilkhan.instaeclipse2.feature_health_sheet");
+        assertNotNull("details must use Eclipse's own sheet, not a framework alert dialog", sheet);
+        assertNotNull(findText(sheet, "Working"));
+        assertNotNull(findText(sheet, "Hook attached"));
+        assertNotNull(findText(sheet, "Not checked"));
+        assertNotNull(findText(sheet, "Failed"));
+        assertNotNull(findText(sheet, "Runtime feature"));
+        assertNotNull(findText(sheet, "Attached feature"));
+        assertNotNull(findText(sheet, "Unchecked feature"));
+        assertNotNull(findText(sheet, "Broken feature"));
+        dialog.dismiss();
+    }
+
+    private static View findText(View root, String expected) {
+        if (root instanceof TextView && expected.contentEquals(((TextView) root).getText())) return root;
+        if (root instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) root;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View result = findText(group.getChildAt(i), expected);
+                if (result != null) return result;
+            }
+        }
+        return null;
     }
 
     @Test public void revealFinishRestoresOutlineAndPivotAndRunsCleanupOnce() {
