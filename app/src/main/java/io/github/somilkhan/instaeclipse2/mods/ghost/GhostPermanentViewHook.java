@@ -49,6 +49,8 @@ public class GhostPermanentViewHook {
     public static final String PERMANENT = "permanent";
     public static final java.util.Map<Long, String> ORIGINAL_BY_KEY =
             new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Set<Class<?>> LOGGED_UNRESOLVED =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public void install(DexKitBridge bridge, ClassLoader classLoader) {
         if (DexKitCache.isCacheValid()) {
@@ -115,49 +117,34 @@ public class GhostPermanentViewHook {
                 Object result = param.getResult();
                 if (result == null) return;
 
-                // Pass 1: read seen_count (small int field) so we don't "un-consume" media whose
-                // CDN URL is already gone; collect id/timestamp keys from the object graph (the
-                // parsed model X/02b7 holds a nested Media whose id also appears on the render side
-                // as ExtendedImageUrl.A07 — that shared id is our once/twice join key).
-                int seenCount = 0;
-                java.util.List<Long> keys = new java.util.ArrayList<>();
+                // seen_count gates the conversion so we don't "un-consume" media whose CDN URL is
+                // already gone. Its field is resolved once per class (instance ints only; named
+                // or unique, see PermanentViewModel); if it can't be resolved the gate is skipped.
                 Class<?> cls = result.getClass();
-                while (cls != null && cls != Object.class) {
-                    for (Field f : cls.getDeclaredFields()) {
-                        if (f.getType() != int.class) continue;
-                        f.setAccessible(true);
-                        try { seenCount = f.getInt(result); } catch (Throwable ignored) {}
-                    }
-                    cls = cls.getSuperclass();
+                PermanentViewModel.SeenCount sc = PermanentViewModel.resolveSeenCount(cls);
+                if (sc.field == null && LOGGED_UNRESOLVED.add(cls)) {
+                    ModuleLog.line("(IE|ViewOnceMedia) seen_count unresolved on " + cls.getName()
+                            + " (" + sc.unresolvedReason + "); converting without the seen gate");
                 }
+                int seenCount = PermanentViewModel.readSeenCount(result, sc);
+
+                // Decide before mutating anything: original once/twice type, then the seen gate.
+                String original = PermanentViewModel.originalMode(result);
+                if (original == null) return;
+                if (PermanentViewModel.consumed(original, seenCount)) return; // views used up
+
+                // Collect id/timestamp keys from the object graph (the parsed model X/02b7 holds a
+                // nested Media whose id also appears on the render side as ExtendedImageUrl.A07 —
+                // that shared id is our once/twice join key).
+                java.util.List<Long> keys = new java.util.ArrayList<>();
                 collectIdKeys(result, keys, 0,
                         java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
 
-                // Pass 2: rewrite the view_mode to "permanent" (both types) so IG shows it as
+                // Rewrite every view_mode field to "permanent" (both types) so IG shows it as
                 // re-viewable media; stash the original once/twice type by each key for the render side.
-                cls = result.getClass();
-                while (cls != null && cls != Object.class) {
-                    for (Field f : cls.getDeclaredFields()) {
-                        if (f.getType() != String.class) continue;
-                        f.setAccessible(true);
-                        try {
-                            String val = (String) f.get(result);
-                            String original = null;
-                            if ("once".equals(val)) {
-                                if (seenCount >= 1) return; // already viewed — URL gone
-                                original = "once";
-                            } else if ("replayable".equals(val) || "allow_replay".equals(val)) {
-                                if (seenCount >= 2) return; // replayable allows 2 views
-                                original = "replayable";
-                            }
-                            if (original != null) {
-                                for (Long k : keys) ORIGINAL_BY_KEY.put(k, original);
-                                ModuleLog.line("(IE|ViewOnceMedia) mode=" + original + " keys=" + keys);
-                                f.set(result, PERMANENT);
-                            }
-                        } catch (Throwable ignored) {}
-                    }
-                    cls = cls.getSuperclass();
+                if (PermanentViewModel.rewriteViewModes(result, PERMANENT) > 0) {
+                    for (Long k : keys) ORIGINAL_BY_KEY.put(k, original);
+                    ModuleLog.line("(IE|ViewOnceMedia) mode=" + original + " seen=" + seenCount + " keys=" + keys);
                 }
             }
         };
