@@ -373,7 +373,7 @@ Download the latest Eclipse 2 APK from [**Releases**](https://github.com/somilkh
 5. **Enable the module.** In LSPatch, open Manage, pick Instagram, open Modules and enable Eclipse 2.
 6. **Open the menu.** Long press the Explore (search) tab.
 
-There is also a [step by step guide](https://t.me/Eclipse2discussion/158/5149) in the community.
+There is also a [step by step guide](https://t.me/Eclipse2discussion) in the community.
 
 ---
 
@@ -401,7 +401,7 @@ Disable and enable the module again in LSPosed or LSPatch, then force stop and r
 Turn off Hide My Applist (HMA) for Instagram. Eclipse 2 reads its text from its own app, and HMA hides it.
 
 **Some features will not work even when they are on.**
-Instagram's own config can block them. Open Developer Options and choose Restore Default Config. The same config is also on [Telegram](https://t.me/Eclipse2discussion/52).
+Instagram's own config can block them. Open Developer Options and choose Restore Default Config. The same config is also on [Telegram](https://t.me/Eclipse2discussion).
 
 **Developer Options labels show up as numbers.**
 That happens on Instagram's Stable build. A Beta or Alpha build from APKMirror shows the names; [458.0.0.0.67](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/) is the alpha this release was checked on.
