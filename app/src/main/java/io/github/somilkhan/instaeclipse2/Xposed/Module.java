@@ -189,14 +189,17 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         return skipped.contains(name);
     }
 
-    /** Installs one Piko-port hook unless skipped ("Hook" or "Hook.part"); a throw only loses that hook. */
-    private static void pikoInstall(String name, Runnable install) {
+    /**
+     * Installs one hook unless skipped ("Hook" or "Hook.part"). Each install gets its own try,
+     * so a throw only loses that hook and the log names it with the cause.
+     */
+    private static void isolatedInstall(String name, Runnable install) {
         int dot = name.indexOf('.');
         if (skip(name) || (dot > 0 && skip(name.substring(0, dot)))) return;
         try {
             install.run();
         } catch (Throwable t) {
-            ModuleLog.line("(InstaEclipse | PikoPorts): ❌ " + name + ": " + t);
+            ModuleLog.line("(InstaEclipse | Install): ❌ " + name + ": " + t);
         }
     }
 
@@ -331,13 +334,9 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     }
 
                     // Ghost Mode
-                    try {
-                        if (!skip("GhostDMSeenHook")) new GhostDMSeenHook().handleSeenBlock(dexKitBridge); // DM Seen
-                        if (!skip("GhostDMMarkAsReadHook")) new GhostDMMarkAsReadHook(moduleSourceDir).install(lpparam.classLoader); // Mark as Read Button
-                        if (!skip("GhostChannelMarkAsReadHook")) new GhostChannelMarkAsReadHook().install(lpparam.classLoader); // Channel Mark as Read Button
-                    } catch (Throwable ignored) {
-                        ModuleLog.line("(InstaEclipse | GhostSeen): ❌ Failed to hook");
-                    }
+                    isolatedInstall("GhostDMSeenHook", () -> new GhostDMSeenHook().handleSeenBlock(dexKitBridge)); // DM Seen
+                    isolatedInstall("GhostDMMarkAsReadHook", () -> new GhostDMMarkAsReadHook(moduleSourceDir).install(lpparam.classLoader)); // Mark as Read Button
+                    isolatedInstall("GhostChannelMarkAsReadHook", () -> new GhostChannelMarkAsReadHook().install(lpparam.classLoader)); // Channel Mark as Read Button
 
                     try {
                         if (!skip("GhostTypingIndicatorHook")) new GhostTypingIndicatorHook().handleTypingBlock(dexKitBridge); // DM Typing
@@ -395,13 +394,9 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         ModuleLog.line("(InstaEclipse | CustomFont): ❌ Failed to hook");
                     }
 
-                    try {
-                        io.github.somilkhan.instaeclipse2.mods.ui.RemoveMetaAIHook metaAi = new io.github.somilkhan.instaeclipse2.mods.ui.RemoveMetaAIHook();
-                        if (!skip("metaAi")) metaAi.install(lpparam.classLoader);              // composer/search XML layouts
-                        if (!skip("metaAi")) metaAi.installReels(dexKitBridge, lpparam.classLoader); // reels Litho unit (#179)
-                    } catch (Throwable ignored) {
-                        ModuleLog.line("(InstaEclipse | RemoveMetaAI): ❌ Failed to hook");
-                    }
+                    io.github.somilkhan.instaeclipse2.mods.ui.RemoveMetaAIHook metaAi = new io.github.somilkhan.instaeclipse2.mods.ui.RemoveMetaAIHook();
+                    isolatedInstall("metaAi", () -> metaAi.install(lpparam.classLoader));              // composer/search XML layouts
+                    isolatedInstall("metaAi.reels", () -> metaAi.installReels(dexKitBridge, lpparam.classLoader)); // reels Litho unit (#179)
 
                     // Disable Repost (feed + reels) — UI/action level; network drop is ineffective
                     try {
@@ -544,28 +539,24 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     // Ported from Piko: feed share/save/repost/like-count, profile highlights,
                     // hidden requests row, empty bottom space. Each install fails closed and logs.
-                    try {
-                        if (!skip("FeedUfiButtonsHook")) new io.github.somilkhan.instaeclipse2.mods.feed.FeedUfiButtonsHook().install(dexKitBridge);
-                        if (!skip("ProfileHighlightsHook")) new io.github.somilkhan.instaeclipse2.mods.ui.ProfileHighlightsHook().install(dexKitBridge);
-                        if (!skip("HideHiddenRequestsHook")) new io.github.somilkhan.instaeclipse2.mods.ghost.HideHiddenRequestsHook().install();
-                        if (!skip("BottomSpaceHook")) new io.github.somilkhan.instaeclipse2.mods.ui.BottomSpaceHook().install(dexKitBridge);
-                    } catch (Throwable t) {
-                        ModuleLog.line("(InstaEclipse | PikoPorts): ❌ " + t);
-                    }
+                    isolatedInstall("FeedUfiButtonsHook", () -> new io.github.somilkhan.instaeclipse2.mods.feed.FeedUfiButtonsHook().install(dexKitBridge));
+                    isolatedInstall("ProfileHighlightsHook", () -> new io.github.somilkhan.instaeclipse2.mods.ui.ProfileHighlightsHook().install(dexKitBridge));
+                    isolatedInstall("HideHiddenRequestsHook", () -> new io.github.somilkhan.instaeclipse2.mods.ghost.HideHiddenRequestsHook().install());
+                    isolatedInstall("BottomSpaceHook", () -> new io.github.somilkhan.instaeclipse2.mods.ui.BottomSpaceHook().install(dexKitBridge));
 
                     // Ported from Piko (batch 2). One try per hook so a failure can't take the
                     // others down; each install also logs and skips on its own when its target
                     // isn't found.
-                    pikoInstall("FollowButtonsHook.stories", () -> new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installStories(dexKitBridge));
-                    pikoInstall("FollowButtonsHook.reels", () -> new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installReels());
-                    pikoInstall("LoopStoryHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LoopStoryHook().install(dexKitBridge));
-                    pikoInstall("DisappearingSwipeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.DisappearingSwipeHook().install(dexKitBridge));
-                    pikoInstall("ChatCallButtonsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ChatCallButtonsHook().install(dexKitBridge));
-                    pikoInstall("StoryTrayFilterHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilterHook().install(dexKitBridge));
-                    pikoInstall("LikeAnimationHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimationHook().install());
-                    pikoInstall("StoryRingSizeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSizeHook().install(dexKitBridge));
-                    pikoInstall("ResumeReelsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ResumeReelsHook().install(dexKitBridge));
-                    pikoInstall("MarkReadAfterReplyHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.MarkReadAfterReplyHook().install(dexKitBridge));
+                    isolatedInstall("FollowButtonsHook.stories", () -> new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installStories(dexKitBridge));
+                    isolatedInstall("FollowButtonsHook.reels", () -> new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installReels());
+                    isolatedInstall("LoopStoryHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LoopStoryHook().install(dexKitBridge));
+                    isolatedInstall("DisappearingSwipeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.DisappearingSwipeHook().install(dexKitBridge));
+                    isolatedInstall("ChatCallButtonsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ChatCallButtonsHook().install(dexKitBridge));
+                    isolatedInstall("StoryTrayFilterHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilterHook().install(dexKitBridge));
+                    isolatedInstall("LikeAnimationHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimationHook().install());
+                    isolatedInstall("StoryRingSizeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSizeHook().install(dexKitBridge));
+                    isolatedInstall("ResumeReelsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ResumeReelsHook().install(dexKitBridge));
+                    isolatedInstall("MarkReadAfterReplyHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.MarkReadAfterReplyHook().install(dexKitBridge));
 
                     // Download DM voice messages (#223)
                     try {
@@ -582,12 +573,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     }
 
                     // Jump to the first message of a DM (#244)
-                    try {
-                        if (!skip("JumpToFirstMessageHook")) new io.github.somilkhan.instaeclipse2.mods.ghost.JumpToFirstMessageHook().install();
-                        if (!skip("ReadReceiptChatHook")) new io.github.somilkhan.instaeclipse2.mods.ghost.ReadReceiptChatHook().install(hostClassLoader);
-                    } catch (Throwable ignored) {
-                        ModuleLog.line("(IE|JumpFirst) ❌ Failed to hook");
-                    }
+                    isolatedInstall("JumpToFirstMessageHook", () -> new io.github.somilkhan.instaeclipse2.mods.ghost.JumpToFirstMessageHook().install());
+                    isolatedInstall("ReadReceiptChatHook", () -> new io.github.somilkhan.instaeclipse2.mods.ghost.ReadReceiptChatHook().install(hostClassLoader));
 
                     // Search your story viewers (Plus-style)
                     try {
@@ -646,13 +633,9 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     }
 
                     // Story Mentions
-                    try {
-                        if (!skip("StoryMentionHook")) new StoryMentionHook().install(dexKitBridge, lpparam.classLoader);
-                        if (!skip("StoryLinksHook")) new io.github.somilkhan.instaeclipse2.mods.misc.StoryLinksHook().install(dexKitBridge, lpparam.classLoader);
-                        if (!skip("StoryInfoHook")) new io.github.somilkhan.instaeclipse2.mods.misc.StoryInfoHook().install(dexKitBridge, lpparam.classLoader);
-                    } catch (Throwable ignored) {
-                        ModuleLog.line("(InstaEclipse | StoryMentions): ❌ Failed to hook");
-                    }
+                    isolatedInstall("StoryMentionHook", () -> new StoryMentionHook().install(dexKitBridge, lpparam.classLoader));
+                    isolatedInstall("StoryLinksHook", () -> new io.github.somilkhan.instaeclipse2.mods.misc.StoryLinksHook().install(dexKitBridge, lpparam.classLoader));
+                    isolatedInstall("StoryInfoHook", () -> new io.github.somilkhan.instaeclipse2.mods.misc.StoryInfoHook().install(dexKitBridge, lpparam.classLoader));
 
                     // Comment Copy
                     try {
@@ -730,12 +713,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     }
 
                     // Media Download (feed)
-                    try {
-                        if (!skip("FeedVideoDownloadHook")) new FeedVideoDownloadHook().install(lpparam.classLoader);
-                        if (!skip("FeedVideoDownloadHook")) FeedVideoDownloadHook.installVideoUrlCaptureHook(dexKitBridge, lpparam.classLoader);
-                    } catch (Throwable ignored) {
-                        ModuleLog.line("(InstaEclipse | MediaDownload): ❌ Failed to hook");
-                    }
+                    isolatedInstall("FeedVideoDownloadHook", () -> new FeedVideoDownloadHook().install(lpparam.classLoader));
+                    isolatedInstall("FeedVideoDownloadHook.videoUrlCapture", () -> FeedVideoDownloadHook.installVideoUrlCaptureHook(dexKitBridge, lpparam.classLoader));
 
                     // Post Download — three-dots menu (replaces floating button + long-press)
                     try {
@@ -787,12 +766,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     }
 
                     // Saved button on your own profile (#237)
-                    try {
-                        if (!skip("SavedOnProfileHook")) new io.github.somilkhan.instaeclipse2.mods.ui.SavedOnProfileHook().install(dexKitBridge, hostClassLoader);
-                        if (!skip("HideHeaderButtonsHook")) new io.github.somilkhan.instaeclipse2.mods.ui.HideHeaderButtonsHook().install(hostClassLoader);
-                    } catch (Throwable ignored) {
-                        ModuleLog.line("(IE|SavedProfile) ❌ Failed to hook");
-                    }
+                    isolatedInstall("SavedOnProfileHook", () -> new io.github.somilkhan.instaeclipse2.mods.ui.SavedOnProfileHook().install(dexKitBridge, hostClassLoader));
+                    isolatedInstall("HideHeaderButtonsHook", () -> new io.github.somilkhan.instaeclipse2.mods.ui.HideHeaderButtonsHook().install(hostClassLoader));
 
                     // Download a post/reel link shared to InstaEclipse from another app (#236)
                     try {

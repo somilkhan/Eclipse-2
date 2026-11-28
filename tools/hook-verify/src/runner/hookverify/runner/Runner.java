@@ -35,6 +35,10 @@ public final class Runner {
     }
 
     private static final Pattern SKIP = Pattern.compile("if \\(!skip\\(\"([^\"]+)\"\\)\\)\\s*(.+?);\\s*(//.*)?$");
+    /** {@code pikoInstall("Key", () -> <call>);} — one-try-per-hook form used for the Piko ports. */
+    private static final Pattern PIKO = Pattern.compile("(?:pikoInstall|isolatedInstall)\\(\"([^\"]+)\",\\s*\\(\\)\\s*->\\s*(.+?)\\);\\s*(//.*)?$");
+    /** Any line that gates an install on a skip key; used to catch install forms the parser misses. */
+    private static final Pattern INSTALL_LINE = Pattern.compile("(if \\(!skip\\(\"|^(?:pikoInstall|isolatedInstall)\\(\")");
     private static final Pattern NEW_CALL = Pattern.compile("^new ([\\w.]+)\\(([^)]*)\\)\\.(\\w+)\\(([^)]*)\\)$");
     private static final Pattern CALL = Pattern.compile("^([\\w.]+)\\.(\\w+)\\(([^)]*)\\)$");
 
@@ -134,8 +138,16 @@ public final class Runner {
         }
         List<StepSpec> out = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
-            Matcher m = SKIP.matcher(lines.get(i).trim());
-            if (m.find()) out.add(new StepSpec(m.group(1), m.group(2).trim(), i + 1));
+            String l = lines.get(i).trim();
+            Matcher m = SKIP.matcher(l);
+            if (m.find()) { out.add(new StepSpec(m.group(1), m.group(2).trim(), i + 1)); continue; }
+            Matcher p = PIKO.matcher(l);
+            if (p.find()) { out.add(new StepSpec(p.group(1), p.group(2).trim(), i + 1)); continue; }
+            // An install the parser can't read must not vanish from the report: record it as a
+            // step whose expression can't be executed, so it shows up as ERROR.
+            if (INSTALL_LINE.matcher(l).find()) {
+                out.add(new StepSpec("UNPARSED@" + (i + 1), l, i + 1));
+            }
         }
         return out;
     }
