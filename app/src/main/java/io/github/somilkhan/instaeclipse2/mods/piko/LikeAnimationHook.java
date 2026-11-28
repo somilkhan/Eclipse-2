@@ -5,11 +5,11 @@ import android.view.View;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -21,8 +21,8 @@ import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 
 /**
- * Plays a chosen (or random) custom like animation on every post (Piko's "Custom like
- * animation").
+ * Plays a chosen custom like animation, or one random pick per Instagram session, instead of the
+ * plain heart (Piko's "Custom like animation").
  *
  * <p>Two layers, the same two Piko patches:
  * <ol>
@@ -42,11 +42,19 @@ public class LikeAnimationHook {
     private static final String TAG = "(InstaEclipse | LikeAnimation): ";
     private static final String METADATA_CLASS = "com.instagram.api.schemas.XDTUserActivationMetadataImpl";
     private static final Random RANDOM = new Random();
+    private static final Object NO_RENDER = new Object();
 
     /** One random pick per process, so the metadata and the view agree (Piko does the same). */
     private static volatile String sessionRandom;
 
+    private static final String EXTRA_ORIGINAL = "ie_like_original";
+
+    /** Metadata enum resolver; set once the constructor is found. */
+    private static volatile LikeAnimations.Resolver metaResolver;
+
     private final AtomicBoolean loggedMeta = new AtomicBoolean();
+    private final AtomicBoolean loggedUntracked = new AtomicBoolean();
+    private final AtomicBoolean loggedMapper = new AtomicBoolean();
     private final AtomicBoolean loggedView = new AtomicBoolean();
 
     public void install() {
@@ -59,7 +67,7 @@ public class LikeAnimationHook {
 
     /**
      * Name to use now (as saved, or this session's random pick), or null to leave Instagram alone.
-     * Callers resolve it against their own enum with {@link LikeAnimations#metadataName}.
+     * Callers resolve it against their own enum with a {@link LikeAnimations.Resolver}.
      */
     private static String currentPick(List<String> names) {
         if (!FeatureFlags.customLikeAnimation) return null;
@@ -85,20 +93,37 @@ public class LikeAnimationHook {
                 Class<?>[] p = c.getParameterTypes();
                 if (p.length < 2 || !p[0].isEnum() || p[1] != Boolean.class) continue;
                 if (metaEnum != null && metaEnum != p[0]) continue;
-                metaEnum = p[0];
-                final Map<String, Object> byName = constants(metaEnum);
-                final List<String> names = new ArrayList<>(byName.keySet());
+                if (metaEnum == null) {
+                    metaEnum = p[0];
+                    final LikeAnimations.Resolver r = new LikeAnimations.Resolver(constants(metaEnum));
+                    metaResolver = r;
+                    // Already-built models follow later switch / pick changes (see LikeMetadataTracker).
+                    LikeMetadataTracker.setPicker(() -> r.get(currentPick(r.names())));
+                }
+                final LikeAnimations.Resolver resolver = metaResolver;
                 XposedBridge.hookMethod(c, new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) {
                         JitGuard.tick(param.method);
-                        String pick = currentPick(names);
-                        Object value = pick != null ? byName.get(LikeAnimations.metadataName(pick, names)) : null;
+                        Object value = resolver.get(currentPick(resolver.names()));
                         if (value == null) return;
+                        param.setObjectExtra(EXTRA_ORIGINAL, new Object[] {param.args[0], param.args[1], value});
                         param.args[0] = value;
-                        param.args[1] = Boolean.TRUE;
+                        param.args[1] = LikeMetadataTracker.MARK;
                         if (loggedMeta.compareAndSet(false, true)) {
                             ModuleLog.line(TAG + "metadata set to " + ((Enum<?>) value).name());
+                        }
+                    }
+
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        Object[] orig = (Object[]) param.getObjectExtra(EXTRA_ORIGINAL);
+                        if (orig == null || param.thisObject == null) return;
+                        boolean tracked = LikeMetadataTracker.track(param.thisObject, orig[2], orig[0], orig[1]);
+                        if (!tracked && loggedUntracked.compareAndSet(false, true)) {
+                            ModuleLog.line(TAG + "⚠️ " + param.thisObject.getClass().getName()
+                                    + ": fields not identified; models built while on keep the custom"
+                                    + " animation after it is turned off");
                         }
                     }
                 });
@@ -109,7 +134,7 @@ public class LikeAnimationHook {
                 return null;
             }
             ModuleLog.line(TAG + "✅ Hooked activation metadata (" + hooked + " ctor, "
-                    + LikeAnimations.selectable(constants(metaEnum).keySet()).size() + " animations)");
+                    + LikeAnimations.selectable(metaResolver.names()).size() + " animations)");
             return metaEnum;
         } catch (Throwable t) {
             ModuleLog.line(TAG + "⚠️ metadata: " + t);
@@ -145,8 +170,8 @@ public class LikeAnimationHook {
                 ModuleLog.line(TAG + "❌ expected 1 configure(UserSession, render), found " + n);
                 return false;
             }
-            final Map<String, Object> renderByName = constants(render);
-            final List<String> renderNames = new ArrayList<>(renderByName.keySet());
+            final LikeAnimations.Resolver renderResolver = new LikeAnimations.Resolver(constants(render));
+            final List<String> renderNames = renderResolver.names();
             if (LikeAnimations.selectable(renderNames).isEmpty()) {
                 ModuleLog.line(TAG + "❌ render enum has no like animations");
                 return false;
@@ -164,8 +189,9 @@ public class LikeAnimationHook {
                 }
                 if (mapper != null) mapper.setAccessible(true);
             }
-            final Map<String, Object> metaByName = metaEnum != null ? constants(metaEnum) : null;
-            final List<String> metaNames = metaByName != null ? new ArrayList<>(metaByName.keySet()) : null;
+            final LikeAnimations.Resolver metaRes = metaEnum != null ? metaResolver : null;
+            // metadata constant -> mapped render constant (or NO_RENDER), so the mapper runs once each.
+            final Map<Object, Object> mapped = new ConcurrentHashMap<>();
             final Method toRender = mapper;
             final Method setUpCustom = setUp;
             setUpCustom.setAccessible(true);
@@ -175,21 +201,28 @@ public class LikeAnimationHook {
                     JitGuard.tick(param.method);
                     Object value = null;
                     // Prefer the same pick as the metadata, mapped the way Instagram maps it.
-                    if (toRender != null && metaNames != null) {
-                        String pick = currentPick(metaNames);
-                        Object meta = pick != null ? metaByName.get(LikeAnimations.metadataName(pick, metaNames)) : null;
+                    if (toRender != null && metaRes != null) {
+                        Object meta = metaRes.get(currentPick(metaRes.names()));
                         if (meta != null) {
-                            try {
-                                value = toRender.invoke(null, meta);
-                            } catch (Throwable ignored) {
-                                value = null;
+                            Object r = mapped.get(meta);
+                            if (r == null) {
+                                r = NO_RENDER;
+                                try {
+                                    Object m = toRender.invoke(null, meta);
+                                    // The mapper may fall back to a plain/unrecognized value.
+                                    if (m instanceof Enum && LikeAnimations.isSelectable(((Enum<?>) m).name())) r = m;
+                                } catch (Throwable ignored) {
+                                }
+                                if (r == NO_RENDER && loggedMapper.compareAndSet(false, true)) {
+                                    ModuleLog.line(TAG + "mapper gave no animation for "
+                                            + ((Enum<?>) meta).name() + "; using the render enum by name");
+                                }
+                                mapped.put(meta, r);
                             }
+                            if (r != NO_RENDER) value = r;
                         }
                     }
-                    if (value == null) {
-                        String pick = currentPick(renderNames);
-                        value = pick != null ? renderByName.get(LikeAnimations.metadataName(pick, renderNames)) : null;
-                    }
+                    if (value == null) value = renderResolver.get(currentPick(renderNames));
                     if (value == null) return;
                     try {
                         setUpCustom.invoke(param.thisObject, value);

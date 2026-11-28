@@ -341,6 +341,9 @@ public class FeatureManager {
             if (ExtrasFeatures.get(e.flag)) FeatureStatusTracker.setEnabled(e.flag, e.label);
             else FeatureStatusTracker.setDisabled(e.flag);
         }
+
+        // Models built with a custom like animation follow the switch (off -> Instagram's own).
+        io.github.somilkhan.instaeclipse2.mods.piko.LikeMetadataTracker.onFlagsChanged();
     }
 
     /** Register a feature in the load toast when enabled, or drop it when off. */
