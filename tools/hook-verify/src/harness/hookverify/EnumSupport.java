@@ -118,6 +118,10 @@ public final class EnumSupport {
                 String name = f[0] < regs.length ? strings.get(regs[f[0]]) : null;
                 Integer ord = f[1] < regs.length ? ints.get(regs[f[1]]) : null;
                 if (name != null && ord != null) lastFactory = new Object[]{null, name, ord};
+            } else if (op == Opcode.SGET_OBJECT) {
+                // the register now holds some other object; forget what it held
+                int a = ((OneRegisterInstruction) ins).getRegisterA();
+                objs.remove(a); strings.remove(a); ints.remove(a);
             } else if (op == Opcode.MOVE_RESULT_OBJECT) {
                 int a = ((OneRegisterInstruction) ins).getRegisterA();
                 strings.remove(a); ints.remove(a);
@@ -128,7 +132,16 @@ public final class EnumSupport {
                 Object[] c = objs.get(((OneRegisterInstruction) ins).getRegisterA());
                 if (c != null && c[1] != null && c[0] == null && fr.getDefiningClass().equals(type) && fr.getType().equals(type)) {
                     c[0] = fr.getName();
-                    out.add(c);
+                    if (!containsRef(out, c)) out.add(c);
+                }
+            } else if ((op == Opcode.FILLED_NEW_ARRAY || op == Opcode.FILLED_NEW_ARRAY_RANGE)
+                    && ((ReferenceInstruction) ins).getReference().toString().equals("[" + type)) {
+                // R8 keeps a static field only for constants the app reads directly; the rest exist
+                // only in the values() array (seen on Instagram 457's like-animation render enum,
+                // where only UNRECOGNIZED had a field). Those constants get no field (c[0] null).
+                for (int r : regsOf(ins)) {
+                    Object[] c = objs.get(r);
+                    if (c != null && c[1] != null && !containsRef(out, c)) out.add(c);
                 }
             }
         }
@@ -136,6 +149,11 @@ public final class EnumSupport {
         out.sort((x, y) -> Integer.compare((Integer) x[2], (Integer) y[2]));
         REGISTRY.put(IgClassLoader.toBinary(type), out);
         return true;
+    }
+
+    private static boolean containsRef(List<Object[]> list, Object[] c) {
+        for (Object[] x : list) if (x == c) return true;
+        return false;
     }
 
     private static int insSize(List<? extends CharSequence> params, boolean isStatic) {
@@ -180,8 +198,10 @@ public final class EnumSupport {
                 Object e = u.allocateInstance(c);
                 u.putObject(e, nameOff, k[1]);
                 u.putInt(e, ordOff, (Integer) k[2]);
-                java.lang.reflect.Field f = c.getDeclaredField((String) k[0]);
-                u.putObject(u.staticFieldBase(f), u.staticFieldOffset(f), e);
+                if (k[0] != null) { // array-only constants have no static field
+                    java.lang.reflect.Field f = c.getDeclaredField((String) k[0]);
+                    u.putObject(u.staticFieldBase(f), u.staticFieldOffset(f), e);
+                }
                 Array.set(arr, i, e);
             }
             VALUES.put(c, arr);
