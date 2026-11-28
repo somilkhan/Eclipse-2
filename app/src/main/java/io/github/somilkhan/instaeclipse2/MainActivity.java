@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private View currentRoot;
     private final io.github.somilkhan.instaeclipse2.ui.glass.TabReveal tabReveal =
             new io.github.somilkhan.instaeclipse2.ui.glass.TabReveal();
+    private final io.github.somilkhan.instaeclipse2.ui.glass.CompanionEntrance entrance =
+            new io.github.somilkhan.instaeclipse2.ui.glass.CompanionEntrance();
+    private boolean coldStart;
+    private boolean entranceStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // Local mode only: never change the Instagram process's theme/night configuration.
         getDelegate().setLocalNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
+        coldStart = savedInstanceState == null;
         Logging.init(this, "instaeclipse_companion.log");
         io.github.somilkhan.instaeclipse2.mods.media.FrameSessionCache.cleanupOrphans(getCacheDir());
         // Only on a fresh launch: recreation (rotation, dark-mode/locale change, process-death
@@ -162,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
 
     /** Tests switch this off so screenshots only contain the selected tab. */
     public static boolean prewarmTabs = true;
+    /** Test seam for settled screenshot suites; production keeps the HyperSpring entrance enabled. */
+    public static boolean startupEntranceEnabled = true;
     private static final long PREWARM_DELAY_MS = 700;
     private static final String STATE_TAB = "ie_current_tab";
     private static final int[] TABS = {R.id.nav_home, R.id.nav_features, R.id.nav_logs, R.id.nav_help};
@@ -263,8 +270,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        entrance.finish();
         tabReveal.finish();
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        entrance.finish();
+        tabReveal.finish();
+        super.onDestroy();
     }
 
     private void prewarmNextTab() {
@@ -341,6 +356,11 @@ public class MainActivity extends AppCompatActivity {
             s.setTag(R.id.ie_scroll_sink, sink);
         }
         if (sink != null) sink.syncChrome(scrollY(s));
+        if (startupEntranceEnabled && coldStart && !entranceStarted && currentTab == R.id.nav_home
+                && title != null && !Boolean.getBoolean("instaeclipse.screenshotDir")) {
+            entranceStarted = true;
+            entrance.play(findViewById(R.id.main), view, nav);
+        }
     }
 
     private static int scrollY(View s) {

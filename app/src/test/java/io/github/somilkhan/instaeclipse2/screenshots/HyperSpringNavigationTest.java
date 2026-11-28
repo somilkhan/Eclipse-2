@@ -50,6 +50,7 @@ public class HyperSpringNavigationTest {
 
     @Before public void setup() {
         MainActivity.prewarmTabs = false;
+        MainActivity.startupEntranceEnabled = false;
         HomeFragment.autoScrollEnabled = false;
         org.robolectric.shadows.ShadowChoreographer.setPaused(true);
         org.robolectric.shadows.ShadowChoreographer.setFrameDelay(Duration.ofMillis(16));
@@ -61,6 +62,7 @@ public class HyperSpringNavigationTest {
         if (controller != null) controller.pause().stop().destroy();
         durationScale(1f);
         MainActivity.prewarmTabs = true;
+        MainActivity.startupEntranceEnabled = true;
         HomeFragment.autoScrollEnabled = true;
     }
 
