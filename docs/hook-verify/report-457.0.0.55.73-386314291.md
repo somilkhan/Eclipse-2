@@ -1,97 +1,111 @@
 # hook-verify report
 
-APK: `ig457.apk` — Instagram 457.0.0.55.73 (386314291)
+APK: `ig457-386314291.apk` — Instagram 457.0.0.55.73 (386314291)
 
 Results hold for this exact build only; a device running another build of the same major version can resolve different classes.
 
 Status legend: **OK** = hooks installed and no failure lines; **PARTIAL** = some hooks installed but at least one sub-lookup logged a failure; **FAIL** = failure logged and nothing hooked; **NO-HOOK** = nothing hooked and nothing logged (usually a hook that installs lazily at runtime, or one that only hooks framework classes once an Activity exists); **ERROR** = install threw. **(harness)** = every failure line comes from the offline harness (stubbed Instagram code or mockable android.jar), not from a lookup; confirm on a device.
 
 ```
-OK       instagramUI                      hooks=5      502 ms
-OK       DevOptionsUnlockHook             hooks=1     1023 ms
-OK       GhostDMSeenHook                  hooks=1      166 ms
+OK       instagramUI                      hooks=5      482 ms
+OK       DevOptionsUnlockHook             hooks=1      930 ms
+OK       GhostDMSeenHook                  hooks=1      157 ms
 OK       GhostDMMarkAsReadHook            hooks=1       52 ms
 OK       GhostChannelMarkAsReadHook       hooks=1       52 ms
-OK       GhostTypingIndicatorHook         hooks=1      170 ms
-OK       GhostScreenshotDetectionHook     hooks=1      153 ms
-OK       ScreenshotPermissionHook         hooks=2       54 ms
-OK       GhostViewOnceHook                hooks=1      175 ms
-OK       GhostStorySeenHook               hooks=6      168 ms
-OK       KeepUnsentMessagesHook           hooks=7     1065 ms
-OK       UnsentThreadButtonHook           hooks=5       57 ms
-OK       HideChatsHook                    hooks=3      282 ms
+OK       GhostTypingIndicatorHook         hooks=1      154 ms
+OK       GhostScreenshotDetectionHook     hooks=1      137 ms
+OK       ScreenshotPermissionHook         hooks=2       53 ms
+OK       GhostViewOnceHook                hooks=1      156 ms
+OK       GhostStorySeenHook               hooks=6      145 ms
+OK       KeepUnsentMessagesHook           hooks=7     1336 ms
+OK       UnsentThreadButtonHook           hooks=5       58 ms
+OK       HideChatsHook                    hooks=3      247 ms
 OK       CustomFontHook                   hooks=9       75 ms
-OK       metaAi                           hooks=2       52 ms
-OK       metaAi                           hooks=8     1721 ms
-OK       DisableRepostHook                hooks=2      432 ms
+OK       metaAi                           hooks=2       53 ms
+OK       metaAi.reels                     hooks=8     1567 ms
+OK       DisableRepostHook                hooks=2      408 ms
 OK       LockDirectMessagesHook           hooks=1       52 ms
-OK       HideSuggestedFeedItemsHook       hooks=2      425 ms
-OK       AdBlocker                        hooks=1      169 ms
+OK       HideSuggestedFeedItemsHook       hooks=2      551 ms
+OK       AdBlocker                        hooks=1      150 ms
 OK       TrackingLinkDisable              hooks=5       55 ms
-OK       ExactTimestampHook               hooks=1      146 ms
-OK       ExpandCaptionsHook               hooks=2      184 ms
-OK       HideCommunityNotesHook           hooks=2       65 ms
-OK       ReelsControlsHook                hooks=3      917 ms
-OK       AccountLimitHook                 hooks=1      723 ms
-OK       AirplaneModeHook                 hooks=3       55 ms
-OK       HighResolutionImageHook          hooks=1      239 ms
-OK       OnboardingPromptHook             hooks=1      166 ms
+OK       ExactTimestampHook               hooks=1      112 ms
+OK       ExpandCaptionsHook               hooks=2      161 ms
+OK       HideCommunityNotesHook           hooks=2       64 ms
+OK       ReelsControlsHook                hooks=3      821 ms
+OK       AccountLimitHook                 hooks=1      744 ms
+OK       AirplaneModeHook                 hooks=3       54 ms
+OK       HighResolutionImageHook          hooks=1      257 ms
+OK       OnboardingPromptHook             hooks=1      144 ms
 NO-HOOK  NotificationRegistrationHook     hooks=0       51 ms
-OK       StartupTabHook                   hooks=4       52 ms
-OK       SwipeToCameraHook                hooks=1       53 ms
-OK       FollowingOnlyFeedHook            hooks=5      165 ms
+OK       StartupTabHook                   hooks=4       55 ms
+OK       SwipeToCameraHook                hooks=1       66 ms
+OK       FollowingOnlyFeedHook            hooks=5      155 ms
 OK       ProfileFollowsYouHook            hooks=2      134 ms
-OK       PlaybackSpeedHook                hooks=23    1078 ms
-OK       HideNotesTrayHook                hooks=1      188 ms
-PARTIAL  VoiceMessageDownloadHook         hooks=6      693 ms  (harness)
-OK       EditHistoryHook                  hooks=2      251 ms
+OK       PlaybackSpeedHook                hooks=23    1041 ms
+OK       HideNotesTrayHook                hooks=1      162 ms
+OK       FeedUfiButtonsHook               hooks=1       67 ms
+OK       ProfileHighlightsHook            hooks=1       67 ms
+OK       HideHiddenRequestsHook           hooks=1       51 ms
+OK       BottomSpaceHook                  hooks=1      153 ms
+OK       FollowButtonsHook.stories        hooks=1      248 ms
+OK       FollowButtonsHook.reels          hooks=3       52 ms
+OK       LoopStoryHook                    hooks=2      138 ms
+OK       DisappearingSwipeHook            hooks=2      856 ms
+OK       ChatCallButtonsHook              hooks=1       98 ms
+FAIL     StoryTrayFilterHook              hooks=0      153 ms  (harness)
+OK       LikeAnimationHook                hooks=2       54 ms
+OK       StoryRingSizeHook                hooks=2       72 ms
+OK       ResumeReelsHook                  hooks=2      152 ms
+OK       MarkReadAfterReplyHook           hooks=1      240 ms
+PARTIAL  VoiceMessageDownloadHook         hooks=6      575 ms  (harness)
+OK       EditHistoryHook                  hooks=2      229 ms
 NO-HOOK  JumpToFirstMessageHook           hooks=0       51 ms
-NO-HOOK  ReadReceiptChatHook              hooks=0       51 ms
-OK       StoryViewerSearchHook            hooks=1      312 ms
-OK       CommentSearchHook                hooks=2      485 ms
-OK       ChatExportHook                   hooks=1      354 ms
-OK       FollowListExportHook             hooks=1      348 ms
-OK       LikeUndoHook                     hooks=1      296 ms
-OK       ShareSheetCleanupHook            hooks=2       58 ms
+NO-HOOK  ReadReceiptChatHook              hooks=0       52 ms
+OK       StoryViewerSearchHook            hooks=1      358 ms
+OK       CommentSearchHook                hooks=2      490 ms
+OK       ChatExportHook                   hooks=1      327 ms
+OK       FollowListExportHook             hooks=1      309 ms
+OK       LikeUndoHook                     hooks=1      252 ms
+OK       ShareSheetCleanupHook            hooks=2       56 ms
 NO-HOOK  ExternalBrowserHook              hooks=0       51 ms
-OK       DisableStoryFlippingHook         hooks=1      154 ms
-OK       StoryMentionHook                 hooks=9      639 ms
-OK       StoryLinksHook                   hooks=9      361 ms
-OK       StoryInfoHook                    hooks=9     1548 ms
-OK       CommentCopyHook                  hooks=4      227 ms
-OK       CaptionCopyContextMenuHook       hooks=11    1233 ms
-OK       DisableDoubleTapLikeHook         hooks=3      783 ms
-OK       DoubleTapExtrasHook              hooks=6      329 ms
+OK       DisableStoryFlippingHook         hooks=1       84 ms
+OK       StoryMentionHook                 hooks=9      495 ms
+OK       StoryLinksHook                   hooks=9      327 ms
+OK       StoryInfoHook                    hooks=9     1502 ms
+OK       CommentCopyHook                  hooks=4      208 ms
+OK       CaptionCopyContextMenuHook       hooks=11    1216 ms
+OK       DisableDoubleTapLikeHook         hooks=3      736 ms
+OK       DoubleTapExtrasHook              hooks=6      271 ms
 OK       FeedPhotoZoomHook                hooks=1       54 ms
 FAIL     LocationSpoofHook                hooks=0       52 ms  (harness)
-OK       IgThemeHook                      hooks=21      62 ms
-OK       ForceReelQualityHook             hooks=1      111 ms
-OK       MaxUploadQualityHook             hooks=1      440 ms
-OK       DisableVideoAutoPlayHook         hooks=9      173 ms
-OK       BuildExpiredPopupHook            hooks=2      282 ms
-NO-HOOK  FeedVideoDownloadHook            hooks=0       59 ms
-OK       FeedVideoDownloadHook            hooks=2     2244 ms
-OK       PostDownloadContextMenuHook      hooks=5      361 ms
-OK       InstantSaveHook                  hooks=2       55 ms
-OK       InstantUploadHook                hooks=10      59 ms
-OK       GhostEphemeralKeepHook           hooks=6      413 ms
-OK       GhostPermanentViewHook           hooks=1      175 ms
-OK       ViewOnceBadgeHook                hooks=1       79 ms
+OK       IgThemeHook                      hooks=21      63 ms
+OK       ForceReelQualityHook             hooks=1      110 ms
+OK       MaxUploadQualityHook             hooks=1      404 ms
+OK       DisableVideoAutoPlayHook         hooks=9      151 ms
+OK       BuildExpiredPopupHook            hooks=2      240 ms
+NO-HOOK  FeedVideoDownloadHook            hooks=0       58 ms
+OK       FeedVideoDownloadHook.videoUrlCapture hooks=2     2218 ms
+OK       PostDownloadContextMenuHook      hooks=5      366 ms
+OK       InstantSaveHook                  hooks=2       52 ms
+OK       InstantUploadHook                hooks=10      62 ms
+OK       GhostEphemeralKeepHook           hooks=6      465 ms
+OK       GhostPermanentViewHook           hooks=1      181 ms
+OK       ViewOnceBadgeHook                hooks=1       77 ms
 OK       LockedCollectionsHook            hooks=1       51 ms
-OK       SavedOnProfileHook               hooks=1       57 ms
+OK       SavedOnProfileHook               hooks=1       59 ms
 OK       HideHeaderButtonsHook            hooks=1       51 ms
-OK       ShareLinkDownloadHook            hooks=3       52 ms
-OK       StoryDownloadHook                hooks=14    1049 ms
-OK       ReelDownloadHook                 hooks=5      485 ms
+OK       ShareLinkDownloadHook            hooks=3       51 ms
+OK       StoryDownloadHook                hooks=14     817 ms
+OK       ReelDownloadHook                 hooks=5      453 ms
 OK       ProfilePicDownloadHook           hooks=2       69 ms
-OK       interceptor                      hooks=2       75 ms
-OK       TerminatedExecutorGuard          hooks=1       51 ms
-TOTAL: 79 steps  OK=72 PARTIAL=1 FAIL=1 NO-HOOK=5 ERROR=0
+OK       interceptor                      hooks=2       65 ms
+OK       TerminatedExecutorGuard          hooks=1       50 ms
+TOTAL: 93 steps  OK=85 PARTIAL=1 FAIL=2 NO-HOOK=5 ERROR=0
 ```
 
 ## OK — instagramUI
 
-`instagramUI.mainActivity(hostClassLoader)` (502 ms)
+`instagramUI.mainActivity(hostClassLoader)` (482 ms)
 
 Hooked (5):
 - `com.instagram.base.activity.BaseFragmentActivity#onCreate(android.os.Bundle)void`
@@ -109,7 +123,7 @@ Log:
 
 ## OK — DevOptionsUnlockHook
 
-`new DevOptionsUnlockHook().handleDevOptions(dexKitBridge)` (1023 ms)
+`new DevOptionsUnlockHook().handleDevOptions(dexKitBridge)` (930 ms)
 
 Hooked (1):
 - `X.02ua#A01(com.instagram.common.session.UserSession)boolean`
@@ -124,14 +138,14 @@ Log:
 
 ## OK — GhostDMSeenHook
 
-`new GhostDMSeenHook().handleSeenBlock(dexKitBridge)` (166 ms)
+`new GhostDMSeenHook().handleSeenBlock(dexKitBridge)` (157 ms)
 
 Hooked (1):
 - `X.0Atf#A0A(com.instagram.common.session.UserSession,X.02wI,java.lang.String,java.lang.String,java.lang.String)void`
 
 Log:
 ```
-   [GhostDMSeenHook.handleSeenBlock:86] (InstaEclipse | GhostModeSeen): ✅ Hooked: X.0Atf.A0A
+   [GhostDMSeenHook.handleSeenBlock:88] (InstaEclipse | GhostModeSeen): ✅ Hooked: X.0Atf.A0A
 ```
 
 ## OK — GhostDMMarkAsReadHook
@@ -150,7 +164,7 @@ Hooked (1):
 
 ## OK — GhostTypingIndicatorHook
 
-`new GhostTypingIndicatorHook().handleTypingBlock(dexKitBridge)` (170 ms)
+`new GhostTypingIndicatorHook().handleTypingBlock(dexKitBridge)` (154 ms)
 
 Hooked (1):
 - `X.06Zw#A0S(boolean)void`
@@ -162,7 +176,7 @@ Log:
 
 ## OK — GhostScreenshotDetectionHook
 
-`new GhostScreenshotDetectionHook().handleScreenshotBlock(dexKitBridge)` (153 ms)
+`new GhostScreenshotDetectionHook().handleScreenshotBlock(dexKitBridge)` (137 ms)
 
 Hooked (1):
 - `X.07WF#GKZ(long)void`
@@ -174,7 +188,7 @@ Log:
 
 ## OK — ScreenshotPermissionHook
 
-`new ScreenshotPermissionHook().install(lpparam.classLoader)` (54 ms)
+`new ScreenshotPermissionHook().install(lpparam.classLoader)` (53 ms)
 
 Hooked (2):
 - `android.view.Window#setFlags(int,int)void`
@@ -187,7 +201,7 @@ Log:
 
 ## OK — GhostViewOnceHook
 
-`new GhostViewOnceHook().handleViewOnceBlock(dexKitBridge)` (175 ms)
+`new GhostViewOnceHook().handleViewOnceBlock(dexKitBridge)` (156 ms)
 
 Hooked (1):
 - `X.05tf#HCv(X.02sx,X.0XoP,X.0ArI)void`
@@ -199,7 +213,7 @@ Log:
 
 ## OK — GhostStorySeenHook
 
-`new GhostStorySeenHook().handleStorySeenBlock(dexKitBridge)` (168 ms)
+`new GhostStorySeenHook().handleStorySeenBlock(dexKitBridge)` (145 ms)
 
 Hooked (6):
 - `X.019u#A0E(java.lang.String,java.lang.Object)void`
@@ -216,48 +230,48 @@ Log:
 
 ## OK — KeepUnsentMessagesHook
 
-`new KeepUnsentMessagesHook().install(dexKitBridge, lpparam.classLoader)` (1065 ms)
+`new KeepUnsentMessagesHook().install(dexKitBridge, lpparam.classLoader)` (1336 ms)
 
 Hooked (7):
 - `androidx.fragment.app.Fragment#performResume()void`
 - `androidx.fragment.app.Fragment#performPause()void`
 - `androidx.fragment.app.Fragment#performDestroyView()void`
-- `com.instagram.direct.store.impl.DirectThreadStoreImpl#H21(com.instagram.model.direct.DirectThreadKey,java.lang.String,java.lang.String,boolean)void`
 - `com.instagram.direct.store.impl.DirectThreadStoreImpl#H20(com.instagram.model.direct.DirectThreadKey,java.lang.String,java.lang.String)void`
+- `com.instagram.direct.store.impl.DirectThreadStoreImpl#H21(com.instagram.model.direct.DirectThreadKey,java.lang.String,java.lang.String,boolean)void`
 - `androidx.fragment.app.Fragment#onResume()void`
 - `androidx.fragment.app.Fragment#onPause()void`
 
 Log:
 ```
    [CurrentConversation.install:81] (IE|Conversation) lifecycle dispatchers resolved=3
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=anchors candidates=1 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=remove-shape candidates=5 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=remove-invokes candidates=31 matches=25
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=entry-call candidates=25 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=ownership-call candidates=25 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=ownership-definition candidates=1 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=sender-field candidates=4 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=id-getter candidates=2 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=client-getter candidates=3 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=id-lookup candidates=38 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=client-lookup candidates=38 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=store-session candidates=1 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=entry-session candidates=1 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=lookup-lists candidates=2 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=lookup-comparator candidates=2 matches=1
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=comparator-value candidates=1 matches=0
-   [UnsentMessageResolver.diagnostic:155] (IE|UnsentBinding-v1) stage=resolved candidates=1 matches=0
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=anchors candidates=1 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=remove-shape candidates=5 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=remove-invokes candidates=31 matches=25
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=entry-call candidates=25 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=ownership-call candidates=25 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=ownership-definition candidates=1 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=sender-field candidates=4 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=id-getter candidates=2 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=client-getter candidates=3 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=id-lookup candidates=38 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=client-lookup candidates=38 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=store-session candidates=1 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=entry-session candidates=1 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=lookup-lists candidates=2 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=lookup-comparator candidates=2 matches=1
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=comparator-value candidates=1 matches=0
+   [UnsentMessageResolver.diagnostic:156] (IE|UnsentBinding-v1) stage=resolved candidates=1 matches=0
    [KeepUnsentMessagesHook.install:93] (IE|KeepUnsent) sender binding=false; optional in-chat binding=false
    [KeepUnsentMessagesHook.resolveEntryClass:395] (IE|KeepUnsent) ✅ thread entry → X.03GI
-   [KeepUnsentMessagesHook.hookRemovePrimitive:296] (IE|KeepUnsent) ✅ remove hook → com.instagram.direct.store.impl.DirectThreadStoreImpl.H21 (4-arg)
    [KeepUnsentMessagesHook.hookRemovePrimitive:296] (IE|KeepUnsent) ✅ remove hook → com.instagram.direct.store.impl.DirectThreadStoreImpl.H20 (3-arg)
+   [KeepUnsentMessagesHook.hookRemovePrimitive:296] (IE|KeepUnsent) ✅ remove hook → com.instagram.direct.store.impl.DirectThreadStoreImpl.H21 (4-arg)
    [CurrentThreadTracker.install:95] (IE|ThreadTracker) ✅ Fragment onResume/onPause hooked
    [KeepUnsentMessagesHook.hookCurrentThread:135] (IE|KeepUnsent) current-thread tracker hooked 0 method(s)
 ```
 
 ## OK — UnsentThreadButtonHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ghost.UnsentThreadButtonHook().install(lpparam.classLoader)` (57 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.UnsentThreadButtonHook().install(lpparam.classLoader)` (58 ms)
 
 Hooked (5):
 - `android.app.Activity#onPostResume()void`
@@ -273,7 +287,7 @@ Log:
 
 ## OK — HideChatsHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ghost.HideChatsHook().install(dexKitBridge, lpparam.classLoader)` (282 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.HideChatsHook().install(dexKitBridge, lpparam.classLoader)` (247 ms)
 
 Hooked (3):
 - `X.00BN#<init>(android.content.Context,X.04om,com.instagram.common.session.UserSession,com.instagram.direct.store.impl.DirectThreadStoreImpl,com.instagram.direct.store.impl.sqlite.DirectSQLiteDiskIO,X.00B6,java.lang.Object)`
@@ -309,7 +323,7 @@ Log:
 
 ## OK — metaAi
 
-`metaAi.install(lpparam.classLoader)` (52 ms)
+`metaAi.install(lpparam.classLoader)` (53 ms)
 
 Hooked (2):
 - `android.view.LayoutInflater#inflate(int,android.view.ViewGroup,boolean)android.view.View`
@@ -320,9 +334,9 @@ Log:
    [RemoveMetaAIHook.install:126] (IE|RemoveMetaAI) ✅ installed
 ```
 
-## OK — metaAi
+## OK — metaAi.reels
 
-`metaAi.installReels(dexKitBridge, lpparam.classLoader)` (1721 ms)
+`metaAi.installReels(dexKitBridge, lpparam.classLoader)` (1567 ms)
 
 Hooked (8):
 - `X.0cnG#A01(boolean)java.util.List`
@@ -356,7 +370,7 @@ Log:
 
 ## OK — DisableRepostHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ui.DisableRepostHook().install(dexKitBridge, lpparam.classLoader)` (432 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.DisableRepostHook().install(dexKitBridge, lpparam.classLoader)` (408 ms)
 
 Hooked (2):
 - `X.0Mnv#EF5(android.view.View,X.010B,X.0Gv1,java.lang.String,java.lang.String,java.lang.String,kotlin.jvm.functions.Function0,int)void`
@@ -382,7 +396,7 @@ Log:
 
 ## OK — HideSuggestedFeedItemsHook
 
-`new HideSuggestedFeedItemsHook().install(dexKitBridge, hostClassLoader)` (425 ms)
+`new HideSuggestedFeedItemsHook().install(dexKitBridge, hostClassLoader)` (551 ms)
 
 Hooked (2):
 - `X.02AQ#unsafeParseFromJson(X.088A)java.lang.Object`
@@ -390,13 +404,13 @@ Hooked (2):
 
 Log:
 ```
-   [HideSuggestedFeedItemsHook.resolveHasLikedGetter:158] (InstaEclipse | HideLiked): ✅ has_liked getter com.instagram.feed.media.Media.A3t
-   [HideSuggestedFeedItemsHook.install:130] (InstaEclipse | HideSuggested): ✅ Hooked: X.02AQ
+   [HideSuggestedFeedItemsHook.resolveHasLikedGetter:168] (InstaEclipse | HideLiked): ✅ has_liked getter com.instagram.feed.media.Media.A3t
+   [HideSuggestedFeedItemsHook.install:140] (InstaEclipse | HideSuggested): ✅ Hooked: X.02AQ
 ```
 
 ## OK — AdBlocker
 
-`new AdBlocker().disableSponsoredContent(dexKitBridge, hostClassLoader)` (169 ms)
+`new AdBlocker().disableSponsoredContent(dexKitBridge, hostClassLoader)` (150 ms)
 
 Hooked (1):
 - `X.06jF#A02(X.06jF,X.04Ib,X.05a3)boolean`
@@ -419,7 +433,7 @@ Hooked (5):
 
 ## OK — ExactTimestampHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.ExactTimestampHook().install(dexKitBridge)` (146 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.ExactTimestampHook().install(dexKitBridge)` (112 ms)
 
 Hooked (1):
 - `X.03fs#A08(android.content.res.Resources,X.04TA,X.03fs,java.lang.Integer,double,double,boolean,boolean,boolean,boolean)java.lang.String`
@@ -431,7 +445,7 @@ Log:
 
 ## OK — ExpandCaptionsHook
 
-`new io.github.somilkhan.instaeclipse2.mods.feed.ExpandCaptionsHook().install(dexKitBridge)` (184 ms)
+`new io.github.somilkhan.instaeclipse2.mods.feed.ExpandCaptionsHook().install(dexKitBridge)` (161 ms)
 
 Hooked (2):
 - `X.02oM#A03(android.content.Context,X.05i1,com.instagram.search.common.analytics.SearchContext,X.02oM,java.lang.String,java.lang.String,boolean)android.text.SpannableStringBuilder`
@@ -444,7 +458,7 @@ Log:
 
 ## OK — HideCommunityNotesHook
 
-`new io.github.somilkhan.instaeclipse2.mods.feed.HideCommunityNotesHook().install(dexKitBridge, hostClassLoader)` (65 ms)
+`new io.github.somilkhan.instaeclipse2.mods.feed.HideCommunityNotesHook().install(dexKitBridge, hostClassLoader)` (64 ms)
 
 Hooked (2):
 - `com.instagram.api.schemas.ImmutablePandoMediaOverlayPayloadSchema#Cqf()X.02ES`
@@ -457,7 +471,7 @@ Log:
 
 ## OK — ReelsControlsHook
 
-`new io.github.somilkhan.instaeclipse2.mods.extras.ReelsControlsHook().install(dexKitBridge, hostClassLoader)` (917 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.ReelsControlsHook().install(dexKitBridge, hostClassLoader)` (821 ms)
 
 Hooked (3):
 - `X.0AMH#A09(com.instagram.common.session.UserSession,boolean)boolean`
@@ -472,7 +486,7 @@ Log:
 
 ## OK — AccountLimitHook
 
-`new io.github.somilkhan.instaeclipse2.mods.extras.AccountLimitHook().install(dexKitBridge, hostClassLoader)` (723 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.AccountLimitHook().install(dexKitBridge, hostClassLoader)` (744 ms)
 
 Hooked (1):
 - `X.0BJH#A01(X.08Ji,int)boolean`
@@ -484,7 +498,7 @@ Log:
 
 ## OK — AirplaneModeHook
 
-`new io.github.somilkhan.instaeclipse2.mods.extras.AirplaneModeHook().install(hostClassLoader)` (55 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.AirplaneModeHook().install(hostClassLoader)` (54 ms)
 
 Hooked (3):
 - `com.instagram.realtimeclient.RealtimeClientManager#<init>(android.content.Context,com.instagram.common.session.UserSession,com.instagram.realtimeclient.clientconfig.RealtimeClientConfig,com.instagram.realtimeclient.MainRealtimeEventHandler,X.0GeL)`
@@ -498,7 +512,7 @@ Log:
 
 ## OK — HighResolutionImageHook
 
-`new io.github.somilkhan.instaeclipse2.mods.extras.HighResolutionImageHook().install(dexKitBridge, hostClassLoader)` (239 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.HighResolutionImageHook().install(dexKitBridge, hostClassLoader)` (257 ms)
 
 Hooked (1):
 - `X.03kB#A02(java.lang.Integer,java.util.List,int)com.instagram.common.typedurl.ImageUrl`
@@ -510,7 +524,7 @@ Log:
 
 ## OK — OnboardingPromptHook
 
-`new io.github.somilkhan.instaeclipse2.mods.extras.OnboardingPromptHook().install(dexKitBridge, hostClassLoader)` (166 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.OnboardingPromptHook().install(dexKitBridge, hostClassLoader)` (144 ms)
 
 Hooked (1):
 - `X.0dcp#A09(android.content.Context,com.instagram.bloks.hosting.IgBloksScreenConfig)void`
@@ -526,11 +540,11 @@ Log:
 
 ## OK — StartupTabHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ui.StartupTabHook().install(hostClassLoader)` (52 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.StartupTabHook().install(hostClassLoader)` (55 ms)
 
 Hooked (4):
-- `android.app.Instrumentation#callActivityOnCreate(android.app.Activity,android.os.Bundle)void`
 - `android.app.Instrumentation#callActivityOnCreate(android.app.Activity,android.os.Bundle,android.os.PersistableBundle)void`
+- `android.app.Instrumentation#callActivityOnCreate(android.app.Activity,android.os.Bundle)void`
 - `android.content.Intent#getBooleanExtra(java.lang.String,boolean)boolean`
 - `android.app.Instrumentation#callActivityOnResume(android.app.Activity)void`
 
@@ -541,7 +555,7 @@ Log:
 
 ## OK — SwipeToCameraHook
 
-`new io.github.somilkhan.instaeclipse2.mods.extras.SwipeToCameraHook().install(hostClassLoader)` (53 ms)
+`new io.github.somilkhan.instaeclipse2.mods.extras.SwipeToCameraHook().install(hostClassLoader)` (66 ms)
 
 Hooked (1):
 - `com.instagram.ui.swipenavigation.container.SwipeNavigationContainer#setInternalPosition(com.instagram.ui.swipenavigation.container.PositionConfig)void`
@@ -553,7 +567,7 @@ Log:
 
 ## OK — FollowingOnlyFeedHook
 
-`new io.github.somilkhan.instaeclipse2.mods.feed.FollowingOnlyFeedHook().install(dexKitBridge, hostClassLoader)` (165 ms)
+`new io.github.somilkhan.instaeclipse2.mods.feed.FollowingOnlyFeedHook().install(dexKitBridge, hostClassLoader)` (155 ms)
 
 Hooked (5):
 - `X.03dn#A01(android.content.Context,X.08Ci,X.0TXl,com.instagram.common.session.UserSession,X.03dA,X.02vf)void`
@@ -577,12 +591,12 @@ Hooked (2):
 
 Log:
 ```
-   [ProfileFollowsYouHook.install:98] (InstaEclipse | FollowsYou): ✅ Hooked A0m / followed_by A2K
+   [ProfileFollowsYouHook.install:102] (InstaEclipse | FollowsYou): ✅ Hooked A0m / followed_by A2K
 ```
 
 ## OK — PlaybackSpeedHook
 
-`new io.github.somilkhan.instaeclipse2.mods.media.PlaybackSpeedHook().install(dexKitBridge, hostClassLoader)` (1078 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.PlaybackSpeedHook().install(dexKitBridge, hostClassLoader)` (1041 ms)
 
 Hooked (23):
 - `X.06mS#A0O(com.instagram.feed.media.Media,X.0Kel,X.09tm,X.010B,X.0KcA,int,boolean)boolean`
@@ -605,22 +619,22 @@ Hooked (23):
 - `android.text.BoringLayout#make(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,android.text.BoringLayout$Metrics,boolean,android.text.TextUtils$TruncateAt,int,boolean)android.text.BoringLayout`
 - `android.text.BoringLayout#make(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,float,float,android.text.BoringLayout$Metrics,boolean,android.text.TextUtils$TruncateAt,int)android.text.BoringLayout`
 - `android.text.BoringLayout#make(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,float,float,android.text.BoringLayout$Metrics,boolean)android.text.BoringLayout`
-- `android.text.BoringLayout#replaceOrMake(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,android.text.BoringLayout$Metrics,boolean,android.text.TextUtils$TruncateAt,int,boolean)android.text.BoringLayout`
 - `android.text.BoringLayout#replaceOrMake(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,float,float,android.text.BoringLayout$Metrics,boolean)android.text.BoringLayout`
+- `android.text.BoringLayout#replaceOrMake(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,android.text.BoringLayout$Metrics,boolean,android.text.TextUtils$TruncateAt,int,boolean)android.text.BoringLayout`
 - `android.text.BoringLayout#replaceOrMake(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,float,float,android.text.BoringLayout$Metrics,boolean,android.text.TextUtils$TruncateAt,int)android.text.BoringLayout`
 
 Log:
 ```
-   [PlaybackSpeedHook.installFeed:509] (InstaEclipse | PlaybackSpeed): story/reel speed methods: 5
-   [PlaybackSpeedHook.installFeed:510] (InstaEclipse | PlaybackSpeed): ✅ feed player X.06mS.A0O, started-cb X.06n0.Gj0, setters 1
-   [PlaybackSpeedHook.installHero:266] (InstaEclipse | PlaybackSpeed): ✅ hero X.06r1.A0D, prepare A02
-   [PlaybackSpeedHook.installReelScrubber:594] (InstaEclipse | PlaybackSpeed): ✅ reel scrubber gate X.0HbX.A00
+   [PlaybackSpeedHook.installFeed:511] (InstaEclipse | PlaybackSpeed): story/reel speed methods: 5
+   [PlaybackSpeedHook.installFeed:512] (InstaEclipse | PlaybackSpeed): ✅ feed player X.06mS.A0O, started-cb X.06n0.Gj0, setters 1
+   [PlaybackSpeedHook.installHero:268] (InstaEclipse | PlaybackSpeed): ✅ hero X.06r1.A0D, prepare A02
+   [PlaybackSpeedHook.installReelScrubber:628] (InstaEclipse | PlaybackSpeed): ✅ reel scrubber gate X.0HbX.A00
    [PlaybackSpeedHook.installHoldSide:153] (InstaEclipse | PlaybackSpeed): ✅ hold side tracking
 ```
 
 ## OK — HideNotesTrayHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ui.HideNotesTrayHook().install(dexKitBridge)` (188 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.HideNotesTrayHook().install(dexKitBridge)` (162 ms)
 
 Hooked (1):
 - `X.0BUT#invoke(java.lang.Object,java.lang.Object,java.lang.Object)java.lang.Object`
@@ -630,9 +644,182 @@ Log:
    [HideNotesTrayHook.installTaggedTray:112] (InstaEclipse | NotesTray): ✅ tagged tray X.0BUT.invoke
 ```
 
+## OK — FeedUfiButtonsHook
+
+`new io.github.somilkhan.instaeclipse2.mods.feed.FeedUfiButtonsHook().install(dexKitBridge)` (67 ms)
+
+Hooked (1):
+- `X.03Ca#<init>(X.01Dh,com.instagram.common.typedurl.ImageUrl,com.instagram.feed.media.Media,X.010B,X.06EH,X.08VI,X.03Bm,X.024A,X.01z6,X.02z0,X.03By,java.lang.Integer,java.lang.String,int,int,int,int,int,long,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)`
+
+Log:
+```
+   [FeedUfiButtonsHook.install:84] (InstaEclipse | FeedUfi): ✅ Hooked 1 constructor(s) of X.03Ca
+```
+
+## OK — ProfileHighlightsHook
+
+`new io.github.somilkhan.instaeclipse2.mods.ui.ProfileHighlightsHook().install(dexKitBridge)` (67 ms)
+
+Hooked (1):
+- `X.0Bl5#bindView(int,android.view.View,java.lang.Object,java.lang.Object)void`
+
+Log:
+```
+   [ProfileHighlightsHook.install:69] (InstaEclipse | Highlights): ✅ Hooked X.0Bl5.bindView
+```
+
+## OK — HideHiddenRequestsHook
+
+`new io.github.somilkhan.instaeclipse2.mods.ghost.HideHiddenRequestsHook().install()` (51 ms)
+
+Hooked (1):
+- `android.view.LayoutInflater#inflate(int,android.view.ViewGroup,boolean)android.view.View`
+
+Log:
+```
+   [HideHiddenRequestsHook.install:45] (InstaEclipse | HiddenRequests): ✅ Hooked LayoutInflater.inflate
+```
+
+## OK — BottomSpaceHook
+
+`new io.github.somilkhan.instaeclipse2.mods.ui.BottomSpaceHook().install(dexKitBridge)` (153 ms)
+
+Hooked (1):
+- `X.07rh#A00(android.app.Activity,int,int,int)int`
+
+Log:
+```
+   [BottomSpaceHook.install:57] (InstaEclipse | BottomSpace): ✅ Hooked X.07rh.A00
+```
+
+## OK — FollowButtonsHook.stories
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installStories(dexKitBridge)` (248 ms)
+
+Hooked (1):
+- `X.0HCo#A0O(java.lang.Object)void`
+
+Log:
+```
+   [FollowButtonsHook.installStories:97] (InstaEclipse | FollowButtons): ✅ Hooked story component bind X.0HCo.A0O
+```
+
+## OK — FollowButtonsHook.reels
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.FollowButtonsHook().installReels()` (52 ms)
+
+Hooked (3):
+- `com.instagram.user.follow.FollowButtonBase#<init>(android.content.Context,android.util.AttributeSet)`
+- `com.instagram.user.follow.FollowButtonBase#<init>(android.content.Context)`
+- `com.instagram.user.follow.FollowButtonBase#<init>(android.content.Context,android.util.AttributeSet,int)`
+
+Log:
+```
+   [FollowButtonsHook.installReels:197] (InstaEclipse | FollowButtons): ✅ Hooked 3 FollowButtonBase constructors
+```
+
+## OK — LoopStoryHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.LoopStoryHook().install(dexKitBridge)` (138 ms)
+
+Hooked (2):
+- `instagram.features.stories.fragment.ReelViewerFragment#A1h(com.instagram.model.reels.ReelItem)void`
+- `instagram.features.stories.fragment.ReelViewerFragment#A1T(com.instagram.model.reels.ReelItem)boolean`
+
+Log:
+```
+   [LoopStoryHook.install:112] (InstaEclipse | LoopStory): ✅ Hooked A1h / A1T (video seek HCA)
+```
+
+## OK — DisappearingSwipeHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.DisappearingSwipeHook().install(dexKitBridge)` (856 ms)
+
+Hooked (2):
+- `X.02Ec#A01()void`
+- `X.02eX#A07(com.instagram.common.session.UserSession,X.06WK,boolean)boolean`
+
+Log:
+```
+   [DisappearingSwipeHook.install:99] (InstaEclipse | DisappearingSwipe): ✅ Hooked X.02Ec.A01 gate X.02eX.A07
+```
+
+## OK — ChatCallButtonsHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.ChatCallButtonsHook().install(dexKitBridge)` (98 ms)
+
+Hooked (1):
+- `X.06ZE#A06(android.content.Context,X.08DY,X.06ZE)java.util.ArrayList`
+
+Log:
+```
+   [ChatCallButtonsHook.install:88] (InstaEclipse | ChatCallButtons): ✅ Hooked X.06ZE.A06
+```
+
+## FAIL — StoryTrayFilterHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilterHook().install(dexKitBridge)` (153 ms)
+
+Log:
+```
+!! [StoryTrayFilterHook.install:96] (InstaEclipse | StoryFilter): ❌ java.lang.UnsupportedOperationException: hook-verify stub: Instagram code does not run on the host JVM
+```
+
+## OK — LikeAnimationHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimationHook().install()` (54 ms)
+
+Hooked (2):
+- `com.instagram.api.schemas.XDTUserActivationMetadataImpl#<init>(X.04Pm,java.lang.Boolean,java.lang.Boolean,java.lang.Boolean,java.lang.Boolean,java.lang.Boolean)`
+- `com.instagram.ui.mediaactions.LikeActionView#A00(com.instagram.common.session.UserSession,X.0AGv)void`
+
+Log:
+```
+   [LikeAnimationHook.installMetadata:136] (InstaEclipse | LikeAnimation): ✅ Hooked activation metadata (1 ctor, 26 animations)
+   [LikeAnimationHook.installView:246] (InstaEclipse | LikeAnimation): ✅ Hooked LikeActionView.A00 (26 animations, mapper found)
+```
+
+## OK — StoryRingSizeHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSizeHook().install(dexKitBridge)` (72 ms)
+
+Hooked (2):
+- `X.07gH#<init>(android.content.Context,com.instagram.common.session.UserSession,java.lang.Integer,float,int,int,int,int,boolean)`
+- `X.07qw#A06(android.content.Context,float)float`
+
+Log:
+```
+   [StoryRingSizeHook.install:102] (InstaEclipse | StoryRingSize): ✅ Hooked X.07gH.<init> via X.07qw.A06 = 100dp
+```
+
+## OK — ResumeReelsHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.ResumeReelsHook().install(dexKitBridge)` (152 ms)
+
+Hooked (2):
+- `X.08v5#GoT(java.lang.String)int`
+- `X.08v5#Gs4(X.06hE,X.075A,X.0Ddj,X.06m0,X.0Npa,float,int,int,boolean,boolean,boolean,boolean)boolean`
+
+Log:
+```
+   [ResumeReelsHook.install:108] (InstaEclipse | ResumeReels): ✅ Hooked X.08v5.GoT / Gs4
+```
+
+## OK — MarkReadAfterReplyHook
+
+`new io.github.somilkhan.instaeclipse2.mods.piko.MarkReadAfterReplyHook().install(dexKitBridge)` (240 ms)
+
+Hooked (1):
+- `X.03SS#FzX(X.02sx,X.0ArI)void`
+
+Log:
+```
+   [MarkReadAfterReplyHook.install:84] (InstaEclipse | MarkReadAfterReply): ✅ Hooked X.03SS.FzX for X.0AvD
+```
+
 ## PARTIAL — VoiceMessageDownloadHook
 
-`new io.github.somilkhan.instaeclipse2.mods.media.VoiceMessageDownloadHook().install(dexKitBridge, hostClassLoader)` (693 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.VoiceMessageDownloadHook().install(dexKitBridge, hostClassLoader)` (575 ms)
 
 Hooked (6):
 - `X.0QCO#A00(X.0QCO,java.lang.String,java.lang.String,boolean)X.02wO`
@@ -652,7 +839,7 @@ Log:
 
 ## OK — EditHistoryHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ghost.EditHistoryHook().install(dexKitBridge, hostClassLoader)` (251 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.EditHistoryHook().install(dexKitBridge, hostClassLoader)` (229 ms)
 
 Hooked (2):
 - `X.02wO#A19(com.instagram.common.session.UserSession,X.02wO,X.02yO)void`
@@ -674,7 +861,7 @@ Log:
 
 ## NO-HOOK — ReadReceiptChatHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ghost.ReadReceiptChatHook().install(hostClassLoader)` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.ReadReceiptChatHook().install(hostClassLoader)` (52 ms)
 
 Log:
 ```
@@ -683,19 +870,19 @@ Log:
 
 ## OK — StoryViewerSearchHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ui.StoryViewerSearchHook().install(dexKitBridge, hostClassLoader)` (312 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.StoryViewerSearchHook().install(dexKitBridge, hostClassLoader)` (358 ms)
 
 Hooked (1):
 - `X.0TVX#A07(java.util.List,boolean,boolean,boolean)void`
 
 Log:
 ```
-   [StoryViewerSearchHook.install:103] (IE|ViewerSearch) ✅ adapter X.0TVX.A07 rebuild=A14
+   [StoryViewerSearchHook.install:105] (IE|ViewerSearch) ✅ adapter X.0TVX.A07 rebuild=A14
 ```
 
 ## OK — CommentSearchHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.CommentSearchHook().install(dexKitBridge, hostClassLoader)` (485 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.CommentSearchHook().install(dexKitBridge, hostClassLoader)` (490 ms)
 
 Hooked (2):
 - `com.instagram.comments.mvvm.viewmodel.CommentListViewModel#A07(X.0Cwz,X.0Cwy,X.0Cwy,X.0Cxi,X.0D3l,X.0DBq,X.0DBr,X.0Cvj,X.0Cwv,X.0D7l,com.instagram.comments.mvvm.viewmodel.CommentListViewModel,X.0Nxz,X.0DBs,X.0Gom,boolean,boolean,boolean)X.0ejk`
@@ -703,38 +890,38 @@ Hooked (2):
 
 Log:
 ```
-   [CommentSearchHook.install:130] (IE|CommentSearch) comment json: serializer=true factory=true
-   [CommentSearchHook.install:151] (IE|CommentSearch) ✅ vm com.instagram.comments.mvvm.viewmodel.CommentListViewModel builders=1 fragments=1
+   [CommentSearchHook.install:131] (IE|CommentSearch) comment json: serializer=true factory=true
+   [CommentSearchHook.install:152] (IE|CommentSearch) ✅ vm com.instagram.comments.mvvm.viewmodel.CommentListViewModel builders=1 fragments=1
 ```
 
 ## OK — ChatExportHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ghost.ChatExportHook().install(dexKitBridge, hostClassLoader)` (354 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ghost.ChatExportHook().install(dexKitBridge, hostClassLoader)` (327 ms)
 
 Hooked (1):
 - `X.03GI#<init>(com.instagram.common.session.UserSession,X.02yB,java.util.List)`
 
 Log:
 ```
-   [ChatExportHook.install:124] (IE|ChatExport) ✅ store X.03GI messages=true serializer=true factory=X.02az
+   [ChatExportHook.install:125] (IE|ChatExport) ✅ store X.03GI messages=true serializer=true factory=X.02az
 ```
 
 ## OK — FollowListExportHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.FollowListExportHook().install(dexKitBridge, hostClassLoader)` (348 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.FollowListExportHook().install(dexKitBridge, hostClassLoader)` (309 ms)
 
 Hooked (1):
 - `X.0T5x#onViewCreated(android.view.View,android.os.Bundle)void`
 
 Log:
 ```
-   [FollowListExportHook.findPager:232] (IE|FollowExport) pager=X.0CqI loadMore=AXk
-   [FollowListExportHook.install:106] (IE|FollowExport) ✅ X.0T5x fullName=true
+   [FollowListExportHook.findPager:233] (IE|FollowExport) pager=X.0CqI loadMore=AXk
+   [FollowListExportHook.install:107] (IE|FollowExport) ✅ X.0T5x fullName=true
 ```
 
 ## OK — LikeUndoHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.LikeUndoHook().install(dexKitBridge)` (296 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.LikeUndoHook().install(dexKitBridge)` (252 ms)
 
 Hooked (1):
 - `X.0Sm8#A03(android.content.Context,X.09rh,com.instagram.common.session.UserSession,X.0Whp,com.instagram.feed.media.Media,X.01Yz,com.instagram.search.common.analytics.SearchContext,java.lang.Double,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Integer,java.lang.Long,java.lang.Long,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.util.Map,boolean)void`
@@ -746,7 +933,7 @@ Log:
 
 ## OK — ShareSheetCleanupHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ui.ShareSheetCleanupHook().install(hostClassLoader)` (58 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.ShareSheetCleanupHook().install(hostClassLoader)` (56 ms)
 
 Hooked (2):
 - `instagram.features.direct.fragment.sharesheet.DirectShareSheetFragment#onViewCreated(android.view.View,android.os.Bundle)void`
@@ -768,19 +955,19 @@ Log:
 
 ## OK — DisableStoryFlippingHook
 
-`new DisableStoryFlippingHook().handleStoryFlippingDisable(dexKitBridge)` (154 ms)
+`new DisableStoryFlippingHook().handleStoryFlippingDisable(dexKitBridge)` (84 ms)
 
 Hooked (1):
 - `instagram.features.stories.fragment.ReelViewerFragment#A1h(com.instagram.model.reels.ReelItem)void`
 
 Log:
 ```
-   [DisableStoryFlippingHook.findAndHookMethod:84] (InstaEclipse | StoryFlipping): ✅ Hooked (dynamic check): instagram.features.stories.fragment.ReelViewerFragment.A1h
+   [DisableStoryFlippingHook.findAndHookMethod:104] (InstaEclipse | StoryFlipping): ✅ Hooked (dynamic check): instagram.features.stories.fragment.ReelViewerFragment.A1h
 ```
 
 ## OK — StoryMentionHook
 
-`new StoryMentionHook().install(dexKitBridge, lpparam.classLoader)` (639 ms)
+`new StoryMentionHook().install(dexKitBridge, lpparam.classLoader)` (495 ms)
 
 Hooked (9):
 - `X.0NnR#A0x(X.00I2,X.0NnR,X.0BT1,boolean)java.lang.CharSequence[]`
@@ -795,14 +982,14 @@ Hooked (9):
 
 Log:
 ```
-   [StoryMentionHook.resolveMentionPipeline:154] (IE|Mention) ✅ pipeline resolved: A9B -> A0E
-   [StoryMentionHook.installButtonHook:232] (IE|Mention) ✅ button hook installed on 3 builder(s)
-   [StoryMentionHook.installClickHook:287] (IE|Mention) ✅ click hook installed
+   [StoryMentionHook.resolveMentionPipeline:165] (IE|Mention) ✅ pipeline resolved: A9B -> A0E
+   [StoryMentionHook.installButtonHook:245] (IE|Mention) ✅ button hook installed on 3 builder(s)
+   [StoryMentionHook.installClickHook:300] (IE|Mention) ✅ click hook installed
 ```
 
 ## OK — StoryLinksHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.StoryLinksHook().install(dexKitBridge, lpparam.classLoader)` (361 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.StoryLinksHook().install(dexKitBridge, lpparam.classLoader)` (327 ms)
 
 Hooked (9):
 - `X.0NnR#A0x(X.00I2,X.0NnR,X.0BT1,boolean)java.lang.CharSequence[]`
@@ -817,13 +1004,13 @@ Hooked (9):
 
 Log:
 ```
-   [StoryLinksHook.installButtonHook:144] (IE|StoryLinks) ✅ button hook on 3 builder(s)
-   [StoryLinksHook.installClickHook:190] (IE|StoryLinks) ✅ click hook installed
+   [StoryLinksHook.installButtonHook:155] (IE|StoryLinks) ✅ button hook on 3 builder(s)
+   [StoryLinksHook.installClickHook:201] (IE|StoryLinks) ✅ click hook installed
 ```
 
 ## OK — StoryInfoHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.StoryInfoHook().install(dexKitBridge, lpparam.classLoader)` (1548 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.StoryInfoHook().install(dexKitBridge, lpparam.classLoader)` (1502 ms)
 
 Hooked (9):
 - `X.0NnR#A0x(X.00I2,X.0NnR,X.0BT1,boolean)java.lang.CharSequence[]`
@@ -838,14 +1025,14 @@ Hooked (9):
 
 Log:
 ```
-   [StoryInfoHook.install:79] (IE|StoryInfo) getters: [taken_at, expiring_at, story_edited_at, is_story_edited, music_metadata, story_music_stickers, story_music_lyric_stickers, clips_metadata, story_locations, story_hashtags, reshared_story_media_author, story_feed_media, story_app_attribution, accessibility_caption, original_width, original_height, has_audio, story_countdowns, story_questions, story_mention_request_info, story_quizs, story_polls, story_sliders, story_prompts, sponsor_tags, is_paid_partnership, coauthor_producers]
-   [StoryInfoHook.installButtonHook:175] (IE|StoryInfo) ✅ button hook on 3 builder(s)
-   [StoryInfoHook.installClickHook:228] (IE|StoryInfo) ✅ click hook installed
+   [StoryInfoHook.install:89] (IE|StoryInfo) getters: [taken_at, expiring_at, story_edited_at, is_story_edited, music_metadata, story_music_stickers, story_music_lyric_stickers, clips_metadata, story_locations, story_hashtags, reshared_story_media_author, story_feed_media, story_app_attribution, accessibility_caption, original_width, original_height, has_audio, story_countdowns, story_questions, story_mention_request_info, story_quizs, story_polls, story_sliders, story_prompts, sponsor_tags, is_paid_partnership, coauthor_producers]
+   [StoryInfoHook.installButtonHook:187] (IE|StoryInfo) ✅ button hook on 3 builder(s)
+   [StoryInfoHook.installClickHook:240] (IE|StoryInfo) ✅ click hook installed
 ```
 
 ## OK — CommentCopyHook
 
-`new CommentCopyHook().install(dexKitBridge, lpparam.classLoader)` (227 ms)
+`new CommentCopyHook().install(dexKitBridge, lpparam.classLoader)` (208 ms)
 
 Hooked (4):
 - `X.0M5A#onViewCreated(android.view.View,android.os.Bundle)void`
@@ -855,12 +1042,12 @@ Hooked (4):
 
 Log:
 ```
-   [CommentCopyHook.findAndHookNew:198] (InstaEclipse | CopyComment): ✅ Hooked com.instagram.comments.mvvm.viewmodel.CommentListViewModel.GP6 (resolver=X.0DCn.A01)
+   [CommentCopyHook.findAndHookNew:200] (InstaEclipse | CopyComment): ✅ Hooked com.instagram.comments.mvvm.viewmodel.CommentListViewModel.GP6 (resolver=X.0DCn.A01)
 ```
 
 ## OK — CaptionCopyContextMenuHook
 
-`new CaptionCopyContextMenuHook().install(dexKitBridge, lpparam.classLoader)` (1233 ms)
+`new CaptionCopyContextMenuHook().install(dexKitBridge, lpparam.classLoader)` (1216 ms)
 
 Hooked (11):
 - `android.app.Activity#onResume()void`
@@ -877,15 +1064,15 @@ Hooked (11):
 
 Log:
 ```
-   [CaptionCopyContextMenuHook.resolveCaptionGetter:221] (IE|Caption) ✅ captionGetter=com.instagram.feed.media.Media.A32
-   [CaptionCopyContextMenuHook.installAddButtonHook:487] (IE|Caption) ✅ Caption copy menu hook installed
-   [CaptionCopyContextMenuHook.installReelLabelOverrideHook:755] (IE|Caption) ✅ reel label override on X.0Zwh.A00
-   [CaptionCopyContextMenuHook.installReelLabelOverrideHook:755] (IE|Caption) ✅ reel label override on X.0Zwh.A01
+   [CaptionCopyContextMenuHook.resolveCaptionGetter:223] (IE|Caption) ✅ captionGetter=com.instagram.feed.media.Media.A32
+   [CaptionCopyContextMenuHook.installAddButtonHook:523] (IE|Caption) ✅ Caption copy menu hook installed
+   [CaptionCopyContextMenuHook.installReelLabelOverrideHook:791] (IE|Caption) ✅ reel label override on X.0Zwh.A00
+   [CaptionCopyContextMenuHook.installReelLabelOverrideHook:791] (IE|Caption) ✅ reel label override on X.0Zwh.A01
 ```
 
 ## OK — DisableDoubleTapLikeHook
 
-`new DisableDoubleTapLikeHook().install(dexKitBridge, lpparam.classLoader)` (783 ms)
+`new DisableDoubleTapLikeHook().install(dexKitBridge, lpparam.classLoader)` (736 ms)
 
 Hooked (3):
 - `X.0Dao#A01(android.app.Activity,X.03yW,com.instagram.common.session.UserSession,com.instagram.feed.media.Media,X.01Yz,X.0Kel,com.instagram.search.common.analytics.SearchContext,X.0WgF,java.lang.Double,java.lang.Integer,java.lang.Long,java.lang.String,java.lang.String,int,int,int,boolean)void`
@@ -901,7 +1088,7 @@ Log:
 
 ## OK — DoubleTapExtrasHook
 
-`new io.github.somilkhan.instaeclipse2.mods.misc.DoubleTapExtrasHook().install(dexKitBridge, lpparam.classLoader)` (329 ms)
+`new io.github.somilkhan.instaeclipse2.mods.misc.DoubleTapExtrasHook().install(dexKitBridge, lpparam.classLoader)` (271 ms)
 
 Hooked (6):
 - `X.0EcE#onDoubleTap(android.view.MotionEvent)boolean`
@@ -939,7 +1126,7 @@ Log:
 
 ## OK — IgThemeHook
 
-`new IgThemeHook().install(hostClassLoader)` (62 ms)
+`new IgThemeHook().install(hostClassLoader)` (63 ms)
 
 Hooked (21):
 - `android.content.res.Resources$Theme#resolveAttribute(int,android.util.TypedValue,boolean)boolean`
@@ -967,24 +1154,24 @@ Hooked (21):
 Log:
 ```
    [IgThemeColorSourceHooks.install:57] (InstaEclipse | Theme): color-source hooks installed=12
-   [IgThemeHook.install:57] (InstaEclipse | Theme): hooks installed enabled=true
+   [IgThemeHook.install:62] (InstaEclipse | Theme): hooks installed enabled=true
 ```
 
 ## OK — ForceReelQualityHook
 
-`new ForceReelQualityHook().install(dexKitBridge, lpparam.classLoader)` (111 ms)
+`new ForceReelQualityHook().install(dexKitBridge, lpparam.classLoader)` (110 ms)
 
 Hooked (1):
 - `com.instagram.feed.media.Media#AAM()java.util.List`
 
 Log:
 ```
-   [ForceReelQualityHook.install:129] (InstaEclipse | ForceReelQuality): ✅ Hooked com.instagram.feed.media.Media#AAM (height=CHg)
+   [ForceReelQualityHook.install:137] (InstaEclipse | ForceReelQuality): ✅ Hooked com.instagram.feed.media.Media#AAM (height=CHg)
 ```
 
 ## OK — MaxUploadQualityHook
 
-`new io.github.somilkhan.instaeclipse2.mods.media.MaxUploadQualityHook().install(dexKitBridge, lpparam.classLoader)` (440 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.MaxUploadQualityHook().install(dexKitBridge, lpparam.classLoader)` (404 ms)
 
 Hooked (1):
 - `X.0BWS#A00(X.02nf)boolean`
@@ -996,7 +1183,7 @@ Log:
 
 ## OK — DisableVideoAutoPlayHook
 
-`new DisableVideoAutoPlayHook().handleAutoPlayDisable(dexKitBridge)` (173 ms)
+`new DisableVideoAutoPlayHook().handleAutoPlayDisable(dexKitBridge)` (151 ms)
 
 Hooked (9):
 - `android.content.res.Resources#getDrawable(int)android.graphics.drawable.Drawable`
@@ -1017,7 +1204,7 @@ Log:
 
 ## OK — BuildExpiredPopupHook
 
-`new BuildExpiredPopupHook().install(dexKitBridge, lpparam.classLoader)` (282 ms)
+`new BuildExpiredPopupHook().install(dexKitBridge, lpparam.classLoader)` (240 ms)
 
 Hooked (2):
 - `X.02zV#A02(androidx.fragment.app.FragmentActivity,X.0mlb)void`
@@ -1031,17 +1218,17 @@ Log:
 
 ## NO-HOOK — FeedVideoDownloadHook
 
-`new FeedVideoDownloadHook().install(lpparam.classLoader)` (59 ms)
+`new FeedVideoDownloadHook().install(lpparam.classLoader)` (58 ms)
 
 Log:
 ```
-   [FeedVideoDownloadHook.install:168] (IE|DL) image url method=A0Q (ExtendedImageUrl)
-   [FeedVideoDownloadHook.install:187] (IE|DL) media model: mutable=false liveTree=false listCandidates=0
+   [FeedVideoDownloadHook.install:172] (IE|DL) image url method=A0Q (ExtendedImageUrl)
+   [FeedVideoDownloadHook.install:191] (IE|DL) media model: mutable=false liveTree=false listCandidates=0
 ```
 
-## OK — FeedVideoDownloadHook
+## OK — FeedVideoDownloadHook.videoUrlCapture
 
-`FeedVideoDownloadHook.installVideoUrlCaptureHook(dexKitBridge, lpparam.classLoader)` (2244 ms)
+`FeedVideoDownloadHook.installVideoUrlCaptureHook(dexKitBridge, lpparam.classLoader)` (2218 ms)
 
 Hooked (2):
 - `com.instagram.api.schemas.ImmutablePandoVideoVersion#getUrl()java.lang.String`
@@ -1049,27 +1236,27 @@ Hooked (2):
 
 Log:
 ```
-   [SelectedMediaAdapter.install:61] (IE|MediaAdapter) resolved properties=13 manifest=true direct=true story=true
-   [FeedVideoDownloadHook.discoverDynamicMediaModel:1277] (IE|DL|DexKit) dynamic media dict=X.09AK
-   [FeedVideoDownloadHook.resolveVideoVersionsGetters:1333] (IE|DL|DexKit) video_versions getters=1
-   [FeedVideoDownloadHook.resolveCarouselGetter:1378] (IE|DL|DexKit) carousel getter=com.instagram.feed.media.Media.A8U
-   [FeedVideoDownloadHook.resolveDashManifestGetter:1447] (IE|DL|DexKit) dash manifest getter=com.instagram.feed.media.Media.A89
-   [FeedVideoDownloadHook.resolveHasAudioGetter:1405] (IE|DL|DexKit) has_audio getter=A3l
-   [FeedVideoDownloadHook.resolveMediaGetter:1640] (IE|DL|DexKit) music_metadata getter=A29
-   [FeedVideoDownloadHook.resolveMediaGetter:1640] (IE|DL|DexKit) clips_metadata getter=A2y
-   [FeedVideoDownloadHook.resolveIsVideoMethod:1780] (IE|DL|DexKit) isVideo: no Media ()Z getter (457+ layout), using video_versions presence
-   [FeedVideoDownloadHook.installVideoUrlCaptureHook:1203] (IE|DL|DexKit) VideoVersionIntf implementors found: 2
-   [FeedVideoDownloadHook.installVideoUrlCaptureHook:1219] (IE|DL|DexKit) ✅ Hooked getUrl() on com.instagram.api.schemas.ImmutablePandoVideoVersion
-   [FeedVideoDownloadHook.installVideoUrlCaptureHook:1219] (IE|DL|DexKit) ✅ Hooked getUrl() on com.instagram.api.schemas.VideoVersion
-   [FeedVideoDownloadHook.resolveUsernameGetter:1827] (IE|DL|Username) userClass=com.instagram.user.model.User
-   [FeedVideoDownloadHook.resolveUsernameGetter:1868] (IE|DL|Username) userUsernameGetter=A7i (excluded 0 full_name getter(s))
-   [FeedVideoDownloadHook.resolveMediaAuthorGetter:1913] (IE|DL|Username) ✅ mediaAuthorGetter (Media."user"): A3M
-   [FeedVideoDownloadHook.resolveDictUserGetter:1992] (IE|DL|Username) dictUserGetter: no dict author getter (446+ layout), using Media.A3M
+   [SelectedMediaAdapter.install:63] (IE|MediaAdapter) resolved properties=13 manifest=true direct=true story=true hashed=true
+   [FeedVideoDownloadHook.discoverDynamicMediaModel:1310] (IE|DL|DexKit) dynamic media dict=X.09AK
+   [FeedVideoDownloadHook.resolveVideoVersionsGetters:1366] (IE|DL|DexKit) video_versions getters=1
+   [FeedVideoDownloadHook.resolveCarouselGetter:1411] (IE|DL|DexKit) carousel getter=com.instagram.feed.media.Media.A8U
+   [FeedVideoDownloadHook.resolveDashManifestGetter:1484] (IE|DL|DexKit) dash manifest getter=com.instagram.feed.media.Media.A89
+   [FeedVideoDownloadHook.resolveHasAudioGetter:1438] (IE|DL|DexKit) has_audio getter=A3l
+   [FeedVideoDownloadHook.resolveMediaGetter:1712] (IE|DL|DexKit) music_metadata getter=A29
+   [FeedVideoDownloadHook.resolveMediaGetter:1712] (IE|DL|DexKit) clips_metadata getter=A2y
+   [FeedVideoDownloadHook.resolveIsVideoMethod:1854] (IE|DL|DexKit) isVideo: no Media ()Z getter (457+ layout), using video_versions presence
+   [FeedVideoDownloadHook.installVideoUrlCaptureHook:1236] (IE|DL|DexKit) VideoVersionIntf implementors found: 2
+   [FeedVideoDownloadHook.installVideoUrlCaptureHook:1252] (IE|DL|DexKit) ✅ Hooked getUrl() on com.instagram.api.schemas.ImmutablePandoVideoVersion
+   [FeedVideoDownloadHook.installVideoUrlCaptureHook:1252] (IE|DL|DexKit) ✅ Hooked getUrl() on com.instagram.api.schemas.VideoVersion
+   [FeedVideoDownloadHook.resolveUsernameGetter:1901] (IE|DL|Username) userClass=com.instagram.user.model.User
+   [FeedVideoDownloadHook.resolveUsernameGetter:1942] (IE|DL|Username) userUsernameGetter=A7i (excluded 0 full_name getter(s))
+   [FeedVideoDownloadHook.resolveMediaAuthorGetter:1990] (IE|DL|Username) ✅ mediaAuthorGetter (Media."user"): A3M
+   [FeedVideoDownloadHook.resolveDictUserGetter:2075] (IE|DL|Username) dictUserGetter: no dict author getter (446+ layout), using Media.A3M
 ```
 
 ## OK — PostDownloadContextMenuHook
 
-`new PostDownloadContextMenuHook().install(dexKitBridge, lpparam.classLoader)` (361 ms)
+`new PostDownloadContextMenuHook().install(dexKitBridge, lpparam.classLoader)` (366 ms)
 
 Hooked (5):
 - `X.0diz#A00(X.03bC,com.instagram.feed.media.mediaoption.MediaOption$Option,X.0diz,X.0VWq,java.lang.CharSequence,java.util.ArrayList,boolean)void`
@@ -1080,14 +1267,14 @@ Hooked (5):
 
 Log:
 ```
-   [PostDownloadContextMenuHook.installAddButtonHook:338] (IE|Post) ✅ Post menu inject hook installed
-   [PostDownloadContextMenuHook.resolveReelClickDispatcher:381] (IE|Post) selected Reel dispatcher bound=false
-   [PostDownloadContextMenuHook.installAllowlistPatchHook:535] (IE|Post) ✅ Allowlist patch hooked: X.0cnG.A01
+   [PostDownloadContextMenuHook.installAddButtonHook:354] (IE|Post) ✅ Post menu inject hook installed
+   [PostDownloadContextMenuHook.resolveReelClickDispatcher:397] (IE|Post) selected Reel dispatcher bound=false
+   [PostDownloadContextMenuHook.installAllowlistPatchHook:552] (IE|Post) ✅ Allowlist patch hooked: X.0cnG.A01
 ```
 
 ## OK — InstantSaveHook
 
-`new io.github.somilkhan.instaeclipse2.mods.media.InstantSaveHook().install(lpparam.classLoader)` (55 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.InstantSaveHook().install(lpparam.classLoader)` (52 ms)
 
 Hooked (2):
 - `com.instagram.quicksnap.viewer.compose.QuickSnapMediaViewerScreenKt$QuickSnapMediaViewerScreen$30$1$1$21$1#<init>(androidx.compose.runtime.MutableState,androidx.compose.runtime.MutableState,androidx.compose.runtime.MutableState,X.0X94,com.instagram.common.session.UserSession,com.instagram.compose.ui.emitter.AnimatedParticleEffectState,X.03Et,java.util.List,java.util.List,X.0UAG,int,boolean)`
@@ -1101,7 +1288,7 @@ Log:
 
 ## OK — InstantUploadHook
 
-`new io.github.somilkhan.instaeclipse2.mods.media.InstantUploadHook().install(lpparam.classLoader)` (59 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.InstantUploadHook().install(lpparam.classLoader)` (62 ms)
 
 Hooked (10):
 - `com.instagram.quicksnap.camera.domain.QuickSnapCameraViewModel#A1C(android.content.Context,android.graphics.Bitmap,X.07aN,X.0SYs,X.0TL7,X.0ZCd,java.lang.Long,java.lang.String,java.lang.String,X.0UAG,X.02oc,X.0mym,float,long,boolean)java.lang.Object`
@@ -1124,7 +1311,7 @@ Log:
 
 ## OK — GhostEphemeralKeepHook
 
-`new GhostEphemeralKeepHook().install(dexKitBridge, lpparam.classLoader)` (413 ms)
+`new GhostEphemeralKeepHook().install(dexKitBridge, lpparam.classLoader)` (465 ms)
 
 Hooked (6):
 - `X.03GI#A0b(boolean)boolean`
@@ -1146,20 +1333,20 @@ Log:
 
 ## OK — GhostPermanentViewHook
 
-`new GhostPermanentViewHook().install(dexKitBridge, lpparam.classLoader)` (175 ms)
+`new GhostPermanentViewHook().install(dexKitBridge, lpparam.classLoader)` (181 ms)
 
 Hooked (1):
 - `X.0000#A00(int)java.lang.String`
 
 Log:
 ```
-   [GhostPermanentViewHook.install:96] (IE|ViewOnceMedia) ✅ hooking X.0000.A00
-   [GhostPermanentViewHook.install:103] (IE|ViewOnceMedia) ✅ hooked
+   [GhostPermanentViewHook.install:98] (IE|ViewOnceMedia) ✅ hooking X.0000.A00
+   [GhostPermanentViewHook.install:105] (IE|ViewOnceMedia) ✅ hooked
 ```
 
 ## OK — ViewOnceBadgeHook
 
-`new ViewOnceBadgeHook().install(dexKitBridge, lpparam.classLoader)` (79 ms)
+`new ViewOnceBadgeHook().install(dexKitBridge, lpparam.classLoader)` (77 ms)
 
 Hooked (1):
 - `X.08XG#<init>(X.02HI,X.02GX,X.08XF,com.instagram.direct.thread.analytics.DirectThreadAnalyticsParams,com.instagram.direct.wellbeing.harmfulcontent.ondevicenudity.view.data.PrivacyMediaOverlayViewModel,X.0AHT,java.lang.String,java.lang.String,boolean,boolean,boolean,boolean)`
@@ -1183,7 +1370,7 @@ Log:
 
 ## OK — SavedOnProfileHook
 
-`new io.github.somilkhan.instaeclipse2.mods.ui.SavedOnProfileHook().install(dexKitBridge, hostClassLoader)` (57 ms)
+`new io.github.somilkhan.instaeclipse2.mods.ui.SavedOnProfileHook().install(dexKitBridge, hostClassLoader)` (59 ms)
 
 Hooked (1):
 - `androidx.fragment.app.Fragment#onResume()void`
@@ -1207,7 +1394,7 @@ Log:
 
 ## OK — ShareLinkDownloadHook
 
-`new io.github.somilkhan.instaeclipse2.mods.media.ShareLinkDownloadHook().install(hostClassLoader)` (52 ms)
+`new io.github.somilkhan.instaeclipse2.mods.media.ShareLinkDownloadHook().install(hostClassLoader)` (51 ms)
 
 Hooked (3):
 - `com.instagram.common.session.UserSession#<init>(X.08Jf,java.lang.String,X.02as,boolean,boolean)`
@@ -1216,12 +1403,12 @@ Hooked (3):
 
 Log:
 ```
-   [ShareLinkDownloadHook.install:71] (IE|ShareDL) ✅ installed
+   [ShareLinkDownloadHook.install:75] (IE|ShareDL) ✅ installed
 ```
 
 ## OK — StoryDownloadHook
 
-`new StoryDownloadHook().install(dexKitBridge, lpparam.classLoader)` (1049 ms)
+`new StoryDownloadHook().install(dexKitBridge, lpparam.classLoader)` (817 ms)
 
 Hooked (14):
 - `X.0NnR#A0x(X.00I2,X.0NnR,X.0BT1,boolean)java.lang.CharSequence[]`
@@ -1241,17 +1428,17 @@ Hooked (14):
 
 Log:
 ```
-   [StoryDownloadHook.install:192] (IE|Highlight) reel class X.04ot
-   [StoryDownloadHook.installButtonInjectorHook:599] (IE|Story) button injector hooked 3 builder(s)
-   [StoryDownloadHook.installHighlightButtonInjectorHook:664] (IE|Story) Highlight injector hooked 2 builder(s)
-   [StoryDownloadHook.installClickHandlerHook:798] (IE|Story) click handler hooked 6 dispatcher(s)
-   [StoryDownloadHook.installHighlightTrayHook:290] (IE|HighlightTray) ✅ X.0O1f legacy=true popup=false loader=false
-   [StoryDownloadHook.installStoryCaptureHook:448] (IE|StoryCache) capture hook: 1 method(s)
+   [StoryDownloadHook.install:199] (IE|Highlight) reel class X.04ot
+   [StoryDownloadHook.installButtonInjectorHook:606] (IE|Story) button injector hooked 3 builder(s)
+   [StoryDownloadHook.installHighlightButtonInjectorHook:671] (IE|Story) Highlight injector hooked 2 builder(s)
+   [StoryDownloadHook.installClickHandlerHook:805] (IE|Story) click handler hooked 6 dispatcher(s)
+   [StoryDownloadHook.installHighlightTrayHook:297] (IE|HighlightTray) ✅ X.0O1f legacy=true popup=false loader=false
+   [StoryDownloadHook.installStoryCaptureHook:455] (IE|StoryCache) capture hook: 1 method(s)
 ```
 
 ## OK — ReelDownloadHook
 
-`new ReelDownloadHook().install(dexKitBridge, lpparam.classLoader)` (485 ms)
+`new ReelDownloadHook().install(dexKitBridge, lpparam.classLoader)` (453 ms)
 
 Hooked (5):
 - `X.0Ckr#A06(X.0BX4,X.075A,X.0Ckr)java.util.ArrayList`
@@ -1262,12 +1449,12 @@ Hooked (5):
 
 Log:
 ```
-   [ReelDownloadHook.installGateHook:502] (IE|Reel) gate config 36313978552585585 absent (pre-457 gate; 457 uses the sheet row injection)
-   [ReelDownloadHook.installGateHook:502] (IE|Reel) gate config 36313978552847731 absent (pre-457 gate; 457 uses the sheet row injection)
-   [ReelDownloadHook.installReduceOptionsListPatch:240] (IE|Reel) ✅ Options-list patch hooked: X.0Ckr.A06
+   [ReelDownloadHook.installGateHook:507] (IE|Reel) gate config 36313978552585585 absent (pre-457 gate; 457 uses the sheet row injection)
+   [ReelDownloadHook.installGateHook:507] (IE|Reel) gate config 36313978552847731 absent (pre-457 gate; 457 uses the sheet row injection)
+   [ReelDownloadHook.installReduceOptionsListPatch:245] (IE|Reel) ✅ Options-list patch hooked: X.0Ckr.A06
    [ReelDownloadHook.install:81] (IE|Reel) string matches=4 candidateClasses=3
-   [ReelDownloadHook.installEligibilityGate457:419] (IE|Reel) ✅ 457 eligibility gate: X.071o.A07
-   [ReelDownloadHook.installSheetRowInjection:363] (IE|Reel) ✅ sheet row injection: X.0Ckr builders=1 rowAdders=2
+   [ReelDownloadHook.installEligibilityGate457:424] (IE|Reel) ✅ 457 eligibility gate: X.071o.A07
+   [ReelDownloadHook.installSheetRowInjection:368] (IE|Reel) ✅ sheet row injection: X.0Ckr builders=1 rowAdders=2
 ```
 
 ## OK — ProfilePicDownloadHook
@@ -1280,12 +1467,12 @@ Hooked (2):
 
 Log:
 ```
-   [ProfilePicDownloadHook.resolveHdGetter:120] (IE|ProfileDL) ✅ HD getter User.A1D
+   [ProfilePicDownloadHook.resolveHdGetter:129] (IE|ProfileDL) ✅ HD getter User.A1D
 ```
 
 ## OK — interceptor
 
-`interceptor.handleInterceptor(lpparam)` (75 ms)
+`interceptor.handleInterceptor(lpparam)` (65 ms)
 
 Hooked (2):
 - `com.instagram.api.tigon.TigonServiceLayer#startRequest(X.03wd,X.03wu,X.04kA)X.0A0F`
@@ -1298,7 +1485,7 @@ Log:
 
 ## OK — TerminatedExecutorGuard
 
-`new io.github.somilkhan.instaeclipse2.mods.core.TerminatedExecutorGuard().install(lpparam.classLoader)` (51 ms)
+`new io.github.somilkhan.instaeclipse2.mods.core.TerminatedExecutorGuard().install(lpparam.classLoader)` (50 ms)
 
 Hooked (1):
 - `java.util.concurrent.ThreadPoolExecutor$AbortPolicy#rejectedExecution(java.lang.Runnable,java.util.concurrent.ThreadPoolExecutor)void`
