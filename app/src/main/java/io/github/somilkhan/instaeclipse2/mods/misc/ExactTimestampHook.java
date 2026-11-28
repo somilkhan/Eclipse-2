@@ -13,8 +13,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.Xposed.Module;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;

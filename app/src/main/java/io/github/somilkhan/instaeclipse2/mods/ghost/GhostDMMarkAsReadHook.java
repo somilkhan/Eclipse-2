@@ -2,7 +2,7 @@ package io.github.somilkhan.instaeclipse2.mods.ghost;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.XModuleResources;
+import io.github.somilkhan.instaeclipse2.compat.XModuleResources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
@@ -12,9 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;

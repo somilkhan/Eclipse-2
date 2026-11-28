@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import de.robv.android.xposed.XSharedPreferences;
+import io.github.somilkhan.instaeclipse2.compat.XSharedPreferences;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureManager;
 import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 

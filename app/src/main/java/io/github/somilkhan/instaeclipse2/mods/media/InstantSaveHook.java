@@ -1,15 +1,15 @@
 package io.github.somilkhan.instaeclipse2.mods.media;
 
-import android.app.AndroidAppHelper;
+import io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper;
 import android.content.Context;
 import android.widget.Toast;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;

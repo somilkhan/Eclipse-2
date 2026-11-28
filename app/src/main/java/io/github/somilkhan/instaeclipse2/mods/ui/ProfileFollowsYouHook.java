@@ -17,8 +17,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
 import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
@@ -83,7 +83,7 @@ public class ProfileFollowsYouHook {
             });
             // Also on every resume of a profile screen (onUserUpdated doesn't fire on all profiles).
             Class<?> base = cl.loadClass("androidx.fragment.app.Fragment");
-            de.robv.android.xposed.XposedHelpers.findAndHookMethod(base, "onResume", new XC_MethodHook() {
+            io.github.somilkhan.instaeclipse2.compat.XposedHelpers.findAndHookMethod(base, "onResume", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
                     if (!FeatureFlags.profileFollowsYouLabel) return;

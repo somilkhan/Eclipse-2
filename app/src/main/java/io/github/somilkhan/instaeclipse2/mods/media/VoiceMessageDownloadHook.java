@@ -23,8 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
@@ -506,12 +506,12 @@ public class VoiceMessageDownloadHook {
     private static volatile String pendingText;
 
     private static String downloadLabel() {
-        Context c = android.app.AndroidAppHelper.currentApplication();
+        Context c = io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper.currentApplication();
         return c != null ? I18n.t(c, R.string.ig_dl_title) : "Download";
     }
 
     private static String translateLabel() {
-        Context c = android.app.AndroidAppHelper.currentApplication();
+        Context c = io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper.currentApplication();
         return c != null ? I18n.t(c, R.string.ig_chat_translate_row) : "Translate with app";
     }
 
@@ -520,7 +520,7 @@ public class VoiceMessageDownloadHook {
     private static volatile Object pendingBulk;
 
     private static String bulkLabel() {
-        Context c = android.app.AndroidAppHelper.currentApplication();
+        Context c = io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper.currentApplication();
         return c != null ? I18n.t(c, R.string.ig_bulk_unsend_row) : "Unsend multiple";
     }
 
@@ -553,7 +553,7 @@ public class VoiceMessageDownloadHook {
         }
         if (text == null) return;
         Context c = ctx != null ? ctx : io.github.somilkhan.instaeclipse2.mods.ui.UIHookManager.getCurrentActivity();
-        if (c == null) c = android.app.AndroidAppHelper.currentApplication();
+        if (c == null) c = io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper.currentApplication();
         final Context host = c;
         final String t = text;
         new android.os.Handler(android.os.Looper.getMainLooper()).post(

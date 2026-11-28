@@ -31,7 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.Xposed.Module;
 import io.github.somilkhan.instaeclipse2.mods.devops.config.ConfigManager;
@@ -2878,7 +2878,7 @@ public class DialogUtils {
     /** A drawable from the module's own APK, in its own colours. */
     private static Drawable loadModuleDrawable(int res) {
         try {
-            return android.content.res.XModuleResources.createInstance(io.github.somilkhan.instaeclipse2.Xposed.Module.moduleSourceDir, null)
+            return io.github.somilkhan.instaeclipse2.compat.XModuleResources.createInstance(io.github.somilkhan.instaeclipse2.Xposed.Module.moduleSourceDir, null)
                     .getDrawable(res, null);
         } catch (Throwable t) {
             return null;
@@ -3272,7 +3272,7 @@ public class DialogUtils {
 
     private static Drawable loadModuleIcon(int iconRes, int tintColor) {
         try {
-            Drawable icon = android.content.res.XModuleResources.createInstance(Module.moduleSourceDir, null)
+            Drawable icon = io.github.somilkhan.instaeclipse2.compat.XModuleResources.createInstance(Module.moduleSourceDir, null)
                     .getDrawable(iconRes, null);
             icon = icon.mutate();
             icon.setColorFilter(new android.graphics.PorterDuffColorFilter(tintColor, android.graphics.PorterDuff.Mode.SRC_IN));

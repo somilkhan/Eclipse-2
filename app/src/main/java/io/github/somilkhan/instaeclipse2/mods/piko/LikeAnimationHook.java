@@ -12,8 +12,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.Xposed.Module;
 import io.github.somilkhan.instaeclipse2.utils.core.JitGuard;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;

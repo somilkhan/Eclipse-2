@@ -1,6 +1,6 @@
 package io.github.somilkhan.instaeclipse2.utils.media;
 
-import android.app.AndroidAppHelper;
+import io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper;
 import android.content.Context;
 
 import org.json.JSONArray;

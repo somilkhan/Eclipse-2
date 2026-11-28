@@ -127,7 +127,7 @@ public final class IeToast {
         try {
             if ("io.github.somilkhan.instaeclipse2".equals(c.getPackageName())) return c.getDrawable(res);
             if (Module.moduleSourceDir == null) return null;
-            return android.content.res.XModuleResources.createInstance(Module.moduleSourceDir, null)
+            return io.github.somilkhan.instaeclipse2.compat.XModuleResources.createInstance(Module.moduleSourceDir, null)
                     .getDrawable(res, null);
         } catch (Throwable t) {
             return null;

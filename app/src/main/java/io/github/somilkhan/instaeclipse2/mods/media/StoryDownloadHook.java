@@ -2,7 +2,7 @@ package io.github.somilkhan.instaeclipse2.mods.media;
 
 import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
 
-import android.app.AndroidAppHelper;
+import io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
 import io.github.somilkhan.instaeclipse2.utils.dialog.IeDialog;
@@ -736,7 +736,7 @@ public class StoryDownloadHook {
                         try {
                             for (int i = 0; i < args.length; i++)
                                 if (args[i] instanceof CharSequence) { args[i] = "[INTERNAL] Resume Playback"; break; }
-                            de.robv.android.xposed.XposedBridge.invokeOriginalMethod(method, self, args);
+                            io.github.somilkhan.instaeclipse2.compat.XposedBridge.invokeOriginalMethod(method, self, args);
                         } catch (Throwable t) {
                             ModuleLog.line("(IE|Story) resume after speed: " + t);
                         }

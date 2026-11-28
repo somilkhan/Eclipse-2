@@ -1,6 +1,6 @@
 package io.github.somilkhan.instaeclipse2.mods.ui;
 
-import android.app.AndroidAppHelper;
+import io.github.somilkhan.instaeclipse2.compat.AndroidAppHelper;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;

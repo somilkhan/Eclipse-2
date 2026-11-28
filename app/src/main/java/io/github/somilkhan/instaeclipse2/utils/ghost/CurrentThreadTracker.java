@@ -14,8 +14,8 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 
 /**

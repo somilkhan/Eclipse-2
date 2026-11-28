@@ -14,8 +14,8 @@ import android.view.WindowInsetsController;
 
 import java.lang.reflect.Field;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.mods.ui.UIHookManager;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;

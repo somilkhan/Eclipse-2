@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.utils.core.SettingsManager;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
@@ -379,7 +379,7 @@ public class CustomFontHook {
             int n = 0;
             for (org.luckypray.dexkit.result.MethodData md : found) {
                 java.lang.reflect.Method run = md.getMethodInstance(cl);
-                de.robv.android.xposed.XposedBridge.hookMethod(run, new XC_MethodHook() {
+                io.github.somilkhan.instaeclipse2.compat.XposedBridge.hookMethod(run, new XC_MethodHook() {
                     @Override protected void beforeHookedMethod(MethodHookParam p) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(p.method);
                         if (!FeatureFlags.customEmojiEnabled) return;
                         try {
