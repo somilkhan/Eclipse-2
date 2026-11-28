@@ -269,9 +269,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (nav != null) nav.onHostStart();
+    }
+
+    @Override
     protected void onStop() {
         entrance.finish();
         tabReveal.finish();
+        if (nav != null) nav.onHostStop();
         super.onStop();
     }
 
@@ -279,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         entrance.finish();
         tabReveal.finish();
+        if (nav != null) nav.onHostStop();
         super.onDestroy();
     }
 

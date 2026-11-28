@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeProvider;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -130,46 +131,71 @@ public class HyperSpringNavigationTest {
         GlassNavPill nav = a.findViewById(R.id.bottom_navigation);
         nav.setMinimized(true);
         assertTrue(nav.isMinimized());
-        assertEquals(0.86f, nav.getScaleX(), 0.001f);
-        for (int id : new int[]{R.id.nav_home, R.id.nav_features, R.id.nav_logs, R.id.nav_help}) {
-            View tab = nav.findViewById(id);
+        assertEquals("compact is drawn inside the pill, not a View property", 1f, nav.getScaleX(), 0.001f);
+        AccessibilityNodeProvider provider = nav.getAccessibilityNodeProvider();
+        assertNotNull(provider);
+        String[] labels = {"Home", "Features", "Logs", "Help"};
+        for (int i = 0; i < labels.length; i++) {
+            AccessibilityNodeInfo tab = provider.createAccessibilityNodeInfo(i);
             assertNotNull(tab);
-            assertEquals(View.VISIBLE, tab.getVisibility());
-            assertEquals(1f, tab.getAlpha(), 0.001f);
+            assertEquals("android.widget.Tab", tab.getClassName());
+            assertEquals(labels[i], tab.getText().toString());
+            assertTrue(tab.isCheckable());
+            assertEquals(i == 3, tab.isSelected());
+            assertEquals(i == 3, tab.isChecked());
             assertTrue(tab.isClickable());
-            assertTrue(tab.isFocusable());
-            assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_YES, tab.getImportantForAccessibility());
-            assertTrue(tab.getContentDescription().length() > 0);
-            assertTrue(tab.getHeight() * nav.getScaleY() / a.getResources().getDisplayMetrics().density >= 48f);
+            assertNotNull(tab.getCollectionItemInfo());
+            android.graphics.Rect bounds = new android.graphics.Rect();
+            tab.getBoundsInParent(bounds);
+            assertTrue(bounds.height() / a.getResources().getDisplayMetrics().density >= 48f);
+            assertTrue(bounds.width() / a.getResources().getDisplayMetrics().density >= 48f);
         }
+        assertTrue(provider.performAction(1, AccessibilityNodeInfo.ACTION_CLICK, null));
+        assertEquals(R.id.nav_features, nav.getSelectedItemId());
+        Fragment features = a.getSupportFragmentManager().findFragmentByTag("ie_tab_" + R.id.nav_features);
+        assertNotNull(features);
+        assertFalse(features.isHidden());
         nav.setMinimized(false);
-        assertEquals(1f, nav.getScaleX(), 0.001f);
+        assertFalse(nav.isMinimized());
     }
 
-    @Test public void rapidTabSelectionCleansIconTransformsAndExposesSelectedSemantics() {
+    @Test public void virtualAccessibilityClickUsesExistingTabListenerAndSelectionState() {
         MainActivity a = activity();
         GlassNavPill nav = a.findViewById(R.id.bottom_navigation);
-        View home = nav.findViewById(R.id.nav_home);
-        View features = nav.findViewById(R.id.nav_features);
-        assertNotNull(home);
-        assertNotNull(features);
+        AccessibilityNodeProvider provider = nav.getAccessibilityNodeProvider();
+        assertNotNull(provider);
+        assertTrue(provider.performAction(2, AccessibilityNodeInfo.ACTION_CLICK, null));
+        assertEquals(R.id.nav_logs, nav.getSelectedItemId());
+        Fragment logs = a.getSupportFragmentManager().findFragmentByTag("ie_tab_" + R.id.nav_logs);
+        assertNotNull("existing listener should create/show the retained Logs fragment", logs);
+        assertFalse(logs.isHidden());
+        assertEquals(Lifecycle.State.RESUMED, logs.getLifecycle().getCurrentState());
 
         a.selectTab(R.id.nav_features);
-        a.selectTab(R.id.nav_logs);
+        a.selectTab(R.id.nav_help);
         a.selectTab(R.id.nav_home);
-        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(500));
-
-        for (int id : new int[]{R.id.nav_home, R.id.nav_features, R.id.nav_logs, R.id.nav_help}) {
-            View tab = nav.findViewById(id);
-            View icon = ((ViewGroup) tab).getChildAt(0);
-            assertEquals("icon scale must settle after interrupted switching", 1f,
-                    icon.getScaleX(), 0.02f);
-            assertEquals(1f, icon.getScaleY(), 0.02f);
-            assertTrue(tab.createAccessibilityNodeInfo().isCheckable());
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(2200));
+        for (int i = 0; i < 4; i++) {
+            AccessibilityNodeInfo node = provider.createAccessibilityNodeInfo(i);
+            assertNotNull(node);
+            assertEquals(i == 0, node.isSelected());
+            assertTrue(node.isCheckable());
         }
-        AccessibilityNodeInfo selected = home.createAccessibilityNodeInfo();
-        assertTrue(selected.isSelected());
-        assertFalse(features.createAccessibilityNodeInfo().isSelected());
+    }
+
+    @Test public void virtualTabFocusAndKeyboardActivationUseTheSelectionListener() {
+        MainActivity a = activity();
+        GlassNavPill nav = a.findViewById(R.id.bottom_navigation);
+        AccessibilityNodeProvider provider = nav.getAccessibilityNodeProvider();
+        int[] routed = {View.NO_ID};
+        nav.setOnItemSelectedListener(id -> routed[0] = id);
+        assertTrue(provider.performAction(3, AccessibilityNodeInfo.ACTION_FOCUS, null));
+        assertFalse(provider.createAccessibilityNodeInfo(3).isSelected());
+        assertTrue(nav.dispatchKeyEvent(new android.view.KeyEvent(
+                android.view.KeyEvent.ACTION_DOWN, android.view.KeyEvent.KEYCODE_ENTER)));
+        assertEquals(R.id.nav_help, nav.getSelectedItemId());
+        assertEquals("keyboard activation must reach the existing tab listener", R.id.nav_help, routed[0]);
+        assertTrue(provider.createAccessibilityNodeInfo(3).isSelected());
     }
 
     @Test public void savedSelectionRestoresMatchingFragmentAndPill() {
