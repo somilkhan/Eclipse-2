@@ -205,6 +205,7 @@ public class DownloadSaveService extends Service {
                         DownloadFiles.check(cancellation);
                         ModuleLog.line("(IE|DL) Original DASH failed; using captured progressive fallback");
                         saved = downloadAndSave(fallbackUrl, fFile, fMime, fSave, fUser, fUF);
+                        showToast(getString(R.string.ie_download_original_fell_back, saved.filename));
                     }
                 } else {
                     saved = fAudio != null ? downloadMergeAndSave(fUrl, fAudio, fFile, fMime, fSave, fUser, fUF)

@@ -2474,6 +2474,12 @@ public class FeedVideoDownloadHook {
         return downloadCapturedOriginal(ctx, url, filename, isVideo, username, dash);
     }
 
+    /** Original quality could not be fetched/joined; the standard file was saved instead. */
+    private static void notifyOriginalFallback(Context ctx, String savedName) {
+        mainHandler.post(() -> io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx,
+                I18n.t(ctx, R.string.ie_download_original_fell_back, savedName), Toast.LENGTH_LONG).show());
+    }
+
     static boolean downloadCapturedOriginal(Context ctx, String url, String filename, boolean isVideo,
             String username, String[] dash) throws Exception {
         String uri = FeatureFlags.downloaderCustomUri.isEmpty() ? readCompanionUri() : FeatureFlags.downloaderCustomUri;
@@ -2518,6 +2524,7 @@ public class FeedVideoDownloadHook {
             ModuleLog.line("(IE|DL|Type) requested=" + (isVideo ? "video" : "image")
                     + " verified=" + verifiedMime + " file=" + detected.filename);
             LegacyMediaSave.publish(ctx, temp, detected.filename, detected.mimeType, username);
+            if (dash != null) notifyOriginalFallback(ctx, detected.filename);
         } finally {
             //noinspection ResultOfMethodCallIgnored
             temp.delete();
