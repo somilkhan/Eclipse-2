@@ -2,5 +2,5 @@
 <resources>
     <string name="faq_7"><b>7. Không hiển thị chữ?</b>\n- Tắt HMA (HideMyApplist) cho Instagram. Eclipse 2 đọc chữ từ chính ứng dụng của nó, và HMA ẩn ứng dụng đó.</string>
     <string name="faq_8"><b>8. Một số tính năng vẫn không chạy dù đã bật?</b>\n- Cấu hình nội bộ của Instagram có thể chặn chúng. Tùy chọn nhà phát triển → Khôi phục cấu hình mặc định.</string>
-    <string name="faq_9"><b>9. Vẫn gặp sự cố?</b>\n- Hỏi trong nhóm Telegram (t.me/instaEclipse_discussion).</string>
+    <string name="faq_9"><b>9. Vẫn gặp sự cố?</b>\n- Hỏi trong nhóm Telegram (https://t.me/Eclipse2discussion).</string>
 </resources>
