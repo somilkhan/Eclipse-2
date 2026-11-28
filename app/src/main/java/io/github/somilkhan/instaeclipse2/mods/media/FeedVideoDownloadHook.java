@@ -70,6 +70,7 @@ import de.robv.android.xposed.XposedHelpers;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
 import io.github.somilkhan.instaeclipse2.utils.core.IgModels;
+import io.github.somilkhan.instaeclipse2.utils.download.DownloadEngine;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
@@ -272,7 +273,7 @@ public class FeedVideoDownloadHook {
                                     if (media != null) {
                                         String url = bestVideoUrlFromMedia(media);
                                         if (url != null) {
-                                            ModuleLog.line("(IE|Reel) media tag hit, url=" + url);
+                                            ModuleLog.line("(IE|Reel) media tag hit, url=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.url(url));
                                             onDownloadClicked(ctx, List.of(url), lv);
                                             return true;
                                         }
@@ -1791,18 +1792,20 @@ public class FeedVideoDownloadHook {
                 File temp = File.createTempFile("ie_dl_", ".m4a", ctx.getCacheDir());
                 File video = extractFromVideo ? File.createTempFile("ie_dv_", ".mp4", ctx.getCacheDir()) : null;
                 try {
+                    String name = filename;
+                    String mime = "audio/mp4";
                     if (video != null) {
-                        downloadToFileAndGetType(url, video);
+                        DownloadEngine.fetchAudioSource(ctx, url, video, null, null);
                         DownloadSaveService.extractAudioTrack(video.getAbsolutePath(), temp.getAbsolutePath(),
                                 trimStartMs * 1000, trimDurationMs > 0 ? trimDurationMs * 1000 : -1);
                     } else {
-                        downloadToFileAndGetType(url, temp);
+                        // Verified audio only (status, length, size cap, signature, real audio track).
+                        MediaTypeDetector.Result verified = MediaTypeDetector.verified(
+                                DownloadEngine.fetch(ctx, url, temp, "audio/mp4", null, null), filename);
+                        name = verified.filename;
+                        mime = verified.mimeType;
                     }
-                    try (FileInputStream in = new FileInputStream(temp);
-                         OutputStream out = openOutputStream(ctx, filename, "audio/mp4", username)) {
-                        byte[] buf = new byte[32768]; int n;
-                        while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
-                    }
+                    LegacyMediaSave.publish(ctx, temp, name, mime, username);
                 } finally {
                     //noinspection ResultOfMethodCallIgnored
                     temp.delete();
@@ -1849,6 +1852,10 @@ public class FeedVideoDownloadHook {
             if (resolvedIsVideoMethod == null && !resolvedVideoVersionsGetters.isEmpty()) {
                 // 457+: "is_video" is read from the Pando tree, not a Media ()Z method.
                 ModuleLog.line("(IE|DL|DexKit) isVideo: no Media ()Z getter (457+ layout), using video_versions presence");
+            } else if (resolvedIsVideoMethod == null && hashedMedia) {
+                // 458+: no video_versions getter either; hasVideoVersions() reads it through the
+                // generic hashed accessor, like carousel/dash/has_audio above.
+                ModuleLog.line("(IE|DL|DexKit) isVideo: no Media ()Z getter (458+ layout), using hash(video_versions) presence");
             } else {
                 ModuleLog.line("(IE|DL|DexKit) isVideo="
                         + (resolvedIsVideoMethod == null ? "not found" : resolvedIsVideoMethod.getName()));
@@ -2408,11 +2415,10 @@ public class FeedVideoDownloadHook {
     /** Copies tempFile to the download destination (only used when no custom SAF URI is set). */
     static void saveFileToDestination(Context ctx, File tempFile, String filename,
                                       boolean isVideo, String username) throws Exception {
-        try (FileInputStream in = new FileInputStream(tempFile);
-             OutputStream out = openOutputStream(ctx, filename, isVideo, username)) {
-            byte[] buf = new byte[32768]; int n;
-            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
-        }
+        // A local file of unknown provenance (e.g. the story cache): its bytes decide GIF vs JPEG.
+        MediaTypeDetector.Result detected = MediaTypeDetector.resolve(
+                tempFile, null, isVideo ? "video/mp4" : "image/jpeg", filename);
+        LegacyMediaSave.publish(ctx, tempFile, detected.filename, detected.mimeType, username);
     }
 
     /**
@@ -2472,6 +2478,12 @@ public class FeedVideoDownloadHook {
         return downloadCapturedOriginal(ctx, url, filename, isVideo, username, dash);
     }
 
+    /** Original quality could not be fetched/joined; the standard file was saved instead. */
+    private static void notifyOriginalFallback(Context ctx, String savedName) {
+        mainHandler.post(() -> io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx,
+                I18n.t(ctx, R.string.ie_download_original_fell_back, savedName), Toast.LENGTH_LONG).show());
+    }
+
     static boolean downloadCapturedOriginal(Context ctx, String url, String filename, boolean isVideo,
             String username, String[] dash) throws Exception {
         String uri = FeatureFlags.downloaderCustomUri.isEmpty() ? readCompanionUri() : FeatureFlags.downloaderCustomUri;
@@ -2485,18 +2497,17 @@ public class FeedVideoDownloadHook {
             File ta = dash[1] != null ? File.createTempFile("ie_da_", ".mp4", ctx.getCacheDir()) : null;
             File merged = File.createTempFile("ie_dm_", ".mp4", ctx.getCacheDir());
             try {
-                downloadToFile(dash[0], tv);
-                File out = tv;
-                if (ta != null) {
-                    downloadToFile(dash[1], ta);
-                    mergeVideoAudio(tv.getAbsolutePath(), ta.getAbsolutePath(), merged.getAbsolutePath());
-                    out = merged;
-                }
-                saveFileToDestination(ctx, out, MediaTypeDetector.withCorrectExtension(
-                        filename, MediaTypeDetector.Kind.VIDEO), true, username);
+                // Verified fetches + the engine join (Mp4Join for VP9/AV1, which MediaMuxer can't
+                // write; interleaved native mux with rotation otherwise), then output inspection.
+                DownloadEngine.fetch(ctx, dash[0], tv, "video/mp4", null, null);
+                if (ta != null) DownloadEngine.fetch(ctx, dash[1], ta, "audio/mp4", null, null);
+                DownloadEngine.joinVerified(tv, ta, merged, null);
+                LegacyMediaSave.publish(ctx, merged, MediaTypeDetector.withCorrectExtension(
+                        filename, MediaTypeDetector.Kind.VIDEO), "video/mp4", username);
                 return false;
             } catch (Throwable t) {
-                ModuleLog.line("(IE|DL) DASH download failed, saving the progressive file: " + t);
+                ModuleLog.line("(IE|DL) DASH download failed, saving the progressive file: "
+                        + (t instanceof DownloadEngine.Failure f ? f.status : t.getClass().getSimpleName()));
             } finally {
                 //noinspection ResultOfMethodCallIgnored
                 tv.delete();
@@ -2508,17 +2519,16 @@ public class FeedVideoDownloadHook {
         }
 
         // No custom folder configured → download to a neutral temporary file first.
-        // The response and file signature decide the final MIME/extension; CDN URL text
-        // alone is not reliable on recent Instagram versions.
+        // The verified response and file signature decide the final MIME/extension; CDN URL
+        // text alone is not reliable on recent Instagram versions.
         File temp = File.createTempFile("ie_dl_", ".bin", ctx.getCacheDir());
         try {
-            String responseType = downloadToFileAndGetType(url, temp);
-            MediaTypeDetector.Result detected = MediaTypeDetector.resolve(
-                    temp, responseType, isVideo ? "video/mp4" : "image/jpeg", filename);
+            String verifiedMime = LegacyMediaSave.fetch(ctx, url, temp, isVideo ? "video/mp4" : "image/jpeg");
+            MediaTypeDetector.Result detected = MediaTypeDetector.verified(verifiedMime, filename);
             ModuleLog.line("(IE|DL|Type) requested=" + (isVideo ? "video" : "image")
-                    + " response=" + responseType + " detected=" + detected.kind
-                    + " file=" + detected.filename);
-            saveFileToDestination(ctx, temp, detected.filename, detected.isVideo(), username);
+                    + " verified=" + verifiedMime + " file=" + detected.filename);
+            LegacyMediaSave.publish(ctx, temp, detected.filename, detected.mimeType, username);
+            if (dash != null) notifyOriginalFallback(ctx, detected.filename);
         } finally {
             //noinspection ResultOfMethodCallIgnored
             temp.delete();
@@ -3065,7 +3075,7 @@ public class FeedVideoDownloadHook {
     private void onDownloadClicked(Context ctx, List<String> urls, View saveBtn) {
         currentDownloadUsername = getUsernameFromView(saveBtn);
         currentDownloadMediaId  = getMediaIdFromView(saveBtn);
-        ModuleLog.line("(IE|DL) onDownloadClicked username=" + currentDownloadUsername + " mediaId=" + currentDownloadMediaId);
+        ModuleLog.line("(IE|DL) onDownloadClicked username=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(currentDownloadUsername) + " mediaId=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(currentDownloadMediaId));
         List<String> videos = new ArrayList<>();
         List<String> images = new ArrayList<>();
         for (String url : urls) {
@@ -3095,7 +3105,7 @@ public class FeedVideoDownloadHook {
         executor.submit(() -> {
             String videoUrl = videos.get(0);
             TrackInfo t = probeUrl(videoUrl);
-            ModuleLog.line("(IE|DL) probeUrl=" + videoUrl
+            ModuleLog.line("(IE|DL) probeUrl=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.url(videoUrl)
                     + " hasVideo=" + t.hasVideo + " hasAudio=" + t.hasAudio);
             mainHandler.post(() -> {
                 if (!t.hasVideo && t.hasAudio) {
@@ -3229,19 +3239,18 @@ public class FeedVideoDownloadHook {
                 return;
             }
 
-            // No custom folder — merge locally and save via openOutputStream.
+            // No custom folder — verified fetches, engine join, atomic publish.
             File tv = null, ta = null, merged = null;
             try {
                 File cache = ctx.getCacheDir();
-                long ts = System.currentTimeMillis();
-                tv     = new File(cache, "ie_v_" + ts + ".mp4");
-                ta     = new File(cache, "ie_a_" + ts + ".mp4");
-                merged = new File(cache, "ie_m_" + ts + ".mp4");
-                downloadToFile(videoUrl, tv);
-                downloadToFile(audioUrl, ta);
+                tv     = File.createTempFile("ie_v_", ".mp4", cache);
+                ta     = File.createTempFile("ie_a_", ".mp4", cache);
+                merged = File.createTempFile("ie_m_", ".mp4", cache);
+                DownloadEngine.fetch(ctx, videoUrl, tv, "video/mp4", null, null);
+                DownloadEngine.fetch(ctx, audioUrl, ta, "audio/mp4", null, null);
                 String fn = buildFilename(currentDownloadUsername, "post", currentDownloadMediaId, true);
-                mergeVideoAudio(tv.getAbsolutePath(), ta.getAbsolutePath(), merged.getAbsolutePath());
-                saveFileToDestination(ctx, merged, fn, true, currentDownloadUsername);
+                DownloadEngine.joinVerified(tv, ta, merged, null);
+                LegacyMediaSave.publish(ctx, merged, fn, "video/mp4", currentDownloadUsername);
                 mainHandler.post(() -> io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_toast_video_saved),
                         Toast.LENGTH_SHORT).show());
             } catch (Throwable e) {
@@ -3255,73 +3264,6 @@ public class FeedVideoDownloadHook {
                     merged.delete();
             }
         });
-    }
-
-    private static void downloadToFile(String url, File dest) throws Exception {
-        downloadToFileAndGetType(url, dest);
-    }
-
-    static String downloadToFileAndGetType(String url, File dest) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        MediaHttp.applyTimeouts(conn);
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36");
-        conn.connect();
-        String contentType = conn.getContentType();
-        try (InputStream in = conn.getInputStream(); FileOutputStream fos = new FileOutputStream(dest)) {
-            byte[] buf = new byte[32768]; int n;
-            while ((n = in.read(buf)) != -1) fos.write(buf, 0, n);
-        } finally { conn.disconnect(); }
-        return contentType;
-    }
-
-    static void downloadToStream(String url, OutputStream out) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        MediaHttp.applyTimeouts(conn);
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36");
-        conn.connect();
-        try (InputStream in = conn.getInputStream()) {
-            byte[] buf = new byte[32768]; int n;
-            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
-        } finally { conn.disconnect(); }
-    }
-
-    private static void mergeVideoAudio(String vp, String ap, String op) throws Exception {
-        MediaExtractor vEx = new MediaExtractor(), aEx = new MediaExtractor();
-        MediaMuxer mux = new MediaMuxer(op, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-        try {
-            vEx.setDataSource(vp); aEx.setDataSource(ap);
-            int vi = selectTrack(vEx, "video/"), ai = selectTrack(aEx, "audio/");
-            if (vi < 0 || ai < 0) throw new Exception("Missing tracks");
-            int vo = mux.addTrack(vEx.getTrackFormat(vi)), ao = mux.addTrack(aEx.getTrackFormat(ai));
-            mux.start();
-            ByteBuffer buf = ByteBuffer.allocate(1024 * 1024);
-            MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-            copyTrack(vEx, mux, vo, buf, info); copyTrack(aEx, mux, ao, buf, info);
-            mux.stop();
-        } finally { vEx.release(); aEx.release(); mux.release(); }
-    }
-
-    private static int selectTrack(MediaExtractor ex, String mime) {
-        for (int i = 0; i < ex.getTrackCount(); i++) {
-            String m = ex.getTrackFormat(i).getString(MediaFormat.KEY_MIME);
-            if (m != null && m.startsWith(mime)) { ex.selectTrack(i); return i; }
-        }
-        return -1;
-    }
-
-    @SuppressLint("WrongConstant")
-    private static void copyTrack(MediaExtractor ex, MediaMuxer mux, int out,
-                                  ByteBuffer buf, MediaCodec.BufferInfo info) {
-        ex.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-        while (true) {
-            int sz = ex.readSampleData(buf, 0);
-            if (sz < 0) break;
-            info.offset = 0; info.size = sz;
-            info.presentationTimeUs = ex.getSampleTime();
-            info.flags = ex.getSampleFlags();
-            mux.writeSampleData(out, buf, info);
-            ex.advance();
-        }
     }
 
     private static TrackInfo probeUrl(String url) {

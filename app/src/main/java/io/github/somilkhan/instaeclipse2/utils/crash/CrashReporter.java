@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import io.github.somilkhan.instaeclipse2.BuildConfig;
+import io.github.somilkhan.instaeclipse2.utils.log.LogRedact;
 import io.github.somilkhan.instaeclipse2.utils.log.Logging;
 
 /**
@@ -113,12 +114,12 @@ public final class CrashReporter {
                 StringBuilder r = header(ctx, "Java crash (uncaught exception)", System.currentTimeMillis());
                 r.append("Thread: ").append(thread == null ? "?" : thread.getName()).append('\n');
                 r.append("Exception: ").append(error.getClass().getName()).append('\n');
-                if (error.getMessage() != null) r.append("Message: ").append(error.getMessage()).append('\n');
+                if (error.getMessage() != null) r.append("Message: ").append(LogRedact.text(error.getMessage())).append('\n');
                 r.append("Module frames: ").append(mentionsModule(error) ? "yes" : "no").append("\n\n");
                 r.append("── Stack trace ──\n");
                 StringWriter sw = new StringWriter();
                 error.printStackTrace(new PrintWriter(sw));
-                r.append(sw).append('\n');
+                r.append(LogRedact.text(sw.toString())).append('\n');
                 appendLogTail(r);
                 String text = r.toString();
                 File pending = savePending(ctx, name, text);
@@ -243,7 +244,8 @@ public final class CrashReporter {
             String[] lines = log.split("\n");
             int from = Math.max(0, lines.length - LOG_TAIL_LINES);
             r.append("── Eclipse 2 log (last ").append(lines.length - from).append(" lines) ──\n");
-            for (int i = from; i < lines.length; i++) r.append(lines[i]).append('\n');
+            // Lines are redacted on append; re-apply for anything that bypassed it.
+            for (int i = from; i < lines.length; i++) r.append(LogRedact.text(lines[i])).append('\n');
         } catch (Throwable ignored) { }
     }
 

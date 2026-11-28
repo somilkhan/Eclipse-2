@@ -83,6 +83,7 @@ public class FeaturesFragment extends Fragment {
     private ActivityResultLauncher<Uri> crashDirPickerLauncher;
     private ActivityResultLauncher<String[]> restoreFileLauncher;
     private ActivityResultLauncher<String> notifPermLauncher;
+    private String pendingNotificationFeatureKey;
     private ActivityResultLauncher<Intent> locationPickerLauncher;
     private ActivityResultLauncher<Intent> themeCustomizerLauncher;
 
@@ -153,9 +154,21 @@ public class FeaturesFragment extends Fragment {
             // picked file into memory; only known, correctly typed settings are applied.
             try (InputStream is = requireContext().getContentResolver().openInputStream(uri)) {
                 String json = io.github.somilkhan.instaeclipse2.utils.ipc.BrokerPayload.readConfig(is);
-                Map<String, Object> restored = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.parse(json);
-                if (restored.isEmpty()) throw new IllegalArgumentException(getString(R.string.json_not_valid));
+                Map<String, Object> parsed = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.parse(json);
+                Map<String, Object> local = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.parseCompanionLocal(json);
+                if (parsed.isEmpty() && local.isEmpty()) throw new IllegalArgumentException(getString(R.string.json_not_valid));
+                // Extreme Mode locks the distraction switches until reinstall (or the Focus Lock
+                // ends): an older backup must not switch them back on.
+                boolean locked = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.isLocked(
+                        localCache.getBoolean("isExtremeMode", false),
+                        localCache.getString("focusLockUntil", ""), System.currentTimeMillis());
+                Map<String, Object> restored = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.filterLocked(parsed, locked);
                 SharedPreferences.Editor editor = localCache.edit();
+                // Companion-only prefs (crash reports, pinned shortcuts): stored here, never broadcast.
+                for (Map.Entry<String, Object> entry : local.entrySet()) {
+                    if (entry.getValue() instanceof Boolean) editor.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+                    else editor.putString(entry.getKey(), (String) entry.getValue());
+                }
                 for (Map.Entry<String, Object> entry : restored.entrySet()) {
                     String key = entry.getKey();
                     Object val = entry.getValue();
@@ -182,7 +195,15 @@ public class FeaturesFragment extends Fragment {
         });
 
         notifPermLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), granted -> {});
+                new ActivityResultContracts.RequestPermission(), granted -> {
+                    String key = pendingNotificationFeatureKey;
+                    pendingNotificationFeatureKey = null;
+                    if (key == null || !isAdded()) return;
+                    if (granted) stageChange(key, true);
+                    else io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(
+                            requireContext(), R.string.feat_download_notifications_denied, Toast.LENGTH_SHORT).show();
+                    refreshVisibleMenu();
+                });
 
         locationPickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -218,13 +239,14 @@ public class FeaturesFragment extends Fragment {
         // not pushed to Instagram.
         crashDirPickerLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), uri -> {
             if (uri == null) return;
-            try {
-                requireContext().getContentResolver().takePersistableUriPermission(uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            } catch (SecurityException e) {
+            android.content.ContentResolver cr = requireContext().getContentResolver();
+            if (!io.github.somilkhan.instaeclipse2.utils.download.SafGrants.take(cr, uri)) {
                 io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ie_crash_folder_failed), Toast.LENGTH_SHORT).show();
                 return;
             }
+            io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(cr,
+                    localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""),
+                    uri.toString(), localCache.getString("downloaderCustomUri", ""));
             String path = uri.getPath();
             path = path != null
                     ? path.replace("/tree/primary:", "/storage/emulated/0/").replace("/document/primary:", "/storage/emulated/0/")
@@ -239,8 +261,16 @@ public class FeaturesFragment extends Fragment {
 
         dirPickerLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), uri -> {
             if (uri != null) {
-                final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                requireContext().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                android.content.ContentResolver cr = requireContext().getContentResolver();
+                if (!io.github.somilkhan.instaeclipse2.utils.download.SafGrants.take(cr, uri)) {
+                    // Some providers return a tree without a persistable grant; it would be lost
+                    // on the next reboot, so don't save it (this used to crash the companion).
+                    io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ie_crash_folder_failed), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(cr,
+                        localCache.getString("downloaderCustomUri", ""), uri.toString(),
+                        localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""));
 
                 String uriString = uri.toString();
                 String path = uri.getPath();
@@ -287,15 +317,6 @@ public class FeaturesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_features, container, false);
         localCache = io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.companionCache(requireContext());
-
-        // Request POST_NOTIFICATIONS permission (required API 33+ for download progress notifications)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(),
-                    android.Manifest.permission.POST_NOTIFICATIONS)
-                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                notifPermLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
 
         recyclerFeatures = fragmentView.findViewById(R.id.recycler_features);
         recyclerFeatures.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -358,7 +379,8 @@ public class FeaturesFragment extends Fragment {
             }
         });
 
-        fabSave.setOnClickListener(v -> commitStagedChanges());
+        fabSave.setOnClickListener(v -> showStagedChangesReview());
+        updateStagedUi();
 
         loadMainMenu();
 
@@ -375,6 +397,7 @@ public class FeaturesFragment extends Fragment {
         public static final int TYPE_CLICKABLE = 2;
         public static final int TYPE_MASTER_SWITCH = 3;
         public static final int TYPE_SPACER = 4;
+        public static final int TYPE_EMPTY = 5;
 
         public int type;
         public String title;
@@ -407,6 +430,12 @@ public class FeaturesFragment extends Fragment {
         public boolean isCategory;
         /** Sub-menu this main-menu row opens (used to recompute its count). */
         Category category;
+        /**
+         * Companion-only switch outside the staged Save flow (e.g. "Use root"): its state comes
+         * from {@link #localChecked} and a toggle calls {@link #onLocalToggle} right away.
+         */
+        java.util.function.BooleanSupplier localChecked;
+        java.util.function.Consumer<Boolean> onLocalToggle;
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -435,6 +464,16 @@ public class FeaturesFragment extends Fragment {
         }
     }
 
+    static class EmptyViewHolder extends RecyclerView.ViewHolder {
+        final TextView title;
+        final TextView body;
+        EmptyViewHolder(View view) {
+            super(view);
+            title = view.findViewById(R.id.empty_title);
+            body = view.findViewById(R.id.empty_body);
+        }
+    }
+
     private class FeatureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         List<FeatureItem> items = new ArrayList<>();
 
@@ -448,6 +487,7 @@ public class FeaturesFragment extends Fragment {
             int type = items.get(position).type;
             if (type == FeatureItem.TYPE_HEADER) return 0;
             if (type == FeatureItem.TYPE_SPACER)  return 2;
+            if (type == FeatureItem.TYPE_EMPTY) return 3;
             return 1;
         }
 
@@ -465,6 +505,9 @@ public class FeaturesFragment extends Fragment {
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, parent.getResources().getDisplayMetrics())
                 ));
                 return new RecyclerView.ViewHolder(v) {};
+            } else if (viewType == 3) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feature_empty, parent, false);
+                return new EmptyViewHolder(v);
             } else {
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feature, parent, false);
                 return new ItemViewHolder(v);
@@ -476,6 +519,12 @@ public class FeaturesFragment extends Fragment {
             FeatureItem item = items.get(position);
 
             if (item.type == FeatureItem.TYPE_SPACER) return;
+            if (holder instanceof EmptyViewHolder) {
+                EmptyViewHolder empty = (EmptyViewHolder) holder;
+                empty.title.setText(item.title);
+                empty.body.setText(item.subtitle);
+                return;
+            }
 
             if (holder instanceof HeaderViewHolder) {
                 ((HeaderViewHolder) holder).tvHeader.setText(item.title);
@@ -499,9 +548,15 @@ public class FeaturesFragment extends Fragment {
                 }
 
                 // Subtitle (category counts) + trailing chevron for rows that open a sub-menu
-                if (item.subtitle != null) {
+                String rowSubtitle = item.subtitle;
+                if (item.prefKey != null && stagedChanges.containsKey(item.prefKey)) {
+                    String pending = getString(R.string.feat_status_pending,
+                            getString(stagedChanges.get(item.prefKey) ? R.string.feat_status_on : R.string.feat_status_off));
+                    rowSubtitle = rowSubtitle == null ? pending : rowSubtitle + " · " + pending;
+                }
+                if (rowSubtitle != null) {
                     itemHolder.tvSubtitle.setVisibility(View.VISIBLE);
-                    itemHolder.tvSubtitle.setText(item.subtitle);
+                    itemHolder.tvSubtitle.setText(rowSubtitle);
                     itemHolder.tvSubtitle.setTextColor(MaterialColors.getColor(itemHolder.itemView, item.subtitleActive
                             ? androidx.appcompat.R.attr.colorPrimary
                             : com.google.android.material.R.attr.colorOnSurfaceVariant));
@@ -543,6 +598,12 @@ public class FeaturesFragment extends Fragment {
                     itemHolder.swToggle.setVisibility(View.VISIBLE);
                     itemHolder.itemView.setOnClickListener(v -> itemHolder.swToggle.toggle());
 
+                    if (item.onLocalToggle != null) {
+                        itemHolder.swToggle.setChecked(item.localChecked != null && item.localChecked.getAsBoolean());
+                        itemHolder.swToggle.setOnCheckedChangeListener((btn, checked) -> item.onLocalToggle.accept(checked));
+                        return;
+                    }
+
                     boolean isChecked = false;
                     if (item.type == FeatureItem.TYPE_MASTER_SWITCH) {
                         isChecked = true;
@@ -556,8 +617,19 @@ public class FeaturesFragment extends Fragment {
                         isChecked = getCurrentState(item.prefKey);
                     }
                     itemHolder.swToggle.setChecked(isChecked);
+                    String accessibility = getString(R.string.feat_switch_accessibility,
+                            item.title, getString(isChecked ? R.string.feat_status_on : R.string.feat_status_off));
+                    if (item.prefKey != null && stagedChanges.containsKey(item.prefKey)) {
+                        accessibility += getString(R.string.feat_status_pending_short);
+                    }
+                    itemHolder.swToggle.setContentDescription(accessibility);
 
                     itemHolder.swToggle.setOnCheckedChangeListener((btn, checked) -> {
+                        if (checked && isDownloadFeature(item.prefKey) && needsNotificationPermission()) {
+                            requestNotificationPermission(item.prefKey);
+                            btn.setChecked(false);
+                            return;
+                        }
                         if (item.isExtreme && checked) {
                             new MaterialAlertDialogBuilder(itemHolder.itemView.getContext())
                                     .setTitle(getString(R.string.ig_dialog_distraction_extreme_title))
@@ -733,6 +805,8 @@ public class FeaturesFragment extends Fragment {
                 header.type = FeatureItem.TYPE_HEADER;
                 header.title = (String) def;
                 displayList.add(header);
+            } else if (def instanceof FeatureItem) {
+                displayList.add((FeatureItem) def);
             } else if (def instanceof List) {
                 @SuppressWarnings("unchecked")
                 List<FeatureItem> group = (List<FeatureItem>) def;
@@ -823,7 +897,8 @@ public class FeaturesFragment extends Fragment {
     private FeatureItem createSwitch(String title, String prefKey) {
         FeatureItem item = new FeatureItem();
         item.type = FeatureItem.TYPE_SWITCH;
-        item.title = title;
+        item.title = io.github.somilkhan.instaeclipse2.utils.feature.RestartRequired.withNote(
+                title, prefKey, getString(R.string.ig_feat_restart_needed));
         item.prefKey = prefKey;
         return item;
     }
@@ -961,6 +1036,7 @@ public class FeaturesFragment extends Fragment {
                 rows.add(createTool(R.drawable.ic_ui_save, "#30D158", getString(R.string.ig_dialog_backup_settings), getString(R.string.tool_backup_sub), this::backupSettings));
                 rows.add(createTool(R.drawable.ic_ui_folder, "#0A84FF", getString(R.string.ig_dialog_restore_settings), getString(R.string.tool_restore_sub), this::restoreSettings));
                 rows.add(createTool(R.drawable.ic_ui_restart, "#FF9F0A", getString(R.string.ig_dialog_menu_restart), getString(R.string.tool_restart_sub), this::restartInstagram));
+                rows.add(createTool(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.root_menu_title), rootMenuSubtitle(), this::loadRootMenu));
                 rows.add(createTool(R.drawable.ic_ui_info, "#BF5AF2", getString(R.string.ig_dialog_menu_about), getString(R.string.tool_about_sub), this::showAboutDialog));
             }
             for (FeatureItem row : rows) row.isCategory = true;
@@ -1076,7 +1152,13 @@ public class FeaturesFragment extends Fragment {
                 defs.add(hits);
             }
         }
-        if (defs.isEmpty()) defs.add(getString(R.string.feat_search_no_results));
+        if (defs.isEmpty()) {
+            FeatureItem empty = new FeatureItem();
+            empty.type = FeatureItem.TYPE_EMPTY;
+            empty.title = getString(R.string.feat_search_no_results);
+            empty.subtitle = getString(R.string.feat_search_empty_body);
+            defs.add(empty);
+        }
         showMenu(getString(R.string.features), defs, false);
         currentMenu = "main";
     }
@@ -1744,6 +1826,11 @@ public class FeaturesFragment extends Fragment {
     }
 
     private void resetCrashFolder() {
+        // Give the folder grant back (unless downloads still use it); it used to be kept forever
+        // and count against the per-app limit of persisted grants.
+        io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(requireContext().getContentResolver(),
+                localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""),
+                null, localCache.getString("downloaderCustomUri", ""));
         localCache.edit()
                 .remove(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI)
                 .remove(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_PATH)
@@ -2261,7 +2348,7 @@ public class FeaturesFragment extends Fragment {
         defs.add(Arrays.asList(
                 createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_feat_filter_story_tray), "filterStoryTray"),
                 types, users,
-                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_story_ring_size) + " (" + getString(R.string.ig_feat_restart_needed) + ")", "customStoryRingSize"),
+                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_story_ring_size), "customStoryRingSize"),
                 ring
         ));
 
@@ -2424,6 +2511,10 @@ public class FeaturesFragment extends Fragment {
     }
 
     private void resetDownloadFolder() {
+        // Release the folder grant unless crash reports still use it (it used to be kept forever).
+        io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(requireContext().getContentResolver(),
+                localCache.getString("downloaderCustomUri", ""), null,
+                localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""));
         SharedPreferences.Editor editor = localCache.edit();
         editor.remove("pathJustSetLocally");
         editor.putString("downloaderCustomUri", "");
@@ -2451,11 +2542,11 @@ public class FeaturesFragment extends Fragment {
     private void backupSettings() {
         try {
             JSONObject settings = new JSONObject();
-            Map<String, ?> all = localCache.getAll();
-            for (Map.Entry<String, ?> entry : all.entrySet()) {
-                if (entry.getValue() instanceof Boolean) {
-                    settings.put(entry.getKey(), entry.getValue());
-                }
+            // Every known setting of any stored type (Boolean, Integer, String), not only switches;
+            // sync stamps and device-specific / secret keys are left out (SettingsRestore).
+            for (Map.Entry<String, Object> entry : io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore
+                    .backupEntries(localCache.getAll()).entrySet()) {
+                settings.put(entry.getKey(), entry.getValue());
             }
             JSONObject root = new JSONObject();
             root.put("version", 1);
@@ -2474,8 +2565,101 @@ public class FeaturesFragment extends Fragment {
         restoreFileLauncher.launch(new String[]{"application/json"});
     }
 
+    /**
+     * Same as the Home tab: force stop + reopen with root, else Instagram's App info page (it used
+     * to only show a "kill Instagram manually" toast). The official app is preferred.
+     */
     private void restartInstagram() {
-        io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_toast_restart_manual), Toast.LENGTH_LONG).show();
+        java.util.List<String> targets = io.github.somilkhan.instaeclipse2.utils.root.RootUi.installedTargets(requireContext(), false);
+        if (targets.isEmpty()) {
+            io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.not_installed_instagram), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String pkg = targets.contains(io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.IG_PACKAGE_NAME)
+                ? io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.IG_PACKAGE_NAME : targets.get(0);
+        io.github.somilkhan.instaeclipse2.utils.root.RootUi.restartInstagram(this, pkg, null);
+    }
+
+    // =========================================================
+    // ROOT ACCESS (optional, off by default)
+    // =========================================================
+
+    /** Status being checked right now (the root prompt may be showing). */
+    private boolean rootChecking;
+
+    private String rootMenuSubtitle() {
+        return isAdded() && io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(requireContext())
+                ? rootStatusText() : getString(R.string.root_menu_sub);
+    }
+
+    private String rootStatusText() {
+        Context ctx = requireContext();
+        if (!io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx)) return getString(R.string.root_status_off);
+        if (rootChecking) return getString(R.string.root_status_checking);
+        switch (io.github.somilkhan.instaeclipse2.utils.root.RootAccess.session(ctx).status()) {
+            case GRANTED: return getString(R.string.root_status_granted);
+            case DENIED: return getString(R.string.root_status_denied);
+            case NOT_ROOTED: return getString(R.string.root_status_not_rooted);
+            default: return getString(R.string.root_status_unknown);
+        }
+    }
+
+    private void loadRootMenu() {
+        showMenu(getString(R.string.root_menu_title), buildRootDefs());
+        currentMenu = "root";
+    }
+
+    private void reloadRootMenuIfShown() {
+        if (isAdded() && "root".equals(currentMenu)) loadRootMenu();
+    }
+
+    private List<Object> buildRootDefs() {
+        Context ctx = requireContext();
+        boolean on = io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx);
+        List<Object> defs = new ArrayList<>();
+
+        FeatureItem use = new FeatureItem();
+        use.type = FeatureItem.TYPE_SWITCH;
+        use.iconRes = R.drawable.ic_ui_shield;
+        use.accentColor = Color.parseColor("#FF453A");
+        use.title = getString(R.string.root_use);
+        use.subtitle = getString(R.string.root_use_hint);
+        use.localChecked = () -> io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx);
+        use.onLocalToggle = checked -> {
+            io.github.somilkhan.instaeclipse2.utils.root.RootAccess.setEnabled(ctx, checked);
+            if (checked) checkRoot(); else reloadRootMenuIfShown();
+        };
+        FeatureItem status = createClickable(R.drawable.ic_ui_info, "#8E8E93", rootStatusText(), this::checkRoot);
+        status.textColor = 0;
+        if (on && !rootChecking) status.subtitle = getString(R.string.root_check_again);
+        defs.add(getString(R.string.root_section_access));
+        defs.add(Arrays.asList(use, status));
+
+        defs.add(getString(R.string.root_section_actions));
+        defs.add(Arrays.asList(
+                createTool(R.drawable.ic_ui_restart, "#FF9F0A", getString(R.string.root_action_restart),
+                        getString(R.string.root_action_restart_sub), this::restartInstagram),
+                createTool(R.drawable.ic_ui_delete, "#FF9F0A", getString(R.string.root_action_dexkit),
+                        getString(R.string.root_action_dexkit_sub),
+                        () -> io.github.somilkhan.instaeclipse2.utils.root.RootUi.clearDexKitCache(this, null)),
+                createTool(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.root_action_crashes),
+                        getString(R.string.root_action_crashes_sub),
+                        () -> io.github.somilkhan.instaeclipse2.utils.root.RootUi.collectCrashes(this, null))
+        ));
+        defs.add(getString(R.string.root_footer));
+        return defs;
+    }
+
+    /** Off the main thread; the root manager may prompt. Status row updates when it returns. */
+    private void checkRoot() {
+        Context ctx = requireContext();
+        if (!io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx) || rootChecking) return;
+        rootChecking = true;
+        reloadRootMenuIfShown();
+        io.github.somilkhan.instaeclipse2.utils.root.RootAccess.checkAsync(ctx, st -> {
+            rootChecking = false;
+            reloadRootMenuIfShown();
+        });
     }
 
     private void importDevConfig() {
@@ -2704,18 +2888,86 @@ public class FeaturesFragment extends Fragment {
     // STAGING LOGIC
     // =========================================================
 
+    private boolean isDownloadFeature(String key) {
+        return "enablePostDownload".equals(key) || "enableStoryDownload".equals(key)
+                || "enableReelDownload".equals(key) || "enableProfileDownload".equals(key);
+    }
+
+    private boolean needsNotificationPermission() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestNotificationPermission(String key) {
+        pendingNotificationFeatureKey = key;
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.feat_download_notifications_title)
+                .setMessage(R.string.feat_download_notifications_body)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    if (notifPermLauncher != null) notifPermLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
+                })
+                .setNegativeButton(R.string.ig_dialog_cancel, (dialog, which) -> pendingNotificationFeatureKey = null)
+                .setOnCancelListener(dialog -> pendingNotificationFeatureKey = null)
+                .show();
+    }
+
+    private void updateStagedUi() {
+        if (fabSave == null) return;
+        if (stagedChanges.isEmpty()) {
+            fabSave.hide();
+        } else {
+            fabSave.setText(getString(R.string.feat_apply_count, stagedChanges.size()));
+            fabSave.show();
+        }
+    }
+
+    private String featureLabel(String key) {
+        if (adapter != null) {
+            for (FeatureItem item : adapter.items) if (key.equals(item.prefKey)) return item.title;
+        }
+        for (Category category : getCategories()) {
+            for (FeatureItem item : flattenItems(category.builder.build())) {
+                if (key.equals(item.prefKey)) return item.title;
+            }
+        }
+        return key;
+    }
+
+    private void showStagedChangesReview() {
+        if (stagedChanges.isEmpty()) return;
+        StringBuilder message = new StringBuilder();
+        for (Map.Entry<String, Boolean> entry : stagedChanges.entrySet()) {
+            if (message.length() > 0) message.append("\n");
+            message.append("• ").append(featureLabel(entry.getKey())).append(" → ")
+                    .append(getString(entry.getValue() ? R.string.feat_status_on : R.string.feat_status_off));
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.feat_staged_review_title, stagedChanges.size()))
+                .setMessage(message.toString())
+                .setPositiveButton(R.string.feat_staged_review_apply, (dialog, which) -> commitStagedChanges())
+                .setNegativeButton(R.string.feat_staged_review_keep, null)
+                .setNeutralButton(R.string.feat_staged_review_discard, (dialog, which) ->
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setMessage(getString(R.string.feat_staged_review_discard_confirm, stagedChanges.size()))
+                                .setPositiveButton(R.string.feat_staged_review_discard, (d, w) -> {
+                                    stagedChanges.clear();
+                                    updateStagedUi();
+                                    refreshVisibleMenu();
+                                })
+                                .setNegativeButton(R.string.feat_staged_review_keep, null)
+                                .show())
+                .show();
+    }
+
     private void stageChange(String prefKey, boolean isChecked) {
         if (localCache.getBoolean(prefKey, io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags.defaultOn(prefKey)) == isChecked) {
             stagedChanges.remove(prefKey);
         } else {
             stagedChanges.put(prefKey, isChecked);
         }
-
-        if (stagedChanges.isEmpty()) {
-            fabSave.hide();
-        } else {
-            fabSave.show();
-        }
+        updateStagedUi();
+        refreshVisibleMenu();
     }
 
     private void commitStagedChanges() {
@@ -2744,7 +2996,8 @@ public class FeaturesFragment extends Fragment {
         }
         editor.apply();
         stagedChanges.clear();
-        fabSave.hide();
+        updateStagedUi();
+        refreshVisibleMenu();
         io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_toast_settings_applied), Toast.LENGTH_SHORT).show();
     }
 

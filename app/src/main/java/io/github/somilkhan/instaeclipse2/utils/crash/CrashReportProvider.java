@@ -11,7 +11,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Process;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
@@ -59,7 +58,8 @@ public class CrashReportProvider extends ContentProvider {
 
     private static final Pattern NAME = Pattern.compile("crash_[A-Za-z0-9._-]{1,120}");
     private static final int MAX_PER_HOUR = 30;
-    private static final ArrayDeque<Long> recent = new ArrayDeque<>();
+    /** Per caller, so one misbehaving package can't use up the budget of the others. */
+    private static final java.util.Map<String, ArrayDeque<Long>> recent = new java.util.HashMap<>();
 
     @Override
     public boolean onCreate() {
@@ -72,7 +72,8 @@ public class CrashReportProvider extends ContentProvider {
         Bundle out = new Bundle();
         Context ctx = getContext();
         if (ctx == null || !METHOD_REPORT.equals(method) || extras == null) return out;
-        if (callerPackage(ctx) == null) throw new SecurityException("caller is not a supported Instagram package");
+        String caller = callerPackage(ctx);
+        if (caller == null) throw new SecurityException("caller is not a trusted Instagram package");
 
         SharedPreferences prefs = CommonUtils.companionCache(ctx);
         if (!prefs.getBoolean(PREF_ENABLED, true)) {
@@ -84,10 +85,10 @@ public class CrashReportProvider extends ContentProvider {
         String text = extras.getString(EXTRA_TEXT);
         byte[] raw = extras.getByteArray(EXTRA_RAW);
         if (name == null || !NAME.matcher(name).matches() || text == null) return out;
-        if (text.length() > MAX_TEXT_CHARS) text = text.substring(0, MAX_TEXT_CHARS) + "\n… (truncated)\n";
+        text = capText(text);
         byte[] body = text.getBytes(StandardCharsets.UTF_8);
         if (raw != null && raw.length > MAX_RAW_BYTES) raw = null;
-        if (!allow()) return out;
+        if (!allow(caller)) return out;
 
         long token = Binder.clearCallingIdentity();
         try {
@@ -95,30 +96,72 @@ public class CrashReportProvider extends ContentProvider {
             if (path != null) {
                 out.putBoolean(RESULT_SAVED, true);
                 out.putString(RESULT_PATH, path);
+            } else {
+                // Instagram keeps the report pending and retries on its next start.
+                warn("report " + name + " from " + caller + " could not be saved anywhere", null);
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable t) {
+            warn("report " + name + " from " + caller + " failed", t);
         } finally {
             Binder.restoreCallingIdentity(token);
         }
         return out;
     }
 
-    private static synchronized boolean allow() {
+    /**
+     * Companion-side entry for reports collected with root ({@code RootActions.collectCrashes}):
+     * same name check, size cap and folders as a report handed over by Instagram.
+     *
+     * @return where it was saved, or {@code null} (logged) when it wasn't.
+     */
+    @Nullable
+    public static String saveCollected(Context ctx, String name, String text) {
+        if (ctx == null || name == null || !NAME.matcher(name).matches() || text == null) {
+            warn("collected report rejected: bad name " + name, null);
+            return null;
+        }
+        SharedPreferences prefs = CommonUtils.companionCache(ctx);
+        String path = save(ctx, prefs, name, capText(text).getBytes(StandardCharsets.UTF_8), null);
+        if (path == null) warn("collected report " + name + " could not be saved anywhere", null);
+        return path;
+    }
+
+    public static boolean isEnabled(Context ctx) {
+        return CommonUtils.companionCache(ctx).getBoolean(PREF_ENABLED, true);
+    }
+
+    /** Caps at MAX_TEXT_CHARS without splitting a surrogate pair. */
+    static String capText(String text) {
+        if (text.length() <= MAX_TEXT_CHARS) return text;
+        int end = Character.isHighSurrogate(text.charAt(MAX_TEXT_CHARS - 1)) ? MAX_TEXT_CHARS - 1 : MAX_TEXT_CHARS;
+        return text.substring(0, end) + "\n… (truncated)\n";
+    }
+
+    private static void warn(String msg, @Nullable Throwable t) {
+        android.util.Log.w("InstaEclipse", "[CrashReports] " + msg, t);
+        try {
+            io.github.somilkhan.instaeclipse2.utils.log.ModuleLog.line("(CrashReports) " + msg, t);
+        } catch (Throwable ignored) {
+            // Logging not initialised in this process (provider started without the activity).
+        }
+    }
+
+    private static synchronized boolean allow(String caller) {
         long now = System.currentTimeMillis();
+        ArrayDeque<Long> recent = CrashReportProvider.recent.computeIfAbsent(caller, k -> new ArrayDeque<>());
         while (!recent.isEmpty() && now - recent.peekFirst() > 3_600_000L) recent.pollFirst();
         if (recent.size() >= MAX_PER_HOUR) return false;
         recent.addLast(now);
         return true;
     }
 
+    /**
+     * The trusted Instagram/clone package behind the Binder caller: package name plus the pinned
+     * or official signing key, the same check as settings sync and downloads.
+     */
     @Nullable
     private static String callerPackage(Context ctx) {
-        int uid = Binder.getCallingUid();
-        if (uid == Process.myUid()) return CommonUtils.IG_PACKAGE_NAME; // local testing only
-        String[] pkgs = ctx.getPackageManager().getPackagesForUid(uid);
-        if (pkgs == null) return null;
-        for (String p : pkgs) if (CommonUtils.SUPPORTED_PACKAGES.contains(p)) return p;
-        return null;
+        return io.github.somilkhan.instaeclipse2.utils.core.IpcSecurity.supportedCallerPackage(ctx, Binder.getCallingUid());
     }
 
     @Nullable
@@ -142,13 +185,25 @@ public class CrashReportProvider extends ContentProvider {
             if (dir == null) return null;
             ContentResolver cr = ctx.getContentResolver();
             DocumentFile txt = dir.createFile("text/plain", name + ".txt");
-            if (txt == null || !write(cr, txt.getUri(), body)) return null;
+            if (txt == null) {
+                warn("cannot create " + name + ".txt in the chosen folder", null);
+                return null;
+            }
+            if (!write(cr, txt.getUri(), body)) {
+                // Don't leave an empty report behind before trying the next folder.
+                if (!txt.delete()) warn("could not remove the empty " + name + ".txt", null);
+                return null;
+            }
             if (raw != null) {
                 DocumentFile pb = dir.createFile("application/octet-stream", name + ".tombstone.pb");
-                if (pb != null) write(cr, pb.getUri(), raw);
+                if (pb == null || !write(cr, pb.getUri(), raw)) {
+                    warn("tombstone for " + name + " not saved (report text was)", null);
+                    if (pb != null) pb.delete();
+                }
             }
             return SUBFOLDER + "/" + name + ".txt";
         } catch (Throwable t) {
+            warn("saving to the chosen folder failed", t);
             return null;
         }
     }
@@ -197,6 +252,7 @@ public class CrashReportProvider extends ContentProvider {
             cr.update(uri, done, null, null);
             return true;
         } catch (Throwable t) {
+            warn("Downloads insert of " + file + " failed", t);
             try { if (uri != null) cr.delete(uri, null, null); } catch (Throwable ignored) { }
             return false;
         }
@@ -208,6 +264,7 @@ public class CrashReportProvider extends ContentProvider {
             os.write(data);
             return true;
         } catch (Throwable t) {
+            warn("write failed", t);
             return false;
         }
     }

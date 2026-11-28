@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Auto Backup on API 28-30 (see data_extraction_rules.xml for API 31+).
-     Settings (shared_prefs) are backed up. Logs are not: they are diagnostic, can be several MB,
-     and contain account/thread details that must not end up in a cloud backup. -->
+     Settings (shared_prefs) are backed up, except the clone trust store and crash bookkeeping.
+     Logs are not: they are diagnostic, can be several MB, and contain account/thread details
+     that must not end up in a cloud backup. -->
 <full-backup-content>
     <exclude domain="file" path="ig_logs/" />
     <exclude domain="file" path="instaeclipse_companion.log" />
     <exclude domain="file" path="instaeclipse_logging.log" />
+    <!-- Clone trust pins are per install and must be re-approved (CloneTrust). -->
+    <exclude domain="sharedpref" path="eclipse2_clone_trust.xml" />
+    <!-- Crash-report bookkeeping is per device. -->
+    <exclude domain="sharedpref" path="eclipse2_crash.xml" />
+    <!-- "Use root" is an explicit choice on each device (RootAccess). -->
+    <exclude domain="sharedpref" path="eclipse2_root.xml" />
 </full-backup-content>

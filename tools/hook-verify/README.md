@@ -14,6 +14,9 @@ HOOKVERIFY_LOCK=/tmp/ie-gradle.lock tools/hook-verify/run.sh   # shared box: ser
 
 Output: a summary table on stdout and `tools/hook-verify/build/report.md` with, per step, the
 hooked members and the module's own log lines (failure lines are prefixed `!!`).
+A final "Feature status" section runs `FeatureManager.refreshFeatureStatus()` with every flag on
+and lists each load-toast feature as HOOKED, BROKEN or SILENT (no report yet). SILENT is expected
+for hooks that only report at runtime (first network request, first Activity).
 
 ## How it works
 
@@ -25,7 +28,7 @@ hooked members and the module's own log lines (failure lines are prefixed `!!`).
 | `MockableJar` | android.jar with every `throw new RuntimeException("Stub!")` body replaced by a default return (AGP's `returnDefaultValues` idea), so module code that touches Android APIs during install doesn't blow up. |
 | `src/xposed` | Host stand-ins for the Xposed API: `XposedBridge.hookMethod` records instead of patching; `XposedHelpers` is the pure-reflection subset. |
 | `src/shadow/android/util/Log` | Routes `ModuleLog` lines into the report. |
-| `Runner` | Parses every `if (!skip("Key")) <call>;` statement in `Module.java` and runs it with the real DexKit bridge and the synthesised class loader. New hooks added to Module.java are picked up automatically. All boolean `FeatureFlags` are forced on so every install path runs. |
+| `Runner` | Parses every `if (!skip("Key")) <call>;` and `isolatedInstall("Key", () -> <call>);` statement in `Module.java` and runs it with the real DexKit bridge and the synthesised class loader. New hooks added to Module.java are picked up automatically. A line that gates an install on a skip key but matches neither form is reported as an `UNPARSED@<line>` ERROR step instead of being dropped (`ModuleInstallIsolationTest` checks the same thing in CI). All boolean `FeatureFlags` are forced on so every install path runs. |
 
 ## Status meaning
 

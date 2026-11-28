@@ -530,13 +530,16 @@ public class PlaybackSpeedHook {
     static Method findScrubberGate457(DexKitBridge bridge, ClassLoader cl) {
         try {
             java.util.Set<String> controllers = new java.util.LinkedHashSet<>();
-            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .usingStrings("ClipsProgressController_forceShowAttachedScrubber")))) {
-                for (MethodData inv : md.getInvokes()) {
-                    if (!inv.isMethod() || !java.lang.reflect.Modifier.isStatic(inv.getModifiers())) continue;
-                    var pt = inv.getParamTypeNames();
-                    if (!pt.isEmpty() && pt.get(0).equals(inv.getClassName())) controllers.add(inv.getClassName());
-                }
+            // Inline literal first (457). The shared string table itself also "uses" the literal,
+            // so drop it: its invokes would never lead to the controller.
+            addControllers(controllers, io.github.somilkhan.instaeclipse2.utils.core.StringTables.withoutTables(
+                    bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                            .usingStrings(SCRUBBER_MARKER)))));
+            // Extra path in case a later build moves the literal into the shared X.0000 string
+            // table (as with HideSuggested/MaxUploadQuality). 458.0.0.0.57 still has it inline.
+            if (controllers.isEmpty()) {
+                addControllers(controllers,
+                        io.github.somilkhan.instaeclipse2.utils.core.StringTables.findTableUsers(bridge, SCRUBBER_MARKER));
             }
             for (String ctrl : controllers) {
                 var cd = bridge.getClassData(ctrl);
@@ -561,6 +564,177 @@ public class PlaybackSpeedHook {
         return null;
     }
 
+    /** Result of {@link #findScrubberFlags}: the config factory and the "show scrubber" flags. */
+    static final class ScrubberFlags {
+        final Method factory;
+        final Class<?> config;
+        final Field[] flags;
+
+        ScrubberFlags(Method factory, Class<?> config, Field[] flags) {
+            this.factory = factory;
+            this.config = config;
+            this.flags = flags;
+        }
+    }
+
+    /**
+     * Flag selection for the 458+ path. {@code gateReads} holds, per caller of the base check
+     * (outside the controller), the boolean config fields it reads. The "show" flags are the ones
+     * every such caller reads and the base check does not: on 458 the inlined wrapper in the
+     * lambda reads {A0B,A0C,A0F,A0G}, the touch listener reads those plus unrelated ones, and the
+     * base check reads {A07,A08}. Callers that read no extra boolean are not gate sites and are
+     * skipped. Returns an empty set when nothing consistent is found.
+     */
+    static java.util.Set<String> selectScrubberFlags(java.util.Set<String> baseReads,
+                                                     List<java.util.Set<String>> gateReads) {
+        java.util.Set<String> out = null;
+        for (java.util.Set<String> reads : gateReads) {
+            java.util.Set<String> extra = new java.util.TreeSet<>(reads);
+            extra.removeAll(baseReads);
+            if (extra.isEmpty()) continue;
+            if (out == null) out = extra;
+            else out.retainAll(extra);
+        }
+        if (out == null || out.isEmpty() || out.size() > 6) return java.util.Collections.emptySet();
+        return out;
+    }
+
+    private static java.util.Set<String> booleanReads(MethodData m, String owner) {
+        java.util.Set<String> out = new java.util.TreeSet<>();
+        for (org.luckypray.dexkit.result.UsingFieldData uf : m.getUsingFields()) {
+            var f = uf.getField();
+            if (uf.getUsingType().isRead() && owner.equals(f.getDeclaredClassName())
+                    && "boolean".equals(f.getTypeName())) out.add(f.getName());
+        }
+        return out;
+    }
+
+    /**
+     * 458+: {@code A00(Config, long, boolean)Z} is gone; only the base check is left and the
+     * "return show ? cfg.flagA : cfg.flagB" wrapper is inlined into its callers. The config has
+     * no constructor: one static factory (a merged lambda) writes all of its fields. Path:
+     * marker -> controller -> the (Config, long, boolean)Z it calls (base check) -> its callers
+     * outside the controller -> the boolean flags they all read beyond the base check -> the only
+     * method writing every one of those flags.
+     */
+    static ScrubberFlags findScrubberFlags(DexKitBridge bridge, ClassLoader cl) {
+        try {
+            java.util.Set<String> controllers = new java.util.LinkedHashSet<>();
+            addControllers(controllers, io.github.somilkhan.instaeclipse2.utils.core.StringTables.withoutTables(
+                    bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                            .usingStrings(SCRUBBER_MARKER)))));
+            for (String ctrl : controllers) {
+                var cd = bridge.getClassData(ctrl);
+                if (cd == null) continue;
+                java.util.Set<String> seen = new java.util.HashSet<>();
+                for (MethodData m : cd.getMethods()) {
+                    for (MethodData base : m.getInvokes()) {
+                        if (!isConfigLongBool(base) || !seen.add(base.getDescriptor())) continue;
+                        String cfg = base.getParamTypeNames().get(0);
+                        List<java.util.Set<String>> gateReads = new ArrayList<>();
+                        for (MethodData caller : base.getCallers()) {
+                            if (caller.getClassName().equals(ctrl)) continue;
+                            gateReads.add(booleanReads(caller, cfg));
+                        }
+                        java.util.Set<String> names = selectScrubberFlags(booleanReads(base, cfg), gateReads);
+                        if (names.isEmpty()) continue;
+                        ScrubberFlags found = resolveFactory(bridge, cl, cfg, names);
+                        if (found != null) return found;
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            ModuleLog.line(TAG + "⚠️ scrubber flags (458 path): " + t);
+        }
+        return null;
+    }
+
+    private static ScrubberFlags resolveFactory(DexKitBridge bridge, ClassLoader cl, String cfg,
+                                                java.util.Set<String> names) throws Throwable {
+        var cfgData = bridge.getClassData(cfg);
+        if (cfgData == null) return null;
+        java.util.Map<String, MethodData> common = null;
+        int matched = 0;
+        for (var f : cfgData.getFields()) {
+            if (!names.contains(f.getName())) continue;
+            matched++;
+            java.util.Map<String, MethodData> w = new java.util.HashMap<>();
+            for (MethodData md : f.getWriters()) w.put(md.getDescriptor(), md);
+            if (common == null) common = w;
+            else common.keySet().retainAll(w.keySet());
+        }
+        if (matched != names.size() || common == null || common.size() != 1) return null;
+        MethodData writer = common.values().iterator().next();
+        if (writer == null || !writer.isMethod() || "void".equals(writer.getReturnTypeName())) return null;
+        Method factory = writer.getMethodInstance(cl);
+        Class<?> config = cl.loadClass(cfg);
+        if (!factory.getReturnType().isAssignableFrom(config)) return null;
+        Field[] flags = new Field[names.size()];
+        int i = 0;
+        for (String n : names) {
+            Field f = config.getDeclaredField(n);
+            if (f.getType() != boolean.class || java.lang.reflect.Modifier.isStatic(f.getModifiers())) return null;
+            f.setAccessible(true);
+            flags[i++] = f;
+        }
+        return new ScrubberFlags(factory, config, flags);
+    }
+
+    /** 458+ path: force the "show attached scrubber" flags on every config the factory builds. */
+    private boolean installScrubberFlags(DexKitBridge bridge, ClassLoader cl) {
+        ScrubberFlags sf = findScrubberFlags(bridge, cl);
+        if (sf == null) return false;
+        XposedBridge.hookMethod(sf.factory, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
+                Object r = param.getResult();
+                if (!FeatureFlags.forceReelScrubber || !sf.config.isInstance(r)) return;
+                for (Field f : sf.flags) {
+                    try {
+                        f.setBoolean(r, true);
+                    } catch (IllegalAccessException e) {
+                        ModuleLog.line(TAG + "⚠️ scrubber flag " + f.getName() + ": " + e);
+                    }
+                }
+            }
+        });
+        StringBuilder names = new StringBuilder();
+        for (Field f : sf.flags) names.append(names.length() == 0 ? "" : ",").append(f.getName());
+        ModuleLog.line(TAG + "✅ reel scrubber flags " + sf.config.getName() + "{" + names + "} via "
+                + sf.factory.getDeclaringClass().getName() + "." + sf.factory.getName());
+        return true;
+    }
+
+    static final String SCRUBBER_MARKER = "ClipsProgressController_forceShowAttachedScrubber";
+    static final String SCRUBBER_MARKER_LEGACY = "android_purge_26_q2_ClipsExperimentUtil_shouldShowAttachedScrubber";
+
+    /** The (?, long, ?, ?)Z ClipsExperimentUtil gate among {@code candidates}, or null. */
+    private static Method legacyScrubberGate(List<MethodData> candidates, ClassLoader cl) {
+        if (candidates == null) return null;
+        for (MethodData md : candidates) {
+            if (!"boolean".equals(md.getReturnTypeName())) continue;
+            try {
+                Method m = md.getMethodInstance(cl);
+                Class<?>[] p = m.getParameterTypes();
+                if (p.length == 4 && p[1] == long.class) return m;
+            } catch (Throwable ignored) {
+            }
+        }
+        return null;
+    }
+
+    /** Classes whose static helpers {@code md} calls with an instance of that class as first argument. */
+    private static void addControllers(java.util.Set<String> out, List<MethodData> markerUsers) {
+        if (markerUsers == null) return;
+        for (MethodData md : markerUsers) {
+            for (MethodData inv : md.getInvokes()) {
+                if (!inv.isMethod() || !java.lang.reflect.Modifier.isStatic(inv.getModifiers())) continue;
+                var pt = inv.getParamTypeNames();
+                if (!pt.isEmpty() && pt.get(0).equals(inv.getClassName())) out.add(inv.getClassName());
+            }
+        }
+    }
+
     private static boolean isConfigLongBool(MethodData m) {
         if (!m.isMethod() || !java.lang.reflect.Modifier.isStatic(m.getModifiers())) return false;
         if (!"boolean".equals(m.getReturnTypeName())) return false;
@@ -573,15 +747,16 @@ public class PlaybackSpeedHook {
         try {
             Method gate = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("PlaybackSpeed_scrubberGate", cl) : null;
             if (gate == null) {
-                for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                        .usingStrings("android_purge_26_q2_ClipsExperimentUtil_shouldShowAttachedScrubber")
-                        .returnType("boolean")))) {
-                    Method m = md.getMethodInstance(cl);
-                    Class<?>[] p = m.getParameterTypes();
-                    if (p.length == 4 && p[1] == long.class) { gate = m; break; }
-                }
+                gate = legacyScrubberGate(bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .usingStrings(SCRUBBER_MARKER_LEGACY)
+                        .returnType("boolean"))), cl);
+                // Same marker through the shared string table, in case a build moves it there.
+                if (gate == null) gate = legacyScrubberGate(io.github.somilkhan.instaeclipse2.utils.core.StringTables
+                        .findTableUsers(bridge, SCRUBBER_MARKER_LEGACY), cl);
                 if (gate == null) gate = findScrubberGate457(bridge, cl);
                 if (gate == null) {
+                    // 458+: the gate wrapper is inlined into its callers; force the config flags instead.
+                    if (installScrubberFlags(bridge, cl)) return;
                     ModuleLog.line(TAG + "⚠️ reel scrubber gate not found");
                     return;
                 }

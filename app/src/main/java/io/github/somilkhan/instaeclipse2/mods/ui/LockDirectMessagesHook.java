@@ -131,7 +131,12 @@ public class LockDirectMessagesHook {
                 @Override public void onActivityResumed(Activity act) {
                     if (!FeatureFlags.lockWholeApp || appUnlockedThisSession) return;
                     if (FeatureFlags.lockDirectPasscode == null || FeatureFlags.lockDirectPasscode.isEmpty()) return;
-                    try { act.runOnUiThread(() -> showOverlay(act, true)); } catch (Throwable ignored) {}
+                    try {
+                        act.runOnUiThread(() -> showOverlay(act, true));
+                    } catch (Throwable t) {
+                        // The app stays usable without the lock screen: say so instead of failing open silently.
+                        ModuleLog.line("(IE|AppLock) ❌ lock screen not shown on " + act.getClass().getName() + ": " + t);
+                    }
                 }
                 @Override public void onActivityStarted(Activity act) { appStartedActivities++; }
                 @Override public void onActivityStopped(Activity act) {
@@ -144,7 +149,10 @@ public class LockDirectMessagesHook {
                 @Override public void onActivityDestroyed(Activity act) {}
             });
             appLockLifecycleRegistered = true;
-        } catch (Throwable ignored) {}
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|AppLock) ❌ whole-app lock not registered: " + t);
+            if (FeatureFlags.lockWholeApp) FeatureStatusTracker.setBroken("LockWholeApp");
+        }
     }
 
     /** True when the DM inbox is on screen (and not a thread). */

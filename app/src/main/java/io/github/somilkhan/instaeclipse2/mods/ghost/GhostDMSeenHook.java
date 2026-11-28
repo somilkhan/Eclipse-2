@@ -27,7 +27,7 @@ public class GhostDMSeenHook {
         XC_MethodHook hook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
-                if (!FeatureFlags.isGhostSeen) return;
+                if (!io.github.somilkhan.instaeclipse2.utils.ghost.GhostSeenBypass.blocksSeen()) return;
                 // Per-chat whitelist (#227): the sender's first String arg is the thread id
                 // ("mark_thread_seen-" + thread_id on 447/451) — let whitelisted chats through.
                 for (Object a : param.args) {

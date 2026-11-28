@@ -94,8 +94,16 @@ public class DistractionFreeUIHook {
                 plusUpsellIds[i] = res.getIdentifier(PLUS_UPSELL_NAMES[i], "id", pkg);
             discoverPeopleId = res.getIdentifier("similar_accounts_container", "id", pkg);
             idsResolved = true;
-            ModuleLog.line("(IE|DistractUI) resolved: tray=" + trayId + " clipsTab=" + clipsTabId);
-        } catch (Throwable ignored) {}
+            // Hide stories tray is view-based (no method hook): it "hooked" once its id resolves.
+            if (trayId != 0) {
+                io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker.setHooked("hideStoriesTray");
+            } else if (FeatureFlags.hideStoriesTray) {
+                io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker.setBroken("hideStoriesTray");
+            }
+            ModuleLog.line("(IE|DistractUI) resolved: tray=" + (trayId != 0 ? trayId : "not found") + " clipsTab=" + clipsTabId);
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|DistractUI) ⚠️ view id lookup failed: " + t);
+        }
     }
 
     /** Collapse the enabled targets in this activity, and keep them collapsed via a one-time

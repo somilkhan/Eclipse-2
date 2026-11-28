@@ -215,7 +215,9 @@ public class CustomFontHook {
                             } catch (Throwable t) { ModuleLog.line("(IE|Font) result: " + t); }
                         }
                     });
-        } catch (Throwable ignored) {}
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|Font) ⚠️ font/emoji picker result hook failed, picked files won't be saved: " + t);
+        }
     }
 
     private static Typeface getUserFont() {

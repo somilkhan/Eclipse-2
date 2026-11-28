@@ -35,6 +35,10 @@ public final class Runner {
     }
 
     private static final Pattern SKIP = Pattern.compile("if \\(!skip\\(\"([^\"]+)\"\\)\\)\\s*(.+?);\\s*(//.*)?$");
+    /** {@code pikoInstall("Key", () -> <call>);} — one-try-per-hook form used for the Piko ports. */
+    private static final Pattern PIKO = Pattern.compile("(?:pikoInstall|isolatedInstall)\\(\"([^\"]+)\",\\s*\\(\\)\\s*->\\s*(.+?)\\);\\s*(//.*)?$");
+    /** Any line that gates an install on a skip key; used to catch install forms the parser misses. */
+    private static final Pattern INSTALL_LINE = Pattern.compile("(if \\(!skip\\(\"|^(?:pikoInstall|isolatedInstall)\\(\")");
     private static final Pattern NEW_CALL = Pattern.compile("^new ([\\w.]+)\\(([^)]*)\\)\\.(\\w+)\\(([^)]*)\\)$");
     private static final Pattern CALL = Pattern.compile("^([\\w.]+)\\.(\\w+)\\(([^)]*)\\)$");
 
@@ -93,6 +97,7 @@ public final class Runner {
             Recorder.end();
         }
         ex.shutdownNow();
+        if (filter == null || filter.isEmpty()) r.collectFeatureStatus();
         return Recorder.steps();
     }
 
@@ -105,6 +110,10 @@ public final class Runner {
             if (f.getType() == boolean.class) { f.setAccessible(true); f.setBoolean(null, true); on++; }
         }
         System.out.println("[hook-verify] FeatureFlags: " + on + " boolean flags forced on");
+        // Register every feature as enabled, like FeatureManager does on the device at startup, so
+        // that a feature which neither hooks nor reports itself broken shows up as SILENT.
+        Class.forName("io.github.somilkhan.instaeclipse2.utils.feature.FeatureManager", true, moduleLoader)
+                .getMethod("refreshFeatureStatus").invoke(null);
         Class<?> module = Class.forName("io.github.somilkhan.instaeclipse2.Xposed.Module", true, moduleLoader);
         setStatic(module, "dexKitBridge", bridge);
         setStatic(module, "hostClassLoader", igLoader);
@@ -113,6 +122,28 @@ public final class Runner {
             Class.forName("io.github.somilkhan.instaeclipse2.utils.core.StringTables", true, moduleLoader)
                     .getMethod("init", String.class).invoke(null, apk);
         } catch (ClassNotFoundException ignored) {}
+    }
+
+    @SuppressWarnings("unchecked")
+    private void collectFeatureStatus() {
+        try {
+            Class<?> t = Class.forName("io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker", true, moduleLoader);
+            java.util.Map<String, Boolean> status = (java.util.Map<String, Boolean>) t.getMethod("getStatus").invoke(null);
+            Field fh = t.getDeclaredField("hooked"), fb = t.getDeclaredField("broken");
+            fh.setAccessible(true);
+            fb.setAccessible(true);
+            java.util.Set<String> hooked = (java.util.Set<String>) fh.get(null), broken = (java.util.Set<String>) fb.get(null);
+            java.util.TreeSet<String> keys = new java.util.TreeSet<>();
+            synchronized (status) { keys.addAll(status.keySet()); }
+            synchronized (broken) { keys.addAll(broken); }
+            for (String k : keys) {
+                String st = hooked.contains(k) ? "HOOKED" : broken.contains(k) ? "BROKEN" : "SILENT";
+                Recorder.features.add(new String[]{k, st});
+            }
+        } catch (Throwable e) {
+            System.out.println("[hook-verify] feature status not collected: " + e);
+            Recorder.features.add(new String[]{"(feature status not collected: " + e + ")", "ERROR"});
+        }
     }
 
     private static void setStatic(Class<?> c, String name, Object v) {
@@ -134,8 +165,16 @@ public final class Runner {
         }
         List<StepSpec> out = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
-            Matcher m = SKIP.matcher(lines.get(i).trim());
-            if (m.find()) out.add(new StepSpec(m.group(1), m.group(2).trim(), i + 1));
+            String l = lines.get(i).trim();
+            Matcher m = SKIP.matcher(l);
+            if (m.find()) { out.add(new StepSpec(m.group(1), m.group(2).trim(), i + 1)); continue; }
+            Matcher p = PIKO.matcher(l);
+            if (p.find()) { out.add(new StepSpec(p.group(1), p.group(2).trim(), i + 1)); continue; }
+            // An install the parser can't read must not vanish from the report: record it as a
+            // step whose expression can't be executed, so it shows up as ERROR.
+            if (INSTALL_LINE.matcher(l).find()) {
+                out.add(new StepSpec("UNPARSED@" + (i + 1), l, i + 1));
+            }
         }
         return out;
     }

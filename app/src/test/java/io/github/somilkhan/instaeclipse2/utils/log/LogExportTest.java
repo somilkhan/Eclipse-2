@@ -27,7 +27,7 @@ public class LogExportTest {
         i.buildType = "release";
         i.instagram = Collections.singletonList(
                 new LogExport.TargetApp("com.instagram.android", "457.0.0.55.73", 386314341L));
-        i.testedInstagram = "457.0.0.55.73";
+        i.checkedInstagram = "458.0.0.0.67, 457.0.0.55.73 (offline hook check; no device test)";
         i.androidRelease = "14";
         i.sdkInt = 34;
         i.manufacturer = "Google";
@@ -43,7 +43,7 @@ public class LogExportTest {
         assertTrue(h, h.contains("Exported: 2026-11-27 10:00:00 +0530\n"));
         assertTrue(h, h.contains("App version: 0.8.4 (22) release\n"));
         assertTrue(h, h.contains("Instagram version: 457.0.0.55.73 (386314341) [com.instagram.android]\n"));
-        assertTrue(h, h.contains("Tested Instagram version: 457.0.0.55.73\n"));
+        assertTrue(h, h.contains("Checked Instagram versions: 458.0.0.0.67, 457.0.0.55.73 (offline hook check; no device test)\n"));
         assertTrue(h, h.contains("Android version: 14 (API 34)\n"));
         assertTrue(h, h.contains("Device model: Google Pixel 8 (shiba)\n"));
         assertTrue(h, h.endsWith(LogExport.SEPARATOR + "\n"));
@@ -56,7 +56,7 @@ public class LogExportTest {
         assertTrue(h, h.contains("Instagram version: not installed\n"));
         assertTrue(h, h.contains("Android version: unknown\n"));
         assertTrue(h, h.contains("Device model: unknown\n"));
-        assertTrue(h, !h.contains("Tested Instagram"));
+        assertTrue(h, !h.contains("Checked Instagram"));
     }
 
     @Test

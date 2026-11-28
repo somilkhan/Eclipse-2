@@ -190,6 +190,7 @@ public class ReelDownloadHook {
             XC_MethodHook hook = new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
+                    if (!MediaMenuFeatures.anyReelMenuFeature()) return;
                     resolve.run();
                     final Object download = opts[0], copyLink = opts[1], info = opts[2], speedRow = opts[3], external = opts[4];
                     boolean wantDl = FeatureFlags.enableReelDownload && download != null;

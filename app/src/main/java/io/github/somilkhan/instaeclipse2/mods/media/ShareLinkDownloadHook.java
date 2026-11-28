@@ -32,7 +32,6 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
  * module to make authenticated API calls of its own.)
  */
 public class ShareLinkDownloadHook {
-    public static final String EXTRA = "io.github.somilkhan.instaeclipse2.SHARE_DOWNLOAD";
     private static final String TAG = "(IE|ShareDL) ";
     private static final Pattern SHORTCODE = Pattern.compile("/(?:p|reel|reels|tv)/([A-Za-z0-9_-]+)");
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -60,8 +59,13 @@ public class ShareLinkDownloadHook {
             protected void afterHookedMethod(MethodHookParam param) { JitGuard.tick(param.method);
                 Activity a = (Activity) param.thisObject;
                 Intent i = param.args.length > 0 && param.args[0] instanceof Intent in ? in : a.getIntent();
-                if (i == null || !i.getBooleanExtra(EXTRA, false)) return;
-                i.removeExtra(EXTRA); // once (not again on recreation)
+                if (i == null || !i.hasExtra(io.github.somilkhan.instaeclipse2.share.ShareProof.EXTRA)) return;
+                boolean fromCompanion = io.github.somilkhan.instaeclipse2.share.ShareProof.isFromCompanion(i);
+                i.removeExtra(io.github.somilkhan.instaeclipse2.share.ShareProof.EXTRA); // once (not again on recreation)
+                if (!fromCompanion) {
+                    ModuleLog.line(TAG + "⚠️ ignored a share-download request that didn't come from the companion");
+                    return;
+                }
                 start(a, i.getData());
             }
         };
@@ -76,7 +80,7 @@ public class ShareLinkDownloadHook {
 
     private static void start(Activity a, Uri uri) {
         String pk = uri != null ? pkFromLink(uri.toString()) : null;
-        ModuleLog.line(TAG + "link=" + uri + " pk=" + pk);
+        ModuleLog.line(TAG + "link=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.url(uri) + " pk=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(pk));
         if (pk == null) {
             toast(a, I18n.t(a, R.string.ig_share_dl_not_found));
             return;
@@ -103,7 +107,7 @@ public class ShareLinkDownloadHook {
                     FeedVideoDownloadHook.mainHandler.postDelayed(this, STEP_MS);
                 } else {
                     pendingPk = null;
-                    ModuleLog.line(TAG + "timed out pk=" + pk);
+                    ModuleLog.line(TAG + "timed out pk=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(pk));
                     toast(app, I18n.t(app, R.string.ig_share_dl_not_found));
                 }
             }
@@ -172,7 +176,7 @@ public class ShareLinkDownloadHook {
         FeedVideoDownloadHook.executor.submit(() -> {
             try {
                 List<String> urls = FeedVideoDownloadHook.extractAllUrlsFromMedia(ctx, media);
-                ModuleLog.line(TAG + "pk=" + pk + " urls=" + (urls == null ? 0 : urls.size()));
+                ModuleLog.line(TAG + "pk=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(pk) + " urls=" + (urls == null ? 0 : urls.size()));
                 if (urls == null || urls.isEmpty()) {
                     toast(ctx, I18n.t(ctx, R.string.ig_share_dl_not_found));
                     return;

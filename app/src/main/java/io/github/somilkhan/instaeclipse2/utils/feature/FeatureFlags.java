@@ -163,6 +163,7 @@ public class FeatureFlags {
     public static volatile boolean savedOnProfile = false;        // #237: Saved button on your own profile
     public static volatile boolean profileFollowsYouLabel = false; // "Follows you" label on profiles (#239)
     public static volatile boolean fancyBioFont = false; // Edit profile: fancy (Unicode) fonts for the bio
+    public static volatile boolean copyProfileUsername = false; // long-press the profile username to copy it
     public static volatile boolean likeUndo = false; // hold likes for a few seconds with an Undo bar (#235)
     public static volatile boolean exactTimestamps = false; // absolute date/time instead of "3h ago" (#232)
     public static volatile String  exactTimestampFormat = ""; // its SimpleDateFormat pattern, "" = device default (#265)

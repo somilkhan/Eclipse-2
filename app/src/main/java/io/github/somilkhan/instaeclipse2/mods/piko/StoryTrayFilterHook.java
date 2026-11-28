@@ -110,10 +110,26 @@ public class StoryTrayFilterHook {
         userGetter = nu == 1 ? user : null;
     }
 
-    private static boolean hasConstant(Class<?> e, String value) {
-        Object[] cs = e.getEnumConstants();
+    /**
+     * True when one of the enum's server values ({@code toString()}, e.g. "ads_reel") or names is
+     * {@code value}. Instagram's toString() runs app code, so a throw there only rules out that
+     * enum instead of aborting the whole hook install.
+     */
+    static boolean hasConstant(Class<?> e, String value) {
+        Object[] cs;
+        try {
+            cs = e.getEnumConstants();
+        } catch (Throwable t) {
+            return false;
+        }
         if (cs == null) return false;
-        for (Object c : cs) if (value.equals(String.valueOf(c))) return true;
+        for (Object c : cs) {
+            try {
+                if (value.equals(String.valueOf(c))) return true;
+            } catch (Throwable ignored) {
+                // this constant's toString() failed; keep checking the others
+            }
+        }
         return false;
     }
 

@@ -3,6 +3,22 @@
     <!-- Features tab: search + per-category counts -->
     <string name="feat_search_hint">Search features</string>
     <string name="feat_search_no_results">No matching features</string>
+    <string name="feat_search_empty_body">Try another keyword or check the spelling.</string>
+    <string name="feat_status_pending">Pending · %1$s</string>
+    <string name="feat_status_pending_short"> · pending change</string>
+    <string name="feat_status_on">On</string>
+    <string name="feat_status_off">Off</string>
+    <string name="feat_switch_accessibility">%1$s, %2$s</string>
+    <string name="feat_staged_review_title">Review changes (%1$d)</string>
+    <string name="feat_staged_review_apply">Apply</string>
+    <string name="feat_staged_review_keep">Keep editing</string>
+    <string name="feat_staged_review_discard">Discard</string>
+    <string name="feat_staged_review_discard_confirm">Discard all %1$d unapplied changes?</string>
+    <string name="feat_apply_count">Apply (%1$d)</string>
+    <string name="feat_status_restart">Restart Instagram to apply</string>
+    <string name="feat_download_notifications_title">Allow download notifications?</string>
+    <string name="feat_download_notifications_body">Android requires notification permission so download progress can be shown. You can still manage downloads without allowing notifications.</string>
+    <string name="feat_download_notifications_denied">Notification permission not granted; download setting was not changed.</string>
     <string name="feat_count_on">%1$d on</string>
     <string name="feat_count_off">Off</string>
 </resources>

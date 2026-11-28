@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Optional root access (utils/root). Off by default. -->
+<resources>
+    <string name="root_menu_title">Root access</string>
+    <string name="root_menu_sub">Optional: lets the app restart Instagram and reach its files</string>
+    <string name="root_section_access">Access</string>
+    <string name="root_section_actions">Actions</string>
+    <string name="root_use">Use root (if available)</string>
+    <string name="root_use_hint">Off by default. Only the actions below use it, and each one still works without root.</string>
+    <string name="root_status_off">Status: root not used</string>
+    <string name="root_status_unknown">Status: not checked yet</string>
+    <string name="root_status_checking">Status: checking… answer the root prompt if one appears</string>
+    <string name="root_status_not_rooted">Status: not rooted (no su found)</string>
+    <string name="root_status_denied">Status: denied</string>
+    <string name="root_status_granted">Status: granted</string>
+    <string name="root_check_again">Check again</string>
+    <string name="root_action_restart">Restart Instagram</string>
+    <string name="root_action_restart_sub">Force stop and reopen, so restart-required settings apply</string>
+    <string name="root_action_dexkit">Clear DexKit cache</string>
+    <string name="root_action_dexkit_sub">Instagram searches its hooks again on the next start (slower start)</string>
+    <string name="root_action_crashes">Collect pending crash reports</string>
+    <string name="root_action_crashes_sub">Saves reports Instagram could not hand over yet</string>
+    <string name="root_footer">Root is never shared with other apps or with Instagram. It is not used to hide root or LSPosed.</string>
+
+    <!-- Results: always say which path was used. -->
+    <string name="root_result_restart_root">Instagram restarted (with root)</string>
+    <string name="root_result_restart_fallback">Without root: press Force stop, then reopen Instagram</string>
+    <string name="root_result_dexkit_root">DexKit cache cleared (with root). Instagram was stopped; it rebuilds the cache on the next start.</string>
+    <string name="root_result_dexkit_fallback">Without root: in Instagram, long press the Explore tab, then Tools → Clear Hooks Cache → Clear Cache &amp; Restart</string>
+    <string name="root_result_crashes_root">%1$d crash report(s) saved (with root)</string>
+    <string name="root_result_crashes_root_partial">%1$d crash report(s) saved with root, some could not be read or saved. See the Logs tab.</string>
+    <string name="root_result_crashes_fallback">Without root: Instagram saves pending reports itself the next time it starts</string>
+    <string name="root_result_crashes_off">Crash reports are switched off (Features → App &amp; Account → Crash reports)</string>
+    <string name="root_result_failed_suffix">Root was tried and failed (see the Logs tab).</string>
+    <string name="root_result_no_instagram">No supported Instagram app is installed</string>
+    <string name="logs_status_root">Read with root · Instagram not running</string>
+</resources>

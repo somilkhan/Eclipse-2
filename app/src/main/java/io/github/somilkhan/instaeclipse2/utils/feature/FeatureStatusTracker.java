@@ -12,41 +12,55 @@ import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
 
 public class FeatureStatusTracker {
     private static final Map<String, Boolean> features = Collections.synchronizedMap(new HashMap<>());
-    private static final Map<String, Integer> labels   = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, Integer> labels = Collections.synchronizedMap(new HashMap<>());
 
-    // Names whose hook has installed. Kept independently of `features` so that a later
-    // setEnabled() (e.g. the companion-sync re-runs refreshFeatureStatus after hooks are
-    // already installed) can't wipe the hooked state back to a ❌ in the load toast. Xposed
-    // hooks persist for the process, so once hooked, a feature stays hooked.
+    // These sets persist for the process: companion sync can refresh enabled flags after startup,
+    // but Xposed hooks already installed in this process remain installed.
     private static final Set<String> hooked = Collections.synchronizedSet(new HashSet<>());
-
-    // Names whose hook FAILED to resolve/install (feature is enabled but not working). Surfaced in
-    // the load toast as a red mark instead of the feature silently reading "enabled".
+    private static final Set<String> runtimeObserved = Collections.synchronizedSet(new HashSet<>());
     private static final Set<String> broken = Collections.synchronizedSet(new HashSet<>());
+    private static final Map<String, String> failureReasons = Collections.synchronizedMap(new HashMap<>());
+
+    private static final String DEFAULT_FAILURE_REASON = "Hook failed; check the module log for details.";
+
+    /** Conservative health state. Runtime observed is only set by explicit successful feature paths. */
+    public enum HealthState {
+        NOT_EXERCISED,
+        INSTALLED,
+        RUNTIME_OBSERVED,
+        FAILED
+    }
 
     public static void setEnabled(String name, int labelResId) {
-        features.put(name, hooked.contains(name));   // preserve hooked state across re-registration
+        features.put(name, hooked.contains(name) && !broken.contains(name));
         labels.put(name, labelResId);
     }
 
-    /** Mark an enabled feature as broken (its hook could not be resolved/installed). Registers a
-     *  label so it still shows up in the toast even if setEnabled was never called for it. */
+    /** Mark an enabled feature as broken (its hook could not be resolved/installed). */
     public static void setBroken(String name, int labelResId) {
-        broken.add(name);
-        labels.put(name, labelResId);
-        features.put(name, false);
+        setBroken(name, labelResId, DEFAULT_FAILURE_REASON);
     }
 
-    /** Mark broken reusing whatever label was already registered (label comes from FeatureManager).
-     *  Call this from a hook's "could not resolve" path, guarded by the feature's own flag so a
-     *  disabled feature never shows as broken. */
+    /** Mark broken and retain a short reason for the in-app health detail dialog. */
+    public static void setBroken(String name, int labelResId, String reason) {
+        labels.put(name, labelResId);
+        setBroken(name, reason);
+    }
+
+    /** Mark broken reusing whatever label was already registered (label comes from FeatureManager). */
     public static void setBroken(String name) {
+        setBroken(name, DEFAULT_FAILURE_REASON);
+    }
+
+    public static void setBroken(String name, String reason) {
         broken.add(name);
+        failureReasons.put(name, reason == null || reason.trim().isEmpty()
+                ? DEFAULT_FAILURE_REASON : reason.trim());
         features.put(name, false);
     }
 
     public static boolean isBroken(String name) {
-        return broken.contains(name) && !hooked.contains(name);
+        return broken.contains(name);
     }
 
     public static void setDisabled(String name) {
@@ -54,12 +68,41 @@ public class FeatureStatusTracker {
         labels.remove(name);
     }
 
+    /** Records that the hook was installed; this alone does not claim the feature ran successfully. */
     public static void setHooked(String name) {
         hooked.add(name);
-        broken.remove(name); // a successful hook clears any earlier broken mark
+        broken.remove(name);
+        failureReasons.remove(name);
         if (features.containsKey(name)) {
             features.put(name, true);
         }
+    }
+
+    /** Records a successful runtime path (for example, a gate was intercepted or an action completed). */
+    public static void setRuntimeObserved(String name) {
+        setHooked(name);
+        runtimeObserved.add(name);
+    }
+
+    public static HealthState getHealthState(String name) {
+        if (broken.contains(name)) return HealthState.FAILED;
+        if (runtimeObserved.contains(name)) return HealthState.RUNTIME_OBSERVED;
+        if (hooked.contains(name)) return HealthState.INSTALLED;
+        return HealthState.NOT_EXERCISED;
+    }
+
+    /** Snapshot of currently enabled features and their evidence states. */
+    public static Map<String, HealthState> getHealthStatus() {
+        Map<String, HealthState> snapshot = new HashMap<>();
+        synchronized (features) {
+            for (String name : features.keySet()) snapshot.put(name, getHealthState(name));
+        }
+        return Collections.unmodifiableMap(snapshot);
+    }
+
+    public static String getFailureReason(String name) {
+        String reason = failureReasons.get(name);
+        return reason == null ? DEFAULT_FAILURE_REASON : reason;
     }
 
     public static String getLabel(Context ctx, String key) {
@@ -67,6 +110,7 @@ public class FeatureStatusTracker {
         return resId != null ? I18n.t(ctx, resId) : key;
     }
 
+    /** Legacy boolean API used by the existing load toast; true means installed, not necessarily exercised. */
     public static Map<String, Boolean> getStatus() {
         return features;
     }

@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="ToolbarTitleTextAppearance" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
     <style name="ShapeAppearance.App.Circle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
-    <!-- Define a custom style for Spinner Popup -->
     <style name="SpinnerPopup" parent="Theme.AppCompat.Light">
         <item name="android:textAppearance">@style/SpinnerTextAppearance</item>
-        <item name="android:background">@android:color/black</item>
+        <item name="android:background">@color/ie_glass_fill</item>
     </style>
-
-    <!-- Define the text appearance for the Spinner items -->
     <style name="SpinnerTextAppearance" parent="TextAppearance.AppCompat.Body1">
         <item name="android:autoSizeTextType">uniform</item>
         <item name="android:autoSizeMinTextSize">10sp</item>
-        <item name="android:autoSizeMaxTextSize">18sp</item>
+        <item name="android:autoSizeMaxTextSize">16sp</item>
         <item name="android:autoSizeStepGranularity">1sp</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/ie_on_surface</item>
     </style>
 
-    <!-- Material3 FeaturesFragment styles -->
+    <!-- Compact grouped rows retain their existing layout/style contracts. -->
     <style name="MenuRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">20dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:padding">16dp</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
@@ -37,24 +39,29 @@
     <style name="MenuDivider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">?attr/colorOutlineVariant</item>
+        <item name="android:background">@color/ie_separator</item>
     </style>
     <style name="SubmenuCard">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="cardBackgroundColor">?attr/colorSurfaceContainerLow</item>
-        <item name="cardCornerRadius">20dp</item>
-        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">@color/ie_glass_fill</item>
+        <item name="cardCornerRadius">18dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/ie_glass_outline</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
-    <!-- Section header above a grouped list: footnote-sized, muted, uppercase (Settings rhythm). -->
+    <!-- SettingsActivity.label(): 11.5sp medium, uppercase, 0.14em tracking. -->
     <style name="IeSectionLabel" parent="TextAppearance.IE.Footnote">
+        <item name="android:textSize">11.5sp</item>
+        <item name="lineHeight">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textFontWeight">500</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-        <item name="android:letterSpacing">0.04</item>
+        <item name="android:letterSpacing">0.14</item>
         <item name="android:textAllCaps">true</item>
     </style>
-
-    <!-- 0.7: thin inset hairline separating rows inside a card. -->
     <style name="IeHairline">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
@@ -63,203 +70,217 @@
     <style name="SubmenuSwitch">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">20dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:padding">16dp</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <!-- Inter defaults for views without an explicit appearance (dialogs, menus, inputs). -->
+    <!-- Native sans-serif matches the reference; no new font dependency/assets. -->
     <style name="TextAppearance.IE.Default" parent="android:TextAppearance.Material">
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
     <style name="TextAppearance.IE.Default.Small" parent="android:TextAppearance.Material.Small">
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
     <style name="TextAppearance.IE.Default.Medium" parent="android:TextAppearance.Material.Medium">
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
     <style name="TextAppearance.IE.Default.Large" parent="android:TextAppearance.Material.Large">
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
     <style name="TextAppearance.IE.Display.Large" parent="TextAppearance.Material3.DisplayLarge">
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textSize">50sp</item>
+        <item name="lineHeight">56sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textFontWeight">800</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
     <style name="TextAppearance.IE.Display.Medium" parent="TextAppearance.Material3.DisplayMedium">
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textSize">40sp</item>
+        <item name="lineHeight">46sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
     <style name="TextAppearance.IE.Display.Small" parent="TextAppearance.Material3.DisplaySmall">
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
+        <item name="android:textSize">32sp</item>
+        <item name="lineHeight">38sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <!-- ================= 0.8.4 type scale: iOS Dynamic Type "Large" sizes in Inter =================
-         Large Title 34/41 bold · Title1 28/34 · Title2 22/28 · Title3 20/25 · Headline 17/22 semibold ·
-         Body 17/22 · Callout 16/21 · Subhead 15/20 · Footnote 13/18 · Caption 12/16 · Caption2 11/13.
-         Inter runs a little wider than SF Pro, so tracking is slightly tighter. sp so font scaling applies. -->
+    <!-- Editorial 40sp page headings; 15.5sp rows and 12.5sp supporting copy.
+         All sizes use sp so accessibility font scaling remains enabled. -->
     <style name="TextAppearance.IE.LargeTitle" parent="TextAppearance.Material3.HeadlineLarge">
-        <item name="android:textSize">34sp</item>
-        <item name="lineHeight">41sp</item>
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">40sp</item>
+        <item name="lineHeight">46sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textFontWeight">700</item>
-        <item name="android:letterSpacing">-0.006</item>
+        <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
     <style name="TextAppearance.IE.Title1" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="android:textSize">28sp</item>
-        <item name="lineHeight">34sp</item>
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">32sp</item>
+        <item name="lineHeight">38sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textFontWeight">700</item>
-        <item name="android:letterSpacing">-0.004</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
     <style name="TextAppearance.IE.Title2" parent="TextAppearance.Material3.HeadlineSmall">
-        <item name="android:textSize">22sp</item>
-        <item name="lineHeight">28sp</item>
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">24sp</item>
+        <item name="lineHeight">30sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textFontWeight">700</item>
-        <item name="android:letterSpacing">-0.004</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
     <style name="TextAppearance.IE.Title3" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textSize">20sp</item>
-        <item name="lineHeight">25sp</item>
-        <item name="android:fontFamily">@font/inter_display_semibold</item>
-        <item name="fontFamily">@font/inter_display_semibold</item>
+        <item name="lineHeight">26sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
         <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">-0.002</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Headline" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textSize">17sp</item>
-        <item name="lineHeight">22sp</item>
-        <item name="android:fontFamily">@font/inter_semibold</item>
-        <item name="fontFamily">@font/inter_semibold</item>
-        <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">-0.022</item>
+        <item name="android:textSize">15.5sp</item>
+        <item name="lineHeight">21sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Body" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:textSize">17sp</item>
-        <item name="lineHeight">22sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">15.5sp</item>
+        <item name="lineHeight">21sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textFontWeight">400</item>
-        <item name="android:letterSpacing">-0.022</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Callout" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="lineHeight">21sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textFontWeight">400</item>
-        <item name="android:letterSpacing">-0.018</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Subhead" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:textSize">15sp</item>
-        <item name="lineHeight">20sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">12.5sp</item>
+        <item name="lineHeight">17sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textFontWeight">400</item>
-        <item name="android:letterSpacing">-0.014</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Subhead.Emphasized">
-        <item name="android:fontFamily">@font/inter_semibold</item>
-        <item name="fontFamily">@font/inter_semibold</item>
-        <item name="android:textFontWeight">600</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textFontWeight">500</item>
     </style>
     <style name="TextAppearance.IE.Footnote" parent="TextAppearance.Material3.BodySmall">
-        <item name="android:textSize">13sp</item>
-        <item name="lineHeight">18sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">12.5sp</item>
+        <item name="lineHeight">17sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textFontWeight">400</item>
-        <item name="android:letterSpacing">-0.006</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Label" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:textSize">15sp</item>
         <item name="lineHeight">20sp</item>
-        <item name="android:fontFamily">@font/inter_semibold</item>
-        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
         <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">-0.014</item>
+        <item name="android:letterSpacing">0</item>
         <item name="android:textAllCaps">false</item>
     </style>
     <style name="TextAppearance.IE.Caption" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textSize">12sp</item>
         <item name="lineHeight">16sp</item>
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.IE.Caption.Emphasized">
-        <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
         <item name="android:textFontWeight">500</item>
     </style>
     <style name="TextAppearance.IE.Caption2" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">11sp</item>
-        <item name="lineHeight">13sp</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
-        <item name="fontFamily">@font/inter_medium</item>
+        <item name="lineHeight">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
         <item name="android:textFontWeight">500</item>
-        <item name="android:letterSpacing">0.006</item>
+        <item name="android:letterSpacing">0</item>
     </style>
-    <!-- Bold dashboard section header ("Quick actions") -->
     <style name="TextAppearance.IE.SectionTitle" parent="TextAppearance.IE.Title3">
-        <item name="android:fontFamily">@font/inter_display_bold</item>
-        <item name="fontFamily">@font/inter_display_bold</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textFontWeight">700</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
-
-    <!-- Home section header: bold Title3 with Apple-like 24/8 rhythm. -->
+    <!-- Reference section rhythm: 22dp above, 8dp side/bottom inset. -->
     <style name="IeHomeSection">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">28dp</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:paddingBottom">7dp</item>
+        <item name="android:layout_marginTop">22dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:accessibilityHeading">true</item>
         <item name="android:textAppearance">@style/IeSectionLabel</item>
     </style>
 
-    <!-- ================= shapes ================= -->
+    <!-- Reference card radius is 18dp; capsules remain fully rounded. -->
     <style name="ShapeAppearance.IE.Small" parent="ShapeAppearance.Material3.Corner.Small">
         <item name="cornerSize">10dp</item>
     </style>
     <style name="ShapeAppearance.IE.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">14dp</item>
     </style>
     <style name="ShapeAppearance.IE.Large" parent="ShapeAppearance.Material3.Corner.Large">
-        <item name="cornerSize">22dp</item>
+        <item name="cornerSize">18dp</item>
     </style>
     <style name="ShapeAppearance.IE.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
-        <item name="cornerSize">28dp</item>
+        <item name="cornerSize">22dp</item>
     </style>
     <style name="ShapeAppearance.IE.Dialog" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">30dp</item>
+        <item name="cornerSize">18dp</item>
     </style>
     <style name="ShapeAppearance.IE.Full" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
 
-    <!-- ================= components ================= -->
-    <!-- Glass card: translucent fill over the mesh; GlassCardView adds hairline + specular rim. -->
+    <!-- GlassCardView already draws its own 0.75dp hairline from ie_glass_outline;
+         leave Material stroke off to avoid drawing the fine edge twice. -->
     <style name="Widget.IE.Card" parent="Widget.Material3.CardView.Filled">
         <item name="cardBackgroundColor">@color/ie_glass_fill</item>
-        <item name="cardCornerRadius">24dp</item>
+        <item name="cardCornerRadius">18dp</item>
         <item name="cardElevation">0dp</item>
         <item name="strokeWidth">0dp</item>
         <item name="rippleColor">@color/ie_ripple</item>
@@ -276,11 +297,15 @@
         <item name="backgroundTint">@color/ie_tonal_button_bg</item>
         <item name="android:textColor">@color/ie_tonal_button_fg</item>
         <item name="iconTint">@color/ie_tonal_button_fg</item>
+        <item name="strokeColor">@color/ie_glass_outline</item>
+        <item name="strokeWidth">1dp</item>
     </style>
     <style name="Widget.IE.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:minHeight">48dp</item>
         <item name="android:textAppearance">@style/TextAppearance.IE.Label</item>
         <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
         <item name="strokeColor">@color/ie_separator</item>
     </style>
     <style name="Widget.IE.Button.Text" parent="Widget.Material3.Button.TextButton">
@@ -293,7 +318,7 @@
         <item name="android:textAppearance">@style/TextAppearance.IE.Headline</item>
         <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
     </style>
-    <!-- iOS "bezeled gray" capsule: tertiary fill, accent label + glyph, 36dp tall. -->
+    <!-- Neutral capsule secondary action; only primary/selected controls are coral. -->
     <style name="Widget.IE.Button.Capsule" parent="Widget.Material3.Button.TonalButton">
         <item name="android:minHeight">40dp</item>
         <item name="android:insetTop">0dp</item>
@@ -319,7 +344,6 @@
     <style name="Widget.IE.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
         <item name="buttonTint">@color/ie_checkbox_tint</item>
     </style>
-    <!-- Plain accent glyph button (iOS borderless bar button). -->
     <style name="Widget.IE.Button.PlainIcon" parent="Widget.Material3.Button.IconButton">
         <item name="android:minWidth">44dp</item>
         <item name="android:minHeight">44dp</item>
@@ -330,14 +354,13 @@
         <item name="rippleColor">@color/ie_ripple</item>
         <item name="shapeAppearance">@style/ShapeAppearance.IE.Full</item>
     </style>
-    <!-- 48dp round glass icon button (toolbar actions, edit) -->
     <style name="Widget.IE.Button.GlassIcon" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="android:minWidth">48dp</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:insetTop">4dp</item>
         <item name="android:insetBottom">4dp</item>
         <item name="backgroundTint">@color/ie_glass_fill_raised</item>
-        <item name="iconTint">?attr/colorPrimary</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
         <item name="iconSize">20dp</item>
         <item name="strokeColor">@color/ie_glass_outline</item>
         <item name="strokeWidth">1dp</item>
@@ -369,7 +392,7 @@
     <style name="MaterialAlertDialog.IE.Title" parent="MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textAppearance">@style/TextAppearance.IE.Title3</item>
     </style>
-    <!-- iOS-like toggle: accent track when on, neutral grey track when off, white thumb, no outline. -->
+    <!-- On = coral, off = neutral. Keep existing switch state-list resource contracts. -->
     <style name="Widget.IE.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="thumbTint">@color/ie_switch_thumb_tint</item>
         <item name="trackTint">@color/ie_switch_track_tint</item>

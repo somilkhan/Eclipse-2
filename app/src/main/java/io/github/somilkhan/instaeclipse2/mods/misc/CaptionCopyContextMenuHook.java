@@ -113,7 +113,9 @@ public class CaptionCopyContextMenuHook {
         // Track current Activity for showing the copy dialog
         try {
             installActivityTracker();
-        } catch (Throwable ignored) {}
+        } catch (Throwable t) {
+            ModuleLog.line("(IE|Caption) ⚠️ activity tracker failed, copy dialog may not open: " + t);
+        }
 
         loadMediaOptionEnum(classLoader);
         resolveCaptionGetter(bridge, classLoader);

@@ -28,19 +28,22 @@ public final class CloneTrust {
 
     private CloneTrust() { }
 
-    /** Supported clone packages (everything except official Instagram) that are installed. */
+    /**
+     * Installed supported packages whose signer the user has to approve: every clone, plus
+     * com.instagram.android when it is not signed by Meta (LSPatch-patched or unclone builds).
+     */
     public static List<String> installedClones(Context context) {
         List<String> out = new ArrayList<>();
         PackageManager pm = context.getPackageManager();
         for (String pkg : CommonUtils.SUPPORTED_PACKAGES) {
-            if (BrokerPayload.HOST.equals(pkg)) continue;
-            try { pm.getPackageInfo(pkg, 0); out.add(pkg); } catch (Exception ignored) { }
+            try { pm.getPackageInfo(pkg, 0); } catch (Exception ignored) { continue; }
+            if (isPinnable(context, pkg)) out.add(pkg);
         }
         return out;
     }
 
     public static boolean isTrusted(Context context, String pkg) {
-        if (!isClone(pkg) || !inCompanion(context)) return false;
+        if (!isPinnable(context, pkg) || !inCompanion(context)) return false;
         String pinned = prefs(context).getString(pkg, null);
         if (pinned == null || pinned.length() != 64) return false;
         try {
@@ -50,7 +53,7 @@ public final class CloneTrust {
 
     /** Pins the clone's current signer. False when it has none or several signers. */
     public static boolean trust(Context context, String pkg) {
-        if (!isClone(pkg) || !inCompanion(context)) return false;
+        if (!isPinnable(context, pkg) || !inCompanion(context)) return false;
         String sha = signerSha256(context, pkg);
         if (sha == null) return false;
         return prefs(context).edit().putString(pkg, sha).commit();
@@ -85,8 +88,13 @@ public final class CloneTrust {
         return sb.toString();
     }
 
-    private static boolean isClone(String pkg) {
-        return pkg != null && !BrokerPayload.HOST.equals(pkg) && CommonUtils.SUPPORTED_PACKAGES.contains(pkg);
+    /**
+     * A supported package whose key can be pinned: any clone, and official Instagram only while it
+     * isn't Meta-signed (a Meta-signed install is trusted by its certificate and needs no pin).
+     */
+    static boolean isPinnable(Context context, String pkg) {
+        if (pkg == null || !CommonUtils.SUPPORTED_PACKAGES.contains(pkg)) return false;
+        return !BrokerPayload.HOST.equals(pkg) || !CompanionBridge.isOfficialHostSigner(context);
     }
 
     private static boolean inCompanion(Context context) {

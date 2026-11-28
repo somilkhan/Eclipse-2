@@ -5,10 +5,22 @@
         <exclude domain="file" path="ig_logs/" />
         <exclude domain="file" path="instaeclipse_companion.log" />
         <exclude domain="file" path="instaeclipse_logging.log" />
+        <!-- Clone trust pins are per install and must be re-approved (CloneTrust). -->
+        <exclude domain="sharedpref" path="eclipse2_clone_trust.xml" />
+        <!-- Crash-report bookkeeping is per device. -->
+        <exclude domain="sharedpref" path="eclipse2_crash.xml" />
+        <!-- "Use root" is an explicit choice on each device (RootAccess). -->
+        <exclude domain="sharedpref" path="eclipse2_root.xml" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="file" path="ig_logs/" />
         <exclude domain="file" path="instaeclipse_companion.log" />
         <exclude domain="file" path="instaeclipse_logging.log" />
+        <!-- Clone trust pins are per install and must be re-approved (CloneTrust). -->
+        <exclude domain="sharedpref" path="eclipse2_clone_trust.xml" />
+        <!-- Crash-report bookkeeping is per device. -->
+        <exclude domain="sharedpref" path="eclipse2_crash.xml" />
+        <!-- "Use root" is an explicit choice on each device (RootAccess). -->
+        <exclude domain="sharedpref" path="eclipse2_root.xml" />
     </device-transfer>
 </data-extraction-rules>

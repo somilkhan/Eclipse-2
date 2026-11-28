@@ -90,6 +90,8 @@ public class FeatureManager {
             FeatureStatusTracker.setDisabled("LockDirectMessages");
         }
 
+        reg(FeatureFlags.lockWholeApp, "LockWholeApp", R.string.ig_dialog_misc_lock_whole_app);
+
         if (FeatureFlags.hideSpecificChats) {
             FeatureStatusTracker.setEnabled("HideSpecificChats", R.string.ig_hide_chats_title);
         } else {
@@ -145,6 +147,8 @@ public class FeatureManager {
         } else {
             FeatureStatusTracker.setDisabled("ProfileFollowsYou");
         }
+
+        reg(FeatureFlags.copyProfileUsername, "CopyProfileUsername", R.string.ig_dialog_copy_profile_username);
 
         if (FeatureFlags.likeUndo) {
             FeatureStatusTracker.setEnabled("LikeUndo", R.string.ig_dialog_misc_like_undo);
@@ -285,6 +289,7 @@ public class FeatureManager {
         }
 
         // ── Newer features (concise labels for the load toast's dense grid) ───
+        reg(FeatureFlags.isAdBlockEnabled,     "AdBlocker",            R.string.ig_dialog_ad_block_ads);
         reg(FeatureFlags.chatExport,           "ChatExport",           R.string.ig_chat_export);
         reg(FeatureFlags.fancyBioFont,         "FancyBioFont",         R.string.ig_dialog_fancy_bio_font);
         reg(FeatureFlags.keepEditHistory,      "EditHistory",          R.string.ig_feat_edit_history);
@@ -341,6 +346,9 @@ public class FeatureManager {
             if (ExtrasFeatures.get(e.flag)) FeatureStatusTracker.setEnabled(e.flag, e.label);
             else FeatureStatusTracker.setDisabled(e.flag);
         }
+
+        // Models built with a custom like animation follow the switch (off -> Instagram's own).
+        io.github.somilkhan.instaeclipse2.mods.piko.LikeMetadataTracker.onFlagsChanged();
     }
 
     /** Register a feature in the load toast when enabled, or drop it when off. */

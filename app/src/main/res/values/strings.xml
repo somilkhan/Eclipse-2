@@ -1,19 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- app wide -->
     <string name="app_name">Eclipse 2</string>
-    <string name="home_compat_tested" tools:ignore="MissingTranslation">Tested version</string>
-    <string name="home_compat_untested_build" tools:ignore="MissingTranslation">Untested build</string>
-    <string name="home_compat_newer" tools:ignore="MissingTranslation">Newer than tested</string>
-    <string name="home_compat_newer_alpha" tools:ignore="MissingTranslation">Alpha build, untested</string>
-    <string name="home_compat_older" tools:ignore="MissingTranslation">Older than tested</string>
+    <string name="home_compat_tested" tools:ignore="MissingTranslation">Device-tested version</string>
+    <string name="home_compat_checked_offline" tools:ignore="MissingTranslation">Checked offline</string>
+    <string name="home_compat_msg_checked_offline" tools:ignore="MissingTranslation">Eclipse 2 %3$s\'s hooks were checked offline on this exact Instagram version (%1$s): every lookup was run against this APK with the hook checker. It has not been tested on a device yet, so a feature can still misbehave. If something breaks, look for ❌ lines in Logs.</string>
+    <string name="home_compat_untested_build" tools:ignore="MissingTranslation">Unchecked build</string>
+    <string name="home_compat_newer" tools:ignore="MissingTranslation">Newer than checked</string>
+    <string name="home_compat_newer_alpha" tools:ignore="MissingTranslation">Alpha build, unchecked</string>
+    <string name="home_compat_older" tools:ignore="MissingTranslation">Older than checked</string>
     <string name="home_compat_unknown" tools:ignore="MissingTranslation">Version not recognised</string>
-    <string name="home_compat_value" tools:ignore="MissingTranslation">Tested: %1$s</string>
+    <string name="home_compat_value" tools:ignore="MissingTranslation">Checked: %1$s</string>
     <string name="home_compat_dialog_title" tools:ignore="MissingTranslation">Instagram %1$s</string>
-    <string name="home_compat_msg_tested" tools:ignore="MissingTranslation">Eclipse 2 %3$s was checked on this exact Instagram version (%1$s). Every hook should load.</string>
+    <string name="home_compat_msg_tested" tools:ignore="MissingTranslation">Eclipse 2 %3$s was tested on a device with this exact Instagram version (%1$s). Every hook should load.</string>
     <string name="home_compat_msg_untested_build" tools:ignore="MissingTranslation">You have %1$s. Eclipse 2 %3$s was checked on %2$s, the same major version, so most features should work. If something breaks, look for ❌ lines in Logs.</string>
-    <string name="home_compat_msg_newer" tools:ignore="MissingTranslation">You have %1$s, which is newer than the version Eclipse 2 %3$s was checked on (%2$s). Instagram changes its code with every update, so some features may not load until Eclipse 2 is updated. Lines marked ❌ in Logs show which ones.\n\nFor everything to work, install %2$s.</string>
-    <string name="home_compat_msg_newer_alpha" tools:ignore="MissingTranslation">You have %1$s, an alpha build from the Play Store testing programme. It is newer than the version Eclipse 2 %3$s was checked on (%2$s), and alpha builds change every few days, so some features may not load. Lines marked ❌ in Logs show which ones.\n\nFor everything to work, leave the Instagram testing programme in the Play Store and install %2$s.</string>
-    <string name="home_compat_msg_older" tools:ignore="MissingTranslation">You have %1$s, which is older than the version Eclipse 2 %3$s was checked on (%2$s). Some features may not load. Install %2$s for the best results.</string>
+    <string name="home_compat_msg_newer" tools:ignore="MissingTranslation">You have %1$s, which is newer than the versions Eclipse 2 %3$s was checked on (newest stable: %2$s). Instagram changes its code with every update, so some features may not load until Eclipse 2 is updated. Lines marked ❌ in Logs show which ones.\n\nFor the best results, install %2$s.</string>
+    <string name="home_compat_msg_newer_alpha" tools:ignore="MissingTranslation">You have %1$s, an alpha build from the Play Store testing programme. It is newer than the versions Eclipse 2 %3$s was checked on (newest alpha: %2$s), and alpha builds change every few days, so some features may not load. Lines marked ❌ in Logs show which ones.\n\nFor the best results, install %2$s.</string>
+    <string name="home_compat_msg_older" tools:ignore="MissingTranslation">You have %1$s, which is older than the versions Eclipse 2 %3$s was checked on. Some features may not load. Install %2$s for the best results.</string>
     <string name="home_compat_msg_unknown" tools:ignore="MissingTranslation">Eclipse 2 %3$s couldn\'t read the Instagram version (%1$s). It was checked on %2$s.</string>
     <string name="home_compat_get_tested" tools:ignore="MissingTranslation">Get %1$s</string>
     <string name="legacy_module_title" tools:ignore="MissingTranslation">Old InstaEclipse is installed</string>
@@ -503,6 +505,7 @@
     <string name="ig_dialog_clean_feed_hide_community_notes">Hide Community Notes</string>
     <string name="ig_dialog_misc_profile_follows_label">Show \"Follows You\" on Profiles</string>
     <string name="ig_dialog_fancy_bio_font">Fancy Fonts in Bio</string>
+    <string name="ig_dialog_copy_profile_username">Copy username on profile long-press</string>
     <string name="ig_fancy_font_button">Fancy font</string>
     <string name="ig_fancy_font_title">Bio font</string>
     <string name="ig_fancy_font_note">Pick a style and what you type next uses it; text already there stays as it is. Latin and Greek letters and numbers get every style, strikethrough and underline work in every language.</string>

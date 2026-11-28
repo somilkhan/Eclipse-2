@@ -205,6 +205,7 @@ public class DownloadSaveService extends Service {
                         DownloadFiles.check(cancellation);
                         ModuleLog.line("(IE|DL) Original DASH failed; using captured progressive fallback");
                         saved = downloadAndSave(fallbackUrl, fFile, fMime, fSave, fUser, fUF);
+                        showToast(getString(R.string.ie_download_original_fell_back, saved.filename));
                     }
                 } else {
                     saved = fAudio != null ? downloadMergeAndSave(fUrl, fAudio, fFile, fMime, fSave, fUser, fUF)
@@ -297,7 +298,9 @@ public class DownloadSaveService extends Service {
 
             // Merge: 80–95 % (indeterminate — MediaMuxer gives no callbacks)
             pushProgress("Merging…", 80, 100, true);
-            mergeVideoAudio(tv.getAbsolutePath(), ta.getAbsolutePath(), out.getAbsolutePath());
+            // Engine join: Mp4Join for VP9/AV1 (MediaMuxer can't write them to MP4), interleaved
+            // native mux with rotation otherwise; both sources and the output are inspected.
+            DownloadEngine.joinVerified(tv, ta, out, cancellations.get(activeJobId));
 
             pushProgress("Saving…", 97, 100, false);
             String corrected = MediaTypeDetector.withCorrectExtension(
@@ -361,9 +364,11 @@ public class DownloadSaveService extends Service {
             int ai = selectTrack(ex, "audio/");
             if (ai < 0) throw new Exception("This video has no audio track");
             mux = new MediaMuxer(outPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-            int ao = mux.addTrack(ex.getTrackFormat(ai));
+            MediaFormat format = ex.getTrackFormat(ai);
+            int ao = mux.addTrack(format);
             mux.start();
-            copyTrackRange(ex, mux, ao, startUs, durationUs);
+            if (copyTrackRange(ex, mux, ao, format, startUs, durationUs) == 0)
+                throw new Exception("The selected audio range is empty");
             mux.stop();
         } finally {
             ex.release();
@@ -371,10 +376,21 @@ public class DownloadSaveService extends Service {
         }
     }
 
-    @SuppressLint("WrongConstant")
-    private static void copyTrackRange(MediaExtractor ex, MediaMuxer mux, int outTrack,
-                                       long startUs, long durationUs) {
-        ByteBuffer buf = ByteBuffer.allocate(1024 * 1024);
+    private static int selectTrack(MediaExtractor ex, String mime) {
+        for (int i = 0; i < ex.getTrackCount(); i++) {
+            String m = ex.getTrackFormat(i).getString(MediaFormat.KEY_MIME);
+            if (m != null && m.startsWith(mime)) { ex.selectTrack(i); return i; }
+        }
+        return -1;
+    }
+
+    /** @return the number of samples written */
+    private static int copyTrackRange(MediaExtractor ex, MediaMuxer mux, int outTrack, MediaFormat format,
+                                      long startUs, long durationUs) {
+        int declared = format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)
+                ? format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE) : 0;
+        ByteBuffer buf = ByteBuffer.allocate(Math.max(1024 * 1024, Math.min(declared, 64 * 1024 * 1024)));
+        int written = 0;
         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
         long end = durationUs > 0 ? startUs + durationUs : Long.MAX_VALUE;
         ex.seekTo(Math.max(0, startUs), MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
@@ -387,11 +403,13 @@ public class DownloadSaveService extends Service {
                 info.offset = 0;
                 info.size = sz;
                 info.presentationTimeUs = t - startUs;
-                info.flags = ex.getSampleFlags();
+                info.flags = LegacyMediaSave.muxerFlags(ex.getSampleFlags());
                 mux.writeSampleData(outTrack, buf, info);
+                written++;
             }
             ex.advance();
         }
+        return written;
     }
 
     // ── SAF write ────────────────────────────────────────────────────────────
@@ -582,47 +600,6 @@ public class DownloadSaveService extends Service {
         return DownloadEngine.fetch(this, url, dest, mime, cancellations.get(activeJobId),
                 (phase, done, total) -> { if (cb != null) cb.onProgress(done, total); });
     }
-    private static void mergeVideoAudio(String vp, String ap, String op) throws Exception {
-        MediaExtractor vEx = new MediaExtractor(), aEx = new MediaExtractor();
-        MediaMuxer mux = new MediaMuxer(op, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-        try {
-            vEx.setDataSource(vp); aEx.setDataSource(ap);
-            int vi = selectTrack(vEx, "video/"), ai = selectTrack(aEx, "audio/");
-            if (vi < 0 || ai < 0) throw new Exception("Missing video or audio track");
-            int vo = mux.addTrack(vEx.getTrackFormat(vi));
-            int ao = mux.addTrack(aEx.getTrackFormat(ai));
-            mux.start();
-            ByteBuffer buf = ByteBuffer.allocate(1024 * 1024);
-            MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-            copyTrack(vEx, mux, vo, buf, info);
-            copyTrack(aEx, mux, ao, buf, info);
-            mux.stop();
-        } finally { vEx.release(); aEx.release(); mux.release(); }
-    }
-
-    private static int selectTrack(MediaExtractor ex, String mime) {
-        for (int i = 0; i < ex.getTrackCount(); i++) {
-            String m = ex.getTrackFormat(i).getString(MediaFormat.KEY_MIME);
-            if (m != null && m.startsWith(mime)) { ex.selectTrack(i); return i; }
-        }
-        return -1;
-    }
-
-    @SuppressLint("WrongConstant")
-    private static void copyTrack(MediaExtractor ex, MediaMuxer mux, int outTrack,
-                                   ByteBuffer buf, MediaCodec.BufferInfo info) {
-        ex.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-        while (true) {
-            int sz = ex.readSampleData(buf, 0);
-            if (sz < 0) break;
-            info.offset = 0; info.size = sz;
-            info.presentationTimeUs = ex.getSampleTime();
-            info.flags = ex.getSampleFlags();
-            mux.writeSampleData(outTrack, buf, info);
-            ex.advance();
-        }
-    }
-
     // ── Notification helpers ──────────────────────────────────────────────────
 
     /**

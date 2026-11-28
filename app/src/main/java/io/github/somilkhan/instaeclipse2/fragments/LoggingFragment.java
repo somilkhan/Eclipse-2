@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,7 +62,6 @@ import java.util.regex.Pattern;
 import io.github.somilkhan.instaeclipse2.BuildConfig;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.CommonUtils;
-import io.github.somilkhan.instaeclipse2.utils.core.ExportBrand;
 import io.github.somilkhan.instaeclipse2.utils.log.LogExport;
 import io.github.somilkhan.instaeclipse2.utils.log.LogMirrorProvider;
 import io.github.somilkhan.instaeclipse2.utils.log.LogWindow;
@@ -152,6 +152,8 @@ public class LoggingFragment extends Fragment {
     private boolean loadedOnce;
 
     private final Map<String, String> liveReplies = new HashMap<>();
+    /** Logs read with root from Instagram's data dir, for apps whose mirror file is missing. */
+    private final Map<String, String> rootLogs = new HashMap<>();
     private boolean waitingForInstagram;
     private boolean noTargetInstalled;
     private Runnable pendingTimeout;
@@ -302,6 +304,7 @@ public class LoggingFragment extends Fragment {
         List<String> targets = findInstalledTargets(ctx);
         noTargetInstalled = targets.isEmpty();
         if (noTargetInstalled) return;
+        readMissingWithRoot(ctx.getApplicationContext());
         cancelLogReplies();
         logsNonce = io.github.somilkhan.instaeclipse2.utils.core.IpcSecurity.newNonce();
         for (String pkg : targets) {
@@ -311,6 +314,11 @@ public class LoggingFragment extends Fragment {
             io.github.somilkhan.instaeclipse2.utils.ipc.ModuleReplies.Pending pending =
                     io.github.somilkhan.instaeclipse2.utils.core.IpcSecurity.requestReply(ctx, request, CommonUtils.ACTION_LOGS_REPLY, logReplyReceiver);
             if (pending != null) logReplies.add(pending);
+        }
+        // Nothing was sent (no trusted host): don't show a 3 s spinner waiting for nobody.
+        if (logReplies.isEmpty()) {
+            updateStatus();
+            return;
         }
         waitingForInstagram = true;
         setProgress(true);
@@ -324,6 +332,42 @@ public class LoggingFragment extends Fragment {
         mainHandler.postDelayed(pendingTimeout, INSTAGRAM_REPLY_TIMEOUT_MS);
     }
 
+    /**
+     * Root fallback (opt-in): when Instagram can't write the mirror file (started before the
+     * companion was installed or updated, or provider blocked), read its own log file instead.
+     * Only for signer-trusted hosts; never runs su when "Use root" is off.
+     */
+    private void readMissingWithRoot(Context app) {
+        if (io.github.somilkhan.instaeclipse2.utils.root.RootAccess.session(app).plannedPath()
+                != io.github.somilkhan.instaeclipse2.utils.root.RootCommands.Path.ROOT) {
+            rootLogs.clear();
+            return;
+        }
+        List<String> missing = new ArrayList<>();
+        for (String pkg : io.github.somilkhan.instaeclipse2.utils.root.RootUi.installedTargets(app, true)) {
+            File f = new File(LogMirrorProvider.mirrorDir(app), pkg + ".log");
+            if (!f.isFile() || f.length() == 0) missing.add(pkg);
+        }
+        if (missing.isEmpty()) {
+            rootLogs.clear();
+            return;
+        }
+        io.github.somilkhan.instaeclipse2.utils.root.RootActions actions = io.github.somilkhan.instaeclipse2.utils.root.RootUi.actions(app);
+        io.github.somilkhan.instaeclipse2.utils.root.RootAccess.runAsync(() -> {
+            Map<String, String> got = new HashMap<>();
+            for (String pkg : missing) {
+                String text = actions.readModuleLog(pkg);
+                if (text != null && !text.isEmpty()) got.put(pkg, text);
+            }
+            return got;
+        }, got -> {
+            if (listView == null) return;
+            rootLogs.clear();
+            if (got != null) rootLogs.putAll(got);
+            if (!rootLogs.isEmpty()) reload();
+        });
+    }
+
     private void cancelLogReplies() {
         for (io.github.somilkhan.instaeclipse2.utils.ipc.ModuleReplies.Pending reply : logReplies) reply.cancel();
         logReplies.clear();
@@ -334,7 +378,8 @@ public class LoggingFragment extends Fragment {
         if (ctx == null) return;
         Context app = ctx.getApplicationContext();
         int gen = loadGeneration.incrementAndGet();
-        Map<String, String> replies = new HashMap<>(liveReplies);
+        Map<String, String> replies = new HashMap<>(rootLogs);
+        replies.putAll(liveReplies); // a live answer is newer than the file read with root
         String companionTag = getString(R.string.logs_source_companion);
         if (!loadedOnce) setProgress(true);
         List<Entry> current = allEntries; // treated as immutable; replaced, never mutated
@@ -628,6 +673,7 @@ public class LoggingFragment extends Fragment {
         int res;
         if (noTargetInstalled) res = R.string.logs_status_none;
         else if (!liveReplies.isEmpty()) res = R.string.logs_status_live;
+        else if (!rootLogs.isEmpty() && !waitingForInstagram) res = R.string.logs_status_root;
         else if (!waitingForInstagram) res = R.string.logs_status_saved;
         else {
             statusView.setVisibility(View.GONE);
@@ -714,13 +760,14 @@ public class LoggingFragment extends Fragment {
         if (uri == null || ctx == null) return; // picker cancelled
         Context app = ctx.getApplicationContext();
         Map<String, String> replies = new HashMap<>(liveReplies);
+        Map<String, String> fromRoot = new HashMap<>(rootLogs);
         String companionTitle = getString(R.string.logs_export_companion_section);
         saving = true;
         setProgress(true);
         io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx, R.string.logs_saving, Toast.LENGTH_SHORT).show();
         try {
             exportExecutor.execute(() -> {
-                boolean ok = writeFullLog(app, uri, replies, companionTitle);
+                boolean ok = writeFullLog(app, uri, replies, fromRoot, companionTitle);
                 mainHandler.post(() -> {
                     saving = false;
                     if (!waitingForInstagram) setProgress(false);
@@ -736,7 +783,8 @@ public class LoggingFragment extends Fragment {
     }
 
     /** Background thread. Streams every log source completely: no entry or size cap. */
-    private static boolean writeFullLog(Context app, Uri uri, Map<String, String> replies, String companionTitle) {
+    private static boolean writeFullLog(Context app, Uri uri, Map<String, String> replies,
+                                        Map<String, String> fromRoot, String companionTitle) {
         try (OutputStream raw = app.getContentResolver().openOutputStream(uri, "wt")) {
             if (raw == null) return false;
             OutputStream out = new java.io.BufferedOutputStream(raw, 64 * 1024);
@@ -761,6 +809,12 @@ public class LoggingFragment extends Fragment {
                 if (written.containsKey(r.getKey()) || r.getValue() == null || r.getValue().isEmpty()) continue;
                 LogExport.writeText(out, LogExport.sectionTitle("Instagram log [" + r.getKey() + "] (live reply)"));
                 LogExport.writeText(out, r.getValue());
+                written.put(r.getKey(), true);
+            }
+            for (Map.Entry<String, String> r : fromRoot.entrySet()) {
+                if (written.containsKey(r.getKey()) || r.getValue() == null || r.getValue().isEmpty()) continue;
+                LogExport.writeText(out, LogExport.sectionTitle("Instagram log [" + r.getKey() + "] (read with root)"));
+                LogExport.writeText(out, r.getValue());
             }
             LogExport.writeText(out, LogExport.sectionTitle(companionTitle));
             LogExport.writeText(out, Logging.getSnapshot());
@@ -777,7 +831,7 @@ public class LoggingFragment extends Fragment {
         info.appVersionName = BuildConfig.VERSION_NAME;
         info.appVersionCode = BuildConfig.VERSION_CODE;
         info.buildType = BuildConfig.BUILD_TYPE;
-        info.testedInstagram = ExportBrand.TESTED_INSTAGRAM;
+        info.checkedInstagram = io.github.somilkhan.instaeclipse2.utils.core.IgCompat.evidenceSummary();
         info.instagram = new ArrayList<>();
         PackageManager pm = ctx.getPackageManager();
         for (String pkg : CommonUtils.SUPPORTED_PACKAGES) {
@@ -797,13 +851,23 @@ public class LoggingFragment extends Fragment {
     private void clearLogs() {
         Context ctx = getContext();
         if (ctx == null) return;
-        for (String pkg : findInstalledTargets(ctx)) {
-            Intent clear = new Intent(CommonUtils.ACTION_CLEAR_LOGS);
-            clear.setPackage(pkg);
-            ctx.sendBroadcast(clear);
-        }
+        new MaterialAlertDialogBuilder(ctx)
+                .setTitle(R.string.logs_clear_confirm_title)
+                .setMessage(R.string.logs_clear_confirm_body)
+                .setNegativeButton(R.string.ig_dialog_cancel, null)
+                .setPositiveButton(R.string.logs_clear_confirm_action, (dialog, which) -> performClearLogs())
+                .show();
+    }
+
+    private void performClearLogs() {
+        Context ctx = getContext();
+        if (ctx == null) return;
+        // Only to signer-trusted hosts, like every other companion -> Instagram command (this
+        // used to go to any installed package with a supported name).
+        CommonUtils.broadcastToInstagram(ctx, new Intent(CommonUtils.ACTION_CLEAR_LOGS));
         Logging.clear();
         liveReplies.clear();
+        rootLogs.clear();
         Context app = ctx.getApplicationContext();
         try {
             loadExecutor.execute(() -> {

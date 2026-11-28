@@ -157,6 +157,25 @@ public class NativeDownloadEngineTest {
     @Test public void portableVp9ProducesVerified1080PortraitWithAac() throws Exception {
         assertEquals("video/x-vnd.on2.vp9", joinAndCheck("vp9-1080.mp4", "aac-1s.mp4", 1080, 1920, "vp09", true).videoCodec);
     }
+    @Test public void legacyJoinVerifiedWritesVp9ThatMediaMuxerCannot() throws Exception {
+        File output = file();
+        DownloadEngine.joinVerified(fixture("vp9-1080.mp4"), fixture("aac-1s.mp4"), output, cancellation);
+        DownloadEngine.Metadata joined = DownloadEngine.inspect(output, true, expected(1080, 1920, "vp09"), cancellation);
+        assertEquals("video/x-vnd.on2.vp9", joined.videoCodec);
+        assertTrue(joined.hasAudio);
+    }
+    @Test public void legacyJoinVerifiedKeepsRotation() throws Exception {
+        File output = file();
+        DownloadEngine.joinVerified(fixture("h264-rotated.mp4"), fixture("aac.mp4"), output, cancellation);
+        int rotation = DownloadEngine.inspect(output, true, expected(0, 0, ""), cancellation).rotation;
+        assertTrue("Expected a quarter-turn rotation, got " + rotation, rotation == 90 || rotation == 270);
+    }
+    @Test public void legacyJoinVerifiedDeletesOutputOnFailure() throws Exception {
+        File output = file();
+        assertThrows(DownloadEngine.Failure.class, () -> DownloadEngine.joinVerified(
+                fixture("aac.mp4"), fixture("aac.mp4"), output, cancellation));
+        assertFalse(output.exists());
+    }
     @Test public void portableAv1IsReadableByTheDeviceExtractor() throws Exception {
         assertEquals("video/av01", joinAndCheck("av1.mp4", "aac.mp4", 320, 240, "av01", true).videoCodec);
     }

@@ -77,6 +77,52 @@ public class PikoHelpersTest {
         assertNull(LikeAnimations.pick(LikeAnimations.RANDOM, Collections.singletonList("UNRECOGNIZED"), new Random()));
     }
 
+    @Test public void defaultHeartIsNotACustomAnimation() {
+        assertTrue(!LikeAnimations.isSelectable(LikeAnimations.DEFAULT_HEART));
+        assertNull(LikeAnimations.pick(LikeAnimations.RANDOM,
+                Collections.singletonList(LikeAnimations.DEFAULT_HEART), new Random(1)));
+    }
+
+    @Test public void metadataNameMatchesAcrossEnums() {
+        java.util.List<String> meta = Arrays.asList("ARES_LIKE_ACTIVATION", "RINGS_LIKE_AKI_KOCHI",
+                "RINGS_LIKE_NINA", "RINGS_LIKE_NIGEL", "UNRECOGNIZED");
+        assertEquals("RINGS_LIKE_NINA", LikeAnimations.metadataName("RINGS_LIKE_NINA", meta));
+        assertEquals("RINGS_LIKE_AKI_KOCHI", LikeAnimations.metadataName("RINGS_LIKE_AKI_KOICHI", meta));
+        assertNull(LikeAnimations.metadataName("RINGS_LIKE_ZARNA", meta));
+        assertNull(LikeAnimations.metadataName("ARES_LIKE_ACTIVATION", meta));
+        assertNull(LikeAnimations.metadataName(null, meta));
+        // Near-misses are different animations, not spellings: no fuzzy matching.
+        assertNull(LikeAnimations.metadataName("RINGS_LIKE_NINO", meta));
+        // Aliases work both ways, and an exact name wins over its alias.
+        List<String> render = Arrays.asList("RINGS_LIKE_AKI_KOICHI", "UNRECOGNIZED");
+        assertEquals("RINGS_LIKE_AKI_KOICHI", LikeAnimations.metadataName("RINGS_LIKE_AKI_KOCHI", render));
+        assertEquals("RINGS_LIKE_AKI_KOICHI", LikeAnimations.metadataName("RINGS_LIKE_AKI_KOICHI",
+                Arrays.asList("RINGS_LIKE_AKI_KOCHI", "RINGS_LIKE_AKI_KOICHI")));
+    }
+
+    @Test public void similarNamesAreNotSwapped() {
+        List<String> onlyAdrian = Arrays.asList("RINGS_LIKE_ADRIAN", "RINGS_LIKE_NINA", "UNRECOGNIZED");
+        assertNull(LikeAnimations.metadataName("RINGS_LIKE_BRIAN", onlyAdrian));
+        assertNull(LikeAnimations.metadataName("RINGS_LIKE_LINDA", onlyAdrian));
+    }
+
+    enum FakeAnim { UNRECOGNIZED, ARES_LIKE_ACTIVATION, RINGS_LIKE_AKI_KOCHI, RINGS_LIKE_NINA }
+
+    @Test public void resolverMapsAndCachesPicks() {
+        java.util.Map<String, Object> byName = new java.util.HashMap<>();
+        for (FakeAnim a : FakeAnim.values()) byName.put(a.name(), a);
+        LikeAnimations.Resolver r = new LikeAnimations.Resolver(byName);
+        assertEquals(FakeAnim.RINGS_LIKE_NINA, r.get("RINGS_LIKE_NINA"));
+        assertEquals(FakeAnim.RINGS_LIKE_AKI_KOCHI, r.get("RINGS_LIKE_AKI_KOICHI"));
+        assertNull(r.get("RINGS_LIKE_NINO"));
+        assertNull(r.get("ARES_LIKE_ACTIVATION"));
+        assertNull(r.get("UNRECOGNIZED"));
+        assertNull(r.get(null));
+        byName.clear(); // cached: no further lookups in the map
+        assertEquals(FakeAnim.RINGS_LIKE_NINA, r.get("RINGS_LIKE_NINA"));
+        assertNull(r.get("RINGS_LIKE_NINO"));
+    }
+
     @Test public void knownNamesAreSelectable() {
         for (String k : LikeAnimations.KNOWN) assertTrue(k, LikeAnimations.isSelectable(k));
     }

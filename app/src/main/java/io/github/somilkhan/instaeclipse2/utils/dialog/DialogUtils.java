@@ -196,7 +196,7 @@ public class DialogUtils {
         mainLayout.addView(sectionHeader(context, I18n.t(context, R.string.feat_group_social)));
         LinearLayout social = createGroupCard(context);
         social.addView(createMenuRow(context, R.drawable.ic_heart, I18n.t(context, R.string.menu_likes_comments), A_SOCIAL, () -> showLikesCommentsOptions(context), onCount(context, "disableDoubleTapLike", "likeUndo", "enableCopyComment", "commentSearch", "enableCaptionCopy")));
-        social.addView(createMenuRow(context, R.drawable.ic_eye, I18n.t(context, R.string.menu_profiles), A_SOCIAL, () -> showProfilesOptions(context), onCount(context, "profileFollowsYouLabel", "fancyBioFont", "showFollowerToast", "followListExport", "followersHistory", "savedOnProfile", "hideThreadsButton")));
+        social.addView(createMenuRow(context, R.drawable.ic_eye, I18n.t(context, R.string.menu_profiles), A_SOCIAL, () -> showProfilesOptions(context), onCount(context, "profileFollowsYouLabel", "fancyBioFont", "copyProfileUsername", "showFollowerToast", "followListExport", "followersHistory", "savedOnProfile", "hideThreadsButton")));
         mainLayout.addView(social);
 
         // ---- TOOLS ---- app & account, developer, backup, restart, cache, about
@@ -299,13 +299,19 @@ public class DialogUtils {
 
     /** Switch for FeatureFlags.{flag}: toggling sets the flag, saves, then runs {@code after} (may be null). */
     private static ToggleRow flagSwitch(Context context, int iconRes, String accentHex, int labelRes, String flag, Runnable after) {
-        ToggleRow row = createSwitch(context, iconRes, accentHex, I18n.t(context, labelRes), flagValue(flag));
+        ToggleRow row = createSwitch(context, iconRes, accentHex, restartLabel(context, I18n.t(context, labelRes), flag), flagValue(flag));
         row.setOnCheckedChangeListener((b, checked) -> {
             setFlagValue(flag, checked);
             SettingsManager.saveAllFlags();
             if (after != null) after.run();
         });
         return row;
+    }
+
+    /** Appends "Restart Instagram to apply" for features that only install at startup. */
+    private static String restartLabel(Context context, String label, String flag) {
+        return io.github.somilkhan.instaeclipse2.utils.feature.RestartRequired.withNote(
+                label, flag, I18n.t(context, R.string.ig_feat_restart_needed));
     }
 
     private static ToggleRow flagSwitch(Context context, int iconRes, String accentHex, int labelRes, String flag) {
@@ -394,29 +400,38 @@ public class DialogUtils {
         versions.addView(statusChip(context, I18n.t(context, R.string.menu_chip_instagram, hostVersion(context)), C_TEXT2, null));
         box.addView(versions);
 
-        java.util.Map<String, Boolean> status = FeatureStatusTracker.getStatus();
-        int total = status.size(), active = 0;
-        java.util.List<String> inactive = new java.util.ArrayList<>();
-        synchronized (status) {
-            for (java.util.Map.Entry<String, Boolean> e : status.entrySet()) {
-                if (Boolean.TRUE.equals(e.getValue())) active++;
-                else inactive.add(FeatureStatusTracker.getLabel(context, e.getKey()));
+        java.util.Map<String, FeatureStatusTracker.HealthState> status = FeatureStatusTracker.getHealthStatus();
+        java.util.List<String> runtime = new java.util.ArrayList<>();
+        java.util.List<String> installed = new java.util.ArrayList<>();
+        java.util.List<String> unverified = new java.util.ArrayList<>();
+        java.util.List<String> failed = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<String, FeatureStatusTracker.HealthState> e : status.entrySet()) {
+            String label = FeatureStatusTracker.getLabel(context, e.getKey());
+            switch (e.getValue()) {
+                case RUNTIME_OBSERVED: runtime.add(label); break;
+                case INSTALLED: installed.add(label); break;
+                case FAILED: failed.add(label + " — " + FeatureStatusTracker.getFailureReason(e.getKey())); break;
+                case NOT_EXERCISED:
+                default: unverified.add(label); break;
             }
         }
-        final int finalActive = active;
+        java.util.Collections.sort(runtime);
+        java.util.Collections.sort(installed);
+        java.util.Collections.sort(unverified);
+        java.util.Collections.sort(failed);
+        int total = status.size();
         if (total > 0) {
-            int color = active == total ? 0xFF30D158 : 0xFFFF9F0A;
-            View health = statusChip(context, "●  " + I18n.t(context, R.string.menu_chip_active, active, total), color, v -> {
-                StringBuilder msg = new StringBuilder();
-                if (inactive.isEmpty()) {
-                    msg.append(I18n.t(context, R.string.menu_inactive_all_good));
-                } else {
-                    msg.append(I18n.t(context, R.string.menu_inactive_hint)).append("\n");
-                    java.util.Collections.sort(inactive);
-                    for (String label : inactive) msg.append("\n•  ").append(label);
-                }
-                // Title is the count itself ("55/55 active"); the body says all-good or lists what failed.
-                showSimpleDialog(context, I18n.t(context, R.string.menu_chip_active, finalActive, total), msg.toString());
+            int color = !failed.isEmpty() ? C_DANGER
+                    : (!installed.isEmpty() || !unverified.isEmpty()) ? 0xFFFF9F0A : 0xFF30D158;
+            String summary = I18n.t(context, R.string.menu_health_summary,
+                    runtime.size(), installed.size(), unverified.size(), failed.size());
+            View health = statusChip(context, "●  " + summary, color, v -> {
+                StringBuilder msg = new StringBuilder(I18n.t(context, R.string.menu_health_note));
+                appendHealthGroup(msg, I18n.t(context, R.string.menu_health_runtime, runtime.size()), runtime);
+                appendHealthGroup(msg, I18n.t(context, R.string.menu_health_installed, installed.size()), installed);
+                appendHealthGroup(msg, I18n.t(context, R.string.menu_health_unverified, unverified.size()), unverified);
+                appendHealthGroup(msg, I18n.t(context, R.string.menu_health_failed, failed.size()), failed);
+                showSimpleDialog(context, I18n.t(context, R.string.menu_health_title), msg.toString());
             });
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -425,6 +440,12 @@ public class DialogUtils {
             box.addView(health);
         }
         return box;
+    }
+
+    private static void appendHealthGroup(StringBuilder out, String heading, java.util.List<String> rows) {
+        if (rows.isEmpty()) return;
+        out.append("\n\n").append(heading);
+        for (String row : rows) out.append("\n•  ").append(row);
     }
 
     private static TextView statusChip(Context context, String text, int textColor, View.OnClickListener onClick) {
@@ -1715,6 +1736,7 @@ public class DialogUtils {
         layout.addView(cardOf(context,
                 flagSwitch(context, R.drawable.ic_notification, A_SOCIAL, R.string.ig_dialog_misc_profile_follows_label, "profileFollowsYouLabel"),
                 flagSwitch(context, R.drawable.ic_notification, A_SOCIAL, R.string.ig_dialog_fancy_bio_font, "fancyBioFont"),
+                flagSwitch(context, R.drawable.ic_content_copy, A_SOCIAL, R.string.ig_dialog_copy_profile_username, "copyProfileUsername"),
                 flagSwitch(context, R.drawable.ic_block, A_SOCIAL, R.string.ig_dialog_hide_threads_button, "hideThreadsButton"),
                 flagSwitch(context, R.drawable.ic_notification, A_SOCIAL, R.string.ig_dialog_misc_show_follower_toast, "showFollowerToast"),
                 flagSwitch(context, R.drawable.ic_download, A_SOCIAL, R.string.ig_dialog_misc_follow_export, "followListExport"),
@@ -2230,7 +2252,7 @@ public class DialogUtils {
         // ---- Colors ----
         // Enable-custom-theme + open the full color customizer.
         ToggleRow themeSwitch = createSwitch(context, R.drawable.ic_palette, "#FF2D55",
-                I18n.t(context, R.string.theme_enable), FeatureFlags.customThemeEnabled);
+                restartLabel(context, I18n.t(context, R.string.theme_enable), "customThemeEnabled"), FeatureFlags.customThemeEnabled);
         themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             FeatureFlags.customThemeEnabled = isChecked;
             SettingsManager.saveAllFlags();
@@ -2347,7 +2369,7 @@ public class DialogUtils {
         LinearLayout fontCard = card(context);
 
         ToggleRow fontSwitch = createSwitch(context, R.drawable.ic_palette, "#FF2D55",
-                I18n.t(context, R.string.ig_dialog_misc_custom_font), FeatureFlags.customFontEnabled);
+                restartLabel(context, I18n.t(context, R.string.ig_dialog_misc_custom_font), "customFontEnabled"), FeatureFlags.customFontEnabled);
         fontSwitch.setOnCheckedChangeListener((b, checked) -> {
             FeatureFlags.customFontEnabled = checked;
             SettingsManager.saveAllFlags();
@@ -2362,7 +2384,7 @@ public class DialogUtils {
                 }));
 
         ToggleRow emojiSwitch = createSwitch(context, R.drawable.ic_palette, "#FF2D55",
-                I18n.t(context, R.string.ig_dialog_misc_custom_emoji), FeatureFlags.customEmojiEnabled);
+                restartLabel(context, I18n.t(context, R.string.ig_dialog_misc_custom_emoji), "customEmojiEnabled"), FeatureFlags.customEmojiEnabled);
         emojiSwitch.setOnCheckedChangeListener((b, checked) -> {
             FeatureFlags.customEmojiEnabled = checked;
             SettingsManager.saveAllFlags();

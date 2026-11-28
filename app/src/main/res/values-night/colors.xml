@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ==== 0.8.4 "liquid glass" palette — DARK (brand indigo/pink, mirrors the in-IG sheet) ==== -->
-    <color name="ie_primary">#8B89FF</color>
-    <color name="ie_on_primary">#0E0D2A</color>
-    <color name="ie_primary_container">#2A2960</color>
-    <color name="ie_on_primary_container">#E6E5FF</color>
-    <color name="ie_secondary">#98989F</color>
+    <!-- Fixed companion palette; matches values/colors.xml, not Instagram theme settings.
+         Source: HyperSpring SettingsActivity.palette() and Motion.ACCENT (#FF5F45). -->
+    <color name="ie_primary">#FF5F45</color>
+    <color name="ie_on_primary">#000000</color>
+    <color name="ie_primary_container">#1A1A1E</color>
+    <color name="ie_on_primary_container">#F5F5F7</color>
+    <color name="ie_secondary">#8E8E96</color>
     <color name="ie_on_secondary">#000000</color>
-    <color name="ie_secondary_container">#2C2C2E</color>
-    <color name="ie_on_secondary_container">#F2F2F7</color>
-    <color name="ie_tertiary">#8B89FF</color>
-    <color name="ie_on_tertiary">#0E0D2A</color>
-    <color name="ie_tertiary_container">#2A2960</color>
-    <color name="ie_on_tertiary_container">#E6E5FF</color>
+    <color name="ie_secondary_container">#1A1A1E</color>
+    <color name="ie_on_secondary_container">#F5F5F7</color>
+    <color name="ie_tertiary">#8E8E96</color>
+    <color name="ie_on_tertiary">#000000</color>
+    <color name="ie_tertiary_container">#1A1A1E</color>
+    <color name="ie_on_tertiary_container">#F5F5F7</color>
 
     <color name="ie_background">#000000</color>
     <color name="ie_surface">#000000</color>
     <color name="ie_on_surface">#F5F5F7</color>
-    <color name="ie_surface_variant">#2C2C2E</color>
-    <color name="ie_on_surface_variant">#98989F</color>
+    <color name="ie_surface_variant">#1A1A1E</color>
+    <color name="ie_on_surface_variant">#8E8E96</color>
     <color name="ie_surface_lowest">#000000</color>
-    <color name="ie_surface_low">#1C1C1E</color>
-    <color name="ie_surface_container">#1C1C1E</color>
-    <color name="ie_surface_high">#2C2C2E</color>
-    <color name="ie_surface_highest">#3A3A3C</color>
-    <color name="ie_outline">#636366</color>
-    <color name="ie_outline_variant">#38383A</color>
+    <color name="ie_surface_low">#0E0E10</color>
+    <color name="ie_surface_container">#0E0E10</color>
+    <color name="ie_surface_high">#161619</color>
+    <color name="ie_surface_highest">#202024</color>
+    <color name="ie_outline">#8E8E96</color>
+    <color name="ie_outline_variant">#17FFFFFF</color>
     <color name="ie_error">#FF6B60</color>
     <color name="ie_on_error">#2A0603</color>
 
-    <color name="ie_glass_fill">#1C1C1E</color>
-    <color name="ie_glass_fill_raised">#1C1C1E</color>
-    <color name="ie_glass_outline">#12FFFFFF</color>
+    <color name="ie_glass_fill">#0E0E10</color>
+    <color name="ie_glass_fill_raised">#1A1A1E</color>
+    <color name="ie_glass_outline">#17FFFFFF</color>
     <color name="ie_glass_specular">#00FFFFFF</color>
     <color name="ie_glass_sheen">#00FFFFFF</color>
-    <color name="ie_glass_chrome">#B31C1C1E</color>
-    <color name="ie_glass_chrome_fallback">#F21C1C1E</color>
+    <color name="ie_glass_chrome">#0E0E10</color>
+    <color name="ie_glass_chrome_fallback">#0E0E10</color>
     <color name="ie_glass_indicator">#1FFFFFFF</color>
-    <color name="ie_glass_shadow">#66000000</color>
-    <color name="ie_separator">#99545458</color>
+    <color name="ie_glass_shadow">#00000000</color>
+    <color name="ie_separator">#17FFFFFF</color>
     <color name="ie_scrim">#8C000000</color>
-
     <color name="ie_mesh_base">#000000</color>
     <color name="ie_mesh_a">#00000000</color>
     <color name="ie_mesh_b">#00000000</color>
     <color name="ie_mesh_c">#00000000</color>
     <color name="ie_mesh_clear">#00000000</color>
 
+    <!-- Preserve success/warning/error/log semantics rather than recoloring as brand. -->
     <color name="ie_ok">#4CC38A</color>
     <color name="ie_warn">#E5A84B</color>
     <color name="ie_log_ok">#4CC38A</color>
     <color name="ie_log_warn">#E5A84B</color>
-    <color name="ie_on_accent_tile">#8B89FF</color>
-    <color name="ie_dialog_bg">#FA1C1C1E</color>
-    <color name="ie_dialog_bg_blur">#E61C1C1E</color>
-    <color name="ie_icon_tile">#298B89FF</color>
-    <color name="ie_fill_tertiary">#2C2C2E</color>
-    <color name="ie_switch_track_off">#39393D</color>
-    <color name="ie_switch_on">#30D158</color>
+    <color name="ie_on_accent_tile">@color/ie_primary</color>
+    <color name="ie_dialog_bg">#0E0E10</color>
+    <color name="ie_dialog_bg_blur">#0E0E10</color>
+    <color name="ie_icon_tile">#1A1A1E</color>
+    <color name="ie_fill_tertiary">#1A1A1E</color>
+    <color name="ie_switch_track_off">#26262B</color>
+    <color name="ie_switch_on">@color/ie_primary</color>
     <color name="ie_switch_thumb">#FFFFFF</color>
-    <color name="ie_glass_rim">#33FFFFFF</color>
-    <color name="ie_fill_capsule">#3D767680</color> <!-- iOS tertiarySystemFill: capsule buttons, search field -->
+    <color name="ie_glass_rim">#17FFFFFF</color>
+    <color name="ie_fill_capsule">#1A1A1E</color>
 </resources>

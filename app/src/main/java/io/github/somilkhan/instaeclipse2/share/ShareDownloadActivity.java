@@ -29,10 +29,9 @@ public class ShareDownloadActivity extends Activity {
         if (link == null) {
             io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(this, R.string.share_dl_no_link, Toast.LENGTH_SHORT).show();
         } else {
-            Intent ig = new Intent(Intent.ACTION_VIEW, Uri.parse(link))
+            Intent ig = ShareProof.attach(this, new Intent(Intent.ACTION_VIEW, Uri.parse(link))
                     .setPackage("com.instagram.android")
-                    .putExtra(ShareLinkDownloadHook.EXTRA, true)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             try {
                 startActivity(ig);
             } catch (ActivityNotFoundException e) {

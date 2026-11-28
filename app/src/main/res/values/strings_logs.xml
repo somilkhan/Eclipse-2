@@ -27,5 +27,8 @@
     <string name="logs_copied">Logs copied</string>
     <string name="logs_entry_copied">Entry copied</string>
     <string name="logs_cleared">Logs cleared</string>
+    <string name="logs_clear_confirm_title">Clear all logs?</string>
+    <string name="logs_clear_confirm_body">This permanently clears saved Instagram and Eclipse 2 logs. Export anything you need first.</string>
+    <string name="logs_clear_confirm_action">Clear logs</string>
     <string name="logs_source_companion">[app]</string>
 </resources>

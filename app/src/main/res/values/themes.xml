@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- 0.8.4 "liquid glass": branded palette in light + dark (values-night/colors.xml), drawn
-         edge-to-edge over a soft mesh backdrop (bg_mesh) so translucent glass surfaces read.
-         Dynamic Colors stay off on purpose: the companion matches the in-IG sheet's brand. -->
+    <!-- HyperSpring's current fixed OLED companion design: black, neutral fine-edged
+         surfaces and coral actions. This does not control Instagram's theme engine. -->
     <style name="Theme.InstaEclipse" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/bg_mesh</item>
+        <item name="android:windowBackground">@color/ie_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">@bool/ie_light_bars</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/ie_light_bars</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
         <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
         <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
@@ -43,8 +42,15 @@
         <item name="colorOutlineVariant">@color/ie_outline_variant</item>
         <item name="colorError">@color/ie_error</item>
         <item name="colorOnError">@color/ie_on_error</item>
+        <item name="colorAccent">@color/ie_primary</item>
+        <item name="colorControlActivated">@color/ie_primary</item>
+        <item name="colorControlNormal">@color/ie_on_surface_variant</item>
+        <item name="android:textColorPrimary">@color/ie_on_surface</item>
+        <item name="android:textColorSecondary">@color/ie_on_surface_variant</item>
+        <item name="android:textColorLink">@color/ie_primary</item>
+        <item name="elevationOverlayEnabled">false</item>
 
-        <!-- Inter everywhere: default TextView appearance (a theme-level fontFamily would
+        <!-- Native sans-serif defaults (a theme-level fontFamily would
              override every textAppearance's weight, so it is set via appearances only). -->
         <item name="android:textAppearance">@style/TextAppearance.IE.Default</item>
         <item name="android:textAppearanceSmall">@style/TextAppearance.IE.Default.Small</item>
@@ -54,7 +60,7 @@
         <item name="textAppearanceDisplayMedium">@style/TextAppearance.IE.Display.Medium</item>
         <item name="textAppearanceDisplaySmall">@style/TextAppearance.IE.Display.Small</item>
 
-        <!-- Type scale (SF-like rhythm, all sp so it follows the user's font scale) -->
+        <!-- Editorial titles and compact rows; sp follows the user's font scale. -->
         <item name="textAppearanceHeadlineLarge">@style/TextAppearance.IE.LargeTitle</item>
         <item name="textAppearanceHeadlineMedium">@style/TextAppearance.IE.Title1</item>
         <item name="textAppearanceHeadlineSmall">@style/TextAppearance.IE.Title2</item>
@@ -84,11 +90,11 @@
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.IE.ExtraLarge</item>
     </style>
 
-    <!-- Dialogs: rounded sheet; on API 31+ values-v31 makes it real frosted glass with blur. -->
+    <!-- Dialogs keep the same opaque neutral card language on every API level. -->
     <style name="ThemeOverlay.IE.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.IE.Dialog</item>
         <item name="backgroundTint">@color/ie_dialog_bg</item>
-        <item name="android:backgroundDimAmount">0.32</item>
+        <item name="android:backgroundDimAmount">0.55</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.IE.Title</item>
         <!-- Neutral sheet: no Material tonal (primary-tinted) surface overlay. -->
         <item name="elevationOverlayEnabled">false</item>

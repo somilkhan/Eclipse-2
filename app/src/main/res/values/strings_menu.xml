@@ -5,4 +5,23 @@
     <string name="menu_chip_active">%1$d/%2$d active</string>
     <string name="menu_inactive_all_good">Every enabled feature is active on this Instagram version.</string>
     <string name="menu_inactive_hint">These are switched on, but they could not attach to this Instagram version:</string>
+    <string name="menu_health_summary">Runtime %1$d · Installed %2$d · Pending %3$d · Failed %4$d</string>
+    <string name="menu_health_title">Feature health</string>
+    <string name="menu_health_runtime">Runtime observed (%1$d)</string>
+    <string name="menu_health_installed">Installed; awaiting a runtime signal (%1$d)</string>
+    <string name="menu_health_unverified">Not yet exercised or verified (%1$d)</string>
+    <string name="menu_health_failed">Failed (%1$d)</string>
+    <string name="menu_health_note">Working means Instagram has successfully used this feature. Hook attached means it is set up but has not reported a use yet. Not checked means there is no success signal yet; try it in Instagram. Failed means setup did not complete—open Logs for the reason.</string>
+    <string name="menu_health_state_runtime">Runtime observed</string>
+    <string name="menu_health_state_installed">Installed; awaiting a runtime signal</string>
+    <string name="menu_health_state_unverified">Not yet exercised or verified</string>
+    <string name="menu_health_state_failed">Failed</string>
+    <string name="menu_health_sheet_intro">Status for %1$d enabled features on this Instagram process</string>
+    <string name="menu_health_short_runtime">Working</string>
+    <string name="menu_health_short_installed">Hook attached</string>
+    <string name="menu_health_short_unverified">Not checked</string>
+    <string name="menu_health_short_failed">Failed</string>
+    <string name="menu_health_sheet_close">Close feature health</string>
+    <string name="menu_health_sheet_done">Done</string>
+    <string name="ig_toast_feature_details">Details</string>
 </resources>

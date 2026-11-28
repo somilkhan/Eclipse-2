@@ -330,12 +330,15 @@ All chat tools live in one Eclipse 2 button in the chat header, next to the back
 
 | | |
 |---|---|
-| **Tested on** | Instagram `457.0.0.55.73` |
-| **Hooks updated for** | Instagram `458.0.0.0.67` (not device-tested yet) |
+| **Main target** | Instagram `458.0.0.0.67` (alpha), hooks checked offline, not device-tested yet |
+| **Also checked offline** | Instagram `457.0.0.55.73` (stable), not device-tested yet |
+| **Device-tested** | None yet for this release |
 | **Also works in** | Instafel and InstaAlpha, including their clone apps |
-| **Get this version** | [Instagram 457.0.0.55.73 on APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) |
+| **Get a checked version** | [457.0.0.55.73 (stable)](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) or [458.0.0.0.67 (alpha)](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/) on APKMirror |
 | **Survives updates** | Yes, DexKit finds what it needs at runtime |
 | **Android** | 9 and newer |
+
+"Checked offline" means every hook lookup was run against that exact APK with the [hook checker](tools/hook-verify/README.md); it does not mean someone used the feature on a phone. The full list of builds, results and known failures is in [docs/COMPATIBILITY_MATRIX.md](docs/COMPATIBILITY_MATRIX.md). The Home screen shows where your installed Instagram stands.
 
 A big Instagram update can still knock a feature out until it is patched. The menu inside Instagram shows how many features are active (for example "62/62 active"); tap it to see which ones could not attach. If something breaks right after an update, check the [Telegram channel](https://t.me/InstaEclipse) first.
 
@@ -343,7 +346,7 @@ A big Instagram update can still knock a feature out until it is patched. The me
 
 ## Installation
 
-> Get Instagram [457.0.0.55.73 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) rather than the Play Store. The Play build is not always fully supported.
+> Get a checked Instagram build from APKMirror rather than the Play Store: [457.0.0.55.73 (stable)](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) or, if you are on the alpha channel, [458.0.0.0.67](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/). The Play build is not always fully supported.
 
 Download the latest Eclipse 2 APK from [**Releases**](https://github.com/somilkhan/Eclipse-2/releases/latest), then follow the path for your phone.
 
@@ -401,13 +404,13 @@ Turn off Hide My Applist (HMA) for Instagram. Eclipse 2 reads its text from its 
 Instagram's own config can block them. Open Developer Options and choose Restore Default Config. The same config is also on [Telegram](https://t.me/InstaEclipse/52).
 
 **Developer Options labels show up as numbers.**
-That happens on Instagram's Stable build. Use a Beta or Alpha build from APKMirror.
+That happens on Instagram's Stable build. A Beta or Alpha build from APKMirror shows the names; [458.0.0.0.67](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/) is the alpha this release was checked on.
 
 **I turned on Distraction Free but the content is still there.**
 Force stop Instagram and clear its cache, then open it again.
 
 **It does not work on the Play Store version.**
-Install [Instagram 457.0.0.55.73 from APKMirror](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) instead.
+Install a checked build from APKMirror instead: [457.0.0.55.73](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-457-0-0-55-73-release/) (stable) or [458.0.0.0.67](https://www.apkmirror.com/apk/instagram/instagram-instagram/instagram-458-0-0-0-67-release/) (alpha).
 
 **Still stuck?**
 Ask in the [Telegram group](https://t.me/instaEclipse_discussion). Someone will help.

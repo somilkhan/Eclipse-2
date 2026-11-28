@@ -1,4 +1,66 @@
 # Changelog
+
+## Unreleased
+
+### Features
+- Root access (opt-in): Features → Tools → Root access. "Use root (if available)" is off by
+  default and is not included in backups. The status shows not rooted / denied / granted, and the
+  check runs off the main thread with a 30 s timeout. When root is on and granted, three actions use
+  it: restart Instagram (`am force-stop`), clear the DexKit hooks cache in every installed supported
+  Instagram, and collect crash reports Instagram could not deliver. The Logs tab can also read the
+  module log straight from Instagram's data folder when its own copy is missing. Every action keeps
+  the old non-root path as a fallback, and the result message says which path was used and whether
+  root was tried and failed. Package names come from a fixed whitelist and are quoted, file names
+  are checked against a strict pattern, and there is no root IPC for other apps. Not tested on a
+  device yet.
+
+### App fixes
+- Home → Restart Instagram ran `su` on every device, even unrooted ones without asking, ignored its
+  result and waited a fixed 400 ms. It now uses root only when opted in, and otherwise opens App info.
+- Features → Tools → Restart App only showed a toast. It now restarts Instagram with root, or opens
+  App info so you can force stop it.
+- Resetting the download or crash report folder kept the old folder's permission forever. It is now
+  released unless the other setting still uses the same folder.
+- Crash reports: a failed write left an empty report file in the folder and failures were not logged.
+  The empty file is removed and every failure is logged. Very long reports are no longer cut in the
+  middle of an emoji.
+- Logs → Clear logs was sent to any app with an Instagram package name, also untrusted ones. It now
+  only goes to trusted Instagram builds, like every other command.
+- Logs showed a 3 second spinner even when no Instagram was asked for logs.
+- Home: the enabled features count missed features that are on by default (e.g. fingerprint
+  unlock), and pinned distraction shortcuts stayed locked after a Focus Lock had run out.
+
+### Fixes
+- Stories → Loop story did nothing on Instagram 458.0.0.0.67 ("expected 1 story completion
+  method, found 0"). Disable swipe for disappearing messages gets a fallback lookup for the
+  458.0.0.0.67 build seen on a device. Both now show as failed in the load toast when they miss.
+- Features that failed to find their Instagram code without saying so now show as failed in the load
+  toast: whole-app lock (it could open unlocked), chat Translate, Hide stories tray and Fancy bio font.
+  Developer options now shows as hooked. Caption copy and custom font log when their setup fails.
+- Ghost mode: the DM and channel Mark as read buttons switched Ghost seen back on if it had been
+  turned off with the quick toggle while the chat was open, and could overwrite a toggle made in
+  the same moment. They now open a short "let seen through" window without touching the setting,
+  and the window closes by itself after 2 seconds if anything goes wrong.
+- Reels → Force reel seek bar did nothing on Instagram 458 ("reel scrubber gate not found").
+  On 458 the `(config, duration, isLong)` wrapper that picked the "show scrubber" flag was inlined
+  into its callers, so there was nothing left to hook. The module now finds the config's
+  show-flags (the booleans every inlined caller reads beyond the shared duration check) and sets
+  them on every config Instagram builds. 457 keeps the old gate hook. Checked offline on
+  458.0.0.0.57; not tested on a device yet. Reels opened before the switch is turned on keep the
+  old config.
+- Download log on 458 reported `isVideo=not found` although video detection works there through
+  the hashed `video_versions` accessor. The log now names the path that is used.
+- Story follow button (FollowButtons) and the story tray filter failed to install on 457.0.0.55.73
+  (one component's name lookup, one enum `toString()` that throws). Both now resolve offline.
+- Feed → Custom like animation did nothing. Only `LikeActionView` was hooked, but Instagram picks
+  the like animation from `XDTUserActivationMetadataImpl(animation, Boolean enabled, ...)` and
+  plays the plain heart when it is missing or disabled. Its constructor now gets the picked
+  animation and `enabled = TRUE`, as in Piko, and the view uses Instagram's own metadata → render
+  mapping so both agree. Random picks one animation per app start for both. The plain heart
+  (`ARES_LIKE_ACTIVATION`) is no longer offered as a "custom" pick, and names spelled differently
+  in the two enums (AKI_KOICHI / AKI_KOCHI) are matched. The log now shows which layers hooked and
+  the first animation applied.
+
 ## 0.9.0 (versionCode 23), for Instagram 458.0.0.0.67
 
 Clone app support, automatic crash reports, the story download fix for Instagram 458 and 19

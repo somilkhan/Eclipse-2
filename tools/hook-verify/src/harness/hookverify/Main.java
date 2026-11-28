@@ -118,6 +118,19 @@ public final class Main {
           .append("**(harness)** = every failure line comes from the offline harness (stubbed Instagram code or ")
           .append("mockable android.jar), not from a lookup; confirm on a device.\n\n");
         sb.append("```\n").append(summaryTable(steps)).append("```\n\n");
+        if (!Recorder.features.isEmpty()) {
+            int h = 0, b = 0, q = 0;
+            for (String[] f : Recorder.features) { if ("HOOKED".equals(f[1])) h++; else if ("BROKEN".equals(f[1])) b++; else q++; }
+            sb.append("## Feature status (FeatureStatusTracker)\n\n")
+              .append("Every feature registered by `FeatureManager.refreshFeatureStatus()` with all flags on, after all steps. ")
+              .append("**HOOKED** = the feature reported its hook; **BROKEN** = it reported a failed lookup (shown red in ")
+              .append("the load toast); **SILENT** = it reported neither, so on a device the load toast cannot say whether it ")
+              .append("works. SILENT is not proof of a failure: runtime-only hooks report later.\n\n")
+              .append(String.format(Locale.ROOT, "HOOKED=%d BROKEN=%d SILENT=%d%n%n", h, b, q))
+              .append("| Feature key | State |\n|---|---|\n");
+            for (String[] f : Recorder.features) sb.append("| `").append(f[0]).append("` | ").append(f[1]).append(" |\n");
+            sb.append('\n');
+        }
         for (Recorder.Step s : steps) {
             sb.append("## ").append(status(s)).append(" — ").append(s.key).append("\n\n");
             sb.append("`").append(s.call).append("` (").append(s.millis).append(" ms)\n\n");
