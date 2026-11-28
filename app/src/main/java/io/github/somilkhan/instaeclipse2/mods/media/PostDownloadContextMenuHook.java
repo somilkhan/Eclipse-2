@@ -402,9 +402,7 @@ public class PostDownloadContextMenuHook {
         XC_MethodHook clickHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
-                if (!FeatureFlags.enablePostDownload && !FeatureFlags.enableReelDownload
-                        && !FeatureFlags.copyMediaLink && !FeatureFlags.offerCopyImage
-                        && !FeatureFlags.offerMediaInfo && !FeatureFlags.offerPlaybackSpeed) return;
+                if (!MediaMenuFeatures.anyMenuFeature()) return;
                 onOptionClicked(param);
             }
         };

@@ -35,6 +35,11 @@ public class IgThemeHook {
     private static volatile Field typedArrayAttrsField;
     private static volatile Field typedArrayResourcesField;
 
+    /** True once the color hooks are in; they are only installed when the theme is on at startup. */
+    public static boolean isInstalled() {
+        return installed;
+    }
+
     public void install(ClassLoader classLoader) {
         if (installed) return;
         // These hooks sit on very hot framework methods (getColor, resolveAttribute); on some
@@ -279,7 +284,8 @@ public class IgThemeHook {
         Activity activity = UIHookManager.getCurrentActivity();
         if (activity == null || activity.isFinishing()) return;
         IgThemeEngine.ensureInitialized(activity);
-        if (!FeatureFlags.customThemeEnabled) return;
+        // Without the hooks (theme was off at startup) a recreate shows nothing new.
+        if (!FeatureFlags.customThemeEnabled || !installed) return;
         IgColorRemapEngine.ensureBuilt(activity);
         applyWindowColors(activity);
         activity.getWindow().getDecorView().post(activity::recreate);

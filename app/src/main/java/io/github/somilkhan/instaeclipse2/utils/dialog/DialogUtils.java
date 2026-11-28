@@ -299,13 +299,19 @@ public class DialogUtils {
 
     /** Switch for FeatureFlags.{flag}: toggling sets the flag, saves, then runs {@code after} (may be null). */
     private static ToggleRow flagSwitch(Context context, int iconRes, String accentHex, int labelRes, String flag, Runnable after) {
-        ToggleRow row = createSwitch(context, iconRes, accentHex, I18n.t(context, labelRes), flagValue(flag));
+        ToggleRow row = createSwitch(context, iconRes, accentHex, restartLabel(context, I18n.t(context, labelRes), flag), flagValue(flag));
         row.setOnCheckedChangeListener((b, checked) -> {
             setFlagValue(flag, checked);
             SettingsManager.saveAllFlags();
             if (after != null) after.run();
         });
         return row;
+    }
+
+    /** Appends "Restart Instagram to apply" for features that only install at startup. */
+    private static String restartLabel(Context context, String label, String flag) {
+        return io.github.somilkhan.instaeclipse2.utils.feature.RestartRequired.withNote(
+                label, flag, I18n.t(context, R.string.ig_feat_restart_needed));
     }
 
     private static ToggleRow flagSwitch(Context context, int iconRes, String accentHex, int labelRes, String flag) {
@@ -2230,7 +2236,7 @@ public class DialogUtils {
         // ---- Colors ----
         // Enable-custom-theme + open the full color customizer.
         ToggleRow themeSwitch = createSwitch(context, R.drawable.ic_palette, "#FF2D55",
-                I18n.t(context, R.string.theme_enable), FeatureFlags.customThemeEnabled);
+                restartLabel(context, I18n.t(context, R.string.theme_enable), "customThemeEnabled"), FeatureFlags.customThemeEnabled);
         themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             FeatureFlags.customThemeEnabled = isChecked;
             SettingsManager.saveAllFlags();
@@ -2347,7 +2353,7 @@ public class DialogUtils {
         LinearLayout fontCard = card(context);
 
         ToggleRow fontSwitch = createSwitch(context, R.drawable.ic_palette, "#FF2D55",
-                I18n.t(context, R.string.ig_dialog_misc_custom_font), FeatureFlags.customFontEnabled);
+                restartLabel(context, I18n.t(context, R.string.ig_dialog_misc_custom_font), "customFontEnabled"), FeatureFlags.customFontEnabled);
         fontSwitch.setOnCheckedChangeListener((b, checked) -> {
             FeatureFlags.customFontEnabled = checked;
             SettingsManager.saveAllFlags();
@@ -2362,7 +2368,7 @@ public class DialogUtils {
                 }));
 
         ToggleRow emojiSwitch = createSwitch(context, R.drawable.ic_palette, "#FF2D55",
-                I18n.t(context, R.string.ig_dialog_misc_custom_emoji), FeatureFlags.customEmojiEnabled);
+                restartLabel(context, I18n.t(context, R.string.ig_dialog_misc_custom_emoji), "customEmojiEnabled"), FeatureFlags.customEmojiEnabled);
         emojiSwitch.setOnCheckedChangeListener((b, checked) -> {
             FeatureFlags.customEmojiEnabled = checked;
             SettingsManager.saveAllFlags();

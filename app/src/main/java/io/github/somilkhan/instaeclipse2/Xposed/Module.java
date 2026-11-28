@@ -56,7 +56,6 @@ import io.github.somilkhan.instaeclipse2.mods.misc.DisableVideoAutoPlayHook;
 import io.github.somilkhan.instaeclipse2.mods.misc.StoryMentionHook;
 import io.github.somilkhan.instaeclipse2.mods.network.IGNetworkInterceptor;
 import io.github.somilkhan.instaeclipse2.mods.ui.UIHookManager;
-import io.github.somilkhan.instaeclipse2.mods.ui.theme.IgThemeEngine;
 import io.github.somilkhan.instaeclipse2.mods.ui.theme.IgThemeHook;
 import io.github.somilkhan.instaeclipse2.utils.core.CommonUtils;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
@@ -905,8 +904,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     SettingsManager.loadAllFlags(ctx);
                     if ("airplaneMode".equals(key)) io.github.somilkhan.instaeclipse2.mods.extras.AirplaneModeHook.apply();
                     FeatureManager.refreshFeatureStatus();
-                    IgThemeEngine.invalidate();
-                    IgThemeHook.refreshCurrentActivity();
+                    io.github.somilkhan.instaeclipse2.mods.ui.theme.ThemeRefresh.onPrefChanged(key);
 
                 } else if ("io.github.somilkhan.instaeclipse2.ACTION_UPDATE_PREF_STRING".equals(action)) {
                     String key = intent.getStringExtra("key");
@@ -919,8 +917,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     prefs.edit().putString(key, value).apply();
 
                     SettingsManager.loadAllFlags(ctx);
-                    IgThemeEngine.invalidate();
-                    IgThemeHook.refreshCurrentActivity();
+                    io.github.somilkhan.instaeclipse2.mods.ui.theme.ThemeRefresh.onPrefChanged(key);
 
                 } else if ("io.github.somilkhan.instaeclipse2.ACTION_UPDATE_PREF_INT".equals(action)) {
                     String key = intent.getStringExtra("key");
@@ -934,8 +931,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     SettingsManager.loadAllFlags(ctx);
                     FeatureManager.refreshFeatureStatus();
-                    IgThemeEngine.invalidate();
-                    IgThemeHook.refreshCurrentActivity();
+                    io.github.somilkhan.instaeclipse2.mods.ui.theme.ThemeRefresh.onPrefChanged(key);
 
                 } else if (CommonUtils.ACTION_REQUEST_LOGS.equals(action)) {
                     // Re-attach/rewrite the companion-side mirror file first (covers the companion
