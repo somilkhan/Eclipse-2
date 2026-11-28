@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+### Features
+- Root access (opt-in): Features → Tools → Root access. "Use root (if available)" is off by
+  default and is not included in backups. The status shows not rooted / denied / granted, and the
+  check runs off the main thread with a 30 s timeout. When root is on and granted, three actions use
+  it: restart Instagram (`am force-stop`), clear the DexKit hooks cache in every installed supported
+  Instagram, and collect crash reports Instagram could not deliver. The Logs tab can also read the
+  module log straight from Instagram's data folder when its own copy is missing. Every action keeps
+  the old non-root path as a fallback, and the result message says which path was used and whether
+  root was tried and failed. Package names come from a fixed whitelist and are quoted, file names
+  are checked against a strict pattern, and there is no root IPC for other apps. Not tested on a
+  device yet.
+
+### App fixes
+- Home → Restart Instagram ran `su` on every device, even unrooted ones without asking, ignored its
+  result and waited a fixed 400 ms. It now uses root only when opted in, and otherwise opens App info.
+- Features → Tools → Restart App only showed a toast. It now restarts Instagram with root, or opens
+  App info so you can force stop it.
+- Resetting the download or crash report folder kept the old folder's permission forever. It is now
+  released unless the other setting still uses the same folder.
+- Crash reports: a failed write left an empty report file in the folder and failures were not logged.
+  The empty file is removed and every failure is logged. Very long reports are no longer cut in the
+  middle of an emoji.
+- Logs → Clear logs was sent to any app with an Instagram package name, also untrusted ones. It now
+  only goes to trusted Instagram builds, like every other command.
+- Logs showed a 3 second spinner even when no Instagram was asked for logs.
+- Home: the enabled features count missed features that are on by default (e.g. fingerprint
+  unlock), and pinned distraction shortcuts stayed locked after a Focus Lock had run out.
+
 ### Fixes
 - Ghost mode: the DM and channel Mark as read buttons switched Ghost seen back on if it had been
   turned off with the quick toggle while the chat was open, and could overwrite a toggle made in

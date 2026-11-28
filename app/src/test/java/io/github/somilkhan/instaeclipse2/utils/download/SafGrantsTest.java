@@ -16,4 +16,10 @@ public class SafGrantsTest {
         assertFalse(SafGrants.shouldRelease("", B));
         assertFalse(SafGrants.shouldRelease(null, B));
     }
+    /** APP-03: "Reset crash folder" has no new folder; the old grant is released unless downloads use it. */
+    @Test public void resetWithoutNewFolderReleasesUnlessShared() {
+        assertTrue(SafGrants.shouldRelease(A, null, ""));
+        assertTrue(SafGrants.shouldRelease(A, null, B));
+        assertFalse(SafGrants.shouldRelease(A, null, A));
+    }
 }
