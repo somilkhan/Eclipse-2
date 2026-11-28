@@ -1852,6 +1852,10 @@ public class FeedVideoDownloadHook {
             if (resolvedIsVideoMethod == null && !resolvedVideoVersionsGetters.isEmpty()) {
                 // 457+: "is_video" is read from the Pando tree, not a Media ()Z method.
                 ModuleLog.line("(IE|DL|DexKit) isVideo: no Media ()Z getter (457+ layout), using video_versions presence");
+            } else if (resolvedIsVideoMethod == null && hashedMedia) {
+                // 458+: no video_versions getter either; hasVideoVersions() reads it through the
+                // generic hashed accessor, like carousel/dash/has_audio above.
+                ModuleLog.line("(IE|DL|DexKit) isVideo: no Media ()Z getter (458+ layout), using hash(video_versions) presence");
             } else {
                 ModuleLog.line("(IE|DL|DexKit) isVideo="
                         + (resolvedIsVideoMethod == null ? "not found" : resolvedIsVideoMethod.getName()));
