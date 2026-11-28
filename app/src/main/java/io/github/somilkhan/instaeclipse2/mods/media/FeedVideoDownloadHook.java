@@ -272,7 +272,7 @@ public class FeedVideoDownloadHook {
                                     if (media != null) {
                                         String url = bestVideoUrlFromMedia(media);
                                         if (url != null) {
-                                            ModuleLog.line("(IE|Reel) media tag hit, url=" + url);
+                                            ModuleLog.line("(IE|Reel) media tag hit, url=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.url(url));
                                             onDownloadClicked(ctx, List.of(url), lv);
                                             return true;
                                         }
@@ -3065,7 +3065,7 @@ public class FeedVideoDownloadHook {
     private void onDownloadClicked(Context ctx, List<String> urls, View saveBtn) {
         currentDownloadUsername = getUsernameFromView(saveBtn);
         currentDownloadMediaId  = getMediaIdFromView(saveBtn);
-        ModuleLog.line("(IE|DL) onDownloadClicked username=" + currentDownloadUsername + " mediaId=" + currentDownloadMediaId);
+        ModuleLog.line("(IE|DL) onDownloadClicked username=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(currentDownloadUsername) + " mediaId=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(currentDownloadMediaId));
         List<String> videos = new ArrayList<>();
         List<String> images = new ArrayList<>();
         for (String url : urls) {
@@ -3095,7 +3095,7 @@ public class FeedVideoDownloadHook {
         executor.submit(() -> {
             String videoUrl = videos.get(0);
             TrackInfo t = probeUrl(videoUrl);
-            ModuleLog.line("(IE|DL) probeUrl=" + videoUrl
+            ModuleLog.line("(IE|DL) probeUrl=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.url(videoUrl)
                     + " hasVideo=" + t.hasVideo + " hasAudio=" + t.hasAudio);
             mainHandler.post(() -> {
                 if (!t.hasVideo && t.hasAudio) {

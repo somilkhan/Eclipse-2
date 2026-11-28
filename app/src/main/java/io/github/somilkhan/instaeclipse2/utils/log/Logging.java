@@ -234,7 +234,8 @@ public final class Logging {
             ArrayDeque<String> tail = new ArrayDeque<>();
             while ((line = readBoundedLine(br)) != null) {
                 if (tail.size() == MAX_LINES) tail.removeFirst();
-                tail.addLast(line);
+                // History written by older builds may predate redaction.
+                tail.addLast(LogRedact.text(line));
             }
             history.addAll(tail);
         } catch (Throwable ignored) {}
@@ -256,7 +257,9 @@ public final class Logging {
 
     public static void append(String line) {
         if (line == null || line.isEmpty()) return;
-        line = LogExport.clampEntry(line, MAX_LINE_CHARS);
+        // Safety net: no URL (signed CDN links, share links) reaches the buffer, file, mirror,
+        // export or crash-report tail with its path/query intact. Call sites redact ids too.
+        line = LogExport.clampEntry(LogRedact.text(line), MAX_LINE_CHARS);
         String time = TS.get().format(new Date());
         synchronized (LOCK) {
             if (line.equals(lastBody) && !LINES.isEmpty()) {
