@@ -65,3 +65,24 @@ P4 cosmetic.
 The first-round agents' reports were lost with that session. These IDs are referenced in the numbering but their findings
 were never committed, so their content is unknown and they are **not** claimed as fixed: HOOK-04, HOOK-05, HOOK-06,
 HOOK-08+, QA-07, SEC-03, SEC-05, SEC-06, PLAT-01, PLAT-02, PLAT-06, PLAT-07, MEDIA-05. They need a fresh audit.
+
+## App and root (APP-xx)
+
+Companion-app audit and opt-in root support (branch `maintainer/root-access`). Verification is unit tests and
+`assembleDebug` only; **nothing here is device-tested**.
+
+| ID | P | File | Root cause | Fix | Regression test | Status |
+|---|---|---|---|---|---|---|
+| APP-01 | P2 | `fragments/HomeFragment.java` `restartInstagram()` | Ran `su -c am force-stop` for every user with no opt-in, ignored failures, then relaunched after a fixed `postDelayed(400)`. | Uses `RootUi.restartInstagram`: root only when "Use root" is on and granted (checked off the main thread, logged), otherwise App info. No delay: launch runs after the root command returns. | `RootSessionTest.offByDefaultNeverStartsSu`, `RootCommandsTest` (force-stop quoting) | Unit tests + build |
+| APP-02 | P2 | `fragments/FeaturesFragment.java` Tools → Restart App | Subtitle said "Force stop and reopen Instagram" but it only showed a toast. | Same `RootUi.restartInstagram` path, prefers the official package. | None (UI); shares APP-01 tests | Build only |
+| APP-03 | P3 | `FeaturesFragment.resetCrashFolder()` / `resetDownloadFolder()` | Reset cleared the pref but never released the persisted SAF grant (apps have a limited number). | `SafGrants.releaseReplaced(old, null, otherSettingUri)`. | `SafGrantsTest.resetWithoutNewFolderReleasesUnlessShared` | Unit tests + build |
+| APP-04 | P3 | `utils/crash/CrashReportProvider.java` | Write failure left an empty `.txt` in the user folder; all failures were swallowed silently; `capText` could split a surrogate pair. | Delete the empty document, log every failure (`Log.w` + module log), surrogate-safe cap. | None (needs a document provider) | Build only |
+| APP-05 | P3 | `fragments/LoggingFragment.java` `clearLogs()` | Clear broadcast went to every installed package with a supported name, trusted or not. | `CommonUtils.broadcastToInstagram` (trusted hosts only). | None | Build only |
+| APP-06 | P4 | `LoggingFragment.loadLogs()` | 3 s spinner even when no trusted Instagram was asked. | Skip the wait when no request was sent. | None | Build only |
+| APP-07 | P4 | `fragments/HomeFragment.java` `updateFeatureCount()` / `refreshShortcuts()` | Count read unset keys as off, ignoring `FeatureFlags.defaultOn` (`lockUseFingerprint`); shortcut lock used `isExtremeMode` only, so an expired Focus Lock kept them locked. | `getBoolean(key, defaultOn(key))`; `SettingsRestore.isLocked(extreme, focusLockUntil, now)`. | Existing `SettingsRestore` lock tests cover the rule; no Home UI test | Build only |
+| ROOT-01 | — | `utils/root/**`, Tools → Root access, Logs | Feature: opt-in root (`su` via `ProcessBuilder`, script on stdin, timeouts, capped output, status cache, single background thread). Actions: force-stop, clear DexKit cache, collect pending crashes, read module log. Each has the old non-root fallback and the UI says which path ran. Commands are built only in `RootCommands` from whitelisted packages and single-quoted paths. Pref excluded from backups. | — | `RootCommandsTest`, `RootSessionTest`, `RootActionsCrashTest`, `BackupRulesTest.rootOptInIsExcludedEverywhere` | Unit tests + build; not device-tested |
+
+Not implemented with root (reasons): saving downloads to folders SAF cannot grant (download pipeline lives in `mods/`,
+lead's area); checking LSPosed scope (needs LSPosed's private database). Nothing was added for fingerprint spoofing,
+anti-ban, or hiding root/LSPosed.
+

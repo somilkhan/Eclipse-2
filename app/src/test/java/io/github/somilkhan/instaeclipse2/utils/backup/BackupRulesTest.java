@@ -46,4 +46,13 @@ public class BackupRulesTest {
             assertTrue(section, excludes((Element) n.item(0), "sharedpref", "eclipse2_clone_trust.xml"));
         }
     }
+
+    /** APP: "Use root" must be re-enabled on each device, never restored from a backup. */
+    @Test public void rootOptInIsExcludedEverywhere() throws Exception {
+        assertTrue(excludes(parse("backup_rules.xml").getDocumentElement(), "sharedpref", "eclipse2_root.xml"));
+        Document d = parse("data_extraction_rules.xml");
+        for (String section : new String[]{"cloud-backup", "device-transfer"}) {
+            assertTrue(section, excludes((Element) d.getElementsByTagName(section).item(0), "sharedpref", "eclipse2_root.xml"));
+        }
+    }
 }

@@ -428,6 +428,12 @@ public class FeaturesFragment extends Fragment {
         public boolean isCategory;
         /** Sub-menu this main-menu row opens (used to recompute its count). */
         Category category;
+        /**
+         * Companion-only switch outside the staged Save flow (e.g. "Use root"): its state comes
+         * from {@link #localChecked} and a toggle calls {@link #onLocalToggle} right away.
+         */
+        java.util.function.BooleanSupplier localChecked;
+        java.util.function.Consumer<Boolean> onLocalToggle;
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -563,6 +569,12 @@ public class FeaturesFragment extends Fragment {
                 } else {
                     itemHolder.swToggle.setVisibility(View.VISIBLE);
                     itemHolder.itemView.setOnClickListener(v -> itemHolder.swToggle.toggle());
+
+                    if (item.onLocalToggle != null) {
+                        itemHolder.swToggle.setChecked(item.localChecked != null && item.localChecked.getAsBoolean());
+                        itemHolder.swToggle.setOnCheckedChangeListener((btn, checked) -> item.onLocalToggle.accept(checked));
+                        return;
+                    }
 
                     boolean isChecked = false;
                     if (item.type == FeatureItem.TYPE_MASTER_SWITCH) {
@@ -983,6 +995,7 @@ public class FeaturesFragment extends Fragment {
                 rows.add(createTool(R.drawable.ic_ui_save, "#30D158", getString(R.string.ig_dialog_backup_settings), getString(R.string.tool_backup_sub), this::backupSettings));
                 rows.add(createTool(R.drawable.ic_ui_folder, "#0A84FF", getString(R.string.ig_dialog_restore_settings), getString(R.string.tool_restore_sub), this::restoreSettings));
                 rows.add(createTool(R.drawable.ic_ui_restart, "#FF9F0A", getString(R.string.ig_dialog_menu_restart), getString(R.string.tool_restart_sub), this::restartInstagram));
+                rows.add(createTool(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.root_menu_title), rootMenuSubtitle(), this::loadRootMenu));
                 rows.add(createTool(R.drawable.ic_ui_info, "#BF5AF2", getString(R.string.ig_dialog_menu_about), getString(R.string.tool_about_sub), this::showAboutDialog));
             }
             for (FeatureItem row : rows) row.isCategory = true;
@@ -1766,6 +1779,11 @@ public class FeaturesFragment extends Fragment {
     }
 
     private void resetCrashFolder() {
+        // Give the folder grant back (unless downloads still use it); it used to be kept forever
+        // and count against the per-app limit of persisted grants.
+        io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(requireContext().getContentResolver(),
+                localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""),
+                null, localCache.getString("downloaderCustomUri", ""));
         localCache.edit()
                 .remove(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI)
                 .remove(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_PATH)
@@ -2446,6 +2464,10 @@ public class FeaturesFragment extends Fragment {
     }
 
     private void resetDownloadFolder() {
+        // Release the folder grant unless crash reports still use it (it used to be kept forever).
+        io.github.somilkhan.instaeclipse2.utils.download.SafGrants.releaseReplaced(requireContext().getContentResolver(),
+                localCache.getString("downloaderCustomUri", ""), null,
+                localCache.getString(io.github.somilkhan.instaeclipse2.utils.crash.CrashReportProvider.PREF_URI, ""));
         SharedPreferences.Editor editor = localCache.edit();
         editor.remove("pathJustSetLocally");
         editor.putString("downloaderCustomUri", "");
@@ -2496,8 +2518,101 @@ public class FeaturesFragment extends Fragment {
         restoreFileLauncher.launch(new String[]{"application/json"});
     }
 
+    /**
+     * Same as the Home tab: force stop + reopen with root, else Instagram's App info page (it used
+     * to only show a "kill Instagram manually" toast). The official app is preferred.
+     */
     private void restartInstagram() {
-        io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_toast_restart_manual), Toast.LENGTH_LONG).show();
+        java.util.List<String> targets = io.github.somilkhan.instaeclipse2.utils.root.RootUi.installedTargets(requireContext(), false);
+        if (targets.isEmpty()) {
+            io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.not_installed_instagram), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String pkg = targets.contains(io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.IG_PACKAGE_NAME)
+                ? io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.IG_PACKAGE_NAME : targets.get(0);
+        io.github.somilkhan.instaeclipse2.utils.root.RootUi.restartInstagram(this, pkg, null);
+    }
+
+    // =========================================================
+    // ROOT ACCESS (optional, off by default)
+    // =========================================================
+
+    /** Status being checked right now (the root prompt may be showing). */
+    private boolean rootChecking;
+
+    private String rootMenuSubtitle() {
+        return isAdded() && io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(requireContext())
+                ? rootStatusText() : getString(R.string.root_menu_sub);
+    }
+
+    private String rootStatusText() {
+        Context ctx = requireContext();
+        if (!io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx)) return getString(R.string.root_status_off);
+        if (rootChecking) return getString(R.string.root_status_checking);
+        switch (io.github.somilkhan.instaeclipse2.utils.root.RootAccess.session(ctx).status()) {
+            case GRANTED: return getString(R.string.root_status_granted);
+            case DENIED: return getString(R.string.root_status_denied);
+            case NOT_ROOTED: return getString(R.string.root_status_not_rooted);
+            default: return getString(R.string.root_status_unknown);
+        }
+    }
+
+    private void loadRootMenu() {
+        showMenu(getString(R.string.root_menu_title), buildRootDefs());
+        currentMenu = "root";
+    }
+
+    private void reloadRootMenuIfShown() {
+        if (isAdded() && "root".equals(currentMenu)) loadRootMenu();
+    }
+
+    private List<Object> buildRootDefs() {
+        Context ctx = requireContext();
+        boolean on = io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx);
+        List<Object> defs = new ArrayList<>();
+
+        FeatureItem use = new FeatureItem();
+        use.type = FeatureItem.TYPE_SWITCH;
+        use.iconRes = R.drawable.ic_ui_shield;
+        use.accentColor = Color.parseColor("#FF453A");
+        use.title = getString(R.string.root_use);
+        use.subtitle = getString(R.string.root_use_hint);
+        use.localChecked = () -> io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx);
+        use.onLocalToggle = checked -> {
+            io.github.somilkhan.instaeclipse2.utils.root.RootAccess.setEnabled(ctx, checked);
+            if (checked) checkRoot(); else reloadRootMenuIfShown();
+        };
+        FeatureItem status = createClickable(R.drawable.ic_ui_info, "#8E8E93", rootStatusText(), this::checkRoot);
+        status.textColor = 0;
+        if (on && !rootChecking) status.subtitle = getString(R.string.root_check_again);
+        defs.add(getString(R.string.root_section_access));
+        defs.add(Arrays.asList(use, status));
+
+        defs.add(getString(R.string.root_section_actions));
+        defs.add(Arrays.asList(
+                createTool(R.drawable.ic_ui_restart, "#FF9F0A", getString(R.string.root_action_restart),
+                        getString(R.string.root_action_restart_sub), this::restartInstagram),
+                createTool(R.drawable.ic_ui_delete, "#FF9F0A", getString(R.string.root_action_dexkit),
+                        getString(R.string.root_action_dexkit_sub),
+                        () -> io.github.somilkhan.instaeclipse2.utils.root.RootUi.clearDexKitCache(this, null)),
+                createTool(R.drawable.ic_ui_shield, "#FF453A", getString(R.string.root_action_crashes),
+                        getString(R.string.root_action_crashes_sub),
+                        () -> io.github.somilkhan.instaeclipse2.utils.root.RootUi.collectCrashes(this, null))
+        ));
+        defs.add(getString(R.string.root_footer));
+        return defs;
+    }
+
+    /** Off the main thread; the root manager may prompt. Status row updates when it returns. */
+    private void checkRoot() {
+        Context ctx = requireContext();
+        if (!io.github.somilkhan.instaeclipse2.utils.root.RootAccess.isEnabled(ctx) || rootChecking) return;
+        rootChecking = true;
+        reloadRootMenuIfShown();
+        io.github.somilkhan.instaeclipse2.utils.root.RootAccess.checkAsync(ctx, st -> {
+            rootChecking = false;
+            reloadRootMenuIfShown();
+        });
     }
 
     private void importDevConfig() {

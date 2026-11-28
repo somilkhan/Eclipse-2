@@ -11,4 +11,6 @@
     <exclude domain="sharedpref" path="eclipse2_clone_trust.xml" />
     <!-- Crash-report bookkeeping is per device. -->
     <exclude domain="sharedpref" path="eclipse2_crash.xml" />
+    <!-- "Use root" is an explicit choice on each device (RootAccess). -->
+    <exclude domain="sharedpref" path="eclipse2_root.xml" />
 </full-backup-content>

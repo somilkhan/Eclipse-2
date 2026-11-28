@@ -44,7 +44,6 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.CommonUtils;
@@ -457,7 +456,8 @@ public class HomeFragment extends Fragment {
         if (featuresCountText == null) return;
         int count = 0;
         for (String key : FEATURE_KEYS) {
-            if (localCache.getBoolean(key, false)) count++;
+            // Unset keys are at their default, and a few default to on (e.g. lockUseFingerprint).
+            if (localCache.getBoolean(key, io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags.defaultOn(key))) count++;
         }
         for (String key : io.github.somilkhan.instaeclipse2.utils.feature.ExtrasFeatures.flags()) {
             if (localCache.getBoolean(key, false)) count++;
@@ -485,9 +485,9 @@ public class HomeFragment extends Fragment {
     // =========================================================
 
     /**
-     * FeaturesFragment's "Restart App" only asks the user to kill Instagram manually. Here we
-     * first try a root force-stop + relaunch; without root we fall back to that same message and
-     * open Instagram's App info page, where the Force stop button lives.
+     * Force stop + reopen with root when "Use root" is on and granted; otherwise Instagram's App
+     * info page, where the Force stop button lives (RootUi). su is never started unless the user
+     * opted in.
      */
     private void restartInstagram() {
         final String pkg = activePackage;
@@ -496,42 +496,12 @@ public class HomeFragment extends Fragment {
             return;
         }
         restartInstagramButton.setEnabled(false);
-        new Thread(() -> {
-            boolean ok = false;
-            try {
-                Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "am force-stop " + pkg});
-                try {
-                    p.getOutputStream().close(); // su must not wait on stdin
-                    if (p.waitFor(15, TimeUnit.SECONDS)) {
-                        ok = p.exitValue() == 0;
-                    }
-                } finally {
-                    // Close the pipes (fd leak otherwise) and never leave a hung su behind.
-                    try { p.getInputStream().close(); } catch (Throwable ignored) { }
-                    try { p.getErrorStream().close(); } catch (Throwable ignored) { }
-                    p.destroy();
-                }
-            } catch (Throwable ignored) { }
-            final boolean rooted = ok;
-            mainHandler.post(() -> {
-                if (!isAdded() || getView() == null) return;
-                restartInstagramButton.setEnabled(true);
-                if (rooted) {
-                    moduleConfirmed = false;
-                    updateStatusPill();
-                    io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.home_restart_done), Toast.LENGTH_SHORT).show();
-                    mainHandler.postDelayed(() -> launchPackage(pkg), 400);
-                } else {
-                    io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_toast_restart_manual), Toast.LENGTH_LONG).show();
-                    try {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.parse("package:" + pkg));
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    } catch (Throwable ignored) { }
-                }
-            });
-        }, "ie-restart-ig").start();
+        // The module is not confirmed in the new process until it answers the next ping.
+        moduleConfirmed = false;
+        updateStatusPill();
+        io.github.somilkhan.instaeclipse2.utils.root.RootUi.restartInstagram(this, pkg, () -> {
+            if (isAdded() && getView() != null) restartInstagramButton.setEnabled(true);
+        });
     }
 
     // =========================================================
@@ -560,7 +530,10 @@ public class HomeFragment extends Fragment {
         if (shortcutsContainer == null) return;
         shortcutsContainer.removeAllViews();
         List<String> pinned = getPinnedKeys();
-        boolean extreme = localCache.getBoolean("isExtremeMode", false);
+        // Same rule as restore and the Features tab: a Focus Lock whose time is up no longer locks.
+        boolean extreme = io.github.somilkhan.instaeclipse2.utils.backup.SettingsRestore.isLocked(
+                localCache.getBoolean("isExtremeMode", false),
+                localCache.getString("focusLockUntil", ""), System.currentTimeMillis());
         for (String key : pinned) {
             Shortcut s = findShortcut(key);
             if (s == null) continue;
