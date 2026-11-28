@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Outline;
 import android.graphics.Paint;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.Build;
@@ -57,6 +58,7 @@ public class GlassNavPill extends BackdropBlurLayout {
     private final List<ItemView> items = new ArrayList<>();
     private final Paint platterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint lensRimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint fingerGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF indicatorRect = new RectF();
     private final RectF glass = new RectF();
     private final FloatValueHolder left = new FloatValueHolder();
@@ -74,6 +76,8 @@ public class GlassNavPill extends BackdropBlurLayout {
     private final int touchSlop;
     private final boolean night;
     private final int platterBaseAlpha;
+    private final int unselectedColor;
+    private final int selectedColor;
     private boolean indicatorPlaced;
     // Fallback lens rim gradient, rebuilt only when the lens height/position changes.
     private float rimShaderTop = Float.NaN, rimShaderBottom = Float.NaN;
@@ -91,6 +95,7 @@ public class GlassNavPill extends BackdropBlurLayout {
     private int lastDragId = View.NO_ID;
     private boolean dragging;
     private boolean pressing;
+    private float touchX, touchY;
 
     public GlassNavPill(@NonNull Context context) { this(context, null); }
 
@@ -104,6 +109,8 @@ public class GlassNavPill extends BackdropBlurLayout {
         int platter = ContextCompat.getColor(context, R.color.ie_glass_indicator);
         platterPaint.setColor(platter);
         platterBaseAlpha = Color.alpha(platter);
+        unselectedColor = ContextCompat.getColor(context, R.color.ie_nav_item);
+        selectedColor = ContextCompat.getColor(context, R.color.ie_primary);
         lensRimPaint.setStyle(Paint.Style.STROKE);
         lensRimPaint.setStrokeWidth(Math.max(1f, density));
         setRefraction(true);
@@ -351,6 +358,22 @@ public class GlassNavPill extends BackdropBlurLayout {
 
     private void onLensMoved() {
         applyMinimize();
+        if (!indicatorPlaced || items.isEmpty()) return;
+        float center = (left.getValue() + right.getValue()) * 0.5f;
+        for (ItemView item : items) {
+            float itemCenter = row.getLeft() + item.getLeft() + item.getWidth() * 0.5f;
+            float near = Math.max(0f, 1f - Math.abs(center - itemCenter) / Math.max(1f, item.getWidth()));
+            item.setVisualColor(blend(unselectedColor, selectedColor, near));
+        }
+    }
+
+    private static int blend(int from, int to, float amount) {
+        amount = Math.max(0f, Math.min(1f, amount));
+        int a = Math.round(Color.alpha(from) + (Color.alpha(to) - Color.alpha(from)) * amount);
+        int r = Math.round(Color.red(from) + (Color.red(to) - Color.red(from)) * amount);
+        int g = Math.round(Color.green(from) + (Color.green(to) - Color.green(from)) * amount);
+        int b = Math.round(Color.blue(from) + (Color.blue(to) - Color.blue(from)) * amount);
+        return Color.argb(a, r, g, b);
     }
 
     /** Selected tab center in the requested content coordinate system (also works in RTL). */
@@ -437,6 +460,15 @@ public class GlassNavPill extends BackdropBlurLayout {
         float press = pressHolder.getValue();
         platterPaint.setAlpha(Math.min(255, Math.round(platterBaseAlpha * (1f + 0.3f * press))));
         canvas.drawRoundRect(indicatorRect, rad, rad, platterPaint);
+        if (press > 0.004f) {
+            canvas.save();
+            canvas.clipRect(0, 0, getWidth(), getHeight());
+            fingerGlowPaint.setShader(new RadialGradient(touchX, touchY, 64f * density,
+                    0x55FFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP));
+            fingerGlowPaint.setAlpha(Math.round(255f * press));
+            canvas.drawCircle(touchX, touchY, 64f * density, fingerGlowPaint);
+            canvas.restore();
+        }
         if (body == null) {
             // Fallback lens rim: bright top edge, faint bottom (the library lens draws its own).
             int top = night ? 0x59FFFFFF : 0xE6FFFFFF;
@@ -496,6 +528,8 @@ public class GlassNavPill extends BackdropBlurLayout {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
                 downY = ev.getY();
+                touchX = downX;
+                touchY = downY;
                 downCenter = (left.getValue() + right.getValue()) / 2f;
                 lastDragId = selectedId;
                 dragging = false;
@@ -503,6 +537,8 @@ public class GlassNavPill extends BackdropBlurLayout {
                 setPressing(true);
                 return false;
             case MotionEvent.ACTION_MOVE:
+                touchX = ev.getX();
+                touchY = ev.getY();
                 if (!dragging && Math.abs(ev.getX() - downX) > touchSlop && indicatorPlaced
                         && Math.abs(ev.getX() - downX) > Math.abs(ev.getY() - downY)) {
                     dragging = true;
@@ -636,6 +672,7 @@ public class GlassNavPill extends BackdropBlurLayout {
         private final int index, count;
         private final ImageView icon;
         private final TextView label;
+        private final HyperNavIconDrawable gestureIcon;
 
         ItemView(Context ctx, MenuItem mi, ColorStateList tint, int index, int count) {
             super(ctx);
@@ -654,7 +691,8 @@ public class GlassNavPill extends BackdropBlurLayout {
             setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
             icon = new ImageView(ctx);
-            icon.setImageDrawable(mi.getIcon());
+            gestureIcon = new HyperNavIconDrawable(index, Color.WHITE);
+            icon.setImageDrawable(gestureIcon);
             icon.setImageTintList(tint);
             icon.setDuplicateParentStateEnabled(true);
             icon.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -692,7 +730,15 @@ public class GlassNavPill extends BackdropBlurLayout {
             refreshDrawableState();
             label.setTypeface(android.graphics.Typeface.create("sans-serif-medium",
                     c ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
+            if (c) gestureIcon.play();
             animateState(false);
+        }
+
+        void setVisualColor(int color) {
+            gestureIcon.setColor(color);
+            label.setTextColor(color);
+            icon.setImageTintList(ColorStateList.valueOf(color));
+            invalidate();
         }
 
         @Override public void toggle() { setChecked(!checked); }
