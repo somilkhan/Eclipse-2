@@ -3,6 +3,10 @@
 ## Unreleased
 
 ### Fixes
+- Ghost mode: the DM and channel Mark as read buttons switched Ghost seen back on if it had been
+  turned off with the quick toggle while the chat was open, and could overwrite a toggle made in
+  the same moment. They now open a short "let seen through" window without touching the setting,
+  and the window closes by itself after 2 seconds if anything goes wrong.
 - Reels → Force reel seek bar did nothing on Instagram 458 ("reel scrubber gate not found").
   On 458 the `(config, duration, isLong)` wrapper that picked the "show scrubber" flag was inlined
   into its callers, so there was nothing left to hook. The module now finds the config's

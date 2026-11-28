@@ -39,6 +39,7 @@ P4 cosmetic.
 | ENG-10 | P1 | `PlaybackSpeedHook` reel scrubber | 458: gate wrapper inlined, nothing to hook | Force config show-flags in the config factory (d30b11d) | `ReelScrubberFlagsTest` | offline PARTIAL→OK (458), 457 unchanged |
 | ENG-11 | P3 | `FeedVideoDownloadHook` isVideo log | Log ignored the hashed `video_versions` path | Log names the real path (39c50cc) | n/a (log only) | offline PARTIAL→OK (458) |
 | ENG-12 | P3 | Compat docs | 24d962c guessed a string-table move for the scrubber; wrong | Matrix corrected (c6dfb7a) | n/a | 458 bytecode |
+| ENG-13 | P1 | `GhostDMMarkAsReadHook`, `GhostChannelMarkAsReadHook` (ghost-mode interference) | Mark as read set the user's `isGhostSeen` to false and then forced it to true: a button left on screen after Ghost seen was quick-toggled off turned it back on, a toggle during the 300–400 ms window was lost, and a callback that never ran left seen-blocking off. During the window, seen also goes through for every chat, not just the open one (still true) | New `GhostSeenBypass` window (expires after 2 s), checked by `GhostDMSeenHook` and the `/threads/…/opened` network drop; the setting is never written (this commit) | `GhostSeenBypassTest` | unit, offline (ghost steps OK on 457/458) |
 
 ## Open
 

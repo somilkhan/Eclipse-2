@@ -6,7 +6,9 @@ Recorded 2026-11-28. Supersedes nothing: `docs/HANDOFF.md` is the historical 0.8
 
 - **Integration branch**: `maintainer/eng-audit`, which carries all 10 round-1 fix branches plus the round-2 fixes. PR #22 → `main`.
   The owner asked for one PR and a merge only when the whole audit is done.
-- **Superseded PRs**: #12–#21 are open and fully contained in #22. Closing them needs the owner's OK.
+- **Superseded PRs**: #12–#21 were closed on 2026-11-28 at the owner's request. Their 10 `fix/*` branches, 5 `wip/*` branches and
+  `contribute/remaining-fork-improvements` were deleted, but only after checking that each one is an ancestor of `maintainer/eng-audit`.
+  `wip/ui-liquid-snapshot` (Liquid Glass UI WIP) is **not merged** and was kept.
 - **Versions**: still 0.9.0 / versionCode 23. Changes are under `## Unreleased` in `CHANGELOG.md`.
 
 ## Toolchain notes

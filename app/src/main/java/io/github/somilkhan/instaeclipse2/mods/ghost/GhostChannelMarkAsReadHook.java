@@ -99,17 +99,27 @@ public class GhostChannelMarkAsReadHook {
             if (messageList instanceof ViewGroup group) {
                 group.scrollBy(0, 100_000);
 
-                FeatureFlags.isGhostSeen = false;
-                group.scrollBy(0, -300);
+                // Let seen through for this scroll only; the user's setting is never written.
+                io.github.somilkhan.instaeclipse2.utils.ghost.GhostSeenBypass.Window window =
+                        io.github.somilkhan.instaeclipse2.utils.ghost.GhostSeenBypass.begin();
+                try {
+                    group.scrollBy(0, -300);
+                } catch (RuntimeException e) {
+                    window.close();
+                    throw e;
+                }
 
                 view.postDelayed(() -> {
-                    group.scrollBy(0, 300);
-                    FeatureFlags.isGhostSeen = true;
+                    try {
+                        group.scrollBy(0, 300);
+                    } finally {
+                        window.close();
+                    }
                     io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx, I18n.t(ctx, R.string.ig_toast_channel_seen_sent), Toast.LENGTH_SHORT).show();
                 }, 400);
             }
         } catch (Exception e) {
-            FeatureFlags.isGhostSeen = true;
+            ModuleLog.line("(InstaEclipse): mark as read failed: " + e);
         }
     }
 }

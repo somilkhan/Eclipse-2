@@ -130,7 +130,7 @@ public class IGNetworkInterceptor {
 
 
                                     // Ghost Mode URIs
-                                    if (FeatureFlags.isGhostSeen) {
+                                    if (io.github.somilkhan.instaeclipse2.utils.ghost.GhostSeenBypass.blocksSeen()) {
                                         shouldDrop |= uri.getPath().contains("/threads/") && uri.getPath().contains("/opened")
                                                 && !io.github.somilkhan.instaeclipse2.utils.ghost.ReadReceiptWhitelist.pathMentionsAllowed(uri.getPath());
                                     }
