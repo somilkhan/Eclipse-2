@@ -36,7 +36,7 @@ public class HelpFragment extends Fragment {
 
     private static final String LSPOSED_URL = "https://github.com/JingMatrix/LSPosed/releases/latest";
     private static final String LSPATCH_URL = "https://github.com/JingMatrix/LSPatch/releases/latest";
-    private static final String LSPATCH_GUIDE_URL = "https://t.me/instaEclipse_discussion/158/5149";
+    private static final String LSPATCH_GUIDE_URL = "https://t.me/Eclipse2discussion";
 
     private static final int[] FAQ_STRINGS = {
             R.string.faq_1, R.string.faq_2, R.string.faq_3,
