@@ -80,6 +80,10 @@ jobs:
           IE_KEY_PASSWORD: ${{ steps.keystore.outputs.path && secrets.RELEASE_KEY_PASSWORD || '' }}
         run: ./gradlew assembleDebug
 
+      # 16 KB-page devices (Android 15+) can't load native libs with 4 KB-aligned segments.
+      - name: Check native libs are 16 KB aligned
+        run: bash .github/scripts/check-native-alignment.sh app/build/outputs/apk/debug/*.apk
+
       - name: Show debug APK signer
         run: |
           apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)

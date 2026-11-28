@@ -113,6 +113,9 @@ jobs:
           IE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
+      - name: Check native libs are 16 KB aligned
+        run: bash .github/scripts/check-native-alignment.sh "$(ls app/build/outputs/apk/release/*.apk | grep -v unsigned | head -1)"
+
       - name: Verify signature and rename
         id: apk
         run: |
