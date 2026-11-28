@@ -61,7 +61,6 @@ import java.util.regex.Pattern;
 import io.github.somilkhan.instaeclipse2.BuildConfig;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.core.CommonUtils;
-import io.github.somilkhan.instaeclipse2.utils.core.ExportBrand;
 import io.github.somilkhan.instaeclipse2.utils.log.LogExport;
 import io.github.somilkhan.instaeclipse2.utils.log.LogMirrorProvider;
 import io.github.somilkhan.instaeclipse2.utils.log.LogWindow;
@@ -777,7 +776,7 @@ public class LoggingFragment extends Fragment {
         info.appVersionName = BuildConfig.VERSION_NAME;
         info.appVersionCode = BuildConfig.VERSION_CODE;
         info.buildType = BuildConfig.BUILD_TYPE;
-        info.testedInstagram = ExportBrand.TESTED_INSTAGRAM;
+        info.checkedInstagram = io.github.somilkhan.instaeclipse2.utils.core.IgCompat.evidenceSummary();
         info.instagram = new ArrayList<>();
         PackageManager pm = ctx.getPackageManager();
         for (String pkg : CommonUtils.SUPPORTED_PACKAGES) {
