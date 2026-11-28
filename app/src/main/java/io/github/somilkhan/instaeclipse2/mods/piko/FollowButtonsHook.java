@@ -75,12 +75,15 @@ public class FollowButtonsHook {
                 name = m;
                 nn++;
             }
-            if (nb != 1 || nn != 1 || bind.getDeclaringClass() != name.getDeclaringClass()) {
-                ModuleLog.line(TAG + "❌ story component base not found (bind=" + nb + ", name=" + nn + ")");
+            Method baseName = nb == 1 && nn == 1 ? baseNameGetter(bind.getDeclaringClass(), name) : null;
+            if (baseName == null) {
+                ModuleLog.line(TAG + "❌ story component base not found (bind=" + nb + ", name=" + nn
+                        + (bind != null && name != null ? ", bind in " + bind.getDeclaringClass().getName()
+                        + ", name in " + name.getDeclaringClass().getName() : "") + ")");
                 return;
             }
-            name.setAccessible(true);
-            nameGetter = name;
+            baseName.setAccessible(true);
+            nameGetter = baseName;
             XposedBridge.hookMethod(bind, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { JitGuard.tick(param.method);
@@ -95,6 +98,25 @@ public class FollowButtonsHook {
             FeatureStatusTracker.setHooked("HideStoryFollowButton");
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ stories: " + t);
+        }
+    }
+
+    /**
+     * The component base's virtual name getter. On 457+ the base (holding the final bind method)
+     * declares {@code String name()} and only the follow component overrides it to return
+     * {@link #STORY_COMPONENT}, so the string lookup lands on the subclass. Returns the base
+     * declaration (so {@code invoke} dispatches per component), the method itself when it is
+     * declared on the base, or null when the two lookups are unrelated classes.
+     */
+    static Method baseNameGetter(Class<?> base, Method name) {
+        if (base == null || name == null || !base.isAssignableFrom(name.getDeclaringClass())) return null;
+        if (name.getDeclaringClass() == base) return name;
+        try {
+            Method m = base.getDeclaredMethod(name.getName());
+            if (m.getReturnType() != String.class || Modifier.isStatic(m.getModifiers())) return null;
+            return m;
+        } catch (NoSuchMethodException notOverride) {
+            return null;
         }
     }
 
