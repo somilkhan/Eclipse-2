@@ -14,6 +14,9 @@ HOOKVERIFY_LOCK=/tmp/ie-gradle.lock tools/hook-verify/run.sh   # shared box: ser
 
 Output: a summary table on stdout and `tools/hook-verify/build/report.md` with, per step, the
 hooked members and the module's own log lines (failure lines are prefixed `!!`).
+A final "Feature status" section runs `FeatureManager.refreshFeatureStatus()` with every flag on
+and lists each load-toast feature as HOOKED, BROKEN or SILENT (no report yet). SILENT is expected
+for hooks that only report at runtime (first network request, first Activity).
 
 ## How it works
 

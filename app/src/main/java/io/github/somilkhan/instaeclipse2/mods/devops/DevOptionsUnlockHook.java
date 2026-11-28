@@ -222,6 +222,7 @@ public class DevOptionsUnlockHook {
                 }
             });
             ModuleLog.line("(InstaEclipse | DevOptionsEnable): ✅ Hooked: " + m.getDeclaringClass().getName() + "." + m.getName());
+            FeatureStatusTracker.setHooked("DevOptions"); // hook installed; the gate itself runs later
         } catch (Throwable e) {
             ModuleLog.line("(InstaEclipse | DevOptionsEnable): ❌ Failed to hook resolved method: " + e.getMessage());
         }
@@ -275,6 +276,7 @@ public class DevOptionsUnlockHook {
                 m.setAccessible(true);
                 XposedBridge.hookMethod(m, hook);
                 ModuleLog.line("(InstaEclipse | DevOptionsEnable): ✅ Hooked (cache): " + className + "." + m.getName());
+                FeatureStatusTracker.setHooked("DevOptions"); // hook installed; the gate itself runs later
             }
         } catch (Throwable e) {
             ModuleLog.line("(InstaEclipse | DevOptionsEnable): ❌ Reflection fallback failed: " + e.getMessage());
@@ -307,6 +309,7 @@ public class DevOptionsUnlockHook {
                             }
                         });
                         ModuleLog.line("(InstaEclipse | DevOptionsEnable): ✅ Hooked: " + method.getClassName() + "." + method.getName());
+                        FeatureStatusTracker.setHooked("DevOptions"); // hook installed; the gate itself runs later
                     } catch (Throwable e) {
                         ModuleLog.line("(InstaEclipse | DevOptionsEnable): ❌ Failed to hook " + method.getName() + ": " + e.getMessage());
                     }

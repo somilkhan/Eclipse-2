@@ -382,14 +382,21 @@ public class VoiceMessageDownloadHook {
             } catch (Throwable t) {
                 ModuleLog.line(TAG + "⚠️ compose rows: " + t + " / " + t.getCause());
             }
-            ModuleLog.line(TAG + "compose row hooks=" + composeRows + " (label field " + (composeRows >= 0 ? "ok" : "") + ")");
+            ModuleLog.line(TAG + "compose row hooks=" + composeRows + " (label field "
+                    + (labelFieldRef != null ? labelFieldRef.getName() : "not found") + ")");
             ModuleLog.line(TAG + "✅ lookups=" + lookups + " factories=" + factories + " dispatchers=" + dispatchers
                     + " mapper=" + (audioMapper != null) + " message=" + (messageClass != null ? messageClass.getName() : "?"));
             if (factories > 0 && dispatchers > 0) {
                 FeatureStatusTracker.setHooked("VoiceDownload");
                 FeatureStatusTracker.setHooked("DmMediaDownload");
             }
-            if (factories > 0 && labelFieldRef != null) FeatureStatusTracker.setHooked("ChatTranslate");
+            if (factories > 0 && labelFieldRef != null) {
+                FeatureStatusTracker.setHooked("ChatTranslate");
+            } else if (FeatureFlags.translateMessages) {
+                // Translate needs the row label field; without it the row never shows.
+                ModuleLog.line(TAG + "⚠️ translate row unavailable: factories=" + factories + " labelField=" + (labelFieldRef != null));
+                FeatureStatusTracker.setBroken("ChatTranslate");
+            }
             io.github.somilkhan.instaeclipse2.mods.ghost.BulkUnsend.install(bridge, cl, messageClass);
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);

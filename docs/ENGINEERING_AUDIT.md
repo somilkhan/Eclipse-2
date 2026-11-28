@@ -37,6 +37,11 @@ The remaining non-OK steps are identical on both builds:
 
 Offline OK means the lookups resolved. It does **not** mean the feature works on a phone.
 
+Feature status (ENG-14), identical on 457 and 458: HOOKED=90, BROKEN=1, SILENT=8.
+- BROKEN `ChatTranslate`: harness-limited. The label-field probe runs an Instagram constructor, which is stubbed on the host (same cause as the VoiceMessageDownload PARTIAL). Needs a device.
+- SILENT, runtime-only by design: `GhostLive`, `SpoofLastSeen`, `DisableDiscoverPeople`, `FollowerToast` (report on the first matching request); `FancyBioFont`, `hideStoriesTray` (report on the first Activity; their view ids exist in both APKs); `fixNotificationRegistration` (NO-HOOK step, runtime install).
+- SILENT `SpoofLocation`: harness FAIL (`Location.CREATOR` stub).
+
 ## Key findings
 
 1. **Reliability**: one throw in Module.java used to skip every later hook (ENG-01). DexKit 2.0.3 was dead on 16 KB-page

@@ -97,6 +97,7 @@ public final class Runner {
             Recorder.end();
         }
         ex.shutdownNow();
+        if (filter == null || filter.isEmpty()) r.collectFeatureStatus();
         return Recorder.steps();
     }
 
@@ -109,6 +110,10 @@ public final class Runner {
             if (f.getType() == boolean.class) { f.setAccessible(true); f.setBoolean(null, true); on++; }
         }
         System.out.println("[hook-verify] FeatureFlags: " + on + " boolean flags forced on");
+        // Register every feature as enabled, like FeatureManager does on the device at startup, so
+        // that a feature which neither hooks nor reports itself broken shows up as SILENT.
+        Class.forName("io.github.somilkhan.instaeclipse2.utils.feature.FeatureManager", true, moduleLoader)
+                .getMethod("refreshFeatureStatus").invoke(null);
         Class<?> module = Class.forName("io.github.somilkhan.instaeclipse2.Xposed.Module", true, moduleLoader);
         setStatic(module, "dexKitBridge", bridge);
         setStatic(module, "hostClassLoader", igLoader);
@@ -117,6 +122,28 @@ public final class Runner {
             Class.forName("io.github.somilkhan.instaeclipse2.utils.core.StringTables", true, moduleLoader)
                     .getMethod("init", String.class).invoke(null, apk);
         } catch (ClassNotFoundException ignored) {}
+    }
+
+    @SuppressWarnings("unchecked")
+    private void collectFeatureStatus() {
+        try {
+            Class<?> t = Class.forName("io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker", true, moduleLoader);
+            java.util.Map<String, Boolean> status = (java.util.Map<String, Boolean>) t.getMethod("getStatus").invoke(null);
+            Field fh = t.getDeclaredField("hooked"), fb = t.getDeclaredField("broken");
+            fh.setAccessible(true);
+            fb.setAccessible(true);
+            java.util.Set<String> hooked = (java.util.Set<String>) fh.get(null), broken = (java.util.Set<String>) fb.get(null);
+            java.util.TreeSet<String> keys = new java.util.TreeSet<>();
+            synchronized (status) { keys.addAll(status.keySet()); }
+            synchronized (broken) { keys.addAll(broken); }
+            for (String k : keys) {
+                String st = hooked.contains(k) ? "HOOKED" : broken.contains(k) ? "BROKEN" : "SILENT";
+                Recorder.features.add(new String[]{k, st});
+            }
+        } catch (Throwable e) {
+            System.out.println("[hook-verify] feature status not collected: " + e);
+            Recorder.features.add(new String[]{"(feature status not collected: " + e + ")", "ERROR"});
+        }
     }
 
     private static void setStatic(Class<?> c, String name, Object v) {

@@ -24,6 +24,7 @@ Branch `maintainer/eng-audit` → `main` via PR #22. **Do not merge until the au
 | 2026-11-28 | `562bd0b` | Integration of all 10 branches, ENG-06/07/08, 457 report regenerated (93 steps) | 588 pass | 457: OK=85 |
 | 2026-11-28 | `c6dfb7a` | ENG-09 StoryTrayFilter, ENG-10 reel scrubber on 458, ENG-11 isVideo log, 458.0.0.0.57 report, matrix and IgCompat | 595 pass, 2 skipped, assembleDebug OK | 457: OK=86, 458.0.0.0.57: OK=86 |
 | 2026-11-28 | (this batch) | Closed PRs #12–#21, deleted 16 merged branches, docs, ENG-13 ghost Mark as read | 600 pass, assembleDebug OK | ghost steps 10/10 OK on 457 and 458 |
+| 2026-11-28 | (this batch) | ENG-14 feature-status check in hook-verify, ENG-15..20 silent failures | 601 pass, assembleDebug OK | 457/458: steps unchanged (OK=86); features HOOKED=90 BROKEN=1 SILENT=8 |
 
 ## How a batch is verified
 

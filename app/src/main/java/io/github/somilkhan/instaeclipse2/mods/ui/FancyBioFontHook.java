@@ -15,6 +15,7 @@ import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.utils.dialog.IeDialog;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureStatusTracker;
+import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 import io.github.somilkhan.instaeclipse2.utils.i18n.I18n;
 import io.github.somilkhan.instaeclipse2.utils.text.FancyText;
 
@@ -28,6 +29,7 @@ public final class FancyBioFontHook {
 
     private static final Map<Activity, Boolean> WATCHED = Collections.synchronizedMap(new WeakHashMap<>());
     private static int bioId, cardId, labelId;
+    private static volatile boolean missingLogged;
 
     private FancyBioFontHook() {}
 
@@ -39,7 +41,14 @@ public final class FancyBioFontHook {
             bioId = a.getResources().getIdentifier("bio", "id", pkg);
             cardId = a.getResources().getIdentifier("form_field_second_right_add_on_button_card", "id", pkg);
             labelId = a.getResources().getIdentifier("form_field_second_right_add_on_button_text", "id", pkg);
-            if (bioId == 0 || cardId == 0) return;
+            if (bioId == 0 || cardId == 0) {
+                if (!missingLogged) {
+                    missingLogged = true;
+                    ModuleLog.line("(IE|FancyBioFont) ⚠️ edit-profile view ids not found: bio=" + bioId + " card=" + cardId);
+                    if (FeatureFlags.fancyBioFont) FeatureStatusTracker.setBroken("FancyBioFont");
+                }
+                return;
+            }
         }
         WATCHED.put(a, true);
         View decor = a.getWindow().getDecorView();

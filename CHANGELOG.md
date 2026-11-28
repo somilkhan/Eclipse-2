@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Fixes
+- Features that failed to find their Instagram code without saying so now show as failed in the load
+  toast: whole-app lock (it could open unlocked), chat Translate, Hide stories tray and Fancy bio font.
+  Developer options now shows as hooked. Caption copy and custom font log when their setup fails.
 - Ghost mode: the DM and channel Mark as read buttons switched Ghost seen back on if it had been
   turned off with the quick toggle while the chat was open, and could overwrite a toggle made in
   the same moment. They now open a short "let seen through" window without touching the setting,

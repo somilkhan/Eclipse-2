@@ -25,6 +25,12 @@ public final class Recorder {
     }
 
     private static final Map<String, Step> steps = new LinkedHashMap<>();
+    /**
+     * FeatureStatusTracker state after every step ran: {key, state} with state HOOKED, BROKEN
+     * or SILENT (registered as enabled by FeatureManager but neither hooked nor marked broken).
+     * Filled by the runner; empty on a filtered run.
+     */
+    public static final List<String[]> features = new ArrayList<>();
     private static volatile Step current;
     public static volatile boolean echo = Boolean.getBoolean("hookverify.echo");
 
