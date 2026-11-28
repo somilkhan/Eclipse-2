@@ -35,7 +35,7 @@ public final class ModuleLog {
         for (int i = 2; i < stack.length; i++) {
             String cn = stack[i].getClassName();
             if (!cn.equals(ModuleLog.class.getName()) && !cn.equals(Logging.class.getName())
-                    && !cn.equals(Thread.class.getName()) && !cn.startsWith("de.robv.android.xposed.")) {
+                    && !cn.equals(Thread.class.getName()) && !cn.startsWith("io.github.somilkhan.instaeclipse2.compat.")) {
                 String simpleName = cn.substring(cn.lastIndexOf('.') + 1);
                 return "[" + simpleName + "." + stack[i].getMethodName() + ":" + stack[i].getLineNumber() + "] ";
             }

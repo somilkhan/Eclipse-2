@@ -18,8 +18,8 @@ import org.luckypray.dexkit.result.MethodData;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
 import io.github.somilkhan.instaeclipse2.R;
 import io.github.somilkhan.instaeclipse2.mods.ui.utils.LifecycleHookUtil;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;

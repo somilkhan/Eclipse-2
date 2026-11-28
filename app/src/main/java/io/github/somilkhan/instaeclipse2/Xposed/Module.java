@@ -15,13 +15,11 @@ import org.luckypray.dexkit.DexKitBridge;
 import java.util.List;
 import java.util.Map;
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import io.github.somilkhan.instaeclipse2.compat.XC_MethodHook;
+import io.github.somilkhan.instaeclipse2.compat.XSharedPreferences;
+import io.github.somilkhan.instaeclipse2.compat.XposedBridge;
+import io.github.somilkhan.instaeclipse2.compat.XposedHelpers;
+import io.github.somilkhan.instaeclipse2.compat.callbacks.XC_LoadPackage;
 import io.github.somilkhan.instaeclipse2.mods.ads.AdBlocker;
 import io.github.somilkhan.instaeclipse2.mods.feed.FeedPhotoZoomHook;
 import io.github.somilkhan.instaeclipse2.mods.location.LocationSpoofHook;
@@ -67,7 +65,7 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 
 
 @SuppressLint("UnsafeDynamicallyLoadedCode")
-public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class Module extends io.github.libxposed.api.XposedModule {
     // List of supported Instagram package names (maintained in CommonUtils)
     private static final List<String> SUPPORTED_PACKAGES = CommonUtils.SUPPORTED_PACKAGES;
     /** Prevent duplicate receivers/callbacks if Application.attach is observed more than once. */
@@ -87,23 +85,28 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     }
     */
 
+    private static android.app.Application application;
+    private static String processName;
+    public static android.app.Application currentApplication() { return application; }
+
     @Override
-    public void initZygote(StartupParam startupParam) {
-        moduleSourceDir = startupParam.modulePath;
-
-        String abi = Build.SUPPORTED_ABIS[0];
-        String abiFolder;
-        if (abi.equalsIgnoreCase("arm64-v8a")) abiFolder = "arm64";
-        else if (abi.equalsIgnoreCase("armeabi-v7a") || abi.equalsIgnoreCase("armeabi") || abi.equalsIgnoreCase("armv8i"))
-            abiFolder = "arm";
-        else if (abi.equalsIgnoreCase("x86")) abiFolder = "x86";
-        else if (abi.equalsIgnoreCase("x86_64")) abiFolder = "x86_64";
-        else abiFolder = abi;
-
-        moduleLibDir = moduleSourceDir.substring(0, moduleSourceDir.lastIndexOf("/")) + "/lib/" + abiFolder;
+    public void onModuleLoaded(io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam param) {
+        io.github.somilkhan.instaeclipse2.compat.XposedBridge.attach(this);
+        processName = param.getProcessName();
     }
 
     @Override
+    public void onPackageReady(io.github.libxposed.api.XposedModuleInterface.PackageReadyParam param) {
+        io.github.somilkhan.instaeclipse2.compat.XposedBridge.attach(this);
+        XC_LoadPackage.LoadPackageParam legacy = new XC_LoadPackage.LoadPackageParam();
+        legacy.packageName = param.getPackageName();
+        legacy.processName = processName != null ? processName : param.getPackageName();
+        legacy.classLoader = param.getClassLoader();
+        legacy.appInfo = param.getApplicationInfo();
+        legacy.isFirstApplication = param.isFirstPackage();
+        handleLoadPackage(legacy);
+    }
+
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         // Ensure preferences are loaded
 
@@ -152,6 +155,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             }
         }
     }
+
 
     /** Identifies this exact module APK: versionCode plus the APK's size and mtime. */
     static String moduleBuildId() {
@@ -229,6 +233,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     // Install CommentCopyButtonHook BEFORE Instagram's Application.attach() runs
                     // so we catch any ViewBinding pre-inflation that happens during attach()
                     Context context = (Context) param.args[0];
+                    application = context instanceof android.app.Application ? (android.app.Application) context : context.getApplicationContext() instanceof android.app.Application ? (android.app.Application) context.getApplicationContext() : application;
                     SettingsManager.init(context);
                     SettingsManager.loadAllFlags(context);
 

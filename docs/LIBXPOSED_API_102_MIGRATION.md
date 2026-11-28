@@ -1,6 +1,6 @@
 # libxposed API 102 migration
 
-Status: in progress. This document is the migration checklist for PR #24. Do not merge or publish until every release gate below passes.
+Status: in progress. Entry point, packaging foundation, adapter, and compile gate are complete; APK/runtime gates remain pending. Do not merge or publish until every release gate below passes.
 
 ## Target
 
@@ -33,31 +33,31 @@ References:
 ## Migration workstreams
 
 ### 1. Entry point and module metadata
-- [ ] Add the API 102 compile-only dependency.
-- [ ] Add exactly one Java entry in `META-INF/xposed/java_init.list`.
-- [ ] Add `module.prop` with min API 101 and target API 102.
-- [ ] Add a scope list covering every supported Instagram variant.
-- [ ] Remove legacy `assets/xposed_init` and legacy Xposed manifest metadata only after the new entry is wired.
-- [ ] Replace zygote initialization with process lifecycle callbacks; initialize DexKit/native libraries from the target process and correct classloader lifecycle.
-- [ ] Ensure process/package filtering is equivalent to current behaviour, including clone package support.
+- [x] Add the API 102 compile-only dependency (`io.github.libxposed:api:102.0.0`).
+- [x] Add exactly one Java entry in `META-INF/xposed/java_init.list`.
+- [x] Add `module.prop` with min API 101 and target API 102.
+- [x] Add a scope list covering every supported Instagram variant.
+- [x] Remove legacy `assets/xposed_init` and legacy Xposed manifest metadata after wiring the new entry.
+- [x] Replace zygote initialization with `XposedModule.onModuleLoaded`/`onPackageReady`; initialize DexKit/native libraries from the target process and preserve classloader lifecycle.
+- [x] Preserve package filtering, clone package scope, and helper-process filtering using the API 102 process callback.
 
 ### 2. Hook engine
-- [ ] Introduce a project-owned hook abstraction backed by `XposedInterface.hook(Executable)`.
-- [ ] Port before/after/replacement semantics to `Hooker`/chain semantics.
-- [ ] Port method/constructor lookup helpers and callback parameter access.
-- [ ] Preserve priorities, unhook handles, original invocation, exception behaviour, and install isolation.
+- [x] Introduce a project-owned callback adapter backed by `XposedInterface.hook(Executable)`.
+- [x] Port before/after/replacement semantics to the API 102 interceptor chain.
+- [x] Port method/constructor lookup helpers and callback parameter access into the project-owned adapter.
+- [x] Preserve callback priorities, API 102 unhook handles, original invocation, exception propagation, and existing install isolation.
 - [ ] Port all feature hooks; no runtime references to `de.robv.android.xposed` may remain in the APK.
 - [ ] Replace deoptimization calls with supported modern API behaviour where possible; otherwise document feature-specific limitations.
 
 ### 3. Companion communication and process context
-- [ ] Replace `XSharedPreferences` with API-102 remote preferences where the framework advertises `PROP_CAP_REMOTE`.
+- [x] Replace `XSharedPreferences` with API-102 remote preferences, gated on `PROP_CAP_REMOTE`; unsupported frameworks use the safe empty/read-only path.
 - [ ] Design a safe compatibility path for frameworks without remote-preference capability; do not assume companion app private files are readable by Instagram.
 - [ ] Preserve timestamp conflict resolution, cold-start sync, resume sync, and live broadcast updates.
-- [ ] Replace `AndroidAppHelper` access with lifecycle-provided process/application context.
+- [x] Replace `AndroidAppHelper` access with a lifecycle-populated application context adapter.
 - [ ] Verify download, log, crash-report and settings IPC providers under the new process model.
 
 ### 4. Verification
-- [ ] Compile debug and release variants against API 102 without `api-82.jar` on the app compile/runtime classpath.
+- [x] Compile Java/resources against API 102 without `api-82.jar` on the app compile/runtime classpath; full APK gate remains pending.
 - [ ] Scan the final DEX/APK for forbidden legacy API references and legacy entry metadata.
 - [ ] Run unit tests and adapt `tools/hook-verify` so it tests the new hook abstraction rather than the old XposedBridge shim.
 - [ ] Run offline hook-target verification against the currently supported Instagram APKs.
@@ -76,3 +76,15 @@ Do not merge this PR while any of the following is true:
 5. CI build, unit tests, hook verification or APK scan fails.
 
 The first user device test should happen only after a clean CI build produces a test APK. Keep the current stable API-82 release untouched during this migration.
+
+## Verified work notes
+
+- Starting branch HEAD: `91069b363305a491617d0a1e8a9df2dd7e321b6f` (PR #24, draft).
+- Baseline command: `./gradlew clean test assembleDebug`; blocked before compilation because the original sandbox had no Android SDK configured.
+- API contract sources verified against the official API 102 Javadoc/repository and `api-102.0.0.aar`.
+- Foundation compile command: `ANDROID_HOME=/home/ubuntu/android-sdk ./gradlew :app:compileDebugJavaWithJavac :app:processDebugResources`; result: PASS.
+- Clean verification command: `./gradlew clean test assembleDebug`; result: PASS (debug and release unit-test tasks passed, debug APK packaged).
+- APK scan: API 102 metadata present; no `de/robv/android/xposed`, `api-82`, or `xposed_init` strings found in `classes.dex`.
+- Dependency scan: `io.github.libxposed:api:102.0.0` present; no API-82 dependency.
+- Debug APK: `app/build/outputs/apk/debug/app-debug.apk`; SHA-256 `a1fd0f91ac8aeea1c917512cc320ea893e366e9380449abec1dd6c0aae83bb37`.
+- Runtime verification has not been performed; an actual API-102-compatible framework/device is still required.

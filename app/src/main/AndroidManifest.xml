@@ -10,6 +10,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:description="@string/app_description"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.InstaEclipse"
@@ -92,22 +93,7 @@
             android:exported="true" />
 
         <activity android:name=".mods.media.VideoFramePickerActivity" android:exported="false" android:theme="@style/Theme.InstaEclipse" />
-        <service android:name=".mods.media.DownloadBrokerService" android:exported="true" />
-
-        <!-- Xposed Meta-data -->
-        <meta-data
-            android:name="xposedmodule"
-            android:value="true" />
-        <meta-data
-            android:name="xposeddescription"
-            android:value="Enhance your Instagram experience" />
-        <meta-data
-            android:name="xposedminversion"
-            android:value="82" />
-        <meta-data
-            android:name="xposedscope"
-            android:resource="@array/target_app" />
-    </application>
+        <service android:name=".mods.media.DownloadBrokerService" android:exported="true" /></application>
 
     <!-- Permissions -->
     <!-- Package visibility: only the Instagram variants in CommonUtils.SUPPORTED_PACKAGES

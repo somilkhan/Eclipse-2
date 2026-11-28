@@ -758,4 +758,5 @@ Stay on this screen until it finishes.</string>
     <string name="ie_pacing_stop">Stop</string>
     <string name="ie_pacing_hide">Hide</string>
     <string name="ie_pacing_stopped">Stopped after %1$d of %2$d</string>
+    <string name="app_description">Enhance your Instagram experience</string>
 </resources>
