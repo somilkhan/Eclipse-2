@@ -2,5 +2,5 @@
 <resources>
     <string name="faq_7"><b>7. Mətnlər görünmür?</b>\n- Instagram üçün HMA (HideMyApplist)-ı söndürün. Eclipse 2 mətnlərini öz tətbiqindən oxuyur, HMA isə onu gizlədir.</string>
     <string name="faq_8"><b>8. Bəzi funksiyalar aktiv olsa da işləmir?</b>\n- Instagram-ın daxili konfiqurasiyası onları bloklaya bilər. Tərtibatçı seçimləri → Standart konfiqurasiyanı bərpa et.</string>
-    <string name="faq_9"><b>9. Hələ də problem var?</b>\n- Telegram qrupunda soruşun (t.me/instaEclipse_discussion).</string>
+    <string name="faq_9"><b>9. Hələ də problem var?</b>\n- Telegram qrupunda soruşun (https://t.me/Eclipse2discussion).</string>
 </resources>
