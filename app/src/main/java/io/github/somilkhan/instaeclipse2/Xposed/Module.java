@@ -142,8 +142,13 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 // Call the method to hook the target app
                 hookInstagram(lpparam);
 
-            } catch (Exception e) {
-                ModuleLog.line("(InstaEclipse): Failed to initialize DexKitBridge for " + lpparam.packageName + ": " + e.getMessage());
+            } catch (UnsatisfiedLinkError e) {
+                // An Error, not an Exception: e.g. a native lib the kernel's page size can't map
+                // (16 KB-page devices need 16 KB-aligned segments). Log it instead of failing silently.
+                ModuleLog.line("(InstaEclipse): ❌ libdexkit.so failed to load for " + lpparam.packageName
+                        + " (no features will work): " + e);
+            } catch (Throwable e) {
+                ModuleLog.line("(InstaEclipse): ❌ Failed to initialize DexKitBridge for " + lpparam.packageName + ": " + e);
             }
         }
     }
