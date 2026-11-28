@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -848,6 +849,17 @@ public class LoggingFragment extends Fragment {
     }
 
     private void clearLogs() {
+        Context ctx = getContext();
+        if (ctx == null) return;
+        new MaterialAlertDialogBuilder(ctx)
+                .setTitle(R.string.logs_clear_confirm_title)
+                .setMessage(R.string.logs_clear_confirm_body)
+                .setNegativeButton(R.string.ig_dialog_cancel, null)
+                .setPositiveButton(R.string.logs_clear_confirm_action, (dialog, which) -> performClearLogs())
+                .show();
+    }
+
+    private void performClearLogs() {
         Context ctx = getContext();
         if (ctx == null) return;
         // Only to signer-trusted hosts, like every other companion -> Instagram command (this

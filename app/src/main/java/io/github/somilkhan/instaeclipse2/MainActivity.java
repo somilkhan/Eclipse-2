@@ -47,11 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView topTitle;
     private Insets bars = Insets.NONE;
     private View currentRoot;
+    private final io.github.somilkhan.instaeclipse2.ui.glass.TabReveal tabReveal =
+            new io.github.somilkhan.instaeclipse2.ui.glass.TabReveal();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // NOTE: intentionally NOT applying DynamicColors — the app ships a fixed branded palette
-        // shared with the in-Instagram sheet (see Theme.InstaEclipse).
+        // HyperSpring's current companion uses a fixed OLED palette, not wallpaper Monet.
+        // Local mode only: never change the Instagram process's theme/night configuration.
+        getDelegate().setLocalNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
         Logging.init(this, "instaeclipse_companion.log");
         io.github.somilkhan.instaeclipse2.mods.media.FrameSessionCache.cleanupOrphans(getCacheDir());
@@ -68,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         topBar = findViewById(R.id.top_app_bar);
         topTitle = findViewById(R.id.toolbar_title_name);
         nav.setBlurSource(fragmentContainer);
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView()).setAppearanceLightStatusBars(false);
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView()).setAppearanceLightNavigationBars(false);
         edge = io.github.somilkhan.instaeclipse2.ui.glass.ScrollEdgeEffect.install(
                 findViewById(R.id.content_stage), fragmentContainer);
         edge.setProgress(0f);
@@ -115,7 +120,13 @@ public class MainActivity extends AppCompatActivity {
         // Re-tapping the current tab is a no-op inside the pill (keeps scroll/search state).
         if (savedInstanceState == null) nav.setSelectedItemId(R.id.nav_home);
 
-        nav.setOnItemSelectedListener(id -> showTab(id, true));
+        nav.setOnItemSelectedListener(id -> {
+            if (getSupportFragmentManager().isStateSaved()) {
+                nav.setSelectedItemId(currentTab);
+                return;
+            }
+            showTab(id, true);
+        });
     }
 
     // ------------------------------------------------------------------ legacy module
@@ -177,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
     private void showTab(int navId, boolean animate) {
         FragmentManager fm = getSupportFragmentManager();
         if (fm.isStateSaved()) return;
+        tabReveal.finish();
         String tag = tagFor(navId);
         Fragment target = fm.findFragmentByTag(tag);
         boolean created = target == null;
@@ -184,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
             target = newTab(navId);
             if (target == null) return;
         }
+        boolean wave = animate && navId != currentTab && !Motion.reduceMotion()
+                && currentRoot != null && currentRoot.getWidth() > 0;
+        android.widget.ImageView snapshot = wave ? snapshotPage(currentRoot) : null;
         currentTab = navId;
         androidx.fragment.app.FragmentTransaction tx = fm.beginTransaction().setReorderingAllowed(true);
         for (Fragment f : fm.getFragments()) {
@@ -198,17 +213,58 @@ public class MainActivity extends AppCompatActivity {
         View v = target.getView();
         if (v == null) return; // first launch: the lifecycle callback wires it once the view exists
         if (!created) onContentView(v);
-        if (animate && !Motion.reduceMotion()) {
-            v.animate().cancel();
-            v.setAlpha(0f);
-            v.setTranslationY(Motion.dp(this, 6));
-            v.animate().alpha(1f).translationY(0f).setDuration(180)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f))
-                    .withLayer().start();
-        } else {
-            v.setAlpha(1f);
-            v.setTranslationY(0f);
+        v.animate().cancel();
+        v.setAlpha(1f);
+        v.setTranslationY(0f);
+        ViewGroup container = findViewById(R.id.fragment_container);
+        if (snapshot != null && !v.isLaidOut() && container.getWidth() > 0 && container.getHeight() > 0) {
+            // A first tap may beat prewarming. Lay out the new match-parent page before its first
+            // frame so it enters through the same wave as an already retained page.
+            v.measure(View.MeasureSpec.makeMeasureSpec(container.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(container.getHeight(), View.MeasureSpec.EXACTLY));
+            v.layout(0, 0, container.getWidth(), container.getHeight());
         }
+        if (snapshot != null && v.isLaidOut()) {
+            ViewGroup stage = findViewById(R.id.content_stage);
+            container.addView(snapshot, new FrameLayout.LayoutParams(-1, -1));
+            v.bringToFront();
+            android.graphics.PointF center = nav.selectedCenterIn(stage);
+            tabReveal.play(stage, container, java.util.Collections.singletonList(snapshot), v,
+                    center.x, center.y, () -> {
+                        container.removeView(snapshot);
+                        snapshot.setImageDrawable(null);
+                    });
+        } else if (snapshot != null) {
+            snapshot.setImageDrawable(null);
+        }
+    }
+
+    /** Bounded bitmap: outgoing fragment is paused immediately rather than running behind the wave. */
+    private android.widget.ImageView snapshotPage(View page) {
+        if (page.getWidth() <= 0 || page.getHeight() <= 0) return null;
+        try {
+            float scale = Math.min(1f, 1600f / Math.max(page.getWidth(), page.getHeight()));
+            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(
+                    Math.max(1, Math.round(page.getWidth() * scale)),
+                    Math.max(1, Math.round(page.getHeight() * scale)), android.graphics.Bitmap.Config.ARGB_8888);
+            android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+            canvas.scale(scale, scale);
+            page.draw(canvas);
+            android.widget.ImageView image = new android.widget.ImageView(this);
+            image.setImageBitmap(bitmap);
+            image.setScaleType(android.widget.ImageView.ScaleType.FIT_XY);
+            image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            image.setClickable(false);
+            return image;
+        } catch (RuntimeException | OutOfMemoryError failure) {
+            return null; // Animation is optional; switching tabs must always work.
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        tabReveal.finish();
+        super.onStop();
     }
 
     private void prewarmNextTab() {
@@ -232,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle out) {
+        tabReveal.finish();
         super.onSaveInstanceState(out);
         out.putInt(STATE_TAB, currentTab);
     }
@@ -244,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
     private void applyChromeInsets() {
         int gap = Math.round(Motion.dp(this, 12));
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) nav.getLayoutParams();
-        int side = Math.round(Motion.dp(this, 20));
+        int side = Math.round(Motion.dp(this, 22));
         // Keep the pill a comfortable thumb width on tablets / landscape.
         int maxW = Math.round(Motion.dp(this, 440));
         int w = getResources().getDisplayMetrics().widthPixels - bars.left - bars.right;
@@ -259,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Space content must keep free at the bottom so its last row clears the floating pill. */
     private int bottomClearance() {
-        int navH = nav.getHeight() > 0 ? nav.getHeight() : Math.round(Motion.dp(this, 62));
+        int navH = nav.getHeight() > 0 ? nav.getHeight() : Math.round(Motion.dp(this, 66));
         return bars.bottom + Math.round(Motion.dp(this, 12)) + navH + Math.round(Motion.dp(this, 16));
     }
 
@@ -346,12 +403,12 @@ public class MainActivity extends AppCompatActivity {
     @androidx.annotation.Nullable
     private ScrollSink wireScroll(View scroller, View largeTitle) {
         if (scroller == null) return null;
-        final int slop = Math.round(Motion.dp(this, 6));
         final float edgeRange = Motion.dp(this, 12);
-        final float minimizeAt = Motion.dp(this, 160);
-        final float restoreAt = Motion.dp(this, 80);
+        final float minimizeAt = Motion.dp(this, 24);
+        final float restoreAt = Motion.dp(this, 12);
         ScrollSink sink = new ScrollSink() {
             private int last;
+            private int travel;
 
             @Override
             public void syncChrome(int y) {
@@ -364,10 +421,12 @@ public class MainActivity extends AppCompatActivity {
                     edge.setProgress(Math.min(1f, Math.max(0f, y / edgeRange)));
                 }
                 last = y;
+                travel = 0;
             }
 
             @Override
             public void onScroll(int y) {
+                if (!scroller.isShown()) return; // Hidden retained tabs cannot own the chrome.
                 if (largeTitle != null) {
                     float start = largeTitle.getTop() + largeTitle.getHeight() * 0.35f;
                     float range = Math.max(1f, largeTitle.getHeight() * 0.65f);
@@ -376,12 +435,18 @@ public class MainActivity extends AppCompatActivity {
                     edge.setProgress(Math.min(1f, Math.max(0f, y / edgeRange)));
                 }
                 int dy = y - last;
-                if (Math.abs(dy) > slop) {
-                    // iOS 26 tabBarMinimizeBehavior(.onScrollDown): shrink while reading, restore on
-                    // scroll up or near the top.
-                    if (dy > 0 && y > minimizeAt) nav.setMinimized(true);
-                    else if (dy < 0 || y < restoreAt) nav.setMinimized(false);
-                    last = y;
+                last = y;
+                if (dy == 0) return;
+                if ((dy > 0 && travel < 0) || (dy < 0 && travel > 0)) travel = 0;
+                travel += dy;
+                // HyperSpring shrinks the whole bar after 24dp down, restores after 12dp up.
+                // Direction accumulation also works with slow, sub-touch-slop scroll frames.
+                if (y <= restoreAt || travel <= -restoreAt) {
+                    nav.setMinimized(false);
+                    travel = 0;
+                } else if (travel >= minimizeAt) {
+                    nav.setMinimized(true);
+                    travel = 0;
                 }
             }
         };

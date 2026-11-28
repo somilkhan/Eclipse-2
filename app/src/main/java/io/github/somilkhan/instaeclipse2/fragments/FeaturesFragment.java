@@ -83,6 +83,7 @@ public class FeaturesFragment extends Fragment {
     private ActivityResultLauncher<Uri> crashDirPickerLauncher;
     private ActivityResultLauncher<String[]> restoreFileLauncher;
     private ActivityResultLauncher<String> notifPermLauncher;
+    private String pendingNotificationFeatureKey;
     private ActivityResultLauncher<Intent> locationPickerLauncher;
     private ActivityResultLauncher<Intent> themeCustomizerLauncher;
 
@@ -194,7 +195,15 @@ public class FeaturesFragment extends Fragment {
         });
 
         notifPermLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), granted -> {});
+                new ActivityResultContracts.RequestPermission(), granted -> {
+                    String key = pendingNotificationFeatureKey;
+                    pendingNotificationFeatureKey = null;
+                    if (key == null || !isAdded()) return;
+                    if (granted) stageChange(key, true);
+                    else io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(
+                            requireContext(), R.string.feat_download_notifications_denied, Toast.LENGTH_SHORT).show();
+                    refreshVisibleMenu();
+                });
 
         locationPickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -309,15 +318,6 @@ public class FeaturesFragment extends Fragment {
         fragmentView = inflater.inflate(R.layout.fragment_features, container, false);
         localCache = io.github.somilkhan.instaeclipse2.utils.core.CommonUtils.companionCache(requireContext());
 
-        // Request POST_NOTIFICATIONS permission (required API 33+ for download progress notifications)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(),
-                    android.Manifest.permission.POST_NOTIFICATIONS)
-                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                notifPermLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-
         recyclerFeatures = fragmentView.findViewById(R.id.recycler_features);
         recyclerFeatures.setLayoutManager(new LinearLayoutManager(requireContext()));
         // Disable change animations so conditional enabled/alpha updates are instant, not crossfaded
@@ -379,7 +379,8 @@ public class FeaturesFragment extends Fragment {
             }
         });
 
-        fabSave.setOnClickListener(v -> commitStagedChanges());
+        fabSave.setOnClickListener(v -> showStagedChangesReview());
+        updateStagedUi();
 
         loadMainMenu();
 
@@ -396,6 +397,7 @@ public class FeaturesFragment extends Fragment {
         public static final int TYPE_CLICKABLE = 2;
         public static final int TYPE_MASTER_SWITCH = 3;
         public static final int TYPE_SPACER = 4;
+        public static final int TYPE_EMPTY = 5;
 
         public int type;
         public String title;
@@ -462,6 +464,16 @@ public class FeaturesFragment extends Fragment {
         }
     }
 
+    static class EmptyViewHolder extends RecyclerView.ViewHolder {
+        final TextView title;
+        final TextView body;
+        EmptyViewHolder(View view) {
+            super(view);
+            title = view.findViewById(R.id.empty_title);
+            body = view.findViewById(R.id.empty_body);
+        }
+    }
+
     private class FeatureAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         List<FeatureItem> items = new ArrayList<>();
 
@@ -475,6 +487,7 @@ public class FeaturesFragment extends Fragment {
             int type = items.get(position).type;
             if (type == FeatureItem.TYPE_HEADER) return 0;
             if (type == FeatureItem.TYPE_SPACER)  return 2;
+            if (type == FeatureItem.TYPE_EMPTY) return 3;
             return 1;
         }
 
@@ -492,6 +505,9 @@ public class FeaturesFragment extends Fragment {
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, parent.getResources().getDisplayMetrics())
                 ));
                 return new RecyclerView.ViewHolder(v) {};
+            } else if (viewType == 3) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feature_empty, parent, false);
+                return new EmptyViewHolder(v);
             } else {
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feature, parent, false);
                 return new ItemViewHolder(v);
@@ -503,6 +519,12 @@ public class FeaturesFragment extends Fragment {
             FeatureItem item = items.get(position);
 
             if (item.type == FeatureItem.TYPE_SPACER) return;
+            if (holder instanceof EmptyViewHolder) {
+                EmptyViewHolder empty = (EmptyViewHolder) holder;
+                empty.title.setText(item.title);
+                empty.body.setText(item.subtitle);
+                return;
+            }
 
             if (holder instanceof HeaderViewHolder) {
                 ((HeaderViewHolder) holder).tvHeader.setText(item.title);
@@ -526,9 +548,15 @@ public class FeaturesFragment extends Fragment {
                 }
 
                 // Subtitle (category counts) + trailing chevron for rows that open a sub-menu
-                if (item.subtitle != null) {
+                String rowSubtitle = item.subtitle;
+                if (item.prefKey != null && stagedChanges.containsKey(item.prefKey)) {
+                    String pending = getString(R.string.feat_status_pending,
+                            getString(stagedChanges.get(item.prefKey) ? R.string.feat_status_on : R.string.feat_status_off));
+                    rowSubtitle = rowSubtitle == null ? pending : rowSubtitle + " · " + pending;
+                }
+                if (rowSubtitle != null) {
                     itemHolder.tvSubtitle.setVisibility(View.VISIBLE);
-                    itemHolder.tvSubtitle.setText(item.subtitle);
+                    itemHolder.tvSubtitle.setText(rowSubtitle);
                     itemHolder.tvSubtitle.setTextColor(MaterialColors.getColor(itemHolder.itemView, item.subtitleActive
                             ? androidx.appcompat.R.attr.colorPrimary
                             : com.google.android.material.R.attr.colorOnSurfaceVariant));
@@ -589,8 +617,19 @@ public class FeaturesFragment extends Fragment {
                         isChecked = getCurrentState(item.prefKey);
                     }
                     itemHolder.swToggle.setChecked(isChecked);
+                    String accessibility = getString(R.string.feat_switch_accessibility,
+                            item.title, getString(isChecked ? R.string.feat_status_on : R.string.feat_status_off));
+                    if (item.prefKey != null && stagedChanges.containsKey(item.prefKey)) {
+                        accessibility += getString(R.string.feat_status_pending_short);
+                    }
+                    itemHolder.swToggle.setContentDescription(accessibility);
 
                     itemHolder.swToggle.setOnCheckedChangeListener((btn, checked) -> {
+                        if (checked && isDownloadFeature(item.prefKey) && needsNotificationPermission()) {
+                            requestNotificationPermission(item.prefKey);
+                            btn.setChecked(false);
+                            return;
+                        }
                         if (item.isExtreme && checked) {
                             new MaterialAlertDialogBuilder(itemHolder.itemView.getContext())
                                     .setTitle(getString(R.string.ig_dialog_distraction_extreme_title))
@@ -766,6 +805,8 @@ public class FeaturesFragment extends Fragment {
                 header.type = FeatureItem.TYPE_HEADER;
                 header.title = (String) def;
                 displayList.add(header);
+            } else if (def instanceof FeatureItem) {
+                displayList.add((FeatureItem) def);
             } else if (def instanceof List) {
                 @SuppressWarnings("unchecked")
                 List<FeatureItem> group = (List<FeatureItem>) def;
@@ -1111,7 +1152,13 @@ public class FeaturesFragment extends Fragment {
                 defs.add(hits);
             }
         }
-        if (defs.isEmpty()) defs.add(getString(R.string.feat_search_no_results));
+        if (defs.isEmpty()) {
+            FeatureItem empty = new FeatureItem();
+            empty.type = FeatureItem.TYPE_EMPTY;
+            empty.title = getString(R.string.feat_search_no_results);
+            empty.subtitle = getString(R.string.feat_search_empty_body);
+            defs.add(empty);
+        }
         showMenu(getString(R.string.features), defs, false);
         currentMenu = "main";
     }
@@ -2841,18 +2888,86 @@ public class FeaturesFragment extends Fragment {
     // STAGING LOGIC
     // =========================================================
 
+    private boolean isDownloadFeature(String key) {
+        return "enablePostDownload".equals(key) || "enableStoryDownload".equals(key)
+                || "enableReelDownload".equals(key) || "enableProfileDownload".equals(key);
+    }
+
+    private boolean needsNotificationPermission() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestNotificationPermission(String key) {
+        pendingNotificationFeatureKey = key;
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.feat_download_notifications_title)
+                .setMessage(R.string.feat_download_notifications_body)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    if (notifPermLauncher != null) notifPermLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
+                })
+                .setNegativeButton(R.string.ig_dialog_cancel, (dialog, which) -> pendingNotificationFeatureKey = null)
+                .setOnCancelListener(dialog -> pendingNotificationFeatureKey = null)
+                .show();
+    }
+
+    private void updateStagedUi() {
+        if (fabSave == null) return;
+        if (stagedChanges.isEmpty()) {
+            fabSave.hide();
+        } else {
+            fabSave.setText(getString(R.string.feat_apply_count, stagedChanges.size()));
+            fabSave.show();
+        }
+    }
+
+    private String featureLabel(String key) {
+        if (adapter != null) {
+            for (FeatureItem item : adapter.items) if (key.equals(item.prefKey)) return item.title;
+        }
+        for (Category category : getCategories()) {
+            for (FeatureItem item : flattenItems(category.builder.build())) {
+                if (key.equals(item.prefKey)) return item.title;
+            }
+        }
+        return key;
+    }
+
+    private void showStagedChangesReview() {
+        if (stagedChanges.isEmpty()) return;
+        StringBuilder message = new StringBuilder();
+        for (Map.Entry<String, Boolean> entry : stagedChanges.entrySet()) {
+            if (message.length() > 0) message.append("\n");
+            message.append("• ").append(featureLabel(entry.getKey())).append(" → ")
+                    .append(getString(entry.getValue() ? R.string.feat_status_on : R.string.feat_status_off));
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.feat_staged_review_title, stagedChanges.size()))
+                .setMessage(message.toString())
+                .setPositiveButton(R.string.feat_staged_review_apply, (dialog, which) -> commitStagedChanges())
+                .setNegativeButton(R.string.feat_staged_review_keep, null)
+                .setNeutralButton(R.string.feat_staged_review_discard, (dialog, which) ->
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setMessage(getString(R.string.feat_staged_review_discard_confirm, stagedChanges.size()))
+                                .setPositiveButton(R.string.feat_staged_review_discard, (d, w) -> {
+                                    stagedChanges.clear();
+                                    updateStagedUi();
+                                    refreshVisibleMenu();
+                                })
+                                .setNegativeButton(R.string.feat_staged_review_keep, null)
+                                .show())
+                .show();
+    }
+
     private void stageChange(String prefKey, boolean isChecked) {
         if (localCache.getBoolean(prefKey, io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags.defaultOn(prefKey)) == isChecked) {
             stagedChanges.remove(prefKey);
         } else {
             stagedChanges.put(prefKey, isChecked);
         }
-
-        if (stagedChanges.isEmpty()) {
-            fabSave.hide();
-        } else {
-            fabSave.show();
-        }
+        updateStagedUi();
+        refreshVisibleMenu();
     }
 
     private void commitStagedChanges() {
@@ -2881,7 +2996,8 @@ public class FeaturesFragment extends Fragment {
         }
         editor.apply();
         stagedChanges.clear();
-        fabSave.hide();
+        updateStagedUi();
+        refreshVisibleMenu();
         io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(requireContext(), getString(R.string.ig_toast_settings_applied), Toast.LENGTH_SHORT).show();
     }
 

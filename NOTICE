@@ -49,3 +49,16 @@ https://github.com/somilkhan/Eclipse-2 (the release tag named in the APK's versi
 
 Eclipse 2 is not affiliated with, endorsed by, or connected to Meta Platforms, Inc. or Instagram.
 See DISCLAIMER.md.
+
+HyperSpring UI adaptation
+-------------------------
+The companion's TabReveal glass-wave transition is adapted from
+olilio3/HyperSpring (https://github.com/olilio3/HyperSpring),
+Copyright 2026 HyperSpring contributors, Apache License 2.0.
+The full Apache-2.0 license is retained in LICENSES/Apache-2.0.txt.
+Eclipse changes include per-Activity animation ownership, outgoing snapshots
+instead of live hidden fragments, bounded snapshot allocation, reduced-motion
+handling and restoration of view properties. Companion palette and navigation
+motion are inspired by HyperSpring's SettingsActivity, Motion and GlassBar;
+Eclipse keeps its own accessible tab views and existing glass rendering backends.
+No HyperSpring launcher or System UI hooks are included.

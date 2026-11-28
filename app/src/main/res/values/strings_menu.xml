@@ -12,4 +12,9 @@
     <string name="menu_health_unverified">Not yet exercised or verified (%1$d)</string>
     <string name="menu_health_failed">Failed (%1$d)</string>
     <string name="menu_health_note">Only explicit successful runtime paths count as runtime observed. No signal is not proof of failure.</string>
+    <string name="menu_health_state_runtime">Runtime observed</string>
+    <string name="menu_health_state_installed">Installed; awaiting a runtime signal</string>
+    <string name="menu_health_state_unverified">Not yet exercised or verified</string>
+    <string name="menu_health_state_failed">Failed</string>
+    <string name="ig_toast_feature_details">Details</string>
 </resources>

@@ -443,8 +443,8 @@ public class HomeFragment extends Fragment {
             color = colorRes(R.color.ie_ok);
             label = getString(R.string.home_status_module_active);
         } else {
-            color = colorRes(R.color.ie_ok);
-            label = getString(R.string.home_status_installed);
+            color = colorRes(R.color.ie_warn);
+            label = getString(R.string.home_status_module_unconfirmed);
         }
         // Grouped-row style: semantic colour only on the status dot, label stays primary text.
         statusDot.setImageTintList(ColorStateList.valueOf(color));

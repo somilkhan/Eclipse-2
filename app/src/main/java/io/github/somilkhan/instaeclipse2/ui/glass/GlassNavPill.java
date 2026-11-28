@@ -44,24 +44,10 @@ import java.util.List;
 import io.github.somilkhan.instaeclipse2.R;
 
 /**
- * Floating iOS 26 tab bar.
- *
- * <ul>
- *   <li><b>Glass body.</b> API 33+ with the Liquid-Glass-Android library available
- *       ({@link LiquidSupport}): a library {@code LiquidGlassView} refracts the scrolling content
- *       (real lens: bevel refraction, dispersion, specular rim). Otherwise, and instantly if the
- *       library ever throws, the in-house {@link BackdropBlurLayout} glass (blur + rim refraction
- *       approximation + specular rim).</li>
- *   <li><b>Lens selection.</b> A capsule "platter" marks the selected tab; on library devices a
- *       clear library lens sits on it and magnifies/bends the icon underneath. It glides between
- *       tabs on two springs (leading edge first, trailing edge follows = liquid stretch), swells
- *       while a finger is down and can be dragged across the bar; release snaps to the nearest tab.</li>
- *   <li><b>Minimise on scroll.</b> {@link #setMinimized(boolean)} shrinks the bar to a compact
- *       capsule at the leading edge showing only the selected icon (iOS 26
- *       {@code tabBarMinimizeBehavior = .onScrollDown}); tapping it restores the bar. Never minimises
- *       with TalkBack / Switch Access on; with "Remove animations" changes are instant.</li>
- *   <li>Real tabs for accessibility: each item is focusable, announced as "Tab, n of m, selected".</li>
- * </ul>
+ * HyperSpring-inspired floating glass tabs: spring travel/lift, 2% press swell,
+ * an 86% compact state which keeps all four tabs visible, and drag-to-select.
+ * Existing Eclipse glass backends and accessible child tabs remain intact.
+ * Reference: olilio3/HyperSpring GlassBar, Apache-2.0 (see NOTICE).
  */
 public class GlassNavPill extends BackdropBlurLayout {
 
@@ -77,10 +63,12 @@ public class GlassNavPill extends BackdropBlurLayout {
     private final FloatValueHolder right = new FloatValueHolder();
     private final FloatValueHolder minimizeHolder = new FloatValueHolder(0f);
     private final FloatValueHolder pressHolder = new FloatValueHolder(0f);
+    private final FloatValueHolder liftHolder = new FloatValueHolder(0f);
     private final SpringAnimation leftSpring;
     private final SpringAnimation rightSpring;
     private final SpringAnimation minimizeSpring;
     private final SpringAnimation pressSpring;
+    private final SpringAnimation liftSpring;
     private final float inset;
     private final float density;
     private final int touchSlop;
@@ -99,7 +87,8 @@ public class GlassNavPill extends BackdropBlurLayout {
     @Nullable private View blurSource;
 
     // Lens drag
-    private float downX;
+    private float downX, downY, downCenter;
+    private int lastDragId = View.NO_ID;
     private boolean dragging;
     private boolean pressing;
 
@@ -133,8 +122,11 @@ public class GlassNavPill extends BackdropBlurLayout {
         leftSpring = new SpringAnimation(left);
         rightSpring = new SpringAnimation(right);
         for (SpringAnimation s : new SpringAnimation[]{leftSpring, rightSpring}) {
-            s.setSpring(new SpringForce().setDampingRatio(0.74f).setStiffness(SpringForce.STIFFNESS_MEDIUM));
+            s.setSpring(new SpringForce().setDampingRatio(0.85f).setStiffness(400f));
             s.addUpdateListener((a, v, vel) -> onLensMoved());
+            s.addEndListener((a, canceled, v, velocity) -> {
+                settleLift();
+            });
         }
         minimizeSpring = new SpringAnimation(minimizeHolder);
         minimizeSpring.setSpring(new SpringForce().setDampingRatio(0.82f).setStiffness(420f));
@@ -144,6 +136,11 @@ public class GlassNavPill extends BackdropBlurLayout {
         pressSpring.setSpring(new SpringForce().setDampingRatio(0.6f).setStiffness(600f));
         pressSpring.setMinimumVisibleChange(0.002f);
         pressSpring.addUpdateListener((a, v, vel) -> onLensMoved());
+
+        liftSpring = new SpringAnimation(liftHolder);
+        liftSpring.setSpring(new SpringForce().setDampingRatio(0.7f).setStiffness(440f));
+        liftSpring.setMinimumVisibleChange(0.002f);
+        liftSpring.addUpdateListener((animation, value, velocity) -> onLensMoved());
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GlassNavPill);
         int menuRes = a.getResourceId(R.styleable.GlassNavPill_ieMenu, 0);
@@ -167,7 +164,7 @@ public class GlassNavPill extends BackdropBlurLayout {
             b.setCornerRadius(999f);
             b.setOverLight(!night);
             b.setEnableEdgeHighlight(true);
-            b.setGlassTint(night ? 0x401C1C1E : 0x66FFFFFF);
+            b.setGlassTint(0x66121212);
             b.setOnBrokenListener(this::fallBackToInHouseGlass);
             b.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
             addView(b, 0, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -251,6 +248,7 @@ public class GlassNavPill extends BackdropBlurLayout {
         rightSpring.cancel();
         minimizeSpring.cancel();
         pressSpring.cancel();
+        liftSpring.cancel();
         super.onDetachedFromWindow();
     }
 
@@ -282,7 +280,7 @@ public class GlassNavPill extends BackdropBlurLayout {
             MenuItem mi = menu.getItem(i);
             ItemView v = new ItemView(getContext(), mi, tint, i, menu.size());
             v.setOnClickListener(x -> {
-                if (minimized) { setMinimized(false); return; }
+                setMinimized(false);
                 select(v.getId(), true, true);
             });
             row.addView(v, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -331,9 +329,12 @@ public class GlassNavPill extends BackdropBlurLayout {
             left.setValue(l);
             right.setValue(r);
             indicatorPlaced = true;
+            liftSpring.cancel();
+            liftHolder.setValue(0f);
             onLensMoved();
             return;
         }
+        liftSpring.animateToFinalPosition(1f);
         boolean movingRight = l > left.getValue();
         // Leading edge snaps a little faster than the trailing one → liquid stretch.
         (movingRight ? rightSpring : leftSpring).getSpring().setStiffness(760f);
@@ -342,15 +343,34 @@ public class GlassNavPill extends BackdropBlurLayout {
         rightSpring.animateToFinalPosition(r);
     }
 
+    private void settleLift() {
+        if (liftSpring != null && !leftSpring.isRunning() && !rightSpring.isRunning()) {
+            liftSpring.animateToFinalPosition(0f);
+        }
+    }
+
     private void onLensMoved() {
-        syncDroplet();
-        invalidate();
+        applyMinimize();
+    }
+
+    /** Selected tab center in the requested content coordinate system (also works in RTL). */
+    public android.graphics.PointF selectedCenterIn(View content) {
+        android.graphics.Rect bounds = new android.graphics.Rect();
+        ItemView item = selectedItem();
+        int[] origin = new int[2];
+        content.getLocationOnScreen(origin);
+        if (item != null && item.getGlobalVisibleRect(bounds)) {
+            return new android.graphics.PointF(bounds.exactCenterX() - origin[0], bounds.exactCenterY() - origin[1]);
+        }
+        return new android.graphics.PointF(content.getWidth() / 2f, content.getHeight());
     }
 
     /** Lens rectangle incl. press swell (view coordinates). */
     private void lensRect(RectF out) {
         float top = row.getTop() + inset * 0.5f, bottom = row.getBottom() - inset * 0.5f;
-        out.set(left.getValue(), top, right.getValue(), bottom);
+        out.set(left.getValue() + inset, top, right.getValue() - inset, bottom);
+        float lift = Math.max(0f, liftHolder.getValue());
+        out.inset(-out.width() * 0.045f * lift, -3f * density * lift);
         float p = pressHolder.getValue();
         if (p > 0f) {
             float gx = out.width() * 0.10f * p, gy = out.height() * 0.12f * p;
@@ -372,7 +392,7 @@ public class GlassNavPill extends BackdropBlurLayout {
         }
         droplet.setTranslationX(indicatorRect.left);
         droplet.setTranslationY(indicatorRect.top);
-        float alpha = 1f - minimizeHolder.getValue();
+        float alpha = 1f;
         if (droplet.getAlpha() != alpha) droplet.setAlpha(alpha);
         droplet.invalidate();
     }
@@ -388,24 +408,12 @@ public class GlassNavPill extends BackdropBlurLayout {
 
     @Override
     protected void glassRect(RectF out) {
-        float p = minimizeHolder.getValue();
-        int w = getWidth(), h = getHeight();
-        out.set(0, 0, w, h);
-        if (p <= 0f || w == 0) return;
-        float compact = compactWidth();
-        float cw = w + (compact - w) * p;
-        if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) out.left = w - cw;
-        else out.right = cw;
-    }
-
-    private float compactWidth() {
-        return Math.max(getHeight(), 64 * density);
+        out.set(0, 0, getWidth(), getHeight());
     }
 
     @Override
     protected void glassOutline(Outline outline) {
-        glassRect(glass);
-        outline.setRoundRect(Math.round(glass.left), 0, Math.round(glass.right), getHeight(), getHeight() / 2f);
+        outline.setRoundRect(0, 0, getWidth(), getHeight(), getHeight() / 2f);
     }
 
     @Override
@@ -424,12 +432,10 @@ public class GlassNavPill extends BackdropBlurLayout {
     /** Selected-tab capsule: soft grey platter + glass rim; swells while pressed. */
     private void drawPlatter(Canvas canvas) {
         if (!indicatorPlaced) return;
-        float m = minimizeHolder.getValue();
-        if (m >= 0.99f) return;
         lensRect(indicatorRect);
         float rad = indicatorRect.height() / 2f;
         float press = pressHolder.getValue();
-        platterPaint.setAlpha(Math.min(255, Math.round(platterBaseAlpha * (1f - m) * (1f + 0.6f * press))));
+        platterPaint.setAlpha(Math.min(255, Math.round(platterBaseAlpha * (1f + 0.3f * press))));
         canvas.drawRoundRect(indicatorRect, rad, rad, platterPaint);
         if (body == null) {
             // Fallback lens rim: bright top edge, faint bottom (the library lens draws its own).
@@ -441,7 +447,7 @@ public class GlassNavPill extends BackdropBlurLayout {
                 lensRimPaint.setShader(new LinearGradient(0, indicatorRect.top, 0, indicatorRect.bottom,
                         top, bottom, Shader.TileMode.CLAMP));
             }
-            lensRimPaint.setAlpha(Math.round(255 * (1f - m) * (0.55f + 0.45f * press)));
+            lensRimPaint.setAlpha(Math.round(255 * (0.55f + 0.45f * press)));
             float hs = lensRimPaint.getStrokeWidth() / 2f;
             indicatorRect.inset(hs, hs);
             canvas.drawRoundRect(indicatorRect, rad - hs, rad - hs, lensRimPaint);
@@ -457,16 +463,11 @@ public class GlassNavPill extends BackdropBlurLayout {
 
     public boolean isMinimized() { return minimized; }
 
-    /** Shrinks the bar to a compact capsule showing only the selected tab (scroll down). */
+    /** HyperSpring-style compact state: all tab targets stay visible and tappable. */
     public void setMinimized(boolean min) {
-        if (min && Motion.touchExploration(getContext())) min = false;
+        if (min && (Motion.touchExploration(getContext()) || pressing)) min = false;
         if (minimized == min) return;
         minimized = min;
-        // Compact bar exposes a single "expand" target to accessibility.
-        for (ItemView v : items) {
-            v.setImportantForAccessibility(min && v.getId() != selectedId
-                    ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS : IMPORTANT_FOR_ACCESSIBILITY_YES);
-        }
         if (Motion.reduceMotion() || !isAttachedToWindow()) {
             minimizeSpring.cancel();
             minimizeHolder.setValue(min ? 1f : 0f);
@@ -477,60 +478,36 @@ public class GlassNavPill extends BackdropBlurLayout {
     }
 
     private void applyMinimize() {
-        float p = minimizeHolder.getValue();
-        glassRect(glass);
-        float compactCenter = getLayoutDirection() == LAYOUT_DIRECTION_RTL
-                ? getWidth() - compactWidth() / 2f : compactWidth() / 2f;
-        ItemView sel = selectedItem();
-        for (ItemView v : items) {
-            if (v == sel) {
-                float itemCenter = row.getLeft() + v.getLeft() + v.getWidth() / 2f;
-                v.setTranslationX((compactCenter - itemCenter) * p);
-                v.label().setAlpha(1f - Math.min(1f, p * 1.6f));
-                v.icon().setTranslationY(v.label().getHeight() / 2f * p);
-                v.setAlpha(1f);
-            } else {
-                v.setTranslationX((compactCenter - (row.getLeft() + v.getLeft() + v.getWidth() / 2f)) * p * 0.6f);
-                v.setAlpha(Math.max(0f, 1f - p * 2.2f));
-                v.label().setAlpha(1f);
-                v.icon().setTranslationY(0f);
-            }
-        }
-        if (body != null) {
-            body.layout(Math.round(glass.left), 0, Math.round(glass.right), getHeight());
-        }
+        float compact = Math.max(0f, Math.min(1f, minimizeHolder.getValue()));
+        float press = Math.max(0f, pressHolder.getValue());
+        float scale = (1f - 0.14f * compact) * (1f + 0.02f * press);
+        setScaleX(scale);
+        setScaleY(scale);
+        setTranslationY(4f * density * compact);
         syncDroplet();
-        invalidateOutline();
         invalidate();
     }
 
     // ------------------------------------------------------------------ touch: lens drag
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (minimized || minimizeHolder.getValue() > 0.5f) {
-            glassRect(glass);
-            if (ev.getActionMasked() == MotionEvent.ACTION_DOWN && !glass.contains(ev.getX(), ev.getY())) {
-                return false; // let touches outside the compact capsule reach the content
-            }
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (minimized) return true; // the compact capsule is one big "expand" button
         switch (ev.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
+                downY = ev.getY();
+                downCenter = (left.getValue() + right.getValue()) / 2f;
+                lastDragId = selectedId;
                 dragging = false;
+                setMinimized(false);
                 setPressing(true);
                 return false;
             case MotionEvent.ACTION_MOVE:
                 if (!dragging && Math.abs(ev.getX() - downX) > touchSlop && indicatorPlaced
-                        && lensHit(downX)) {
+                        && Math.abs(ev.getX() - downX) > Math.abs(ev.getY() - downY)) {
                     dragging = true;
-                    getParent().requestDisallowInterceptTouchEvent(true);
+                    if (getParent() != null) getParent().requestDisallowInterceptTouchEvent(true);
+                    liftSpring.animateToFinalPosition(1f);
                     return true;
                 }
                 return false;
@@ -543,25 +520,16 @@ public class GlassNavPill extends BackdropBlurLayout {
         }
     }
 
-    private boolean lensHit(float x) {
-        float slack = 12 * density;
-        return x >= left.getValue() - slack && x <= right.getValue() + slack;
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (minimized) {
-            if (ev.getActionMasked() == MotionEvent.ACTION_UP) setMinimized(false);
-            return true;
-        }
         switch (ev.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 return true;
             case MotionEvent.ACTION_MOVE:
                 if (dragging) {
                     float w = right.getValue() - left.getValue();
-                    float l = ev.getX() - w / 2f;
+                    float l = downCenter + ev.getX() - downX - w / 2f;
                     float min = row.getLeft() + row.getPaddingLeft();
                     float max = row.getRight() - row.getPaddingRight() - w;
                     l = Math.max(min, Math.min(max, l));
@@ -569,6 +537,11 @@ public class GlassNavPill extends BackdropBlurLayout {
                     rightSpring.cancel();
                     left.setValue(l);
                     right.setValue(l + w);
+                    ItemView nearest = nearestItem(l + w / 2f);
+                    if (nearest != null && nearest.getId() != lastDragId) {
+                        lastDragId = nearest.getId();
+                        Motion.selectionTick(this);
+                    }
                     onLensMoved();
                 }
                 return true;
@@ -577,6 +550,8 @@ public class GlassNavPill extends BackdropBlurLayout {
                 setPressing(false);
                 if (dragging) {
                     dragging = false;
+                    liftSpring.animateToFinalPosition(0f);
+                    if (getParent() != null) getParent().requestDisallowInterceptTouchEvent(false);
                     ItemView best = null;
                     float c = (left.getValue() + right.getValue()) / 2f, bestD = Float.MAX_VALUE;
                     for (ItemView v : items) {
@@ -595,6 +570,16 @@ public class GlassNavPill extends BackdropBlurLayout {
             default:
                 return true;
         }
+    }
+
+    private ItemView nearestItem(float center) {
+        ItemView best = null;
+        float distance = Float.MAX_VALUE;
+        for (ItemView item : items) {
+            float d = Math.abs(row.getLeft() + item.getLeft() + item.getWidth() / 2f - center);
+            if (d < distance) { distance = d; best = item; }
+        }
+        return best;
     }
 
     private void setPressing(boolean down) {
@@ -660,7 +645,7 @@ public class GlassNavPill extends BackdropBlurLayout {
             setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
             float d = getResources().getDisplayMetrics().density;
-            setMinimumHeight(Math.round(54 * d));
+            setMinimumHeight(Math.round(58 * d));
             setPadding(0, Math.round(7 * d), 0, Math.round(6 * d));
             setClickable(true);
             setFocusable(true);
@@ -673,13 +658,13 @@ public class GlassNavPill extends BackdropBlurLayout {
             icon.setImageTintList(tint);
             icon.setDuplicateParentStateEnabled(true);
             icon.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            int s = Math.round(26 * d);
+            int s = Math.round(24 * d);
             addView(icon, new LayoutParams(s, s));
 
             label = new TextView(ctx);
             label.setText(mi.getTitle());
-            label.setTypeface(Fonts.inter(ctx, 500));
-            label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+            label.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
+            label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             label.setTextColor(tint);
             label.setMaxLines(1);
             label.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -687,8 +672,8 @@ public class GlassNavPill extends BackdropBlurLayout {
             label.setLetterSpacing(0.01f);
             label.setDuplicateParentStateEnabled(true);
             label.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(label, 8, 10, 1, TypedValue.COMPLEX_UNIT_SP);
-            LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, Math.round(14 * d));
+            androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(label, 9, 12, 1, TypedValue.COMPLEX_UNIT_SP);
+            LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, Math.round(16 * d));
             lp.topMargin = Math.round(2 * d);
             label.setGravity(Gravity.CENTER);
             addView(label, lp);
@@ -705,7 +690,8 @@ public class GlassNavPill extends BackdropBlurLayout {
             checked = c;
             setSelected(c);
             refreshDrawableState();
-            label.setTypeface(Fonts.inter(getContext(), c ? 600 : 500));
+            label.setTypeface(android.graphics.Typeface.create("sans-serif-medium",
+                    c ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
         }
 
         @Override public void toggle() { setChecked(!checked); }

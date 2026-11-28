@@ -261,11 +261,10 @@ public class UIHookManager {
                         if (FeatureFlags.showFeatureToasts && !CustomToast.toastShown) {
                             CustomToast.toastShown = true;
 
-                            // Pass the raw KEY -> hooked map; showFeatureGrid resolves
-                            // each key's label and groups it into a category itself.
-                            java.util.LinkedHashMap<String, Boolean> status =
-                                    new java.util.LinkedHashMap<>(FeatureStatusTracker.getStatus());
-                            CustomToast.showFeatureGrid(activity.getApplicationContext(),
+                            // Compact status banner; the full per-feature list is opt-in via Details.
+                            java.util.LinkedHashMap<String, FeatureStatusTracker.HealthState> status =
+                                    new java.util.LinkedHashMap<>(FeatureStatusTracker.getHealthStatus());
+                            CustomToast.showFeatureSummary(activity,
                                     I18n.t(activity, R.string.ig_toast_features_loaded), status);
                         }
                     } catch (Exception innerE) {
