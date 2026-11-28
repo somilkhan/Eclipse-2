@@ -46,7 +46,7 @@ final class ImageClipboard {
                 if (old != null) for (File f : old) //noinspection ResultOfMethodCallIgnored
                     f.delete();
                 File out = new File(dir, "image_" + System.currentTimeMillis() + ".jpg");
-                FeedVideoDownloadHook.downloadToFileAndGetType(imageUrl, out);
+                io.github.somilkhan.instaeclipse2.utils.download.DownloadEngine.fetch(ctx, imageUrl, out, "image/jpeg", null, null);
                 Uri uri = new Uri.Builder().scheme("content").authority(auth)
                         .appendPath("cache").appendPath(DIR).appendPath(out.getName()).build();
                 FeedVideoDownloadHook.mainHandler.post(() -> {

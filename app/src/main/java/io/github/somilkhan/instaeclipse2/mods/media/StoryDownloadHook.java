@@ -155,31 +155,36 @@ public class StoryDownloadHook {
         io.github.somilkhan.instaeclipse2.utils.pacing.PacedRun run = io.github.somilkhan.instaeclipse2.utils.pacing.PacedRun.start(
                 ctx, I18n.t(ctx, R.string.ig_highlight_download_all), copy.size());
         new Thread(() -> {
-            int ok = 0;
+            HighlightTally tally = new HighlightTally();
             for (int i = 0; i < copy.size(); i++) {
                 if (!run.awaitTurn(i)) break; // safe pacing + Stop
                 Object item = copy.get(i);
                 run.done(i);
                 try {
                     StoryMediaOptions m = extractStoryMediaOptions(ctx, item, true);
-                    if (m == null) continue;
+                    if (m == null) { tally.skipped(); continue; }
                     boolean video = m.videoUrl != null;
                     String url = video ? m.videoUrl : m.imageUrl;
                     String user = extractUsernameFromReelItemHolder(item);
                     String id = extractMediaIdFromReelItemHolder(item);
                     String fn = FeedVideoDownloadHook.buildFilename(user, "highlight", id, video);
-                    FeedVideoDownloadHook.downloadAndSave(ctx, url, fn, video, user);
-                    ok++;
+                    // true = handed to the companion service, which reports its own result.
+                    if (FeedVideoDownloadHook.downloadAndSave(ctx, url, fn, video, user)) tally.queued();
+                    else tally.saved();
                     if (!run.pacer.isEnabled()) Thread.sleep(400); // previous fixed gap when pacing is off
                 } catch (Throwable t) {
+                    tally.failed();
                     ModuleLog.line("(IE|Highlight) item: " + t);
                 }
             }
             run.finish();
-            final int done = ok;
-            String stopped = run.stoppedText(done);
+            String stopped = run.stoppedText(tally.handled());
+            String summary = tally.queuedCount() > 0
+                    ? I18n.t(ctx, R.string.ig_highlight_queued, tally.handled(), copy.size())
+                    : I18n.t(ctx, R.string.ig_highlight_done, tally.savedCount(), copy.size());
+            ModuleLog.line("(IE|Highlight) " + tally);
             mainHandler.post(() -> io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx,
-                    stopped != null ? stopped : I18n.t(ctx, R.string.ig_highlight_done, done, copy.size()), Toast.LENGTH_LONG).show());
+                    stopped != null ? stopped : summary, Toast.LENGTH_LONG).show());
         }).start();
     }
 

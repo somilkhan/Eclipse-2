@@ -439,6 +439,49 @@ public final class DownloadEngine {
         return samples > 0 && duration > 0 && last - first + durationTolerance(duration) < duration;
     }
 
+    /**
+     * Joins an already fetched DASH video track and its (optional) audio track into {@code out}
+     * through the verified engine route: inspection of both sources, {@link Mp4Join} for VP9/AV1
+     * or sparse tracks (MediaMuxer can not write those), the interleaved native muxer otherwise,
+     * then inspection of the result against its sources. Used by the legacy Original-quality path
+     * instead of its own sequential MediaMuxer copy. On any failure {@code out} is deleted.
+     */
+    public static void joinVerified(File video, File audio, File out, Cancellation cancellation) throws Failure {
+        if (Looper.myLooper() == Looper.getMainLooper()) throw new Failure("THREAD", "Downloads must run on a worker thread", false);
+        Cancellation cancel = cancellation == null ? new Cancellation() : cancellation;
+        DownloadRequest.Rendition anyVideo = new DownloadRequest.Rendition("", 0, 0, 0, "", 0);
+        DownloadDiagnostics.Phase phase = DownloadDiagnostics.Phase.INSPECT_VIDEO;
+        boolean complete = false;
+        try {
+            checkCancelled(cancel);
+            Metadata before = inspect(video, false, anyVideo, cancel);
+            if (before.hasAudio) throw new Failure("JOIN", "DASH video unexpectedly contains embedded audio", false);
+            Metadata beforeAudio = null;
+            if (audio != null) {
+                phase = DownloadDiagnostics.Phase.INSPECT_AUDIO;
+                beforeAudio = inspect(audio, true, null, cancel);
+            }
+            phase = usesPortableJoin(before, beforeAudio)
+                    ? DownloadDiagnostics.Phase.JOIN_PORTABLE : DownloadDiagnostics.Phase.JOIN_NATIVE;
+            if (!joinTracks(video, audio, out, before, beforeAudio, cancel, (p, d, t) -> { }))
+                throw new Failure("CANCELLED", "Download cancelled", false);
+            if (out.length() > Downloader.MAX_BYTES)
+                throw new Failure("TOO_LARGE", "Joined output exceeds the media size limit", false);
+            phase = DownloadDiagnostics.Phase.INSPECT_OUTPUT;
+            Metadata verified = inspect(out, audio != null, anyVideo, cancel);
+            phase = DownloadDiagnostics.Phase.VERIFY_OUTPUT;
+            verifyJoined(before, beforeAudio, verified);
+            checkCancelled(cancel);
+            complete = true;
+        } catch (Failure e) { throw e;
+        } catch (IOException | RuntimeException e) {
+            checkCancelled(cancel);
+            throw diagnosedFailure(phase, e);
+        } finally {
+            if (!complete) Downloader.delete(out);
+        }
+    }
+
     /** Shared production route for already inspected DASH sources; no quality or encoding change. */
     static boolean joinTracks(File video, File audio, File out, Metadata sourceVideo, Metadata sourceAudio,
             Cancellation cancellation, Progress listener) throws IOException {
