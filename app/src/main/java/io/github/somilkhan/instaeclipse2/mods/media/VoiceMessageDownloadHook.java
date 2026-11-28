@@ -685,7 +685,7 @@ public class VoiceMessageDownloadHook {
                     ModuleLog.line(TAG + "DM photo: largest=" + (big != null ? big[1] : null) + " ig=" + igArea);
                     if (big != null && igArea > 0 && (int) big[1] > igArea) urls.set(0, (String) big[0]);
                 }
-                ModuleLog.line(TAG + "DM media: " + urls.size() + " item(s), user=" + fUser);
+                ModuleLog.line(TAG + "DM media: " + urls.size() + " item(s), user=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(fUser));
                 if (urls.isEmpty()) throw new IllegalStateException("no media URL");
                 boolean delegated = false, anyVideo = false;
                 for (int i = 0; i < urls.size(); i++) {

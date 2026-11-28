@@ -44,7 +44,7 @@ public final class ModuleLog {
     }
 
     public static void line(String msg) {
-        String formatted = getCallerInfo() + msg;
+        String formatted = LogRedact.text(getCallerInfo() + msg);
         Logging.append(formatted);
         Log.i(TAG, formatted);
     }
@@ -52,7 +52,7 @@ public final class ModuleLog {
     public static void line(String msg, Throwable t) {
         String stackTraceStr = t != null ? Log.getStackTraceString(t) : "";
         String fullMsg = msg + (stackTraceStr.isEmpty() ? "" : "\n" + stackTraceStr);
-        String formatted = getCallerInfo() + fullMsg;
+        String formatted = LogRedact.text(getCallerInfo() + fullMsg);
         Logging.append(formatted);
         Log.i(TAG, formatted);
     }

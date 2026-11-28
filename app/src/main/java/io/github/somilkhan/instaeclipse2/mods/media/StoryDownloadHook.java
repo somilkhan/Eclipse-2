@@ -1359,7 +1359,7 @@ public class StoryDownloadHook {
                     if (IgModels.isUserClass(candidateClass)) {
                         String username = UserUtils.callUsernameGetter(candidate);
                         if (username != null) {
-                            ModuleLog.line("(IE|Story|Username) reelItem." + m.getName() + "() [User] → " + username);
+                            ModuleLog.line("(IE|Story|Username) reelItem." + m.getName() + "() [User] → " + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(username));
                             return username;
                         }
                         continue;
@@ -1460,8 +1460,8 @@ public class StoryDownloadHook {
     private void startDownload(Context ctx, String url, boolean isVideo,
                                String username, String mediaId) {
         String fn = FeedVideoDownloadHook.buildFilename(username, "story", mediaId, isVideo);
-        ModuleLog.line("(IE|Story|DL) username=" + username + " mediaId=" + mediaId
-                + " file=" + fn);
+        ModuleLog.line("(IE|Story|DL) username=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(username) + " mediaId=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(mediaId)
+                + " file=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(fn));
         io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx, isVideo ? I18n.t(ctx, R.string.ig_toast_downloading_story_video) : I18n.t(ctx, R.string.ig_toast_downloading_story_photo), Toast.LENGTH_SHORT).show();
         mainHandler.post(() -> new Thread(() -> {
             try {
@@ -1472,7 +1472,7 @@ public class StoryDownloadHook {
                 }
             } catch (Throwable e) {
                 mainHandler.post(() -> io.github.somilkhan.instaeclipse2.utils.toast.IeToast.makeText(ctx,
-                        I18n.t(ctx, R.string.ig_toast_download_failed, e.getMessage()), Toast.LENGTH_SHORT).show());
+                        I18n.t(ctx, R.string.ig_toast_download_failed, io.github.somilkhan.instaeclipse2.utils.log.LogRedact.text(e.getMessage())), Toast.LENGTH_SHORT).show());
             }
         }).start());
     }

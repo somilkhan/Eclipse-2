@@ -80,7 +80,7 @@ public class ShareLinkDownloadHook {
 
     private static void start(Activity a, Uri uri) {
         String pk = uri != null ? pkFromLink(uri.toString()) : null;
-        ModuleLog.line(TAG + "link=" + uri + " pk=" + pk);
+        ModuleLog.line(TAG + "link=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.url(uri) + " pk=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(pk));
         if (pk == null) {
             toast(a, I18n.t(a, R.string.ig_share_dl_not_found));
             return;
@@ -107,7 +107,7 @@ public class ShareLinkDownloadHook {
                     FeedVideoDownloadHook.mainHandler.postDelayed(this, STEP_MS);
                 } else {
                     pendingPk = null;
-                    ModuleLog.line(TAG + "timed out pk=" + pk);
+                    ModuleLog.line(TAG + "timed out pk=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(pk));
                     toast(app, I18n.t(app, R.string.ig_share_dl_not_found));
                 }
             }
@@ -176,7 +176,7 @@ public class ShareLinkDownloadHook {
         FeedVideoDownloadHook.executor.submit(() -> {
             try {
                 List<String> urls = FeedVideoDownloadHook.extractAllUrlsFromMedia(ctx, media);
-                ModuleLog.line(TAG + "pk=" + pk + " urls=" + (urls == null ? 0 : urls.size()));
+                ModuleLog.line(TAG + "pk=" + io.github.somilkhan.instaeclipse2.utils.log.LogRedact.id(pk) + " urls=" + (urls == null ? 0 : urls.size()));
                 if (urls == null || urls.isEmpty()) {
                     toast(ctx, I18n.t(ctx, R.string.ig_share_dl_not_found));
                     return;
