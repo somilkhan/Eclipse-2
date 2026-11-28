@@ -52,6 +52,10 @@ public final class Logging {
     // CannotDeliverBroadcastException instead of ever seeing the intent.
     private static final int IPC_MAX_CHARS = 150000;
     private static final long MAX_FILE_BYTES = 4 * 1024 * 1024;
+    // Hard ceiling for the companion-side mirror file. Every flush already truncates and
+    // rewrites it from the (MAX_FILE_BYTES-bounded) ring, but any write that pushes the counted
+    // size past this budget compacts it immediately instead of letting the file grow.
+    static final long MAX_MIRROR_BYTES = 2 * MAX_FILE_BYTES;
     private static final int MAX_LINES = 10000;
     // One entry (message + full stack trace with causes). 4096 used to cut real stack traces
     // short; the byte budget above still bounds the whole buffer.
@@ -198,7 +202,33 @@ public final class Logging {
         } catch (Throwable t) {
             // EBADF/EPIPE etc.: drop it; the companion's next request re-attaches.
             closeMirror();
+            return;
         }
+        // rewriteMirror() never writes more than MAX_FILE_BYTES, so this cannot recurse.
+        if (overMirrorBudget(mirrorBytes)) rewriteMirror(snapshotLines());
+    }
+
+    static boolean overMirrorBudget(long bytes) {
+        return bytes > MAX_MIRROR_BYTES;
+    }
+
+    /** Newline-terminated UTF-8 of the newest lines that fit in MAX_FILE_BYTES. */
+    static byte[] mirrorPayload(List<String> lines) {
+        ArrayDeque<byte[]> kept = new ArrayDeque<>();
+        long total = 0;
+        for (int i = lines.size() - 1; i >= 0; i--) {
+            byte[] b = (lines.get(i) + '\n').getBytes(StandardCharsets.UTF_8);
+            if (total + b.length > MAX_FILE_BYTES) break;
+            total += b.length;
+            kept.addFirst(b);
+        }
+        byte[] out = new byte[(int) total];
+        int pos = 0;
+        for (byte[] b : kept) {
+            System.arraycopy(b, 0, out, pos, b.length);
+            pos += b.length;
+        }
+        return out;
     }
 
     private static void rewriteMirror(java.util.List<String> lines) {
@@ -210,9 +240,8 @@ public final class Logging {
             return;
         }
         mirrorBytes = 0;
-        StringBuilder sb = new StringBuilder(lines.size() * 96);
-        for (String s : lines) sb.append(s).append('\n');
-        if (sb.length() > 0) writeMirror(sb.toString().getBytes(StandardCharsets.UTF_8));
+        byte[] payload = mirrorPayload(lines);
+        if (payload.length > 0) writeMirror(payload);
     }
 
     private static void ensureIoThread() {
