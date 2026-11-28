@@ -66,42 +66,65 @@ public final class LikeAnimations {
     }
 
     /**
-     * The constant in {@code names} for a picked name. The metadata and render enums spell a few
-     * names differently (e.g. AKI_KOICHI / AKI_KOCHI), so when there is no exact match the one
-     * selectable name within edit distance 2 is used. Null when none, or more than one, is close.
+     * Names the metadata and render enums spell differently, as groups of equivalent names. Only
+     * listed spellings are treated as the same animation: a near-miss (BRIAN / ADRIAN) is a
+     * different animation, not a typo.
+     */
+    static final String[][] ALIASES = {
+            {"RINGS_LIKE_AKI_KOICHI", "RINGS_LIKE_AKI_KOCHI"},
+    };
+
+    /**
+     * The constant in {@code names} for a picked name: the exact name, else a listed alias
+     * ({@link #ALIASES}), else null (leave Instagram alone). Only selectable names are returned.
      */
     public static String metadataName(String pick, Iterable<String> names) {
         if (pick == null) return null;
-        String best = null;
-        int bestDist = 3;
-        boolean tie = false;
-        for (String n : names) {
-            if (!isSelectable(n)) continue;
-            if (n.equals(pick)) return n;
-            int d = distance(pick, n, 3);
-            if (d < bestDist) { best = n; bestDist = d; tie = false; }
-            else if (d == bestDist) tie = true;
+        java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
+        wanted.add(pick);
+        for (String[] group : ALIASES) {
+            if (java.util.Arrays.asList(group).contains(pick)) wanted.addAll(java.util.Arrays.asList(group));
         }
-        return tie ? null : best;
+        String alias = null;
+        for (String n : names) {
+            if (!isSelectable(n) || !wanted.contains(n)) continue;
+            if (n.equals(pick)) return n;
+            if (alias == null) alias = n;
+        }
+        return alias;
     }
 
-    /** Levenshtein distance, stopping early at {@code cap}. */
-    static int distance(String a, String b, int cap) {
-        if (Math.abs(a.length() - b.length()) >= cap) return cap;
-        int[] prev = new int[b.length() + 1];
-        int[] cur = new int[b.length() + 1];
-        for (int j = 0; j <= b.length(); j++) prev[j] = j;
-        for (int i = 1; i <= a.length(); i++) {
-            cur[0] = i;
-            int rowMin = cur[0];
-            for (int j = 1; j <= b.length(); j++) {
-                int c = a.charAt(i - 1) == b.charAt(j - 1) ? 0 : 1;
-                cur[j] = Math.min(Math.min(cur[j - 1] + 1, prev[j] + 1), prev[j - 1] + c);
-                rowMin = Math.min(rowMin, cur[j]);
-            }
-            if (rowMin >= cap) return cap;
-            int[] t = prev; prev = cur; cur = t;
+    /**
+     * Picked name → enum constant, resolved once per name (bind paths call this per view, so
+     * the name matching must not run each time). Misses are cached too.
+     */
+    public static final class Resolver {
+        private static final Object NONE = new Object();
+        private final java.util.Map<String, Object> byName;
+        private final List<String> names;
+        private final java.util.concurrent.ConcurrentHashMap<String, Object> cache =
+                new java.util.concurrent.ConcurrentHashMap<>();
+
+        public Resolver(java.util.Map<String, Object> byName) {
+            this.byName = byName;
+            this.names = new ArrayList<>(byName.keySet());
         }
-        return Math.min(prev[b.length()], cap);
+
+        public List<String> names() {
+            return names;
+        }
+
+        /** Constant for {@code pick}, or null. */
+        public Object get(String pick) {
+            if (pick == null) return null;
+            Object v = cache.get(pick);
+            if (v == null) {
+                String n = metadataName(pick, names);
+                Object c = n != null ? byName.get(n) : null;
+                v = c != null ? c : NONE;
+                cache.put(pick, v);
+            }
+            return v == NONE ? null : v;
+        }
     }
 }
