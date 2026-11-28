@@ -29,7 +29,7 @@ public final class ExportBrand {
     }
 
     public static final String GITHUB   = RepoLinks.REPO_URL;
-    public static final String TELEGRAM = "https://t.me/InstaEclipse";
+    public static final String TELEGRAM = "https://t.me/Eclipse2discussion";
 
     /**
      * Main Instagram target of this release (the build named in the CHANGELOG heading). Hooks were
