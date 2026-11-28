@@ -530,13 +530,16 @@ public class PlaybackSpeedHook {
     static Method findScrubberGate457(DexKitBridge bridge, ClassLoader cl) {
         try {
             java.util.Set<String> controllers = new java.util.LinkedHashSet<>();
-            for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                    .usingStrings("ClipsProgressController_forceShowAttachedScrubber")))) {
-                for (MethodData inv : md.getInvokes()) {
-                    if (!inv.isMethod() || !java.lang.reflect.Modifier.isStatic(inv.getModifiers())) continue;
-                    var pt = inv.getParamTypeNames();
-                    if (!pt.isEmpty() && pt.get(0).equals(inv.getClassName())) controllers.add(inv.getClassName());
-                }
+            // Inline literal first (457). The shared string table itself also "uses" the literal,
+            // so drop it: its invokes would never lead to the controller.
+            addControllers(controllers, io.github.somilkhan.instaeclipse2.utils.core.StringTables.withoutTables(
+                    bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                            .usingStrings(SCRUBBER_MARKER)))));
+            // 458+ (unverified offline, no APK at hand): the literal may only be reachable through
+            // the shared X.0000 string table, like the HideSuggested/MaxUploadQuality anchors.
+            if (controllers.isEmpty()) {
+                addControllers(controllers,
+                        io.github.somilkhan.instaeclipse2.utils.core.StringTables.findTableUsers(bridge, SCRUBBER_MARKER));
             }
             for (String ctrl : controllers) {
                 var cd = bridge.getClassData(ctrl);
@@ -561,6 +564,36 @@ public class PlaybackSpeedHook {
         return null;
     }
 
+    static final String SCRUBBER_MARKER = "ClipsProgressController_forceShowAttachedScrubber";
+    static final String SCRUBBER_MARKER_LEGACY = "android_purge_26_q2_ClipsExperimentUtil_shouldShowAttachedScrubber";
+
+    /** The (?, long, ?, ?)Z ClipsExperimentUtil gate among {@code candidates}, or null. */
+    private static Method legacyScrubberGate(List<MethodData> candidates, ClassLoader cl) {
+        if (candidates == null) return null;
+        for (MethodData md : candidates) {
+            if (!"boolean".equals(md.getReturnTypeName())) continue;
+            try {
+                Method m = md.getMethodInstance(cl);
+                Class<?>[] p = m.getParameterTypes();
+                if (p.length == 4 && p[1] == long.class) return m;
+            } catch (Throwable ignored) {
+            }
+        }
+        return null;
+    }
+
+    /** Classes whose static helpers {@code md} calls with an instance of that class as first argument. */
+    private static void addControllers(java.util.Set<String> out, List<MethodData> markerUsers) {
+        if (markerUsers == null) return;
+        for (MethodData md : markerUsers) {
+            for (MethodData inv : md.getInvokes()) {
+                if (!inv.isMethod() || !java.lang.reflect.Modifier.isStatic(inv.getModifiers())) continue;
+                var pt = inv.getParamTypeNames();
+                if (!pt.isEmpty() && pt.get(0).equals(inv.getClassName())) out.add(inv.getClassName());
+            }
+        }
+    }
+
     private static boolean isConfigLongBool(MethodData m) {
         if (!m.isMethod() || !java.lang.reflect.Modifier.isStatic(m.getModifiers())) return false;
         if (!"boolean".equals(m.getReturnTypeName())) return false;
@@ -573,13 +606,12 @@ public class PlaybackSpeedHook {
         try {
             Method gate = DexKitCache.isCacheValid() ? DexKitCache.loadMethod("PlaybackSpeed_scrubberGate", cl) : null;
             if (gate == null) {
-                for (MethodData md : bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
-                        .usingStrings("android_purge_26_q2_ClipsExperimentUtil_shouldShowAttachedScrubber")
-                        .returnType("boolean")))) {
-                    Method m = md.getMethodInstance(cl);
-                    Class<?>[] p = m.getParameterTypes();
-                    if (p.length == 4 && p[1] == long.class) { gate = m; break; }
-                }
+                gate = legacyScrubberGate(bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .usingStrings(SCRUBBER_MARKER_LEGACY)
+                        .returnType("boolean"))), cl);
+                // Same marker through the shared string table (458+; unverified offline, no APK at hand).
+                if (gate == null) gate = legacyScrubberGate(io.github.somilkhan.instaeclipse2.utils.core.StringTables
+                        .findTableUsers(bridge, SCRUBBER_MARKER_LEGACY), cl);
                 if (gate == null) gate = findScrubberGate457(bridge, cl);
                 if (gate == null) {
                     ModuleLog.line(TAG + "⚠️ reel scrubber gate not found");
