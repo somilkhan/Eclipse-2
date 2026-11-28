@@ -68,10 +68,11 @@ public class CommonUtils {
      * the live broadcast didn't reach it (not running, or frozen in the background).
      */
     /**
-     * The companion's instaeclipse_cache prefs, opened MODE_WORLD_READABLE so Instagram can read
-     * it through XSharedPreferences. LSPosed (xposedsharedprefs) allows that mode and keeps the
-     * file under /data/misc/<id>/prefs; MODE_PRIVATE made it 0660 there, unreadable from
-     * Instagram. Without LSPosed the platform rejects the mode, so fall back to MODE_PRIVATE.
+     * The companion's instaeclipse_cache prefs are world-readable so the hooked Instagram process
+     * can read them through the legacy XSharedPreferences API on a cold start. Do not opt into
+     * LSPosed's New XSharedPreferences extension here: it is deprecated and scheduled for removal.
+     * On Android versions that reject MODE_WORLD_READABLE, fall back to MODE_PRIVATE; live setting
+     * updates still use the companion-to-Instagram broadcast bridge.
      * Every companion-side open must go through here: a process keeps the first mode it used.
      */
     @SuppressWarnings("deprecation")
