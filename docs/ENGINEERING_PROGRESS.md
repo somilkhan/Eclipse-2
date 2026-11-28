@@ -25,6 +25,8 @@ Branch `maintainer/eng-audit` → `main` via PR #22. **Do not merge until the au
 | 2026-11-28 | `c6dfb7a` | ENG-09 StoryTrayFilter, ENG-10 reel scrubber on 458, ENG-11 isVideo log, 458.0.0.0.57 report, matrix and IgCompat | 595 pass, 2 skipped, assembleDebug OK | 457: OK=86, 458.0.0.0.57: OK=86 |
 | 2026-11-28 | (this batch) | Closed PRs #12–#21, deleted 16 merged branches, docs, ENG-13 ghost Mark as read | 600 pass, assembleDebug OK | ghost steps 10/10 OK on 457 and 458 |
 | 2026-11-28 | (this batch) | ENG-14 feature-status check in hook-verify, ENG-15..20 silent failures | 601 pass, assembleDebug OK | 457/458: steps unchanged (OK=86); features HOOKED=90 BROKEN=1 SILENT=8 |
+| 2026-11-28 | `2a9ff44` | Merged maintainer/root-access (ROOT-01, APP-01..07) | 629 pass, 2 skipped, assembleDebug OK | 457/458.57 identical |
+| 2026-11-28 | (this batch) | First device log (458.0.0.0.67): ENG-21 LoopStory, ENG-22 DisappearingSwipe; 458.0.0.0.67 93-step report | 629 pass, assembleDebug OK | 458.0.0.0.67: OK=86; 457/458.57 identical |
 
 ## How a batch is verified
 

@@ -47,13 +47,18 @@ P4 cosmetic.
 | ENG-18 | P3 | `DevOptionsUnlockHook` | Installed its 3 hooks but never reported, so the toast showed nothing | `setHooked("DevOptions")` after each install | `FeatureStatusCoverageTest` | offline SILENT→HOOKED |
 | ENG-19 | P1 | `LockDirectMessagesHook` (whole-app lock) | Lifecycle registration failure and a lock screen that failed to show were swallowed: the app opened unlocked with no sign | Both log ❌; registration failure marks `LockWholeApp` BROKEN | n/a | needs device |
 | ENG-20 | P3 | `CaptionCopyContextMenuHook`, `CustomFontHook` | Activity tracker and font-picker result hook failures were swallowed | Both log a ⚠️ line | n/a | log only |
+| ENG-21 | P1 | `LoopStoryHook` (458.0.0.0.67) | **Device log** (458.0.0.0.67, 386405710): "expected 1 story completion method, found 0". 458.0.0.0.67 moved the `end_scene` branch out of the completion handler (`A1V`) into a helper, so the `end_scene`+`comment` matcher found nothing. The failure also never called `setBroken`, so the toast didn't show it | Fallback when the first query is empty: `void(ReelItem)` in ReelViewerFragment using "comment" and reading `photoTimerController`; the existing "exactly one private (ReelItem)Z replay check" validation is unchanged. Every failure path now calls `setBroken("LoopStories")` | report | offline FAIL→OK on 458.0.0.0.67 (386405728: `A1V`/`A1H`); 457 and 458.0.0.0.57 unchanged (first query). Device variant 386405710 not checked |
+| ENG-22 | P2 | `DisappearingSwipeHook` (458.0.0.0.67 device) | **Device log**: "expected 1 swipe setup method, found 0" on 386405710, while 386405728 matches offline (variants of the same version use different obfuscated names: e.g. scrubber flags `X.07RI` on the device vs `X.07PR` offline). Exact cause on the device variant unknown without that APK. No `setBroken` either | Fallback when empty: the shape alone (the only `()V` caller of `setRefreshingDistance`; on 457/458.57/458.67 that is exactly one method); the vanish-check pair validation is unchanged. Failure paths call `setBroken` | report | offline OK on all three; **device fix unverified** (best guess) |
 
 ## Open
 
 | ID | P | Area | Status |
 |---|---|---|---|
 | OPEN-01 | P1 | Every fix above | **Device verification not done.** Needs a phone with 457.0.0.55.73 or 458.0.0.0.x. |
-| OPEN-02 | P2 | 458.0.0.0.67 (release target) | Report is the old 79-step run; APK not obtainable from the sandbox. Re-run needed. |
+| OPEN-02 | P2 | 458.0.0.0.67 (release target) | 93-step report on 386405728 (Uptodown): OK=86. The tester's device runs 386405710, a different variant with different obfuscated names; that exact APK is still needed for an exact check. |
+| OPEN-08 | P1 | Device log, 458.0.0.0.67 | "first launch … (previous run unfinished)" on every session (5 sessions in ~2 min, each cut off 8–16 s in): Instagram's process ended before the background hook pass finished, so the warm cache is never marked complete. Cause unknown (crash, kill by the user/root restart, or low-memory kill). Needs the crash report or `logcat`. |
+| OPEN-09 | P3 | `KeepUnsentMessagesHook` | `sender binding=false` and `current-thread tracker hooked 0` on 457, 458.57, 458.67 offline and on the device: the optional sender attribution is not working. Messages are still kept. |
+| OPEN-10 | P4 | `FollowListExportHook` | `fullName=false` on 458 (true on 457): exports lack the full-name column. |
 | OPEN-03 | P2 | 458.0.0.0.72 (newest alpha) | No APK, no report. |
 | OPEN-04 | P3 | hook-verify harness | VoiceMessageDownload PARTIAL and LocationSpoof FAIL are harness stubs (`Location.CREATOR`), not lookups. Harness could be improved. |
 | OPEN-05 | P2 | Runtime-only hooks | NotificationRegistration, JumpToFirstMessage, ReadReceiptChat, ExternalBrowser and FeedVideoDownload#install can only be checked on a device. |

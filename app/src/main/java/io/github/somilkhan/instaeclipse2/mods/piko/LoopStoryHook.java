@@ -58,8 +58,20 @@ public class LoopStoryHook {
             List<MethodData> found = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
                     .declaredClass(FRAGMENT).returnType("void").paramTypes("com.instagram.model.reels.ReelItem")
                     .usingStrings("end_scene", "comment")));
+            if (found.isEmpty()) {
+                // 458.0.0.0.67 moved the "end_scene" branch into a helper, leaving the completion
+                // handler (A1V there) with "comment" and the photo timer. The replay-check
+                // validation below still has to find exactly one candidate.
+                found = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .declaredClass(FRAGMENT).returnType("void").paramTypes("com.instagram.model.reels.ReelItem")
+                        .usingStrings("comment")
+                        .addUsingField(org.luckypray.dexkit.query.matchers.FieldMatcher.create()
+                                .declaredClass(FRAGMENT).name("photoTimerController"))));
+                if (found.size() == 1) ModuleLog.line(TAG + "completion found without end_scene (photo timer + comment)");
+            }
             if (found.size() != 1) {
                 ModuleLog.line(TAG + "❌ expected 1 story completion method, found " + found.size());
+                if (FeatureFlags.loopStories) FeatureStatusTracker.setBroken("LoopStories");
                 return;
             }
             MethodData completionData = found.get(0);
@@ -80,6 +92,7 @@ public class LoopStoryHook {
             }
             if (n != 1) {
                 ModuleLog.line(TAG + "❌ expected 1 replay check in " + completion.getName() + ", found " + n);
+                if (FeatureFlags.loopStories) FeatureStatusTracker.setBroken("LoopStories");
                 return;
             }
 
@@ -114,6 +127,7 @@ public class LoopStoryHook {
             FeatureStatusTracker.setHooked("LoopStories");
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);
+            if (FeatureFlags.loopStories) FeatureStatusTracker.setBroken("LoopStories");
         }
     }
 

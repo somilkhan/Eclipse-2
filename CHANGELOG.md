@@ -31,6 +31,9 @@
   unlock), and pinned distraction shortcuts stayed locked after a Focus Lock had run out.
 
 ### Fixes
+- Stories → Loop story did nothing on Instagram 458.0.0.0.67 ("expected 1 story completion
+  method, found 0"). Disable swipe for disappearing messages gets a fallback lookup for the
+  458.0.0.0.67 build seen on a device. Both now show as failed in the load toast when they miss.
 - Features that failed to find their Instagram code without saying so now show as failed in the load
   toast: whole-app lock (it could open unlocked), chat Translate, Hide stories tray and Fancy bio font.
   Developer options now shows as hooked. Caption copy and custom font log when their setup fails.

@@ -44,8 +44,20 @@ public class DisappearingSwipeHook {
                     .addInvoke(MethodMatcher.create()
                             .declaredClass("com.instagram.ui.widget.refresh.RefreshableNestedScrollingParent")
                             .name("setRefreshingDistance"))));
+            if (setups.isEmpty()) {
+                // Seen on a 458.0.0.0.67 device build: no match with the "disappearing_messages"
+                // class string. Fall back to the shape alone (the only ()V caller of
+                // setRefreshingDistance); the vanish-check pair below must still match exactly.
+                setups = bridge.findMethod(FindMethod.create().matcher(MethodMatcher.create()
+                        .returnType("void").paramCount(0)
+                        .addInvoke(MethodMatcher.create()
+                                .declaredClass("com.instagram.ui.widget.refresh.RefreshableNestedScrollingParent")
+                                .name("setRefreshingDistance"))));
+                if (setups.size() == 1) ModuleLog.line(TAG + "setup found without the class string: " + setups.get(0).getClassName() + "." + setups.get(0).getName());
+            }
             if (setups.size() != 1) {
                 ModuleLog.line(TAG + "❌ expected 1 swipe setup method, found " + setups.size());
+                if (FeatureFlags.disableDisappearingSwipe) FeatureStatusTracker.setBroken("DisableDisappearingSwipe");
                 return;
             }
             MethodData setupData = setups.get(0);
@@ -65,6 +77,7 @@ public class DisappearingSwipeHook {
             if (na != 1 || ng != 1 || isActive.getDeclaringClass() != gate.getDeclaringClass()
                     || isActive.getParameterTypes()[1] != gate.getParameterTypes()[1]) {
                 ModuleLog.line(TAG + "❌ vanish checks not found (active=" + na + ", gate=" + ng + ")");
+                if (FeatureFlags.disableDisappearingSwipe) FeatureStatusTracker.setBroken("DisableDisappearingSwipe");
                 return;
             }
             final Method active = isActive;
@@ -101,6 +114,7 @@ public class DisappearingSwipeHook {
             FeatureStatusTracker.setHooked("DisableDisappearingSwipe");
         } catch (Throwable t) {
             ModuleLog.line(TAG + "❌ " + t);
+            if (FeatureFlags.disableDisappearingSwipe) FeatureStatusTracker.setBroken("DisableDisappearingSwipe");
         }
     }
 }
