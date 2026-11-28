@@ -89,6 +89,7 @@ public class GlassNavPill extends BackdropBlurLayout {
     @Nullable private SafeLiquidGlassView body;
     @Nullable private SafeLiquidGlassView droplet;
     @Nullable private View blurSource;
+    private int dropletBaseW, dropletBaseH;
 
     // Lens drag
     private float downX, downY, downCenter;
@@ -96,6 +97,7 @@ public class GlassNavPill extends BackdropBlurLayout {
     private boolean dragging;
     private boolean pressing;
     private float touchX, touchY;
+    private boolean lensFramePosted;
 
     public GlassNavPill(@NonNull Context context) { this(context, null); }
 
@@ -193,6 +195,7 @@ public class GlassNavPill extends BackdropBlurLayout {
 
             body = b;
             droplet = d;
+            dropletBaseW = dropletBaseH = 0;
             if (blurSource != null) b.setBackdropSource(blurSource);
             setGlassDrawingEnabled(false);
         } catch (Throwable t) {
@@ -207,6 +210,7 @@ public class GlassNavPill extends BackdropBlurLayout {
         if (droplet != null) removeView(droplet);
         body = null;
         droplet = null;
+        dropletBaseW = dropletBaseH = 0;
         setGlassDrawingEnabled(true);
         invalidate();
     }
@@ -357,13 +361,26 @@ public class GlassNavPill extends BackdropBlurLayout {
     }
 
     private void onLensMoved() {
+        if (lensFramePosted) return;
+        lensFramePosted = true;
+        postOnAnimation(() -> {
+            lensFramePosted = false;
+            applyLensFrame();
+        });
+    }
+
+    private void applyLensFrame() {
         applyMinimize();
         if (!indicatorPlaced || items.isEmpty()) return;
         float center = (left.getValue() + right.getValue()) * 0.5f;
         for (ItemView item : items) {
             float itemCenter = row.getLeft() + item.getLeft() + item.getWidth() * 0.5f;
             float near = Math.max(0f, 1f - Math.abs(center - itemCenter) / Math.max(1f, item.getWidth()));
-            item.setVisualColor(blend(unselectedColor, selectedColor, near));
+            // Quantise the visual blend: the pill itself still moves every frame, but child tint
+            // state only changes at perceptible colour steps instead of allocating four new
+            // ColorStateLists on every spring tick.
+            float stepped = Math.round(near * 32f) / 32f;
+            item.setVisualColor(blend(unselectedColor, selectedColor, stepped));
         }
     }
 
@@ -405,16 +422,21 @@ public class GlassNavPill extends BackdropBlurLayout {
         if (droplet == null || !indicatorPlaced) return;
         lensRect(indicatorRect);
         int w = Math.round(indicatorRect.width()), h = Math.round(indicatorRect.height());
-        // Size the lens directly. setLayoutParams() here used to requestLayout() the whole window
-        // on every spring frame (the lens stretches while it glides), which is what made the tab
-        // switch stutter.
-        if (droplet.getWidth() != w || droplet.getHeight() != h || droplet.isLayoutRequested()) {
+        // Establish a real layer once. During spring travel do not measure/layout: that forced a
+        // full child hierarchy/layout pass every frame and was the main source of pill hitching.
+        if (dropletBaseW == 0 || dropletBaseH == 0 || droplet.getWidth() == 0) {
             droplet.measure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY));
             droplet.layout(0, 0, w, h);
+            dropletBaseW = Math.max(1, w);
+            dropletBaseH = Math.max(1, h);
+            droplet.setPivotX(0f);
+            droplet.setPivotY(0f);
         }
         droplet.setTranslationX(indicatorRect.left);
         droplet.setTranslationY(indicatorRect.top);
+        droplet.setScaleX(w / (float) dropletBaseW);
+        droplet.setScaleY(h / (float) dropletBaseH);
         float alpha = 1f;
         if (droplet.getAlpha() != alpha) droplet.setAlpha(alpha);
         droplet.invalidate();
@@ -673,6 +695,7 @@ public class GlassNavPill extends BackdropBlurLayout {
         private final ImageView icon;
         private final TextView label;
         private final HyperNavIconDrawable gestureIcon;
+        private int visualColor = Integer.MIN_VALUE;
 
         ItemView(Context ctx, MenuItem mi, ColorStateList tint, int index, int count) {
             super(ctx);
@@ -735,6 +758,8 @@ public class GlassNavPill extends BackdropBlurLayout {
         }
 
         void setVisualColor(int color) {
+            if (visualColor == color) return;
+            visualColor = color;
             gestureIcon.setColor(color);
             label.setTextColor(color);
             icon.setImageTintList(ColorStateList.valueOf(color));
