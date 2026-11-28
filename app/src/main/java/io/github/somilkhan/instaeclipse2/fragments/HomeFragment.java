@@ -249,7 +249,8 @@ public class HomeFragment extends Fragment {
 
         restartInstagramButton.setOnClickListener(v -> restartInstagram());
         downloadButton.setOnClickListener(v -> {
-            String url = io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.TESTED_INSTAGRAM_APK;
+            String url = io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.apkMirrorUrl(
+                    io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.STABLE_INSTAGRAM);
             safeStart(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
         view.findViewById(R.id.home_shortcuts_edit).setOnClickListener(v -> showEditShortcutsDialog());
@@ -399,10 +400,12 @@ public class HomeFragment extends Fragment {
 
         io.github.somilkhan.instaeclipse2.utils.core.IgCompat.Status st =
                 io.github.somilkhan.instaeclipse2.utils.core.IgCompat.classify(versionName);
-        String tested = io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.TESTED_INSTAGRAM;
+        // The checked build to offer: alpha users get the checked alpha, others the checked stable build.
+        String tested = io.github.somilkhan.instaeclipse2.utils.core.IgCompat.recommendedFor(versionName);
         int label, msg, color;
         switch (st) {
             case TESTED:         label = R.string.home_compat_tested;         msg = R.string.home_compat_msg_tested;         color = colorRes(R.color.ie_ok); break;
+            case CHECKED_OFFLINE: label = R.string.home_compat_checked_offline; msg = R.string.home_compat_msg_checked_offline; color = colorRes(R.color.ie_ok); break;
             case UNTESTED_BUILD: label = R.string.home_compat_untested_build; msg = R.string.home_compat_msg_untested_build; color = colorRes(R.color.ie_warn); break;
             case NEWER:          label = R.string.home_compat_newer;          msg = R.string.home_compat_msg_newer;          color = colorRes(R.color.ie_warn); break;
             case NEWER_ALPHA:    label = R.string.home_compat_newer_alpha;    msg = R.string.home_compat_msg_newer_alpha;    color = colorRes(R.color.ie_warn); break;
@@ -411,7 +414,7 @@ public class HomeFragment extends Fragment {
         }
         compatDot.setImageTintList(ColorStateList.valueOf(color));
         compatText.setText(label);
-        boolean ok = st == io.github.somilkhan.instaeclipse2.utils.core.IgCompat.Status.TESTED;
+        boolean ok = io.github.somilkhan.instaeclipse2.utils.core.IgCompat.isVerified(st);
         // Tested: the version is already in the hero, so no trailing value. Otherwise show the target.
         compatValue.setText(ok ? "" : getString(R.string.home_compat_value, tested));
         compatValue.setVisibility(ok ? View.GONE : View.VISIBLE);
@@ -426,7 +429,7 @@ public class HomeFragment extends Fragment {
                             .setPositiveButton(android.R.string.ok, null);
             if (!ok) b.setNeutralButton(getString(R.string.home_compat_get_tested, tested), (d, w) ->
                     safeStart(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.TESTED_INSTAGRAM_APK))));
+                            Uri.parse(io.github.somilkhan.instaeclipse2.utils.core.ExportBrand.apkMirrorUrl(tested)))));
             b.show();
         });
     }

@@ -47,7 +47,8 @@ public final class LogExport {
         public String manufacturer;
         public String model;
         public String device;
-        public String testedInstagram;
+        /** Which Instagram builds this release was checked on, and how (see IgCompat.evidenceSummary). */
+        public String checkedInstagram;
     }
 
     /** "instaeclipse-log-20261127-101500.txt" (local time). */
@@ -65,8 +66,8 @@ public final class LogExport {
         sb.append("Exported: ").append(f.format(when)).append('\n');
         sb.append("App version: ").append(appVersion(info)).append('\n');
         sb.append("Instagram version: ").append(instagramVersion(info.instagram)).append('\n');
-        if (!isBlank(info.testedInstagram)) {
-            sb.append("Tested Instagram version: ").append(info.testedInstagram).append('\n');
+        if (!isBlank(info.checkedInstagram)) {
+            sb.append("Checked Instagram versions: ").append(info.checkedInstagram).append('\n');
         }
         sb.append("Android version: ").append(androidVersion(info.androidRelease, info.sdkInt)).append('\n');
         sb.append("Device model: ").append(deviceModel(info.manufacturer, info.model, info.device)).append('\n');
