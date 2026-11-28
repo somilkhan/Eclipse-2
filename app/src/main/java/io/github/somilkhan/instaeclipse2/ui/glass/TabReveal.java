@@ -119,6 +119,8 @@ public final class TabReveal {
         final ViewOutlineProvider originalOutline = page.getOutlineProvider();
         final boolean originalClip = page.getClipToOutline();
         final float pivotX = page.getPivotX(), pivotY = page.getPivotY();
+        final float[] oldPivotX = new float[old.size()];
+        final float[] oldPivotY = new float[old.size()];
         final float dp = root.getResources().getDisplayMetrics().density;
         float w = root.getWidth(), h = root.getHeight();
         final float maxR = (float) Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)) + 40f * dp;
@@ -140,7 +142,10 @@ public final class TabReveal {
         // Las dos páginas giran en torno al botón: la nueva crece desde él, la vieja se va hacia él.
         page.setPivotX(cx);
         page.setPivotY(cy);
-        for (View o : old) {
+        for (int i = 0; i < old.size(); i++) {
+            View o = old.get(i);
+            oldPivotX[i] = o.getPivotX();
+            oldPivotY[i] = o.getPivotY();
             o.setPivotX(cx);
             o.setPivotY(cy);
         }
@@ -211,11 +216,14 @@ public final class TabReveal {
                 page.setPivotY(pivotY);
                 page.setScaleX(1f);
                 page.setScaleY(1f);
-                for (View o : old) {
+                for (int i = 0; i < old.size(); i++) {
+                    View o = old.get(i);
                     if (Build.VERSION.SDK_INT >= 31) o.setRenderEffect(null);
                     o.setScaleX(1f);
                     o.setScaleY(1f);
                     o.setAlpha(1f);
+                    o.setPivotX(oldPivotX[i]);
+                    o.setPivotY(oldPivotY[i]);
                 }
                 done.run();
             }

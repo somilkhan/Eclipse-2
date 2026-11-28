@@ -55,10 +55,18 @@ HyperSpring UI adaptation
 The companion's TabReveal glass-wave transition is adapted from
 olilio3/HyperSpring (https://github.com/olilio3/HyperSpring),
 Copyright 2026 HyperSpring contributors, Apache License 2.0.
+The companion navigation renderer and the HOME, SLIDERS, LIST, and INFO icon
+drawables are direct, companion-safe adaptations of GlassBar.java and Icons.java
+from olilio3/HyperSpring (https://github.com/olilio3/HyperSpring),
+Copyright 2026 HyperSpring contributors, Apache License 2.0. The reference source
+revision used for the port is a13867b9dac8f9f32cf4316fa684fa561a54a285.
+The rounded-rectangle refraction lens and seven-tap chromatic dispersion in the
+capsule shader are adapted from AndroidLiquidGlass
+(https://github.com/Kyant0/AndroidLiquidGlass), Copyright 2025 Kyant,
+Apache License 2.0.
 The full Apache-2.0 license is retained in LICENSES/Apache-2.0.txt.
 Eclipse changes include per-Activity animation ownership, outgoing snapshots
 instead of live hidden fragments, bounded snapshot allocation, reduced-motion
-handling and restoration of view properties. Companion palette and navigation
-motion are inspired by HyperSpring's SettingsActivity, Motion and GlassBar;
-Eclipse keeps its own accessible tab views and existing glass rendering backends.
+handling and restoration of view properties. The navigation port uses Eclipse's
+menu IDs, labels, coral accent, and virtual accessibility nodes.
 No HyperSpring launcher or System UI hooks are included.
