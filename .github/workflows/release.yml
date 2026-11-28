@@ -141,6 +141,45 @@ jobs:
             --notes-file "$RUNNER_TEMP/notes.md" \
             --verify-tag "${flags[@]}"
 
+      # Mirror the exact signed APK to the LSPosed module repository. The target tag
+      # format is versionCode-versionName (for example: 24-0.9.1).
+      - name: Publish LSPosed module release
+        env:
+          GH_TOKEN: ${{ secrets.XPOSED_REPO_TOKEN }}
+          VERSION: ${{ steps.tag.outputs.version }}
+          APK: ${{ steps.apk.outputs.file }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning title=LSPosed sync not configured::Add XPOSED_REPO_TOKEN under Settings > Secrets and variables > Actions to enable automatic LSPosed publishing."
+            exit 0
+          fi
+
+          version_code=$(sed -n 's/^[[:space:]]*versionCode[[:space:]]\+\([0-9][0-9]*\).*/\1/p' app/build.gradle | head -1)
+          if ! [[ "$version_code" =~ ^[0-9]+$ ]]; then
+            echo "::error::Could not read numeric versionCode from app/build.gradle"
+            exit 1
+          fi
+          xposed_tag="${version_code}-${VERSION}"
+          xposed_repo="Xposed-Modules-Repo/io.github.somilkhan.instaeclipse2"
+
+          if gh release view "$xposed_tag" --repo "$xposed_repo" >/dev/null 2>&1; then
+            gh release edit "$xposed_tag" --repo "$xposed_repo" \
+              --title "Eclipse 2 v$VERSION" \
+              --notes-file "$RUNNER_TEMP/notes.md"
+            gh release upload "$xposed_tag" "$APK" --repo "$xposed_repo" --clobber
+          else
+            flags=()
+            if [ "${{ steps.tag.outputs.prerelease }}" = "true" ]; then flags+=(--prerelease); fi
+            gh release create "$xposed_tag" "$APK" \
+              --repo "$xposed_repo" \
+              --target main \
+              --title "Eclipse 2 v$VERSION" \
+              --notes-file "$RUNNER_TEMP/notes.md" \
+              "${flags[@]}"
+          fi
+
+          echo "Published $APK to $xposed_repo as $xposed_tag"
+
       # The in-app update checker reads version.json from main. Bump it for stable releases so
       # users are offered the new build; pre-releases leave it alone.
       - name: Point the update checker at this release

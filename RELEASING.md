@@ -77,6 +77,28 @@ gh secret set RELEASE_KEY_PASSWORD --repo somilkhan/Eclipse-2
 Also make sure **Settings -> Actions -> General -> Workflow permissions** allows the workflow token
 to create releases (the workflow requests `contents: write`).
 
+### 3. Enable automatic LSPosed repository publishing
+
+After the normal GitHub Release is created, the same workflow mirrors the exact signed APK to
+the LSPosed module repository
+([`Xposed-Modules-Repo/io.github.somilkhan.instaeclipse2`]) using the tag
+`versionCode-versionName` (for example, `24-0.9.1`). Stable and pre-release tags retain
+their release type. The source release remains the canonical release.
+
+Create a fine-grained personal access token with access only to
+`Xposed-Modules-Repo/io.github.somilkhan.instaeclipse2`, granting **Contents: Read and write**
+(and the default Metadata: Read). Add it to
+**somilkhan/Eclipse-2 -> Settings -> Secrets and variables -> Actions** as:
+
+| Secret | Value |
+|---|---|
+| `XPOSED_REPO_TOKEN` | The fine-grained token described above |
+
+Do not paste the token into chat, source code, or a committed file. If the secret is absent, the
+main GitHub release still publishes, but the workflow emits a warning and skips LSPosed sync.
+If the LSPosed sync fails, fix the token/permissions and re-run the failed workflow job; the step
+updates an existing same-version LSPosed release and replaces its APK asset safely.
+
 ## Signing key change: existing users must reinstall once
 
 Releases from this repository are signed with the maintainer's new key, not the key used for the
