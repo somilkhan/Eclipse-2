@@ -37,7 +37,8 @@ public class ReleaseVersionTest {
         if (!java.nio.file.Files.exists(p)) p = java.nio.file.Paths.get("..", "CHANGELOG.md");
         String first = null;
         for (String l : java.nio.file.Files.readAllLines(p, java.nio.charset.StandardCharsets.UTF_8)) {
-            if (l.startsWith("## ")) { first = l; break; }
+            // Keep a Changelog's "## Unreleased" section names no target build; check the first release.
+            if (l.startsWith("## ") && !l.trim().equalsIgnoreCase("## Unreleased")) { first = l; break; }
         }
         assertTrue("no release heading", first != null);
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("for Instagram (\\S+)").matcher(first);
