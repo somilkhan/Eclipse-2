@@ -422,6 +422,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 last = y;
                 travel = 0;
+                // A retained tab may be restored at a non-zero scroll position. Sync the chrome
+                // immediately instead of waiting for a later scroll callback.
+                nav.setMinimized(y >= minimizeAt);
             }
 
             @Override

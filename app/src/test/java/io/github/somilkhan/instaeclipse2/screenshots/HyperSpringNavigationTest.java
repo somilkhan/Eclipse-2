@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -143,6 +144,32 @@ public class HyperSpringNavigationTest {
         assertEquals(1f, nav.getScaleX(), 0.001f);
     }
 
+    @Test public void rapidTabSelectionCleansIconTransformsAndExposesSelectedSemantics() {
+        MainActivity a = activity();
+        GlassNavPill nav = a.findViewById(R.id.bottom_navigation);
+        View home = nav.findViewById(R.id.nav_home);
+        View features = nav.findViewById(R.id.nav_features);
+        assertNotNull(home);
+        assertNotNull(features);
+
+        a.selectTab(R.id.nav_features);
+        a.selectTab(R.id.nav_logs);
+        a.selectTab(R.id.nav_home);
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(500));
+
+        for (int id : new int[]{R.id.nav_home, R.id.nav_features, R.id.nav_logs, R.id.nav_help}) {
+            View tab = nav.findViewById(id);
+            View icon = ((ViewGroup) tab).getChildAt(0);
+            assertEquals("icon scale must settle after interrupted switching", 1f,
+                    icon.getScaleX(), 0.02f);
+            assertEquals(1f, icon.getScaleY(), 0.02f);
+            assertTrue(tab.createAccessibilityNodeInfo().isCheckable());
+        }
+        AccessibilityNodeInfo selected = home.createAccessibilityNodeInfo();
+        assertTrue(selected.isSelected());
+        assertFalse(features.createAccessibilityNodeInfo().isSelected());
+    }
+
     @Test public void savedSelectionRestoresMatchingFragmentAndPill() {
         MainActivity a = activity();
         a.selectTab(R.id.nav_logs);
@@ -211,21 +238,27 @@ public class HyperSpringNavigationTest {
     @Test public void revealFinishRestoresOutlineAndPivotAndRunsCleanupOnce() {
         FrameLayout root = root();
         View page = root.getChildAt(0);
+        View old = new View(root.getContext());
+        root.addView(old, new FrameLayout.LayoutParams(-1, -1));
         ViewOutlineProvider outline = page.getOutlineProvider();
         page.setPivotX(7f);
         page.setPivotY(11f);
+        old.setPivotX(13f);
+        old.setPivotY(17f);
         int[] done = {0};
         TabReveal reveal = new TabReveal();
-        reveal.play(root, page, Collections.emptyList(), page, 180f, 760f, () -> done[0]++);
-        assertEquals(2, root.getChildCount());
+        reveal.play(root, page, Collections.singletonList(old), page, 180f, 760f, () -> done[0]++);
+        assertEquals(3, root.getChildCount());
         reveal.finish();
         reveal.finish();
         assertEquals(1, done[0]);
-        assertEquals(1, root.getChildCount());
+        assertEquals(2, root.getChildCount());
         assertSame(outline, page.getOutlineProvider());
         assertFalse(page.getClipToOutline());
         assertEquals(7f, page.getPivotX(), 0f);
         assertEquals(11f, page.getPivotY(), 0f);
+        assertEquals(13f, old.getPivotX(), 0f);
+        assertEquals(17f, old.getPivotY(), 0f);
         assertEquals(1f, page.getScaleX(), 0f);
     }
 

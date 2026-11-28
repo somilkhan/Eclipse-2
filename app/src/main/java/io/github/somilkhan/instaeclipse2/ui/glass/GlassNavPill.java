@@ -692,9 +692,59 @@ public class GlassNavPill extends BackdropBlurLayout {
             refreshDrawableState();
             label.setTypeface(android.graphics.Typeface.create("sans-serif-medium",
                     c ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
+            animateState(false);
         }
 
         @Override public void toggle() { setChecked(!checked); }
+
+        /**
+         * Keep icon and label motion coordinated with the moving lens. Animations are cancelled
+         * before every new state so rapid switching cannot leave a tab half-scaled or faded.
+         */
+        private void animateState(boolean pressed) {
+            // Selection settles at the neutral transform; the coordinated alpha/typeface change
+            // carries the selected state without leaving a scale offset after an interruption.
+            float scale = pressed ? 0.90f : 1f;
+            float iconAlpha = checked ? 1f : 0.82f;
+            float labelAlpha = checked ? 1f : 0.86f;
+            icon.animate().cancel();
+            label.animate().cancel();
+            if (Motion.reduceMotion()) {
+                icon.setScaleX(scale);
+                icon.setScaleY(scale);
+                icon.setAlpha(iconAlpha);
+                label.setAlpha(labelAlpha);
+                return;
+            }
+            long duration = pressed ? 90L : 180L;
+            android.view.animation.Interpolator interpolator = pressed
+                    ? new android.view.animation.DecelerateInterpolator()
+                    : new android.view.animation.OvershootInterpolator(1.35f);
+            icon.animate().scaleX(scale).scaleY(scale).alpha(iconAlpha)
+                    .setDuration(duration).setInterpolator(interpolator).start();
+            label.animate().alpha(labelAlpha).setDuration(duration)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
+        }
+
+        @Override public void setPressed(boolean pressed) {
+            super.setPressed(pressed);
+            animateState(pressed);
+        }
+
+        @Override protected void onDetachedFromWindow() {
+            icon.animate().cancel();
+            label.animate().cancel();
+            icon.setScaleX(1f);
+            icon.setScaleY(1f);
+            icon.setAlpha(1f);
+            label.setAlpha(1f);
+            super.onDetachedFromWindow();
+        }
+
+        @Override protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            animateState(false);
+        }
 
         @Override
         protected int[] onCreateDrawableState(int extraSpace) {
@@ -706,15 +756,6 @@ public class GlassNavPill extends BackdropBlurLayout {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouchEvent(MotionEvent e) {
-            if (!Motion.reduceMotion()) {
-                if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    icon.animate().scaleX(0.86f).scaleY(0.86f).setDuration(110).start();
-                } else if (e.getActionMasked() == MotionEvent.ACTION_UP
-                        || e.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-                    icon.animate().scaleX(1f).scaleY(1f).setDuration(320)
-                            .setInterpolator(new android.view.animation.OvershootInterpolator(2.4f)).start();
-                }
-            }
             return super.onTouchEvent(e);
         }
 
@@ -722,7 +763,7 @@ public class GlassNavPill extends BackdropBlurLayout {
         public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
             super.onInitializeAccessibilityNodeInfo(info);
             info.setClassName("android.widget.Tab");
-            info.setCheckable(false);
+            info.setCheckable(true);
             info.setSelected(checked);
             info.setCollectionItemInfo(AccessibilityNodeInfo.CollectionItemInfo.obtain(0, 1, index, 1, false, checked));
         }
