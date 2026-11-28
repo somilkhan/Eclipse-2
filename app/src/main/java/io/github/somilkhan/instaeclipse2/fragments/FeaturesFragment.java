@@ -823,7 +823,8 @@ public class FeaturesFragment extends Fragment {
     private FeatureItem createSwitch(String title, String prefKey) {
         FeatureItem item = new FeatureItem();
         item.type = FeatureItem.TYPE_SWITCH;
-        item.title = title;
+        item.title = io.github.somilkhan.instaeclipse2.utils.feature.RestartRequired.withNote(
+                title, prefKey, getString(R.string.ig_feat_restart_needed));
         item.prefKey = prefKey;
         return item;
     }
@@ -2261,7 +2262,7 @@ public class FeaturesFragment extends Fragment {
         defs.add(Arrays.asList(
                 createSwitch(R.drawable.ic_ui_block, "#32D74B", getString(R.string.ig_feat_filter_story_tray), "filterStoryTray"),
                 types, users,
-                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_story_ring_size) + " (" + getString(R.string.ig_feat_restart_needed) + ")", "customStoryRingSize"),
+                createSwitch(R.drawable.ic_ui_story_ring, "#32D74B", getString(R.string.ig_feat_story_ring_size), "customStoryRingSize"),
                 ring
         ));
 
