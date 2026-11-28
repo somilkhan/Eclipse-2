@@ -56,13 +56,16 @@ public class LikeAnimationHook {
     private final AtomicBoolean loggedUntracked = new AtomicBoolean();
     private final AtomicBoolean loggedMapper = new AtomicBoolean();
     private final AtomicBoolean loggedView = new AtomicBoolean();
+    private final AtomicBoolean loggedConfigure = new AtomicBoolean();
+    private final AtomicBoolean loggedNoRender = new AtomicBoolean();
 
     public void install() {
-        int layers = 0;
         Class<?> metaEnum = installMetadata();
-        if (metaEnum != null) layers++;
-        if (installView(metaEnum)) layers++;
-        if (layers > 0) FeatureStatusTracker.setHooked("CustomLikeAnimation");
+        boolean viewHooked = installView(metaEnum);
+        if (FeatureFlags.customLikeAnimation) {
+            if (viewHooked) FeatureStatusTracker.setHooked("CustomLikeAnimation");
+            else FeatureStatusTracker.setBroken("CustomLikeAnimation", "LikeActionView configuration hook could not be installed.");
+        }
     }
 
     /**
@@ -197,8 +200,14 @@ public class LikeAnimationHook {
             setUpCustom.setAccessible(true);
             XposedBridge.hookMethod(configure, new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
+                protected void afterHookedMethod(MethodHookParam param) {
                     JitGuard.tick(param.method);
+                    if (loggedConfigure.compareAndSet(false, true))
+                        ModuleLog.line(TAG + "configure method ran; enabled=" + FeatureFlags.customLikeAnimation);
+                    // Let Instagram finish its ordinary view setup first. The former before-hook
+                    // invoked setUpCustom and returned null, skipping the rest of configure;
+                    // recycled LikeActionViews could then be left only partly initialized.
+                    if (!FeatureFlags.customLikeAnimation) return;
                     Object value = null;
                     // Prefer the same pick as the metadata, mapped the way Instagram maps it.
                     if (toRender != null && metaRes != null) {
@@ -223,7 +232,12 @@ public class LikeAnimationHook {
                         }
                     }
                     if (value == null) value = renderResolver.get(currentPick(renderNames));
-                    if (value == null) return;
+                    if (value == null) {
+                        if (loggedNoRender.compareAndSet(false, true))
+                            ModuleLog.line(TAG + "❌ selected animation has no matching render enum; leaving Instagram's animation unchanged");
+                        FeatureStatusTracker.setBroken("CustomLikeAnimation", "Selected animation has no matching Instagram render enum.");
+                        return;
+                    }
                     try {
                         setUpCustom.invoke(param.thisObject, value);
                         View v = (View) param.thisObject;
@@ -234,12 +248,13 @@ public class LikeAnimationHook {
                         v.setRotation(0f);
                         v.setTranslationX(0f);
                         v.setTranslationY(0f);
-                        param.setResult(null);
                         if (loggedView.compareAndSet(false, true)) {
                             ModuleLog.line(TAG + "view set up with " + ((Enum<?>) value).name());
                         }
+                        FeatureStatusTracker.setRuntimeObserved("CustomLikeAnimation");
                     } catch (Throwable t) {
                         ModuleLog.line(TAG + "⚠️ " + (t.getCause() != null ? t.getCause() : t));
+                        FeatureStatusTracker.setBroken("CustomLikeAnimation", t.toString());
                     }
                 }
             });

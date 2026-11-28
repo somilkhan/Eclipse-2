@@ -194,6 +194,7 @@ public class SettingsManager {
         editor.putBoolean("likeUndo", FeatureFlags.likeUndo);
         editor.putBoolean("profileFollowsYouLabel", FeatureFlags.profileFollowsYouLabel);
         editor.putBoolean("fancyBioFont", FeatureFlags.fancyBioFont);
+        editor.putBoolean("copyProfileUsername", FeatureFlags.copyProfileUsername);
         editor.putBoolean("savedOnProfile", FeatureFlags.savedOnProfile);
         editor.putBoolean("lockSavedCollections", FeatureFlags.lockSavedCollections);
         editor.putString("lockedCollections", FeatureFlags.lockedCollections);
@@ -439,6 +440,7 @@ public class SettingsManager {
         FeatureFlags.likeUndo = prefs.getBoolean("likeUndo", false);
         FeatureFlags.profileFollowsYouLabel = prefs.getBoolean("profileFollowsYouLabel", false);
         FeatureFlags.fancyBioFont = prefs.getBoolean("fancyBioFont", false);
+        FeatureFlags.copyProfileUsername = prefs.getBoolean("copyProfileUsername", false);
         FeatureFlags.savedOnProfile = prefs.getBoolean("savedOnProfile", false);
         FeatureFlags.lockSavedCollections = prefs.getBoolean("lockSavedCollections", false);
         FeatureFlags.lockedCollections = prefs.getString("lockedCollections", "");

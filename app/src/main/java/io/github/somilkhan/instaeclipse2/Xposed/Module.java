@@ -59,6 +59,7 @@ import io.github.somilkhan.instaeclipse2.mods.ui.UIHookManager;
 import io.github.somilkhan.instaeclipse2.mods.ui.theme.IgThemeHook;
 import io.github.somilkhan.instaeclipse2.utils.core.CommonUtils;
 import io.github.somilkhan.instaeclipse2.utils.core.DexKitCache;
+import io.github.somilkhan.instaeclipse2.utils.core.HookInstallCoordinator;
 import io.github.somilkhan.instaeclipse2.utils.core.SettingsManager;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureFlags;
 import io.github.somilkhan.instaeclipse2.utils.feature.FeatureManager;
@@ -67,13 +68,13 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
 
 @SuppressLint("UnsafeDynamicallyLoadedCode")
 public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
-    /** Delay before the first-launch DexKit pass, after Instagram's startup has been posted. */
-    private static final long COLD_INSTALL_DELAY_MS = 1500;
-    /** How long Application.attach waits for a cached install before letting Instagram continue. */
-    private static final long WARM_INLINE_BUDGET_MS = 1500;
-
     // List of supported Instagram package names (maintained in CommonUtils)
     private static final List<String> SUPPORTED_PACKAGES = CommonUtils.SUPPORTED_PACKAGES;
+    /** Prevent duplicate receivers/callbacks if Application.attach is observed more than once. */
+    private static final java.util.concurrent.atomic.AtomicBoolean ATTACH_INITIALIZED =
+            new java.util.concurrent.atomic.AtomicBoolean();
+    /** Process-local: a new Instagram process creates a fresh coordinator and reinstalls hooks. */
+    private static final HookInstallCoordinator INSTALL_COORDINATOR = new HookInstallCoordinator();
     public static DexKitBridge dexKitBridge;
     public static ClassLoader hostClassLoader;
     public static String moduleSourceDir;
@@ -177,8 +178,8 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 + context.getPackageName() + " " + ig);
     }
 
-    /** DexKitCache key set once every feature hook has been installed for this IG version. */
-    private static final String CACHE_COMPLETE_KEY = "InstallComplete";
+    /** Discovery sweep reached its end normally; this is not a persistent hook-installed flag. */
+    private static final String CACHE_COMPLETE_KEY = "InstallSweepReachedEnd_v2";
 
     private static java.util.Set<String> skipped;
 
@@ -249,6 +250,11 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) { io.github.somilkhan.instaeclipse2.utils.core.JitGuard.tick(param.method);
 
+                    if (!ATTACH_INITIALIZED.compareAndSet(false, true)) {
+                        android.util.Log.d("InstaEclipse", "Duplicate Application.attach ignored");
+                        return;
+                    }
+
                     // Setup context, preferences
                     Context context = (Context) param.args[0];
                     SettingsManager.init(context);
@@ -305,6 +311,16 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                     // Activate the LSPosed Sync Bridge to listen to FeaturesFragment updates
                     registerSyncReceiver(context);
+
+                    // Startup tab must hook framework activity creation before Instagram creates
+                    // its first Activity. It is reflection-only and cheap enough for this phase.
+                    isolatedInstall("StartupTabHook", () -> new io.github.somilkhan.instaeclipse2.mods.ui.StartupTabHook().install(hostClassLoader));
+                    // Custom Like uses direct class/method reflection, not DexKit. Install it
+                    // before the delayed, sequential discovery sweep so it is ready as soon as
+                    // Instagram reaches the feed (especially on a cold/version-change launch).
+                    isolatedInstall("LikeAnimationHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimationHook().install());
+                    // Copy Username is also reflection-only; install its lifecycle trigger early.
+                    isolatedInstall("CopyProfileUsernameHook", () -> new io.github.somilkhan.instaeclipse2.mods.ui.CopyProfileUsernameHook().install(hostClassLoader));
 
                     try {
                         UIHookManager.registerConfigImportReceiver(context);
@@ -499,13 +515,6 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         ModuleLog.line("(InstaEclipse | NotificationFix): ❌ Failed to hook: " + t);
                     }
 
-                    // Startup tab
-                    try {
-                        if (!skip("StartupTabHook")) new io.github.somilkhan.instaeclipse2.mods.ui.StartupTabHook().install(hostClassLoader);
-                    } catch (Throwable t) {
-                        ModuleLog.line("(InstaEclipse | StartupTab): ❌ Failed to hook: " + t);
-                    }
-
                     // Extras: no swipe to camera from the feed
                     try {
                         if (!skip("SwipeToCameraHook")) new io.github.somilkhan.instaeclipse2.mods.extras.SwipeToCameraHook().install(hostClassLoader);
@@ -557,7 +566,6 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     isolatedInstall("DisappearingSwipeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.DisappearingSwipeHook().install(dexKitBridge));
                     isolatedInstall("ChatCallButtonsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ChatCallButtonsHook().install(dexKitBridge));
                     isolatedInstall("StoryTrayFilterHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryTrayFilterHook().install(dexKitBridge));
-                    isolatedInstall("LikeAnimationHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.LikeAnimationHook().install());
                     isolatedInstall("StoryRingSizeHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.StoryRingSizeHook().install(dexKitBridge));
                     isolatedInstall("ResumeReelsHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.ResumeReelsHook().install(dexKitBridge));
                     isolatedInstall("MarkReadAfterReplyHook", () -> new io.github.somilkhan.instaeclipse2.mods.piko.MarkReadAfterReplyHook().install(dexKitBridge));
@@ -831,19 +839,25 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                                 + ") — installing hooks in background");
                     }
                     Thread t = new Thread(() -> {
+                        if (!INSTALL_COORDINATOR.tryStart()) {
+                            ModuleLog.line("(InstaEclipse): duplicate hook sweep ignored; state="
+                                    + INSTALL_COORDINATOR.getState());
+                            return;
+                        }
                         long start = android.os.SystemClock.elapsedRealtime();
                         try {
                             installFeatureHooks.run();
+                            INSTALL_COORDINATOR.markComplete();
                         } catch (Throwable e) {
-                            // One hook escaping its own try must not stop the cache from being
-                            // marked complete, or every launch repeats the slow DexKit pass.
+                            // A partial sweep is not a successful warm-cache run. Leave the
+                            // completion key unset so the next process retries the cold path.
+                            INSTALL_COORDINATOR.markFailed();
                             ModuleLog.line("(InstaEclipse): ❌ background install: " + e);
-                            DexKitCache.saveString(CACHE_COMPLETE_KEY, "1");
                         }
                         long took = android.os.SystemClock.elapsedRealtime() - start;
-                        if (!warm || took > WARM_INLINE_BUDGET_MS)
-                            ModuleLog.line("(InstaEclipse): " + (warm ? "cached" : "background")
-                                    + " hook installation took " + took + " ms");
+                        ModuleLog.line("(InstaEclipse): " + (warm ? "cached" : "cold")
+                                + " hook sweep state=" + INSTALL_COORDINATOR.getState()
+                                + " duration=" + took + " ms");
                     }, "InstaEclipse-Init");
                     // DexKit runs each query on every core by default, which starved Instagram's
                     // own startup ("failed to complete startup" ANR). Keep half the cores free.
@@ -852,23 +866,15 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         dexKitBridge.setThreadNum(Math.max(1, cores / 2));
                     } catch (Throwable ignored) { }
                     if (warm) {
-                        // Cached launch: most hooks are reflection only, but some lookups are not
-                        // cacheable (media adapter, negative results) and took 20 s+ on 458 when
-                        // run inline in Application.attach. Run them off the main thread and wait
-                        // a short, bounded time so the early hooks (main activity, startup tab)
-                        // still land before Instagram's first screen; the rest follows shortly.
+                        // Cached discovery still runs in the worker: per-process Xposed callbacks
+                        // must be reinstalled, and the cache is not proof that hooks are live.
                         t.setPriority(Thread.NORM_PRIORITY - 1);
-                        t.start();
-                        try { t.join(WARM_INLINE_BUDGET_MS); } catch (InterruptedException ignored) {
-                            Thread.currentThread().interrupt();
-                        }
                     } else {
-                        // First launch: the full DexKit scan takes many seconds. Start only once
-                        // the main looper is idle again (posted messages run after bindApplication
-                        // returned) so Android sees startup complete first.
+                        // First launch: full DexKit discovery can take many seconds. Start on the
+                        // next main-loop turn after attach returns and keep all discovery off UI.
                         t.setPriority(Thread.MIN_PRIORITY);
-                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(t::start, COLD_INSTALL_DELAY_MS);
                     }
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(t::start);
                 }
 
             });
@@ -902,6 +908,7 @@ public class Module implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     prefs.edit().putBoolean(key, value).apply();
 
                     SettingsManager.loadAllFlags(ctx);
+                    if ("isDevEnabled".equals(key)) DevOptionsUnlockHook.resetRuntimeLogForFlagChange();
                     if ("airplaneMode".equals(key)) io.github.somilkhan.instaeclipse2.mods.extras.AirplaneModeHook.apply();
                     FeatureManager.refreshFeatureStatus();
                     io.github.somilkhan.instaeclipse2.mods.ui.theme.ThemeRefresh.onPrefChanged(key);

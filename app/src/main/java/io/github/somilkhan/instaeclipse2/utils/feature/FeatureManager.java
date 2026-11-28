@@ -90,6 +90,8 @@ public class FeatureManager {
             FeatureStatusTracker.setDisabled("LockDirectMessages");
         }
 
+        reg(FeatureFlags.lockWholeApp, "LockWholeApp", R.string.ig_dialog_misc_lock_whole_app);
+
         if (FeatureFlags.hideSpecificChats) {
             FeatureStatusTracker.setEnabled("HideSpecificChats", R.string.ig_hide_chats_title);
         } else {
@@ -145,6 +147,8 @@ public class FeatureManager {
         } else {
             FeatureStatusTracker.setDisabled("ProfileFollowsYou");
         }
+
+        reg(FeatureFlags.copyProfileUsername, "CopyProfileUsername", R.string.ig_dialog_copy_profile_username);
 
         if (FeatureFlags.likeUndo) {
             FeatureStatusTracker.setEnabled("LikeUndo", R.string.ig_dialog_misc_like_undo);

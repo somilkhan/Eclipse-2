@@ -5,4 +5,11 @@
     <string name="menu_chip_active">%1$d/%2$d active</string>
     <string name="menu_inactive_all_good">Every enabled feature is active on this Instagram version.</string>
     <string name="menu_inactive_hint">These are switched on, but they could not attach to this Instagram version:</string>
+    <string name="menu_health_summary">Runtime %1$d · Installed %2$d · Pending %3$d · Failed %4$d</string>
+    <string name="menu_health_title">Feature health</string>
+    <string name="menu_health_runtime">Runtime observed (%1$d)</string>
+    <string name="menu_health_installed">Installed; awaiting a runtime signal (%1$d)</string>
+    <string name="menu_health_unverified">Not yet exercised or verified (%1$d)</string>
+    <string name="menu_health_failed">Failed (%1$d)</string>
+    <string name="menu_health_note">Only explicit successful runtime paths count as runtime observed. No signal is not proof of failure.</string>
 </resources>
