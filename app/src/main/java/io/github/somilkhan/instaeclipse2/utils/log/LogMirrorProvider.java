@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.ParcelFileDescriptor;
-import android.os.Process;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,22 +49,9 @@ public class LogMirrorProvider extends ContentProvider {
         if (ctx == null) throw new FileNotFoundException("no context");
         if (!mode.contains("w")) throw new SecurityException("write-only");
 
-        int uid = Binder.getCallingUid();
-        String pkg = null;
-        if (uid == Process.myUid()) {
-            pkg = CommonUtils.IG_PACKAGE_NAME; // local testing only
-        } else {
-            String[] pkgs = ctx.getPackageManager().getPackagesForUid(uid);
-            if (pkgs != null) {
-                for (String p : pkgs) {
-                    if (CommonUtils.SUPPORTED_PACKAGES.contains(p)) {
-                        pkg = p;
-                        break;
-                    }
-                }
-            }
-        }
-        if (pkg == null) throw new SecurityException("caller is not a supported Instagram package");
+        // Package name plus the pinned/official signing key, like settings sync and downloads.
+        String pkg = io.github.somilkhan.instaeclipse2.utils.core.IpcSecurity.supportedCallerPackage(ctx, Binder.getCallingUid());
+        if (pkg == null) throw new SecurityException("caller is not a trusted Instagram package");
 
         File dir = mirrorDir(ctx);
         if (!dir.isDirectory() && !dir.mkdirs()) throw new FileNotFoundException("cannot create " + dir);

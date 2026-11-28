@@ -32,7 +32,6 @@ import io.github.somilkhan.instaeclipse2.utils.log.ModuleLog;
  * module to make authenticated API calls of its own.)
  */
 public class ShareLinkDownloadHook {
-    public static final String EXTRA = "io.github.somilkhan.instaeclipse2.SHARE_DOWNLOAD";
     private static final String TAG = "(IE|ShareDL) ";
     private static final Pattern SHORTCODE = Pattern.compile("/(?:p|reel|reels|tv)/([A-Za-z0-9_-]+)");
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -60,8 +59,13 @@ public class ShareLinkDownloadHook {
             protected void afterHookedMethod(MethodHookParam param) { JitGuard.tick(param.method);
                 Activity a = (Activity) param.thisObject;
                 Intent i = param.args.length > 0 && param.args[0] instanceof Intent in ? in : a.getIntent();
-                if (i == null || !i.getBooleanExtra(EXTRA, false)) return;
-                i.removeExtra(EXTRA); // once (not again on recreation)
+                if (i == null || !i.hasExtra(io.github.somilkhan.instaeclipse2.share.ShareProof.EXTRA)) return;
+                boolean fromCompanion = io.github.somilkhan.instaeclipse2.share.ShareProof.isFromCompanion(i);
+                i.removeExtra(io.github.somilkhan.instaeclipse2.share.ShareProof.EXTRA); // once (not again on recreation)
+                if (!fromCompanion) {
+                    ModuleLog.line(TAG + "⚠️ ignored a share-download request that didn't come from the companion");
+                    return;
+                }
                 start(a, i.getData());
             }
         };
